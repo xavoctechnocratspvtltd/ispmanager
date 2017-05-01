@@ -10,7 +10,9 @@ class page_user extends \xepan\base\Page {
 	function init(){
 		parent::init();
 
-
-		$this->add('View')->set("hello user ");
+		$model = $this->add('xavoc\ispmanager\Model_User');
+		$crud = $this->add('xepan\hr\CRUD');
+		$crud->setModel($model);
+		
 	}
 }

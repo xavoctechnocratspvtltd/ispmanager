@@ -9,10 +9,10 @@ class Model_Policy extends \xepan\base\Model_Table{
 	function init(){
 		parent::init();
 
-		$this->hasOne('xacoc\ispmanager\Plan','plan_id');
+		$this->hasOne('xavoc\ispmanager\Plan','plan_id');
 		
 		$this->addField('data_dl')->type('number')->hint('DL: download limit');
-		$this->addField('data_dl')->type('number')->hint('DL: download limit');
+		$this->addField('data_ul')->type('number')->hint('uL: download limit');
 
 		$this->addField('data_accounting_dl')->type('number')->hint('DL: upload limit');
 		$this->addField('data_accounting_ul')->type('number')->hint('UL: upload limit');

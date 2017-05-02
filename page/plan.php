@@ -10,7 +10,10 @@ class page_plan extends \xepan\base\Page {
 	function init(){
 		parent::init();
 
-
-		$this->add('View')->set("plans ");
+		$plan = $this->add('xavoc\ispmanager\Model_Plan');
+		$crud = $this->add('xepan\hr\CRUD');
+		$crud->setModel($plan);
+		$crud->grid->removeColumn('attachment_icon');
+		
 	}
 }

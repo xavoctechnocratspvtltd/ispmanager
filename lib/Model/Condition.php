@@ -9,7 +9,7 @@ class Model_Condition extends \xepan\base\Model_Table{
 	function init(){
 		parent::init();
 
-		$this->hasOne('xacoc\ispmanager\Policy','policy_id');
+		$this->hasOne('xavoc\ispmanager\Policy','policy_id');
 
 		$this->addField('factor')->enum(['daily_uses','monthly_uses','yearly_uses','day','date','time']);
 		

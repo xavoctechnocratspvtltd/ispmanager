@@ -27,8 +27,10 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 		$this->addField('is_expired')->type('boolean')->defaultValue(false);
 		$this->addField('is_recurring')->type('boolean')->defaultValue(false);
 		$this->addField('is_effective')->type('boolean')->defaultValue(false);
-		$this->addField('download_data_consumed');
-		$this->addField('upload_data_consumed');
+		$this->addField('download_data_consumed')->defaultValue(0);
+		$this->addField('upload_data_consumed')->defaultValue(0);
+		
+		// row in which consumptin data value to be stored
 		$this->addField('data_limit_row');
 		$this->addField('duplicated_from_record_id');
 		$this->addField('is_data_carry_forward')->type('boolean')->defaultValue(false);
@@ -73,10 +75,11 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 		$this->addField('d28')->type('boolean')->defaultValue(false);
 		$this->addField('d29')->type('boolean')->defaultValue(false);
 		$this->addField('d30')->type('boolean')->defaultValue(false);
-		$this->addField('d31')->type('boolean')->defaultValue(false);		
+		$this->addField('d31')->type('boolean')->defaultValue(false);
 
 		$this->addField('reset_date')->type('datetime');
-		$this->addField('data_reset_mode')->enum(['hourly','daily','monthly','yearly']);
+		$this->addField('data_reset_value')->type('number');
+		$this->addField('data_reset_mode')->enum(['hour','day','month','year']);
 
 		$this->add('dynamic_model/Controller_AutoCreator');
 	}

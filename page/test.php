@@ -10,6 +10,8 @@ class page_test extends \xepan\base\Page {
 	function init(){
 		parent::init();
 
+		// $this->add('CRUD')->setModel($this->add('xavoc\ispmanager\Model_UserPlanAndTopup'));
+
 		$form = $this->add('Form');
 		$form->addField('DropDown', 'user')->setModel($this->add('xavoc\ispmanager\Model_User'));
 		$factor = ['daily_uses','monthly_uses','yearly_uses','day','date','time'];

@@ -6,11 +6,11 @@ class Model_User extends \xepan\base\Model_Table{
 	public $table = "isp_user";
 	public $status = ['active','deactive'];
 	public $actions = [
-				'active'=>['view','edit','delete','topup'],
+				'active'=>['view','edit','delete','plans'],
 				'deactive'=>['view','edit','delete','active']
 				];
 	public $acl_type= "ispmanager_user";
-
+	private $plan_dirty = false;
 	function init(){
 		parent::init();
 
@@ -40,13 +40,13 @@ class Model_User extends \xepan\base\Model_Table{
 		$this->addField('email_id');
 		$this->addField('vat_id');
 		$this->addField('narration')->type('text');
+		$this->addField('grace_period_in_days')->type('number')->defaultValue(0);
 		$this->addField('custom_radius_attributes')->type('text')->caption('Custom RADIUS Attributes');
 
 		$this->addField('is_verified')->type('boolean');
 		$this->addField('verified_by')->enum(['email','otp','social']);
 		$this->addField('status')->enum(['active','deactive'])->defaultValue('active');
 		$this->addField('created_at')->type('datetime')->defaultValue($this->app->now);
-		
 		$this->hasMany('xavoc\ispmanager\TopUp','topup_id',null,'topups');
 
 		$this->add('dynamic_model/Controller_AutoCreator');
@@ -56,13 +56,65 @@ class Model_User extends \xepan\base\Model_Table{
 				'password|number|>=4',
 				'created_at|to_trim|required'
 			]);
+
+		$this->addHook('beforeSave',$this);
+		$this->addHook('afterSave',[$this,'updateUserConditon']);
 	}
 
-	function page_topup($page){
-		$topup_model = $page->add('xavoc\ispmanager\Model_UserTopUp');
-		$topup_model->addCondition('user_id',$this->id);
-
-		$t_crud = $page->add('xepan\hr\CRUD');
-		$t_crud->setModel($topup_model);
+	function beforeSave(){
+		if($this->dirty['plan_id']){
+			$this->plan_dirty = true;
+		}
 	}
+
+	function updateUserConditon(){
+		if(!$this->plan_dirty) return;
+
+		$plan_model = $this->add('xavoc\ispmanager\Model_Plan')->load($this['plan_id']);
+		$condition_model = $this->add('xavoc\ispmanager\Model_Condition')->addCondition('plan_id',$plan_model->id);
+		
+		// set all plan to expire
+		$update_query = "UPDATE isp_user_plan_and_topup SET is_expired = '1' WHERE user_id = '".$this->id."' AND is_topup = '0'";
+		$this->app->db->dsql()->expr($update_query)->execute();
+
+		foreach ($condition_model as $key => $condition) {
+			$fields = $condition->getActualFields();
+			$unset_field =  ['id','plan_id','plan'];
+			$fields = array_diff($fields,$unset_field);
+
+			$u_p = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup');
+			$u_p->addCondition('user_id',$this->id)
+				->addCondition('is_topup',false);
+			$u_p['plan_id'] = $this['plan_id'];
+			$u_p['is_topup'] = $plan_model['is_topup'];
+
+			// all fields same as condition are setted
+			foreach ($fields as $key => $field_name) {
+				$u_p[$field_name] = $condition[$field_name];
+			}
+
+			$end_date = date("Y-m-d H:i:s", strtotime("'+".$plan_model['period']." ".$plan_model['period_unit']."'",strtotime($this->app->now)));
+			$reset_date = date("Y-m-d H:i:s", strtotime("'+".$condition['data_reset_value']." ".$condition['data_reset_mode']."'",strtotime($this->app->now)));
+			if($condition['data_reset_mode'] == "months"){
+				$reset_date = date('Y-m-01 00:00:00', strtotime($reset_date));
+			}elseif ($condition['data_reset_mode'] == "years") {
+				$reset_date = date('Y-m-01 00:00:00', strtotime($reset_date));
+			}elseif ($condition['data_reset_mode'] == "days") {
+				$reset_date = date('Y-m-d 00:00:00', strtotime($reset_date));
+			}elseif($condition['data_reset_mode'] == "hours"){
+				$reset_date = date('Y-m-d H:00:00', strtotime($reset_date));
+			}
+
+			// factor based on implemention
+			$u_p['start_date'] = $this->app->now;						
+			$u_p['end_date'] = $end_date;
+			$u_p['expire_date'] = date("Y-m-d H:i:s", strtotime("'+".$this['grace_period_in_days']." days'",strtotime($end_date)));
+			$u_p['is_recurring'] = $plan_model['is_auto_renew'];
+			$u_p['reset_date'] = $reset_date;
+			$u_p['is_effective'] = 0;
+			$u_p['data_limit_row'] = null; //id condition has data_limit then set empty else previous data row limit id;
+			$u_p->save();
+		}
+	}
+
 }

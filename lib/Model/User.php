@@ -4,6 +4,11 @@ namespace xavoc\ispmanager;
 
 class Model_User extends \xepan\base\Model_Table{ 
 	public $table = "isp_user";
+	public $status = ['active','deactive'];
+	public $actions = [
+				'active'=>['view','edit','delete','topup'],
+				'deactive'=>['view','edit','delete','active']
+				];
 	public $acl_type= "ispmanager_user";
 
 	function init(){
@@ -39,9 +44,11 @@ class Model_User extends \xepan\base\Model_Table{
 
 		$this->addField('is_verified')->type('boolean');
 		$this->addField('verified_by')->enum(['email','otp','social']);
-		$this->addField('is_active')->type('boolean');
+		$this->addField('status')->enum(['active','deactive'])->defaultValue('active');
 		$this->addField('created_at')->type('datetime')->defaultValue($this->app->now);
 		
+		$this->hasMany('xavoc\ispmanager\TopUp','topup_id',null,'topups');
+
 		$this->add('dynamic_model/Controller_AutoCreator');
 
 		$this->is([
@@ -49,5 +56,13 @@ class Model_User extends \xepan\base\Model_Table{
 				'password|number|>=4',
 				'created_at|to_trim|required'
 			]);
+	}
+
+	function page_topup($page){
+		$topup_model = $page->add('xavoc\ispmanager\Model_UserTopUp');
+		$topup_model->addCondition('user_id',$this->id);
+
+		$t_crud = $page->add('xepan\hr\CRUD');
+		$t_crud->setModel($topup_model);
 	}
 }

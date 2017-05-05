@@ -2,15 +2,18 @@
 
 namespace xavoc\ispmanager;
 
-class Model_Condition extends \xepan\base\Model_Table{ 
-	public $table = "isp_condition";
-	
-	public $acl_type="ispmanager_plan";
+class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
+	public $table = "isp_user_plan_and_topup";
+	public $acl_type="ispmanager_user_plan_and_topup";
+
 	function init(){
 		parent::init();
 
-		$this->hasOne('xavoc\ispmanager\Plan','plan_id');
-		
+		$this->hasOne('xavoc\ispmanager\User','user_id');
+		$this->hasOne('xavoc\ispmanager\BasicPlan','plan_id');
+
+		$this->addField('is_topup')->type('boolean')->defaultValue(0);
+
 		$this->addField('data_limit');
 		$this->addField('download_limit');
 		$this->addField('upload_limit');
@@ -18,13 +21,20 @@ class Model_Condition extends \xepan\base\Model_Table{
 		$this->addField('fup_upload_limit');
 		$this->addField('accounting_download_ratio');
 		$this->addField('accounting_upload_ratio');
-
-		$this->addField('is_recurring')->type('boolean');
+		$this->addField('start_date')->type('datetime');
+		$this->addField('end_date')->type('datetime');
+		$this->addField('expire_date')->type('datetime');
+		$this->addField('is_expired')->type('boolean')->defaultValue(false);
+		$this->addField('is_recurring')->type('boolean')->defaultValue(false);
+		$this->addField('is_effective')->type('boolean')->defaultValue(false);
+		$this->addField('download_data_consumed');
+		$this->addField('upload_data_consumed');
+		$this->addField('data_limit_row');
+		$this->addField('duplicated_from_record_id');
 		$this->addField('is_data_carry_forward')->type('boolean')->defaultValue(false);
 		$this->addField('start_time');
 		$this->addField('end_time');
-					
-		// for factor day
+		
 		$this->addField('sun')->type('boolean')->defaultValue(false);
 		$this->addField('mon')->type('boolean')->defaultValue(false);
 		$this->addField('tue')->type('boolean')->defaultValue(false);
@@ -65,8 +75,9 @@ class Model_Condition extends \xepan\base\Model_Table{
 		$this->addField('d30')->type('boolean')->defaultValue(false);
 		$this->addField('d31')->type('boolean')->defaultValue(false);		
 
+		$this->addField('reset_date')->type('datetime');
 		$this->addField('data_reset_mode')->enum(['hourly','daily','monthly','yearly']);
-		
+
 		$this->add('dynamic_model/Controller_AutoCreator');
 	}
 }

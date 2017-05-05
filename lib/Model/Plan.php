@@ -6,7 +6,7 @@ class Model_Plan extends \xepan\base\Model_Table{
 	public $table = "isp_plan";
 	public $status = ['active','deactive'];
 	public $actions = [
-				'active'=>['view','edit','delete','policy'],
+				'active'=>['view','edit','delete','condition'],
 				'deactive'=>['view','edit','delete','active']
 				];
 	public $acl_type="ispmanager_plan";
@@ -15,43 +15,37 @@ class Model_Plan extends \xepan\base\Model_Table{
 
 		$this->addField('name');
 		$this->addField('description');
-		$this->addField('total_limit')->type('number');
 		$this->addField('price')->type('number');
 		$this->addField('mode')->enum(['monthly','quarterly','half yearly','yearly']);
-		$this->addField('type_of_plan')->enum(['prepaid','postpaid']);
-		$this->addField('data_rate_dl')->type('number')->hint('DL: Download Limit');
-		$this->addField('data_rate_ul')->type('number')->hint('UL: Upload Limit');
-		
-		$this->addField('after_limit')->enum(['close','capping']);
-		$this->addField('after_limit_dl')->type('number')->hint('DL: Download Limit')->defaultValue(0);
-		$this->addField('after_limit_ul')->type('number')->hint('UL: Upload Limit')->defaultValue(0);
 
 		$this->addField('available_in_user_control_panel')->type('boolean');
 		$this->addField('status')->enum(['active','deactive'])->defaultValue('active');
+		$this->addField('is_topup')->type('boolean')->defaultValue(false);
+		$this->addField('maintain_data_limit')->type('boolean')->defaultValue(true);
+		
+		$this->hasMany('xavoc\ispmanager\Condition','plan_id',null,'conditions');
 
-		$this->hasMany('xavoc\ispmanager\Policy','plan_id');
 		$this->add('dynamic_model/Controller_AutoCreator');
 	}
 
-	function page_policy($page){
-		$model = $this->add('xavoc\ispmanager\Model_Policy');
-		$model->addCondition('plan_id',$this->id);
+	function page_condition($page){
+		$condition_model = $this->add('xavoc\ispmanager\Model_Condition');
+		$condition_model->addcondition('plan_id',$this->id);
 
 		$crud = $page->add('xepan\hr\CRUD');
-		$crud->setModel($model);
-		
-		$crud->grid->removeColumn('attachment_icon');
-		$crud->grid->removeColumn('action');
-
-		$crud->grid->add('VirtualPage')
-			->addColumn('condition')
-			->set(function($v_page){
-				$id = $_GET[$v_page->short_name.'_id'];
-				$condition_model = $this->add('xavoc\ispmanager\Model_Condition');
-				$condition_model->addcondition('policy_id',$id);
-
-				$crud = $v_page->add('xepan\hr\CRUD');
-				$crud->setModel($condition_model);
-		});
+		$crud->setModel($condition_model);
+		// if($crud->isEditing()){
+		// 	$form = $crud->form;
+		// 	$factor_field = $form->getElement('factor');
+		// 	$factor_field->js(true)->univ()
+		// 			->bindConditionalShow([
+		// 				'daily_uses'=>['operator','value'],
+		// 				'monthly_uses'=>['operator','value'],
+		// 				'yearly_uses'=>['operator','value'],
+		// 				'day'=>['mon','tue','wed','thu','fri','sat','sun','operator','value'],
+		// 				'date'=>['start_date','end_date','operator','value'],
+		// 				'time'=>['starting_time','ending_time','operator','value']
+		// 			],'div.atk-form-row');
+		// }
 	}
 }

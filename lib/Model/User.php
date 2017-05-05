@@ -117,4 +117,23 @@ class Model_User extends \xepan\base\Model_Table{
 		}
 	}
 
+	function addPlan($plan){
+
+	}
+
+	function getCurrent($now=null,$accounting_data=null){
+		if(!$now) $now = $this->app->now;
+
+		// if accounting data
+			// add in effective_row=1
+		// run effectiveDataRecord again to set flag in database
+		// run getDlUl
+		return ['access'=>true,'dl'=>512,'ul'=>512];
+	}
+
+	function setEffectiveDataRecord($now=null){
+		if(!$now) $now = $this->app->now;
+
+	}
+
 }

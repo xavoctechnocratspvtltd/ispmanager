@@ -17,7 +17,16 @@ class Initiator extends \Controller_Addon {
         $m->addItem(['Topups','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_topup');
         $m->addItem(['Configuration','icon'=>'fa fa-cog'],'xavoc_ispmanager_configuration');
         $m->addItem(['test','icon'=>'fa fa-cog'],'xavoc_ispmanager_test');
+
+        $this->addAppFunctions();
+
         return $this;
+    }
+
+    function addAppFunctions(){
+        $this->app->addMethod('toMB',function($app,$data=null){
+            return $data;
+        });
     }
 
     function setup_frontend(){

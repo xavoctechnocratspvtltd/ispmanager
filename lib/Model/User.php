@@ -73,9 +73,9 @@ class Model_User extends \xepan\base\Model_Table{
 		
 	}
 
-	function setPlan($plan,$on_date=null,$remove_old=false){
+	function setPlan($plan, $on_date=null, $remove_old=false){
 
-		if(!$on_date) $on_date = $this->app->today;
+		if(!$on_date) $on_date = isset($this->app->isptoday)? $this->app->isptoday : $this->app->today;
 
 		if(is_string($plan)) 
 			$plan_model = $this->add('xavoc\ispmanager\Model_Plan')->loadBy('name',$plan);
@@ -136,7 +136,7 @@ class Model_User extends \xepan\base\Model_Table{
 	}
 
 	function getApplicableRow($now=null,$with_data_limit=false){
-		if(!$now) $now = $this->app->now;
+		if(!$now) $now = isset($this->app->ispnow)? $this->app->ispnow : $this->app->now;
 		
 		$day = strtolower(date("D", strtotime($now)));
 		$date = 'd'.strtolower(date("d", strtotime($now)));
@@ -194,7 +194,7 @@ class Model_User extends \xepan\base\Model_Table{
 	}
 
 	function getAAADetails($now=null,$accounting_data=null){
-		if(!$now) $now = $this->app->now;
+		if(!$now) $now = isset($this->app->ispnow)? $this->app->ispnow : $this->app->now;
 
 		// if accounting data
 			// add in effective_row=1
@@ -209,7 +209,7 @@ class Model_User extends \xepan\base\Model_Table{
 		
 		// bandwidth or fup ??
 		$if_fup='fup_';
-		if(($data_limit_row['download_data_consumed'] + $data_limit_row['upload_data_consumed']) < $data_limit_row['data_limit']){
+		if(($data_limit_row['download_data_consumed'] + $data_limit_row['upload_data_consumed']) < $this->app->toMB($data_limit_row['data_limit'])){
 			$if_fup='';
 		}
 		$dl_field = $if_fup.'download_limit';
@@ -238,7 +238,7 @@ class Model_User extends \xepan\base\Model_Table{
 	}
 
 	function setEffectiveDataRecord($now=null){
-		if(!$now) $now = $this->app->now;
+		if(!$now) $now = isset($this->app->ispnow)? $this->app->ispnow : $this->app->now;
 
 	}
 

@@ -19,8 +19,12 @@ class page_Tester extends \xepan\base\Page_Tester{
 
 	function setDateTime($date){
 		$this->on_date = $date;
-		$this->app->now = $date;
-		$this->app->today = date('Y-m-d',strtotime($date));
+		$this->app->ispnow = $date;
+		$this->app->isptoday = date('Y-m-d',strtotime($date));
+	}
+
+	function _($data){
+		return $data;
 	}
 
 }

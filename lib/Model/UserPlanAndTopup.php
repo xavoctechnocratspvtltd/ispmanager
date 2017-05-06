@@ -12,23 +12,23 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 		$this->hasOne('xavoc\ispmanager\User','user_id');
 		$this->hasOne('xavoc\ispmanager\BasicPlan','plan_id');
 
-		$this->addField('is_topup')->type('boolean')->defaultValue(0);
+		$this->addField('is_topup')->type('boolean')->defaultValue(0)->caption('TopUp');
 
-		$this->addField('data_limit');
-		$this->addField('download_limit');
-		$this->addField('upload_limit');
-		$this->addField('fup_download_limit');
-		$this->addField('fup_upload_limit');
-		$this->addField('accounting_download_ratio');
-		$this->addField('accounting_upload_ratio');
+		$this->addField('data_limit')->hint('in MB');
+		$this->addField('download_limit')->hint('in KBps');
+		$this->addField('upload_limit')->hint('in KBps');
+		$this->addField('fup_download_limit')->hint('in KBps')->caption('FUP DL');
+		$this->addField('fup_upload_limit')->hint('in KBps')->caption('FUP UL');
+		$this->addField('accounting_download_ratio')->hint('in %')->caption('ACC DL %');
+		$this->addField('accounting_upload_ratio')->hint('in %')->caption('ACC UL %');
 		$this->addField('start_date')->type('datetime');
 		$this->addField('end_date')->type('datetime');
 		$this->addField('expire_date')->type('datetime');
 		$this->addField('is_expired')->type('boolean')->defaultValue(false);
 		$this->addField('is_recurring')->type('boolean')->defaultValue(false);
 		$this->addField('is_effective')->type('boolean')->defaultValue(false);
-		$this->addField('download_data_consumed')->defaultValue(0);
-		$this->addField('upload_data_consumed')->defaultValue(0);
+		$this->addField('download_data_consumed')->hint('in MB')->defaultValue(0);
+		$this->addField('upload_data_consumed')->hint('in MB')->defaultValue(0);
 		
 		// row in which consumptin data value to be stored
 		$this->addField('data_limit_row');
@@ -45,15 +45,15 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 		$this->addField('fri')->type('boolean')->defaultValue(false);
 		$this->addField('sat')->type('boolean')->defaultValue(false);
 
-		$this->addField('d1')->type('boolean')->defaultValue(false);
-		$this->addField('d2')->type('boolean')->defaultValue(false);
-		$this->addField('d3')->type('boolean')->defaultValue(false);
-		$this->addField('d4')->type('boolean')->defaultValue(false);
-		$this->addField('d5')->type('boolean')->defaultValue(false);
-		$this->addField('d6')->type('boolean')->defaultValue(false);
-		$this->addField('d7')->type('boolean')->defaultValue(false);
-		$this->addField('d8')->type('boolean')->defaultValue(false);
-		$this->addField('d9')->type('boolean')->defaultValue(false);
+		$this->addField('d01')->type('boolean')->defaultValue(false);
+		$this->addField('d02')->type('boolean')->defaultValue(false);
+		$this->addField('d03')->type('boolean')->defaultValue(false);
+		$this->addField('d04')->type('boolean')->defaultValue(false);
+		$this->addField('d05')->type('boolean')->defaultValue(false);
+		$this->addField('d06')->type('boolean')->defaultValue(false);
+		$this->addField('d07')->type('boolean')->defaultValue(false);
+		$this->addField('d08')->type('boolean')->defaultValue(false);
+		$this->addField('d09')->type('boolean')->defaultValue(false);
 		$this->addField('d10')->type('boolean')->defaultValue(false);
 		$this->addField('d11')->type('boolean')->defaultValue(false);
 		$this->addField('d12')->type('boolean')->defaultValue(false);

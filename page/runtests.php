@@ -34,6 +34,9 @@ class page_runtests extends \xepan\base\Page_TestRunner {
 
 		$query = file_get_contents($plan_sql);
 		$this->add('xavoc\ispmanager\Model_Plan')->deleteAll();
+		$this->app->db->dsql()->expr('truncate isp_condition')->execute();
+		$this->app->db->dsql()->expr('truncate isp_plan')->execute();
+		$this->app->db->dsql()->expr('truncate isp_user_plan_and_topup')->execute();
 		$this->app->db->dsql()->expr($query)->execute();
 	}
 

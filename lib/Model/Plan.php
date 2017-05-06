@@ -16,7 +16,7 @@ class Model_Plan extends \xepan\commerce\Model_Item{
 
 		// destroy extra fields
 		$item_fields = $this->add('xepan\commerce\Model_Item')->getActualFields();
-		$required_field = ['name','sku','description','sale_price','status','document_id','id','created_by','updated_by','created_at','updated_at','type'];
+		$required_field = ['name','sku','description','sale_price','original_price','status','document_id','id','created_by','updated_by','created_at','updated_at','type','qty_unit_id'];
 		$destroy_field = array_diff($item_fields, $required_field);
 		foreach ($destroy_field as $key => $field) {
 			if($this->hasElement($field))
@@ -28,6 +28,7 @@ class Model_Plan extends \xepan\commerce\Model_Item{
 		// 	$this->getElement('minimum_order_qty')->set(1);
 
 		$plan_j = $this->join('isp_plan.item_id');
+		$plan_j->hasOne('xepan\commerce\Model_Taxation','tax_id');
 
 		$plan_j->addField('maintain_data_limit')->type('boolean')->defaultValue(true);
 		$plan_j->addField('period')->type('number');

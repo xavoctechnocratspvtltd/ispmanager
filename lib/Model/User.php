@@ -17,10 +17,10 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 		// destroy extra fields
 		// $cust_fields = $this->add('xepan\commerce\Model_Customer')->getActualFields();
-		$destroy_field = ['assign_to_id','scope','user_id','is_designer','score','freelancer_type','related_with','related_id','assign_to','billing_country_id','billing_state_id','shipping_country_id','shipping_state_id','billing_name','billing_address','billing_city','billing_pincode','same_as_billing_address','shipping_name','shipping_address','shipping_city','shipping_pincode','created_by_id','source'];
+		$destroy_field = ['assign_to_id','scope','user_id','is_designer','score','freelancer_type','related_with','related_id','assign_to','created_by_id','source'];
 		foreach ($destroy_field as $key => $field) {
 			if($this->hasElement($field))
-				$this->getElement($field)->destroy();
+				$this->getElement($field)->system(true);
 		}
 
 		$user_j = $this->join('isp_user.customer_id');
@@ -41,13 +41,29 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$this->is(['plan_id|to_trim|required']);
 
 		$this->addHook('beforeSave',$this);
-		$this->addHook('afterSave',[$this,'updateUserConditon','createInvoice']);
+		$this->addHook('afterSave',[$this,'updateUserConditon']);
+		$this->addHook('afterSave',[$this,'createInvoice']);
 	}
 
 	function beforeSave(){
 		if($this->dirty['plan_id']){
 			$this->plan_dirty = true;
 		}
+		
+		$this['billing_country_id'] = $this['billing_country_id']?:$this['country_id'];
+		$this['billing_state_id'] = $this['billing_state_id']?:$this['state_id'];
+		$this['billing_city'] = $this['billing_city']?:$this['city'];
+		$this['billing_address'] = $this['billing_address']?:$this['address'];
+		$this['billing_name'] = $this['billing_name']?:$this['organization_name'];
+		$this['billing_pincode'] = $this['billing_pincode']?:$this['pin_code'];
+		
+		$this['shipping_country_id'] = $this['shipping_country_id']?:$this['country_id'];
+		$this['shipping_state_id'] = $this['shipping_state_id']?:$this['state_id'];
+		$this['shipping_city'] = $this['shipping_city']?:$this['city'];
+		$this['shipping_address'] = $this['shipping_address']?:$this['address'];
+		$this['shipping_name'] = $this['shipping_name']?:$this['organization_name'];
+		$this['shipping_pincode'] = $this['shipping_pincode']?:$this['pin_code'];
+
 	}
 
 	function updateUserConditon(){
@@ -57,8 +73,61 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	}
 
 	function createInvoice(){
-		if(!$this->plan_dirty) return;
-		
+		if(!$this->plan_dirty AND !$this['create_invoice'] ) return;
+
+		if(!$this->loaded()) throw new \Exception("model radius user must loaded");
+		$this->reload();
+
+		$qsp_master = $this->add('xepan\commerce\Model_QSP_Master');
+		$master_data = [];
+
+		$master_data['qsp_no'] = $this->add('xepan\commerce\Model_SalesInvoice')->newNumber();
+		$master_data['contact_id'] = $this->id;
+		$master_data['currency_id'] = $this->app->epan->default_currency->get('id');
+		$master_data['billing_country_id'] = $this['billing_country_id'];
+		$master_data['billing_state_id'] = $this['billing_state_id'];
+		$master_data['billing_city'] = $this['billing_city'];
+		$master_data['billing_address'] = $this['billing_address'];
+		$master_data['billing_name'] = $this['billing_name'];
+		$master_data['billing_pincode'] = $this['billing_pincode'];
+
+		$master_data['shipping_country_id'] = $this['shipping_country_id'];
+		$master_data['shipping_state_id'] = $this['shipping_state_id'];
+		$master_data['shipping_name'] = $this['shipping_name'];
+		$master_data['shipping_address'] = $this['shipping_address'];
+		$master_data['shipping_city'] = $this['shipping_city'];
+		$master_data['shipping_pincode'] = $this['shipping_pincode'];
+
+		$master_data['is_shipping_inclusive_tax'] = 0;
+		$master_data['is_express_shipping'] = 0;
+		$master_data['due_date'] = date("Y-m-d H:i:s", strtotime("+".$this['grace_period_in_days']." days",strtotime($this->app->now)));
+		$master_data['round_amount'] = 0;
+		$master_data['discount_amount'] = $this->getProDataAmount();
+		$master_data['exchange_rate'] = 1;
+		$master_data['tnc_id'] = 0;
+
+		$detail_data = [];
+		$plan_model = $this->add('xavoc\ispmanager\Model_Plan')->load($this['plan_id']);
+		$item = [
+					'item_id'=>$plan_model->id,
+					'price'=>$plan_model['sale_price'],
+					'quantity'=>1,
+					'taxation_id'=>$plan_model['tax_id'],
+					'shipping_charge'=>0,
+					'shipping_duration'=>"",
+					'express_shipping_charge'=>0,
+					'express_shipping_duration'=>"",
+					'qty_unit_id'=>$plan_model['qty_unit_id'],
+					'discount'=>0
+				];
+		array_push($detail_data, $item);
+		$qsp_master->createQSP($master_data,$detail_data,"SalesInvoice");
+	}
+
+	function getProDataAmount(){
+		if(!$this->loaded()) throw new \Exception("radius user must loaded");
+
+		return 10;
 	}
 
 	function setPlan($plan, $on_date=null, $remove_old=false){

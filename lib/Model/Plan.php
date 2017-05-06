@@ -32,8 +32,6 @@ class Model_Plan extends \xepan\commerce\Model_Item{
 		$plan_j->hasOne('xepan\commerce\Model_Taxation','tax_id');
 
 		$plan_j->addField('maintain_data_limit')->type('boolean')->defaultValue(true);
-		$plan_j->addField('period')->type('number');
-		$plan_j->addField('period_unit')->enum(['hours','days','months','years']);
 
 		$plan_j->addField('is_topup')->type('boolean')->defaultValue(false);
 		$plan_j->addField('is_auto_renew')->type('boolean')->defaultValue(0);
@@ -47,7 +45,7 @@ class Model_Plan extends \xepan\commerce\Model_Item{
 	}
 
 	function beforeSave(){
-		$this['original_price'] = $this['sale_price'];
+		// $this['original_price'] = $this['sale_price'];
 		$this['minimum_order_qty'] = 1;
 	}
 
@@ -57,6 +55,22 @@ class Model_Plan extends \xepan\commerce\Model_Item{
 
 		$crud = $page->add('xepan\hr\CRUD');
 		$crud->setModel($condition_model);
+		if($crud->isEditing()){
+			$crud->form->getElement('start_time')
+					   ->setOption('showMeridian',false)
+					   ->setOption('minuteStep',5)
+					   ->setOption('showSeconds',true)
+					   ->setOption('defaultTime',"00:00:00")
+					   ;
+
+			$crud->form->getElement('end_time')
+					   ->setOption('showMeridian',false)
+					   ->setOption('minuteStep',5)
+					   ->setOption('showSeconds',true)
+					   ->setOption('defaultTime',"23:59:59")
+					   ;
+		}
+
 		// if($crud->isEditing()){
 		// 	$form = $crud->form;
 		// 	$recurring_field = $form->getElement('is_recurring');

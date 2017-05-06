@@ -14,5 +14,6 @@ class page_plan extends \xepan\base\Page {
 		$crud = $this->add('xepan\hr\CRUD');
 		$crud->setModel($plan);
 		$crud->grid->removeColumn('attachment_icon');
+
 	}
 }

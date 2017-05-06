@@ -11,7 +11,7 @@
  Target Server Version : 100118
  File Encoding         : utf-8
 
- Date: 05/06/2017 16:52:25 PM
+ Date: 05/06/2017 17:44:08 PM
 */
 
 SET NAMES utf8;
@@ -41,8 +41,8 @@ CREATE TABLE `isp_condition` (
   `upload_limit` bigint(20) DEFAULT NULL,
   `fup_download_limit` bigint(20) DEFAULT NULL,
   `fup_upload_limit` bigint(20) DEFAULT NULL,
-  `accounting_download_ratio` varchar(255) DEFAULT NULL,
-  `accounting_upload_ratio` varchar(255) DEFAULT NULL,
+  `accounting_download_ratio` int(11) DEFAULT NULL,
+  `accounting_upload_ratio` int(11) DEFAULT NULL,
   `is_data_carry_forward` tinyint(1) DEFAULT NULL,
   `start_time` time DEFAULT NULL,
   `end_time` time DEFAULT NULL,
@@ -122,6 +122,7 @@ CREATE TABLE `isp_plan` (
   `period` tinyint(4) DEFAULT NULL,
   `period_unit` varchar(255) DEFAULT NULL,
   `item_id` int(11) NOT NULL,
+  `tax_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_created_by_id` (`created_by_id`),
   KEY `fk_updated_by_id` (`updated_by_id`)
@@ -270,7 +271,7 @@ CREATE TABLE `isp_user_plan_and_topup` (
   PRIMARY KEY (`id`),
   KEY `fk_user_id` (`user_id`),
   KEY `fk_plan_id` (`plan_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=20 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 --  Table structure for `isp_user_topup`

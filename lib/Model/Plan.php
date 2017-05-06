@@ -9,6 +9,7 @@ class Model_Plan extends \xepan\commerce\Model_Item{
 				'active'=>['view','edit','delete','condition'],
 				'deactive'=>['view','edit','delete','active']
 				];
+	
 	public $acl_type="ispmanager_plan";
 
 	function init(){
@@ -39,7 +40,14 @@ class Model_Plan extends \xepan\commerce\Model_Item{
 
 		$this->hasMany('xavoc\ispmanager\Condition','plan_id',null,'conditions');
 
+		$this->addHook('beforeSave',$this,[],4);
+
 		// $this->add('dynamic_model/Controller_AutoCreator');
+	}
+
+	function beforeSave(){
+		$this['original_price'] = $this['sale_price'];
+		$this['minimum_order_qty'] = 1;
 	}
 
 	function page_condition($page){

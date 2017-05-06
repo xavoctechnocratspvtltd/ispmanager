@@ -11,7 +11,7 @@ class page_Tester extends \xepan\base\Page_Tester{
 		if($_GET['testonly']){
             $g = $this->add('Grid');
             $g->add('View',null,'grid_buttons')->set($this->on_date);
-            $g->setModel('xavoc\ispmanager\Model_UserPlanAndTopup')->addCondition('user','test_user');
+            $g->setModel('xavoc\ispmanager\Model_UserPlanAndTopup')->addCondition('user','test user');
             $g->removeColumn('user');
             $g->removeColumn('plan');
         }
@@ -24,7 +24,7 @@ class page_Tester extends \xepan\base\Page_Tester{
 	}
 
 	function _($data){
-		return $data;
+		return $this->app->human2byte($data);
 	}
 
 }

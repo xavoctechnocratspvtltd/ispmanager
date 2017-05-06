@@ -38,10 +38,11 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$user_j->hasMany('xavoc\ispmanager\TopUp','topup_id',null,'topups');
 
 		// $this->add('dynamic_model/Controller_AutoCreator');
-		$this->is(['plan_id|to_trim|required']);
+		// $this->is(['plan_id|to_trim|required']);
 
 		$this->addHook('beforeSave',$this);
-		$this->addHook('afterSave',[$this,'updateUserConditon','createInvoice']);
+		$this->addHook('afterSave',[$this,'updateUserConditon']);
+		$this->addHook('afterSave',[$this,'createInvoice']);
 	}
 
 	function beforeSave(){
@@ -169,8 +170,10 @@ class Model_User extends \xepan\commerce\Model_Customer{
 					AND
 					'$now' <= end_date
 				)
+				AND
+				`user_id`= ". $this->id."
 				".
-				($with_data_limit? " AND data_limit isnot null AND data_limit >0 ":'')
+				($with_data_limit? " AND data_limit is not null AND data_limit >0 ":'')
 				)
 		);
 
@@ -181,7 +184,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		return $x;
 	}
 
-	function getAAADetails($now=null,$accounting_data=null){
+	function getAAADetails($now=null,$accounting_data=null,$human_redable=false){
 		if(!$now) $now = isset($this->app->ispnow)? $this->app->ispnow : $this->app->now;
 
 		// if accounting data
@@ -197,7 +200,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		
 		// bandwidth or fup ??
 		$if_fup='fup_';
-		if(($data_limit_row['download_data_consumed'] + $data_limit_row['upload_data_consumed']) < $this->app->toMB($data_limit_row['data_limit'])){
+		if(($data_limit_row['download_data_consumed'] + $data_limit_row['upload_data_consumed']) < $data_limit_row['data_limit']){
 			$if_fup='';
 		}
 		$dl_field = $if_fup.'download_limit';
@@ -221,6 +224,10 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$final_row['data_limit'] = $data_limit_row['data_limit'];
 		$final_row['download_data_consumed'] = $data_limit_row['download_data_consumed'];
 		$final_row['upload_data_consumed'] = $data_limit_row['upload_data_consumed'];
+
+		if($human_redable){
+			$final_row['data_limit'] = $this->app->byte2human($final_row['data_limit']);
+		}
 
 		return ['access'=>$access, 'result'=>$final_row];
 	}

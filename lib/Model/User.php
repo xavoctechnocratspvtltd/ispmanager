@@ -2,63 +2,46 @@
 
 namespace xavoc\ispmanager;
 
-class Model_User extends \xepan\base\Model_Table{ 
-	public $table = "isp_user";
-	public $status = ['active','deactive'];
+class Model_User extends \xepan\commerce\Model_Customer{ 
+	// public $table = "isp_user";
+	public $status = ['Active','InActive'];
 	public $actions = [
-				'active'=>['view','edit','delete','plans'],
-				'deactive'=>['view','edit','delete','active']
+				'Active'=>['view','edit','delete','plans'],
+				'InActive'=>['view','edit','delete','active']
 				];
 	public $acl_type= "ispmanager_user";
 	private $plan_dirty = false;
+
 	function init(){
 		parent::init();
 
-		$this->hasOne('xavoc\ispmanager\Plan','plan_id');
+		// destroy extra fields
+		// $cust_fields = $this->add('xepan\commerce\Model_Customer')->getActualFields();
+		$destroy_field = ['assign_to_id','scope','user_id','is_designer','score','freelancer_type','related_with','related_id','assign_to','billing_country_id','billing_state_id','shipping_country_id','shipping_state_id','billing_name','billing_address','billing_city','billing_pincode','same_as_billing_address','shipping_name','shipping_address','shipping_city','shipping_pincode','created_by_id','source'];
+		foreach ($destroy_field as $key => $field) {
+			if($this->hasElement($field))
+				$this->getElement($field)->destroy();
+		}
 
-		$this->addField('name');
-		$this->addField('password');
-		$this->addField('mac_address_cm')->caption('MAC Address CM');
-		$this->addField('ip_address_mode_cm')->setValueList(['ip pool'=>'ip pool','static ip'=>'static ip']);
-		$this->addField('cm_ip_pool');
-		$this->addField('cm_static_ip');
-		
-		$this->addField('mac_address_cpe')->caption('MAC Address CPE');
-		$this->addField('allow_mac_address_cpe_only')->type('boolean');
-		$this->addField('ip_address_mode_cpe')->setValueList(['nas pool or dhcp'=>'NAS Pool or DHCP','ip pool'=>'IP pool','static ip'=>'static IP']);
-		
-		$this->addField('simultaneous_use')->type('Number');
-		$this->addField('first_name');
-		$this->addField('last_name');
-		$this->addField('company_name');
-		$this->addField('address');
-		$this->addField('city');
-		$this->addField('zip');
-		$this->addField('country');
-		$this->addField('state');
-		$this->addField('contact_number');
-		$this->addField('email_id');
-		$this->addField('vat_id');
-		$this->addField('narration')->type('text');
-		$this->addField('grace_period_in_days')->type('number')->defaultValue(0);
-		$this->addField('custom_radius_attributes')->type('text')->caption('Custom RADIUS Attributes');
+		$user_j = $this->join('isp_user.customer_id');
 
-		$this->addField('is_verified')->type('boolean');
-		$this->addField('verified_by')->enum(['email','otp','social']);
-		$this->addField('status')->enum(['active','deactive'])->defaultValue('active');
-		$this->addField('created_at')->type('datetime')->defaultValue($this->app->now);
-		$this->hasMany('xavoc\ispmanager\TopUp','topup_id',null,'topups');
+		$user_j->hasOne('xavoc\ispmanager\Plan','plan_id');
 
-		$this->add('dynamic_model/Controller_AutoCreator');
+		$user_j->addField('radius_username')->caption('Username');
+		$user_j->addField('radius_password')->caption('Password');
+		$user_j->addField('simultaneous_use')->type('Number');
+		$user_j->addField('grace_period_in_days')->type('number')->defaultValue(0);
+		$user_j->addField('custom_radius_attributes')->type('text')->caption('Custom RADIUS Attributes');
+		$user_j->addField('create_invoice')->type('boolean')->defaultValue(false);
+		$user_j->addField('include_pro_data_basis')->type('boolean')->defaultValue(false);
 
-		$this->is([
-				'name|to_trim|required',
-				'password|number|>=4',
-				'created_at|to_trim|required'
-			]);
+		$user_j->hasMany('xavoc\ispmanager\TopUp','topup_id',null,'topups');
+
+		// $this->add('dynamic_model/Controller_AutoCreator');
+		$this->is(['plan_id|to_trim|required']);
 
 		$this->addHook('beforeSave',$this);
-		$this->addHook('afterSave',[$this,'updateUserConditon']);
+		$this->addHook('afterSave',[$this,'updateUserConditon','createInvoice']);
 	}
 
 	function beforeSave(){
@@ -73,17 +56,22 @@ class Model_User extends \xepan\base\Model_Table{
 		
 	}
 
+	function createInvoice(){
+		if(!$this->plan_dirty) return;
+		
+	}
+
 	function setPlan($plan, $on_date=null, $remove_old=false){
 
 		if(!$on_date) $on_date = isset($this->app->isptoday)? $this->app->isptoday : $this->app->today;
 
-		if(is_string($plan)) 
-			$plan_model = $this->add('xavoc\ispmanager\Model_Plan')->loadBy('name',$plan);
-		elseif(is_numeric($plan)) 
+		if(is_numeric($plan))
 			$plan_model = $this->add('xavoc\ispmanager\Model_Plan')->load($plan);
+		elseif(is_string($plan))
+			$plan_model = $this->add('xavoc\ispmanager\Model_Plan')->loadBy('name',$plan);
 		else
 			$plan_model = $plan;
-
+		
 		$condition_model = $this->add('xavoc\ispmanager\Model_Condition')->addCondition('plan_id',$plan_model->id);
 		
 		// set all plan to expire

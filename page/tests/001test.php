@@ -11,7 +11,7 @@
 
 namespace xavoc\ispmanager;
 
-class page_tests_001test extends \xepan\base\Page_Tester {
+class page_tests_001test extends page_Tester {
 	
 	public $title='Test';
 	
@@ -24,18 +24,11 @@ class page_tests_001test extends \xepan\base\Page_Tester {
         $this->user = $this->add('xavoc\ispmanager\Model_User')->loadBy('name','test_user');
         $this->user->setPlan('PL-50-M',null,true);
         parent::init();
-        if($_GET['testonly']){
-            $g = $this->add('Grid');
-            $g->add('View',null,'grid_buttons')->set($this->on_date);
-            $g->setModel('xavoc\ispmanager\Model_UserPlanAndTopup')->addCondition('user','test_user');
-            $g->removeColumn('user');
-            $g->removeColumn('plan');
-        }
     }
 
     function test_a(){
-        $this->on_date = $this->app->today .' 22:30:00';
-        $r = $this->user->getAAADetails($this->on_date);
+        $this->setDateTime($this->app->today .' 22:30:00');
+        $r = $this->user->getAAADetails();
         $this->proper_responses['test_a']=['data_limit'=>'200000','dl'=>'2mbps','ul'=>'2mbps','access'=>1];
         return ['data_limit'=>$r['result']['data_limit'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'access'=>$r['access']];
     }

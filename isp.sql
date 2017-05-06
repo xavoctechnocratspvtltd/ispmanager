@@ -1,22 +1,24 @@
 /*
-Navicat MySQL Data Transfer
+ Navicat Premium Data Transfer
 
-Source Server         : Localhost
-Source Server Version : 50505
-Source Host           : localhost:3306
-Source Database       : printonclick
+ Source Server         : localhost
+ Source Server Type    : MariaDB
+ Source Server Version : 100118
+ Source Host           : localhost
+ Source Database       : ispmanager
 
-Target Server Type    : MYSQL
-Target Server Version : 50505
-File Encoding         : 65001
+ Target Server Type    : MariaDB
+ Target Server Version : 100118
+ File Encoding         : utf-8
 
-Date: 2017-05-06 15:11:23
+ Date: 05/06/2017 16:52:25 PM
 */
 
-SET FOREIGN_KEY_CHECKS=0;
+SET NAMES utf8;
+SET FOREIGN_KEY_CHECKS = 0;
 
 -- ----------------------------
--- Table structure for `isp_city`
+--  Table structure for `isp_city`
 -- ----------------------------
 DROP TABLE IF EXISTS `isp_city`;
 CREATE TABLE `isp_city` (
@@ -28,27 +30,22 @@ CREATE TABLE `isp_city` (
 ) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
--- Records of isp_city
--- ----------------------------
-INSERT INTO `isp_city` VALUES ('1', '1', 'Udipur');
-
--- ----------------------------
--- Table structure for `isp_condition`
+--  Table structure for `isp_condition`
 -- ----------------------------
 DROP TABLE IF EXISTS `isp_condition`;
 CREATE TABLE `isp_condition` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `plan_id` int(11) DEFAULT NULL,
-  `data_limit` varchar(255) DEFAULT NULL,
-  `download_limit` varchar(255) DEFAULT NULL,
-  `upload_limit` varchar(255) DEFAULT NULL,
-  `fup_download_limit` varchar(255) DEFAULT NULL,
-  `fup_upload_limit` varchar(255) DEFAULT NULL,
+  `data_limit` bigint(20) DEFAULT NULL,
+  `download_limit` bigint(20) DEFAULT NULL,
+  `upload_limit` bigint(20) DEFAULT NULL,
+  `fup_download_limit` bigint(20) DEFAULT NULL,
+  `fup_upload_limit` bigint(20) DEFAULT NULL,
   `accounting_download_ratio` varchar(255) DEFAULT NULL,
   `accounting_upload_ratio` varchar(255) DEFAULT NULL,
   `is_data_carry_forward` tinyint(1) DEFAULT NULL,
-  `start_time` varchar(255) DEFAULT NULL,
-  `end_time` varchar(255) DEFAULT NULL,
+  `start_time` time DEFAULT NULL,
+  `end_time` time DEFAULT NULL,
   `sun` tinyint(1) DEFAULT NULL,
   `mon` tinyint(1) DEFAULT NULL,
   `tue` tinyint(1) DEFAULT NULL,
@@ -91,16 +88,10 @@ CREATE TABLE `isp_condition` (
   `data_reset_mode` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_plan_id` (`plan_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
--- Records of isp_condition
--- ----------------------------
-INSERT INTO `isp_condition` VALUES ('1', '1', '10gb', '2mbps', '2mbps', '1mbps', '1mbps', '100', '100', '0', '08:00:00', '20:00:00', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', 'months');
-INSERT INTO `isp_condition` VALUES ('2', '1', '20gb', '2mbps', '2mbps', '1mbps', '1mbps', '100', '100', '0', '20:00:00', '08:00:00', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', 'months');
-
--- ----------------------------
--- Table structure for `isp_country`
+--  Table structure for `isp_country`
 -- ----------------------------
 DROP TABLE IF EXISTS `isp_country`;
 CREATE TABLE `isp_country` (
@@ -110,12 +101,7 @@ CREATE TABLE `isp_country` (
 ) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
--- Records of isp_country
--- ----------------------------
-INSERT INTO `isp_country` VALUES ('1', 'India');
-
--- ----------------------------
--- Table structure for `isp_plan`
+--  Table structure for `isp_plan`
 -- ----------------------------
 DROP TABLE IF EXISTS `isp_plan`;
 CREATE TABLE `isp_plan` (
@@ -139,15 +125,10 @@ CREATE TABLE `isp_plan` (
   PRIMARY KEY (`id`),
   KEY `fk_created_by_id` (`created_by_id`),
   KEY `fk_updated_by_id` (`updated_by_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=22 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=23 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
--- Records of isp_plan
--- ----------------------------
-INSERT INTO `isp_plan` VALUES ('21', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '10', 'months', '8409');
-
--- ----------------------------
--- Table structure for `isp_policy`
+--  Table structure for `isp_policy`
 -- ----------------------------
 DROP TABLE IF EXISTS `isp_policy`;
 CREATE TABLE `isp_policy` (
@@ -163,14 +144,7 @@ CREATE TABLE `isp_policy` (
 ) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
--- Records of isp_policy
--- ----------------------------
-INSERT INTO `isp_policy` VALUES ('2', '1', '2048', '2048', '100', '100', '0');
-INSERT INTO `isp_policy` VALUES ('3', '1', '512', '512', '512', '512', '0');
-INSERT INTO `isp_policy` VALUES ('4', '2', '4096', '4096', '100', '100', '0');
-
--- ----------------------------
--- Table structure for `isp_state`
+--  Table structure for `isp_state`
 -- ----------------------------
 DROP TABLE IF EXISTS `isp_state`;
 CREATE TABLE `isp_state` (
@@ -182,12 +156,7 @@ CREATE TABLE `isp_state` (
 ) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
--- Records of isp_state
--- ----------------------------
-INSERT INTO `isp_state` VALUES ('1', null, 'Rajasthan');
-
--- ----------------------------
--- Table structure for `isp_user`
+--  Table structure for `isp_user`
 -- ----------------------------
 DROP TABLE IF EXISTS `isp_user`;
 CREATE TABLE `isp_user` (
@@ -226,44 +195,10 @@ CREATE TABLE `isp_user` (
   `include_pro_data_basis` tinyint(4) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_plan_id` (`plan_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=14 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=19 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
--- Records of isp_user
--- ----------------------------
-INSERT INTO `isp_user` VALUES ('4', null, null, null, null, null, null, null, null, '1', null, null, null, null, null, null, null, null, null, null, null, null, 'sfcsd sdfhsdfjk s', null, null, null, null, null, '8409', '10', '1784', null, null);
-INSERT INTO `isp_user` VALUES ('5', 'test_rakesh', null, null, null, null, null, null, null, '', null, null, null, null, null, null, null, null, null, null, null, null, '', null, null, null, null, null, '8409', '0', '1785', null, null);
-INSERT INTO `isp_user` VALUES ('6', null, null, null, null, null, null, null, null, '', null, null, null, null, null, null, null, null, null, null, null, null, '', null, null, null, null, null, null, '0', '1786', null, null);
-INSERT INTO `isp_user` VALUES ('7', null, null, null, null, null, null, null, null, '', null, null, null, null, null, null, null, null, null, null, null, null, '', null, null, null, null, null, null, '0', '1787', null, null);
-INSERT INTO `isp_user` VALUES ('8', null, null, null, null, null, null, null, null, '', null, null, null, null, null, null, null, null, null, null, null, null, '', null, null, null, null, null, '8409', '0', '1788', null, null);
-INSERT INTO `isp_user` VALUES ('9', null, null, null, null, null, null, null, null, '', null, null, null, null, null, null, null, null, null, null, null, null, '', null, null, null, null, null, '8409', '0', '1789', null, null);
-INSERT INTO `isp_user` VALUES ('10', null, null, null, null, null, null, null, null, '', null, null, null, null, null, null, null, null, null, null, null, null, '', null, null, null, null, null, '8409', '0', '1790', null, null);
-INSERT INTO `isp_user` VALUES ('11', null, null, null, null, null, null, null, null, '', null, null, null, null, null, null, null, null, null, null, null, null, '', null, null, null, null, null, '8409', '0', '1791', null, null);
-INSERT INTO `isp_user` VALUES ('12', null, null, null, null, null, null, null, null, '', null, null, null, null, null, null, null, null, null, null, null, null, '', null, null, null, null, null, '8409', '0', '1792', null, null);
-
--- ----------------------------
--- Table structure for `isp_user_plan_and_condition`
--- ----------------------------
-DROP TABLE IF EXISTS `isp_user_plan_and_condition`;
-CREATE TABLE `isp_user_plan_and_condition` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) DEFAULT NULL,
-  `plan_id` int(11) DEFAULT NULL,
-  `topup_id` int(11) DEFAULT NULL,
-  `is_active` tinyint(1) DEFAULT NULL,
-  `created_at` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `fk_user_id` (`user_id`),
-  KEY `fk_plan_id` (`plan_id`),
-  KEY `fk_topup_id` (`topup_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
-
--- ----------------------------
--- Records of isp_user_plan_and_condition
--- ----------------------------
-
--- ----------------------------
--- Table structure for `isp_user_plan_and_topup`
+--  Table structure for `isp_user_plan_and_topup`
 -- ----------------------------
 DROP TABLE IF EXISTS `isp_user_plan_and_topup`;
 CREATE TABLE `isp_user_plan_and_topup` (
@@ -271,26 +206,26 @@ CREATE TABLE `isp_user_plan_and_topup` (
   `user_id` int(11) DEFAULT NULL,
   `plan_id` int(11) DEFAULT NULL,
   `is_topup` tinyint(1) DEFAULT NULL,
-  `data_limit` varchar(255) DEFAULT NULL,
-  `download_limit` varchar(255) DEFAULT NULL,
-  `upload_limit` varchar(255) DEFAULT NULL,
-  `fup_download_limit` varchar(255) DEFAULT NULL,
-  `fup_upload_limit` varchar(255) DEFAULT NULL,
-  `accounting_download_ratio` varchar(255) DEFAULT NULL,
-  `accounting_upload_ratio` varchar(255) DEFAULT NULL,
+  `data_limit` bigint(20) DEFAULT NULL,
+  `download_limit` bigint(20) DEFAULT NULL,
+  `upload_limit` bigint(20) DEFAULT NULL,
+  `fup_download_limit` bigint(20) DEFAULT NULL,
+  `fup_upload_limit` bigint(20) DEFAULT NULL,
+  `accounting_download_ratio` int(11) DEFAULT NULL,
+  `accounting_upload_ratio` int(11) DEFAULT NULL,
   `start_date` datetime DEFAULT NULL,
   `end_date` datetime DEFAULT NULL,
   `expire_date` datetime DEFAULT NULL,
   `is_expired` tinyint(1) DEFAULT NULL,
   `is_recurring` tinyint(1) DEFAULT NULL,
   `is_effective` tinyint(1) DEFAULT NULL,
-  `download_data_consumed` varchar(255) DEFAULT NULL,
-  `upload_data_consumed` varchar(255) DEFAULT NULL,
+  `download_data_consumed` bigint(20) DEFAULT NULL,
+  `upload_data_consumed` bigint(20) DEFAULT NULL,
   `data_limit_row` varchar(255) DEFAULT NULL,
-  `duplicated_from_record_id` varchar(255) DEFAULT NULL,
+  `duplicated_from_record_id` int(255) DEFAULT NULL,
   `is_data_carry_forward` tinyint(1) DEFAULT NULL,
-  `start_time` varchar(255) DEFAULT NULL,
-  `end_time` varchar(255) DEFAULT NULL,
+  `start_time` time DEFAULT NULL,
+  `end_time` time DEFAULT NULL,
   `sun` tinyint(1) DEFAULT NULL,
   `mon` tinyint(1) DEFAULT NULL,
   `tue` tinyint(1) DEFAULT NULL,
@@ -338,13 +273,7 @@ CREATE TABLE `isp_user_plan_and_topup` (
 ) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
--- Records of isp_user_plan_and_topup
--- ----------------------------
-INSERT INTO `isp_user_plan_and_topup` VALUES ('4', '2', '1', '0', '20gb', '2mbps', '2mbps', '1mbps', '1mbps', '100', '100', '2017-05-06 00:00:00', '2017-06-06 00:00:00', '1970-01-01 05:30:00', '0', '1', '0', '0', '0', null, null, '0', '20:00:00', '08:00:00', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1970-01-01 00:00:00', 'months', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1');
-INSERT INTO `isp_user_plan_and_topup` VALUES ('3', '2', '1', '0', '10gb', '2mbps', '2mbps', '1mbps', '1mbps', '100', '100', '2017-05-06 00:00:00', '2017-06-06 00:00:00', '1970-01-01 05:30:00', '0', '1', '0', '0', '0', null, null, '0', '08:00:00', '20:00:00', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1970-01-01 00:00:00', 'months', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1');
-
--- ----------------------------
--- Table structure for `isp_user_topup`
+--  Table structure for `isp_user_topup`
 -- ----------------------------
 DROP TABLE IF EXISTS `isp_user_topup`;
 CREATE TABLE `isp_user_topup` (
@@ -358,6 +287,4 @@ CREATE TABLE `isp_user_topup` (
   KEY `fk_topup_id` (`topup_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
--- ----------------------------
--- Records of isp_user_topup
--- ----------------------------
+SET FOREIGN_KEY_CHECKS = 1;

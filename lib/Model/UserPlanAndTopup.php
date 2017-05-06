@@ -29,6 +29,8 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 		$this->addField('is_effective')->type('boolean')->defaultValue(false);
 		$this->addField('download_data_consumed')->hint('in MB')->defaultValue(0);
 		$this->addField('upload_data_consumed')->hint('in MB')->defaultValue(0);
+
+		$this->addExpression('data_consumed')->set('download_data_consumed+upload_data_consumed');
 		
 		// row in which consumptin data value to be stored
 		$this->addField('data_limit_row');
@@ -81,6 +83,16 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 		$this->addField('data_reset_value')->type('number');
 		$this->addField('data_reset_mode')->enum(['hour','day','month','year']);
 
-		$this->add('dynamic_model/Controller_AutoCreator');
+		$this->add('xavoc\ispmanager\Controller_HumanByte')
+			->handleFields([
+					'data_limit',
+					'download_limit',
+					'upload_limit',
+					'fup_download_limit',
+					'fup_upload_limit',
+					'data_consumed'
+				]);
+
+		// $this->add('dynamic_model/Controller_AutoCreator');
 	}
 }

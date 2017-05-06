@@ -11,7 +11,7 @@ class Model_Condition extends \xepan\base\Model_Table{
 
 		$this->hasOne('xavoc\ispmanager\Plan','plan_id');
 		
-		$this->addField('data_limit')->hint('Data Limit in MB');
+		$this->addField('data_limit')->hint('Data Limit in HUman redable format 20gb, 1tb, 500mb');
 		$this->addField('download_limit')->hint('Limit in KBPS');
 		$this->addField('upload_limit')->hint('Limit in KBPS');
 		$this->addField('fup_download_limit')->hint('Limit in KBPS');
@@ -69,6 +69,15 @@ class Model_Condition extends \xepan\base\Model_Table{
 		$this->addField('data_reset_value')->type('number')->defaultValue(0);
 		$this->addField('data_reset_mode')->enum(['hours','days','months','years']);
 
-		$this->add('dynamic_model/Controller_AutoCreator');
+		$this->add('xavoc\ispmanager\Controller_HumanByte')
+			->handleFields([
+					'data_limit',
+					'download_limit',
+					'upload_limit',
+					'fup_download_limit',
+					'fup_upload_limit'
+				]);
+		// $this->add('dynamic_model/Controller_AutoCreator');
 	}
+
 }

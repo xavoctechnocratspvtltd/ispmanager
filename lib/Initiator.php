@@ -24,8 +24,25 @@ class Initiator extends \Controller_Addon {
     }
 
     function addAppFunctions(){
-        $this->app->addMethod('toMB',function($app,$data=null){
-            return $data;
+        
+        $this->app->addMethod('byte2human',function($app,$bytes, $decimals = 2){
+            $size = array('B','kB','MB','GB','TB','PB','EB','ZB','YB');
+            $factor = floor((strlen($bytes) - 1) / 3);
+            return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$size[$factor];
+        });
+
+        $this->app->addMethod('human2byte',function($app,$value){
+              return preg_replace_callback('/^\s*(\d*\.?\d+)\s*(?:([kmgtpy]?)b?)?\s*$/i', function ($m) {
+                switch (strtolower($m[2])) {
+                  case 'y': $m[1] *= 1024;
+                  case 'p': $m[1] *= 1024;
+                  case 't': $m[1] *= 1024;
+                  case 'g': $m[1] *= 1024;
+                  case 'm': $m[1] *= 1024;
+                  case 'k': $m[1] *= 1024;
+                }
+                return $m[1];
+              }, $value);
         });
     }
 

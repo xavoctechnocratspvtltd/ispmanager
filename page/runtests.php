@@ -17,7 +17,7 @@ class page_runtests extends \xepan\base\Page_TestRunner {
 
 		// empty plan tables
 		// run sql files in plan tables
-		$this->resetPlan();
+		// $this->resetPlan();
 
 		// create a new user named test_user if not exists
 		$this->createTestUser();
@@ -42,9 +42,13 @@ class page_runtests extends \xepan\base\Page_TestRunner {
 
 	function createTestUser(){
 		$user_model = $this->add('xavoc\ispmanager\Model_User')
-				->addCondition('name','test_user');
+				->addCondition('name','test user')
+				
+				;
 		if($user_model->count()->getOne() > 1) throw new \Exception("more then one test_user found");
 		$user_model->tryLoadAny();
+		$user_model['first_name'] = 'test';
+		$user_model['last_name'] = 'user';
 		$user_model['password'] = 123;
 		$user_model->save();
 	}

@@ -86,6 +86,7 @@ class Model_Condition extends \xepan\base\Model_Table{
 	function beforeSave(){
 		if($this['start_time']=='') $this['start_time']=null;
 		if($this['end_time']=='') $this['end_time']=null;
+		if(!$this['data_reset_value']) $this['data_reset_value']=null;
 
 		if($this['data_limit'] && (!$this['data_reset_value'] || !$this['data_reset_mode']))
 			throw $this->exception('Value mandatory if having Data Limit','ValidityCheck')

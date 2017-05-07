@@ -109,15 +109,16 @@ class page_tests_002SimpleDataPlan extends page_Tester {
                 '2017-05-01 00:00:00'=>'plan-PL-50-M',
                 '2017-05-01 00:01:00'=>'authentication'
             ]);
-        return ['data_limit'=>$r['result']['data_limit'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'effective_row'=>$r['result']['effective_row'],'access'=>$r['access']];
+        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
     }
 
     function prepare_1_05(){
         $this->proper_responses['test_1_05']=[
-            'data_limit'=>'50.00GB',
+            'data_limit_row'=>'Main Plan',
+            'bw_limit_row'=>'Main Plan',
             'dl'=>'1.00MB',
             'ul'=>'1.00MB',
-            'effective_row'=>'Main Plan',
+            'data_consumed'=>'0.00B',
             'access'=>1
         ];
     }
@@ -128,12 +129,13 @@ class page_tests_002SimpleDataPlan extends page_Tester {
                 '2017-05-10 22:30:00'=>'authentication',
                 '2017-05-10 22:35:00'=>'10gb',
             ]);
-        return ['data_limit'=>$r['result']['data_limit'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
     }
 
     function prepare_10_05_dataConsume(){
         $this->proper_responses['test_10_05_dataConsume']=[
-            'data_limit'=>'50.00GB',
+            'data_limit_row'=>'Main Plan',
+            'bw_limit_row'=>'Main Plan',
             'dl'=>'1.00MB',
             'ul'=>'1.00MB',
             'data_consumed'=>'10.00GB',
@@ -147,15 +149,18 @@ class page_tests_002SimpleDataPlan extends page_Tester {
                 '2017-05-10 22:30:00'=>'authentication',
                 '2017-05-10 22:35:00'=>'10gb',
                 '2017-05-12 22:35:00'=>'20gb',
-                '2017-05-13 22:35:00'=>'20gb',
-                '2017-05-14 22:35:00'=>'authentication',
+                '2017-05-13 22:35:00'=>'19gb',
+                '2017-05-13 22:40:00'=>'1gb',
+                '2017-05-13 22:45:00'=>'1mb',
+                '2017-05-13 22:46:00'=>'authentication',
             ]);
-        return ['data_limit'=>$r['result']['data_limit'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
     }
 
     function prepare_15_05_dataConsumed(){
         $this->proper_responses['test_15_05_dataConsumed']=[
-            'data_limit'=>'50.00GB',
+            'data_limit_row'=>'Main Plan',
+            'bw_limit_row'=>'Main Plan',
             'dl'=>null,
             'ul'=>null,
             'data_consumed'=>'50.00GB',
@@ -163,19 +168,19 @@ class page_tests_002SimpleDataPlan extends page_Tester {
         ];
     }
 
-    function test_1_06(){
-        $this->setDateTime('2017-06-01 00:01:00'); // next month after disconnect
-        $r = $this->user->getAAADetails($now=null,$accounting_data=null,$human_redable=true);
-        return ['data_limit'=>$r['result']['data_limit'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'access'=>$r['access']];
-    }
+    // function test_1_06(){
+    //     $this->setDateTime('2017-06-01 00:01:00'); // next month after disconnect
+    //     $r = $this->user->getAAADetails($now=null,$accounting_data=null,$human_redable=true);
+    //     return ['data_limit'=>$r['result']['data_limit'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'access'=>$r['access']];
+    // }
 
-    function prepare_1_06(){
-        $this->proper_responses['test_1_06']=[
-            'data_limit'=>'50.00GB',
-            'dl'=>'1.00MB',
-            'ul'=>'1.00MB',
-            'access'=>'1'
-        ];
-    }
+    // function prepare_1_06(){
+    //     $this->proper_responses['test_1_06']=[
+    //         'data_limit'=>'50.00GB',
+    //         'dl'=>'1.00MB',
+    //         'ul'=>'1.00MB',
+    //         'access'=>'1'
+    //     ];
+    // }
 
 }

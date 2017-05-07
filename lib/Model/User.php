@@ -261,7 +261,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 		$q->order('is_topup desc, id desc');
 		$q->limit(1);
-		$this->testDebug('Applicable Row with_data_limit = '. ($with_data_limit?'true':'false'),null,$q->render());
+		$this->testDebug('Querying for '.($with_data_limit?'Data Limit':'Bw Limit').' Row ',null,$q->render());
 		$x = $q->getHash();
 		return $x;
 	}
@@ -281,13 +281,17 @@ class Model_User extends \xepan\commerce\Model_Customer{
 				$accounting_data=[$accounting_data,0];
 			}
 
-			$update_query = "UPDATE isp_user_plan_and_topup SET download_data_consumed = IFNULL(download_data_consumed,0) + ".$this->app->human2byte($accounting_data[0]) . " , upload_data_consumed = IFNULL(upload_data_consumed,0) + ".$this->app->human2byte($accounting_data[1]) . " WHERE is_effective = 1 AND user_id = ". $this->id;
+			$condition = "is_effective = 1 AND user_id = ". $this->id;
+			$update_query = "UPDATE isp_user_plan_and_topup SET download_data_consumed = IFNULL(download_data_consumed,0) + ".$this->app->human2byte($accounting_data[0]) . " , upload_data_consumed = IFNULL(upload_data_consumed,0) + ".$this->app->human2byte($accounting_data[1]) . " WHERE ". $condition;
 			$this->app->db->dsql()->expr($update_query)->execute();
-			$this->testDebug('Saving Accounting Data',$accounting_data,$update_query);
 			
-			$data=$this->app->db->dsql()->table('isp_user_plan_and_topup')->field('download_data_consumed')->field('upload_data_consumed')->where('is_effective',1)->where('user_id',$this->id)->getHash();
+			$data=$this->app->db->dsql()->table('isp_user_plan_and_topup')->field('download_data_consumed')->field('upload_data_consumed')->field('remark')->where($this->db->dsql()->expr($condition))->getHash();
 			$data['download_data_consumed'] = $this->app->byte2human($data['download_data_consumed']);
 			$data['upload_data_consumed'] = $this->app->byte2human($data['upload_data_consumed']);
+
+			$accounting_data['remark']= $data['remark'];
+
+			$this->testDebug('Saving Accounting Data ',$accounting_data,$update_query);
 			$this->testDebug('Total Accounting data ',$data);
 		}
 		
@@ -303,8 +307,9 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$this->testDebug('Applicable Data Row ', $data_limit_row['remark']);
 		
 		// Mark datalimitrow as effective
+		$this->app->db->dsql()->table('isp_user_plan_and_topup')->set('is_effective',0)->where('user_id',$this->id)->update();
 		$this->app->db->dsql()->table('isp_user_plan_and_topup')->set('is_effective',1)->where('id',$data_limit_row['id'])->update();
-		$this->testDebug('Marking Effecting ', $data_limit_row['remark'],$data_limit_row);
+		$this->testDebug('Mark Effecting for Next Accounting', $data_limit_row['remark'],$data_limit_row);
 
 		// bandwidth or fup ??
 		$if_fup='fup_';

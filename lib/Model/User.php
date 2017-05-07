@@ -288,56 +288,61 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			$data=$this->app->db->dsql()->table('isp_user_plan_and_topup')->field('download_data_consumed')->field('upload_data_consumed')->where('is_effective',1)->where('user_id',$this->id)->getHash();
 			$data['download_data_consumed'] = $this->app->byte2human($data['download_data_consumed']);
 			$data['upload_data_consumed'] = $this->app->byte2human($data['upload_data_consumed']);
-			$this->testDebug('Accounting Data Saved ? ',$data);
+			$this->testDebug('Total Accounting data ',$data);
 		}
 		
 		// run effectiveDataRecord again to set flag in database
 		// run getDlUl
 
-		$applicable_row = $this->getApplicableRow($now);
-		$this->testDebug('Applicable Row ', $applicable_row['id']);
+		$bw_applicable_row = $this->getApplicableRow($now);
+		$this->testDebug('Applicable Row ', $bw_applicable_row['remark'],$bw_applicable_row);
 
-		$data_limit_row = $applicable_row;
+		$data_limit_row = $bw_applicable_row;
 
-		if(!$applicable_row['data_limit']) $data_limit_row = $this->getApplicableRow($now,$with_data_limit=true);
-		$this->testDebug('Applicable Data Row ', $data_limit_row['id']);
+		if(!$bw_applicable_row['data_limit']) $data_limit_row = $this->getApplicableRow($now,$with_data_limit=true);
+		$this->testDebug('Applicable Data Row ', $data_limit_row['remark']);
 		
 		// Mark datalimitrow as effective
 		$this->app->db->dsql()->table('isp_user_plan_and_topup')->set('is_effective',1)->where('id',$data_limit_row['id'])->update();
-		$this->testDebug('Marking Effecting ', $data_limit_row['id']);
+		$this->testDebug('Marking Effecting ', $data_limit_row['remark'],$data_limit_row);
 
 		// bandwidth or fup ??
 		$if_fup='fup_';
-		if(($data_limit_row['download_data_consumed'] + $data_limit_row['upload_data_consumed']) < $data_limit_row['data_limit']){
+		if(($data_limit_row['download_data_consumed'] + $data_limit_row['upload_data_consumed']) <= $data_limit_row['data_limit']){
 			$if_fup='';
+		}else{
+			$this->testDebug('Data Limit Crossed',$data_limit_row['data_consumed']);
 		}
+
 		$dl_field = $if_fup.'download_limit';
 		$ul_field = $if_fup.'upload_limit';
 
 		// but from which row ??
 		// from applicable if values exists
-		$dl_limit = $applicable_row[$dl_field];
-		$ul_limit = $applicable_row[$ul_field];
+		$dl_limit = $bw_applicable_row[$dl_field];
+		$ul_limit = $bw_applicable_row[$ul_field];
 
-		if(!$dl_limit) $dl_limit = $data_limit_row[$dl_field];
-		if(!$ul_limit) $ul_limit = $data_limit_row[$ul_field];
+		if($dl_limit !== '') $dl_limit = $data_limit_row[$dl_field];
+		if($ul_limit !== '') $ul_limit = $data_limit_row[$ul_field];
 		// from data if not 
 		// if fup is null or 0 it is a reject authentication command 
 
 		$access= true;
 		if(!$dl_limit && !$ul_limit) $access=false;
-		$final_row = $applicable_row;
+		
+		$final_row = $bw_applicable_row;
 		$final_row['dl_limit'] = $dl_limit;
 		$final_row['ul_limit'] = $ul_limit;
 		$final_row['data_limit'] = $data_limit_row['data_limit'];
 		$final_row['download_data_consumed'] = $data_limit_row['download_data_consumed'];
 		$final_row['upload_data_consumed'] = $data_limit_row['upload_data_consumed'];
-		$final_row['effective_row'] = $data_limit_row['remark'];
+		$final_row['data_limit_row'] = $data_limit_row['remark'];
+		$final_row['bw_limit_row'] = $bw_applicable_row['remark'];
 
 		if($human_redable){
 			$final_row['data_limit'] = $this->app->byte2human($final_row['data_limit']);
-			$final_row['dl_limit'] = $this->app->byte2human($final_row['dl_limit']);
-			$final_row['ul_limit'] = $this->app->byte2human($final_row['ul_limit']);
+			$final_row['dl_limit'] = ($final_row['dl_limit'] !== null ) ? $this->app->byte2human($final_row['dl_limit']):null;
+			$final_row['ul_limit'] = ($final_row['ul_limit'] !== null ) ? $this->app->byte2human($final_row['ul_limit']):null;
 			$final_row['data_consumed'] = $this->app->byte2human($final_row['download_data_consumed'] + $final_row['upload_data_consumed']);
 		}
 
@@ -352,10 +357,17 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	function testDebug($title,$msg, $details=null){
 		if($_GET['testonly']){
 			if(is_array($msg)) $msg = print_r($msg,true);
-			// $a = $this->app->debugisp->add('misc\View_Accordion');
-			// $s = $a->addSection('<b>'.$title.'</b> '.$msg);
-			// $s->add('View')->set($details);
-			$this->app->debugisp->add('View')->setHTML('<b>'.$title.'</b> '.$msg.'<br><small><small>'.$details.'</small></small>');
+			if(is_array($details)) $details = var_export($details,true);
+			/*
+			<details>
+            	<summary>Getting Started</summary>
+            	<p>1. Signup for a free trial</p>
+          	</details>
+          	*/
+          	if($details)
+				$this->app->debugisp->add('View')->setHTML('<details><summary><b>'.$title.'</b> '.$msg.'</summary><small><small>'.$details.'</small></small></details>');
+			else
+				$this->app->debugisp->add('View')->setHTML('<b>'.$title.'</b> '.$msg.'</summary><small><small>'.$details.'</small></small>');
 		}
 	}
 

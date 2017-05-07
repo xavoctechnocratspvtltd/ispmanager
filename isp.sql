@@ -11,7 +11,7 @@
  Target Server Version : 100118
  File Encoding         : utf-8
 
- Date: 05/06/2017 17:44:08 PM
+ Date: 05/07/2017 11:07:32 AM
 */
 
 SET NAMES utf8;
@@ -36,6 +36,7 @@ DROP TABLE IF EXISTS `isp_condition`;
 CREATE TABLE `isp_condition` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `plan_id` int(11) DEFAULT NULL,
+  `remark` varchar(255) DEFAULT NULL,
   `data_limit` bigint(20) DEFAULT NULL,
   `download_limit` bigint(20) DEFAULT NULL,
   `upload_limit` bigint(20) DEFAULT NULL,
@@ -88,7 +89,7 @@ CREATE TABLE `isp_condition` (
   `data_reset_mode` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_plan_id` (`plan_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `isp_country`
@@ -119,14 +120,12 @@ CREATE TABLE `isp_plan` (
   `is_topup` tinyint(4) DEFAULT NULL,
   `maintain_data_limit` tinyint(4) DEFAULT NULL,
   `is_auto_renew` tinyint(4) DEFAULT NULL,
-  `period` tinyint(4) DEFAULT NULL,
-  `period_unit` varchar(255) DEFAULT NULL,
   `item_id` int(11) NOT NULL,
   `tax_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_created_by_id` (`created_by_id`),
   KEY `fk_updated_by_id` (`updated_by_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=23 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 --  Table structure for `isp_policy`
@@ -206,6 +205,7 @@ CREATE TABLE `isp_user_plan_and_topup` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) DEFAULT NULL,
   `plan_id` int(11) DEFAULT NULL,
+  `remark` varchar(255) DEFAULT NULL,
   `is_topup` tinyint(1) DEFAULT NULL,
   `data_limit` bigint(20) DEFAULT NULL,
   `download_limit` bigint(20) DEFAULT NULL,
@@ -271,7 +271,7 @@ CREATE TABLE `isp_user_plan_and_topup` (
   PRIMARY KEY (`id`),
   KEY `fk_user_id` (`user_id`),
   KEY `fk_plan_id` (`plan_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=20 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=19 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 --  Table structure for `isp_user_topup`

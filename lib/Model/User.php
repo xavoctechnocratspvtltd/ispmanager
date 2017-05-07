@@ -134,13 +134,15 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 		if(!$on_date) $on_date = isset($this->app->isptoday)? $this->app->isptoday : $this->app->today;
 
-		if(is_numeric($plan))
+		if(is_numeric($plan)){
 			$plan_model = $this->add('xavoc\ispmanager\Model_Plan')->load($plan);
-		elseif(is_string($plan))
+		}
+		elseif(is_string($plan)){
 			$plan_model = $this->add('xavoc\ispmanager\Model_Plan')->loadBy('name',$plan);
+		}
 		else
 			$plan_model = $plan;
-		
+
 		$condition_model = $this->add('xavoc\ispmanager\Model_Condition')->addCondition('plan_id',$plan_model->id);
 		
 		// set all plan to expire
@@ -167,9 +169,9 @@ class Model_User extends \xepan\commerce\Model_Customer{
 				$u_p[$field_name] = $condition[$field_name];
 			}
 
-			$end_date = date("Y-m-d H:i:s", strtotime("+".$plan_model['period']." ".$plan_model['period_unit'],strtotime($on_date)));
+			$end_date = date("Y-m-d H:i:s", strtotime("+1 ".$plan_model['qty_unit'],strtotime($on_date)));
+			$reset_date = date("Y-m-d H:i:s", strtotime("+".$condition['data_reset_value']." ".$condition['data_reset_mode'],strtotime($this->app->now)));
 
-			$reset_date = date("Y-m-d H:i:s", strtotime("'+".$condition['data_reset_value']." ".$condition['data_reset_mode']."'",strtotime($this->app->now)));
 			if($condition['data_reset_mode'] == "months"){
 				$reset_date = date('Y-m-01 00:00:00', strtotime($reset_date));
 			}elseif ($condition['data_reset_mode'] == "years") {
@@ -183,7 +185,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			// factor based on implemention
 			$u_p['start_date'] = $on_date;						
 			$u_p['end_date'] = $end_date;
-			$u_p['expire_date'] = $u_p['is_topup']? $end_date : date("Y-m-d H:i:s", strtotime("'+".$this['grace_period_in_days']." days'",strtotime($end_date)));
+			$u_p['expire_date'] = $u_p['is_topup']? $end_date : date("Y-m-d H:i:s", strtotime("+".($this['grace_period_in_days']?:'5')." days",strtotime($end_date)));
 			$u_p['is_recurring'] = $plan_model['is_auto_renew'];
 			$u_p['reset_date'] = $reset_date;
 			$u_p['is_effective'] = 0;
@@ -227,6 +229,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 					(
 						`start_time` is null
 					)
+					OR (`start_time`='00:00:00' and `end_time`='00:00:00')
 				)
 				AND
 				`$day`=1
@@ -247,24 +250,27 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 		$q->order('is_topup desc, id desc');
 		$q->limit(1);
-
-		$x = $q->debug()->getHash();
+		$this->testDebug('Applicable Row with_data_limit = '. ($with_data_limit?'true':'false'),$q->render());
+		$x = $q->getHash();
 		return $x;
 	}
 
 	function getAAADetails($now=null,$accounting_data=null,$human_redable=false){
 		if(!$now) $now = isset($this->app->ispnow)? $this->app->ispnow : $this->app->now;
 
+		$this->testDebug('Working DateTime ', $now);
 		// if accounting data
 			// add in effective_row=1
 		// run effectiveDataRecord again to set flag in database
 		// run getDlUl
 
 		$applicable_row = $this->getApplicableRow($now);
+		$this->testDebug('Applicable Row ', $applicable_row['id']);
 
 		$data_limit_row = $applicable_row;
 
 		if(!$applicable_row['data_limit']) $data_limit_row = $this->getApplicableRow($now,$with_data_limit=true);
+		$this->testDebug('Applicable Data Row ', $data_limit_row['id']);
 		
 		// bandwidth or fup ??
 		$if_fup='fup_';
@@ -295,6 +301,8 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 		if($human_redable){
 			$final_row['data_limit'] = $this->app->byte2human($final_row['data_limit']);
+			$final_row['dl_limit'] = $this->app->byte2human($final_row['dl_limit']);
+			$final_row['ul_limit'] = $this->app->byte2human($final_row['ul_limit']);
 		}
 
 		return ['access'=>$access, 'result'=>$final_row];
@@ -303,6 +311,12 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	function setEffectiveDataRecord($now=null){
 		if(!$now) $now = isset($this->app->ispnow)? $this->app->ispnow : $this->app->now;
 
+	}
+
+	function testDebug($title,$msg){
+		if($_GET['testonly']){
+			$this->app->debugisp->add('View')->setHTML('<b>'.$title.'</b><br>'.$msg);
+		}
 	}
 
 }

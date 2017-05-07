@@ -12,6 +12,7 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 		$this->hasOne('xavoc\ispmanager\User','user_id');
 		$this->hasOne('xavoc\ispmanager\BasicPlan','plan_id');
 
+		$this->addField('remark');
 		$this->addField('is_topup')->type('boolean')->defaultValue(0)->caption('TopUp');
 
 		$this->addField('data_limit')->hint('in MB');
@@ -38,6 +39,10 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 		$this->addField('is_data_carry_forward')->type('boolean')->defaultValue(false);
 		$this->addField('start_time');
 		$this->addField('end_time');
+
+		$this->addField('reset_date')->type('datetime');
+		$this->addField('data_reset_value')->type('number');
+		$this->addField('data_reset_mode')->enum(['hour','day','month','year']);
 		
 		$this->addField('sun')->type('boolean')->defaultValue(false);
 		$this->addField('mon')->type('boolean')->defaultValue(false);
@@ -79,9 +84,7 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 		$this->addField('d30')->type('boolean')->defaultValue(false);
 		$this->addField('d31')->type('boolean')->defaultValue(false);
 
-		$this->addField('reset_date')->type('datetime');
-		$this->addField('data_reset_value')->type('number');
-		$this->addField('data_reset_mode')->enum(['hour','day','month','year']);
+		$this->addHook('beforeSave',$this);
 
 		$this->add('xavoc\ispmanager\Controller_HumanByte')
 			->handleFields([
@@ -94,5 +97,10 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 				]);
 
 		// $this->add('dynamic_model/Controller_AutoCreator');
+	}
+
+	function beforeSave(){
+		if($this['start_time']=='') $this['start_time']=null;
+		if($this['end_time']=='') $this['end_time']=null;
 	}
 }

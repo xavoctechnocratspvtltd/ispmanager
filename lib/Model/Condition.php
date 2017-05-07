@@ -11,6 +11,7 @@ class Model_Condition extends \xepan\base\Model_Table{
 
 		$this->hasOne('xavoc\ispmanager\Plan','plan_id');
 		
+		$this->addField('remark');
 		$this->addField('data_limit')->hint('Data Limit in HUman redable format 20gb, 1tb, 500mb');
 		$this->addField('download_limit')->hint('Limit in KBPS');
 		$this->addField('upload_limit')->hint('Limit in KBPS');
@@ -20,8 +21,8 @@ class Model_Condition extends \xepan\base\Model_Table{
 		$this->addField('accounting_upload_ratio')->hint('ratio in %')->defaultValue(100);
 
 		$this->addField('is_data_carry_forward')->type('boolean')->defaultValue(false);
-		$this->addField('start_time')->type('time')->display(['form'=>'TimePicker']);
-		$this->addField('end_time')->type('time')->display(['form'=>'TimePicker']);
+		$this->addField('start_time');//->type('time')->display(['form'=>'TimePicker']);
+		$this->addField('end_time');//->type('time')->display(['form'=>'TimePicker']);
 									
 		// for factor day
 		$this->addField('sun')->type('boolean')->defaultValue(true);
@@ -69,6 +70,8 @@ class Model_Condition extends \xepan\base\Model_Table{
 		$this->addField('data_reset_value')->type('number')->defaultValue(0);
 		$this->addField('data_reset_mode')->enum(['hours','days','months','years']);
 
+		$this->addHook('beforeSave',$this);
+
 		$this->add('xavoc\ispmanager\Controller_HumanByte')
 			->handleFields([
 					'data_limit',
@@ -79,5 +82,15 @@ class Model_Condition extends \xepan\base\Model_Table{
 				]);
 		// $this->add('dynamic_model/Controller_AutoCreator');
 	}
+
+	function beforeSave(){
+		if($this['start_time']=='') $this['start_time']=null;
+		if($this['end_time']=='') $this['end_time']=null;
+
+		if($this['data_limit'] && (!$this['data_reset_value'] || !$this['data_reset_mode']))
+			throw $this->exception('Value mandatory if having Data Limit','ValidityCheck')
+						->setField(!$this['data_reset_value']?'data_reset_value':'data_reset_mode');
+	}
+
 
 }

@@ -17,7 +17,7 @@ class Model_Plan extends \xepan\commerce\Model_Item{
 
 		// destroy extra fields
 		$item_fields = $this->add('xepan\commerce\Model_Item')->getActualFields();
-		$required_field = ['name','sku','description','sale_price','original_price','status','document_id','id','created_by','updated_by','created_at','updated_at','type','qty_unit_id'];
+		$required_field = ['name','sku','description','sale_price','original_price','status','document_id','id','created_by','updated_by','created_at','updated_at','type','qty_unit_id','qty_unit'];
 		$destroy_field = array_diff($item_fields, $required_field);
 		foreach ($destroy_field as $key => $field) {
 			if($this->hasElement($field))
@@ -55,29 +55,6 @@ class Model_Plan extends \xepan\commerce\Model_Item{
 
 		$crud = $page->add('xepan\hr\CRUD');
 		$crud->setModel($condition_model);
-		if($crud->isEditing()){
-			$crud->form->getElement('start_time')
-					   ->setOption('showMeridian',false)
-					   ->setOption('minuteStep',5)
-					   ->setOption('showSeconds',true)
-					   ->setOption('defaultTime',"00:00:00")
-					   ;
-
-			$crud->form->getElement('end_time')
-					   ->setOption('showMeridian',false)
-					   ->setOption('minuteStep',5)
-					   ->setOption('showSeconds',true)
-					   ->setOption('defaultTime',"23:59:59")
-					   ;
-		}
-
-		// if($crud->isEditing()){
-		// 	$form = $crud->form;
-		// 	$recurring_field = $form->getElement('is_recurring');
-		// 	$recurring_field->js(true)->univ()
-		// 			->bindConditionalShow([
-		// 				'1'=>['data_reset_value','data_reset_mode'],
-		// 			],'div.atk-form-row');
-		// }
+		$crud->grid->removeColumn('plan');
 	}
 }

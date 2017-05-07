@@ -6,15 +6,10 @@ namespace xavoc\ispmanager;
 
 class page_Tester extends \xepan\base\Page_Tester{
 
+
 	function init(){
 		parent::init();
-		if($_GET['testonly']){
-            $g = $this->add('Grid');
-            $g->add('View',null,'grid_buttons')->set($this->on_date);
-            $g->setModel('xavoc\ispmanager\Model_UserPlanAndTopup')->addCondition('user','test user');
-            $g->removeColumn('user');
-            $g->removeColumn('plan');
-        }
+		
 	}
 
 	function setDateTime($date){
@@ -25,6 +20,29 @@ class page_Tester extends \xepan\base\Page_Tester{
 
 	function _($data){
 		return $this->app->human2byte($data);
+	}
+
+	function filterColumns($data,$fields){
+		foreach ($data as &$datum) {
+			foreach ($datum as $field => $value) {
+				if(!in_array($field, $fields)) unset($datum[$field]);
+			}
+		}
+		return $data;
+	}
+	
+	function defaultTemplate(){
+		if($_GET['testonly']){
+            $g = $this->add('Grid');
+			$this->app->debugisp = $this->add('View');
+            $g->add('View',null,'grid_buttons')->set($this->on_date);
+            $m= $this->add('xavoc\ispmanager\Model_UserPlanAndTopup')->addCondition('user','test user')->setOrder('id');
+            $m->getElement('id')->system(false)->visible(true);
+            $g->setModel($m);
+            $g->removeColumn('user');
+            $g->removeColumn('plan');
+        }
+		return parent::defaultTemplate();
 	}
 
 }

@@ -96,11 +96,20 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 					'data_consumed'
 				]);
 
+		$this->setOrder('id');
+
 		// $this->add('dynamic_model/Controller_AutoCreator');
 	}
 
 	function beforeSave(){
 		if($this['start_time']=='') $this['start_time']=null;
 		if($this['end_time']=='') $this['end_time']=null;
+		if(!$this['data_reset_value']) $this['data_reset_value']=null;
+	}
+
+	function cron($now=null){
+		if(!$now) $now= $this->app->now;
+
+		
 	}
 }

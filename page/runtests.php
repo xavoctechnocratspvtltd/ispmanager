@@ -17,7 +17,7 @@ class page_runtests extends \xepan\base\Page_TestRunner {
 
 		// empty plan tables
 		// run sql files in plan tables
-		// $this->resetPlan();
+		$this->resetPlan();
 
 		// create a new user named test_user if not exists
 		$this->createTestUser();

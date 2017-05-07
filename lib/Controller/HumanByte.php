@@ -11,13 +11,17 @@ class Controller_HumanByte extends \AbstractController {
 
 		$this->owner->addHook('beforeSave',function($m)use($fields){
 			foreach ($fields as $field) {
-				$m[$field] = $this->app->human2byte($m[$field]);
+				if($m[$field]!='')
+					$m[$field] = $this->app->human2byte($m[$field]);
+				else
+					$m[$field]=null;
 			}
 		});
 
 		$this->owner->addHook('afterLoad',function($m)use($fields){
 			foreach ($fields as $field) {
-				$m[$field] = $this->app->byte2human($m[$field]);
+				if($m[$field]!==null)
+					$m[$field] = $this->app->byte2human($m[$field]);
 			}
 		});
 	}

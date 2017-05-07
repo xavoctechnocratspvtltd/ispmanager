@@ -134,6 +134,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 		if(!$on_date) $on_date = isset($this->app->isptoday)? $this->app->isptoday : $this->app->today;
 
+
 		if(is_numeric($plan)){
 			$plan_model = $this->add('xavoc\ispmanager\Model_Plan')->load($plan);
 		}
@@ -142,6 +143,8 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		}
 		else
 			$plan_model = $plan;
+
+		$this->testDebug('Setting Plan '.($remove_old?'(Truncate Old Plan Data)':''), $plan_model['name']. ' on '. $on_date);
 
 		$condition_model = $this->add('xavoc\ispmanager\Model_Condition')->addCondition('plan_id',$plan_model->id);
 		
@@ -170,16 +173,22 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			}
 
 			$end_date = date("Y-m-d H:i:s", strtotime("+1 ".$plan_model['qty_unit'],strtotime($on_date)));
-			$reset_date = date("Y-m-d H:i:s", strtotime("+".$condition['data_reset_value']." ".$condition['data_reset_mode'],strtotime($this->app->now)));
+			
+			if($condition['data_reset_value']){
 
-			if($condition['data_reset_mode'] == "months"){
-				$reset_date = date('Y-m-01 00:00:00', strtotime($reset_date));
-			}elseif ($condition['data_reset_mode'] == "years") {
-				$reset_date = date('Y-m-01 00:00:00', strtotime($reset_date));
-			}elseif ($condition['data_reset_mode'] == "days") {
-				$reset_date = date('Y-m-d 00:00:00', strtotime($reset_date));
-			}elseif($condition['data_reset_mode'] == "hours"){
-				$reset_date = date('Y-m-d H:00:00', strtotime($reset_date));
+				$reset_date = date("Y-m-d H:i:s", strtotime("+".$condition['data_reset_value']." ".$condition['data_reset_mode'],strtotime($this->app->now)));
+
+				if($condition['data_reset_mode'] == "months"){
+					$reset_date = date('Y-m-01 00:00:00', strtotime($reset_date));
+				}elseif ($condition['data_reset_mode'] == "years") {
+					$reset_date = date('Y-m-01 00:00:00', strtotime($reset_date));
+				}elseif ($condition['data_reset_mode'] == "days") {
+					$reset_date = date('Y-m-d 00:00:00', strtotime($reset_date));
+				}elseif($condition['data_reset_mode'] == "hours"){
+					$reset_date = date('Y-m-d H:00:00', strtotime($reset_date));
+				}
+			}else{
+				$reset_date = null;
 			}
 
 			// factor based on implemention
@@ -192,6 +201,8 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			$u_p['data_limit_row'] = null; //id condition has data_limit then set empty else previous data row limit id;
 			$u_p->save();
 		}
+
+		return $plan_model;
 	}
 
 	function getApplicableRow($now=null,$with_data_limit=false){
@@ -250,7 +261,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 		$q->order('is_topup desc, id desc');
 		$q->limit(1);
-		$this->testDebug('Applicable Row with_data_limit = '. ($with_data_limit?'true':'false'),$q->render());
+		$this->testDebug('Applicable Row with_data_limit = '. ($with_data_limit?'true':'false'),null,$q->render());
 		$x = $q->getHash();
 		return $x;
 	}
@@ -258,9 +269,28 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	function getAAADetails($now=null,$accounting_data=null,$human_redable=false){
 		if(!$now) $now = isset($this->app->ispnow)? $this->app->ispnow : $this->app->now;
 
-		$this->testDebug('Working DateTime ', $now);
+		$this->testDebug("====================",'');
+		if(!$accounting_data)
+			$this->testDebug('Authentication on ', $now);
+		else
+			$this->testDebug('Accounting on ', $now);
 		// if accounting data
 			// add in effective_row=1
+		if($accounting_data){
+			if(!is_array($accounting_data)){
+				$accounting_data=[$accounting_data,0];
+			}
+
+			$update_query = "UPDATE isp_user_plan_and_topup SET download_data_consumed = IFNULL(download_data_consumed,0) + ".$this->app->human2byte($accounting_data[0]) . " , upload_data_consumed = IFNULL(upload_data_consumed,0) + ".$this->app->human2byte($accounting_data[1]) . " WHERE is_effective = 1 AND user_id = ". $this->id;
+			$this->app->db->dsql()->expr($update_query)->execute();
+			$this->testDebug('Saving Accounting Data',$accounting_data,$update_query);
+			
+			$data=$this->app->db->dsql()->table('isp_user_plan_and_topup')->field('download_data_consumed')->field('upload_data_consumed')->where('is_effective',1)->where('user_id',$this->id)->getHash();
+			$data['download_data_consumed'] = $this->app->byte2human($data['download_data_consumed']);
+			$data['upload_data_consumed'] = $this->app->byte2human($data['upload_data_consumed']);
+			$this->testDebug('Accounting Data Saved ? ',$data);
+		}
+		
 		// run effectiveDataRecord again to set flag in database
 		// run getDlUl
 
@@ -272,6 +302,10 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		if(!$applicable_row['data_limit']) $data_limit_row = $this->getApplicableRow($now,$with_data_limit=true);
 		$this->testDebug('Applicable Data Row ', $data_limit_row['id']);
 		
+		// Mark datalimitrow as effective
+		$this->app->db->dsql()->table('isp_user_plan_and_topup')->set('is_effective',1)->where('id',$data_limit_row['id'])->update();
+		$this->testDebug('Marking Effecting ', $data_limit_row['id']);
+
 		// bandwidth or fup ??
 		$if_fup='fup_';
 		if(($data_limit_row['download_data_consumed'] + $data_limit_row['upload_data_consumed']) < $data_limit_row['data_limit']){
@@ -298,11 +332,13 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$final_row['data_limit'] = $data_limit_row['data_limit'];
 		$final_row['download_data_consumed'] = $data_limit_row['download_data_consumed'];
 		$final_row['upload_data_consumed'] = $data_limit_row['upload_data_consumed'];
+		$final_row['effective_row'] = $data_limit_row['remark'];
 
 		if($human_redable){
 			$final_row['data_limit'] = $this->app->byte2human($final_row['data_limit']);
 			$final_row['dl_limit'] = $this->app->byte2human($final_row['dl_limit']);
 			$final_row['ul_limit'] = $this->app->byte2human($final_row['ul_limit']);
+			$final_row['data_consumed'] = $this->app->byte2human($final_row['download_data_consumed'] + $final_row['upload_data_consumed']);
 		}
 
 		return ['access'=>$access, 'result'=>$final_row];
@@ -313,9 +349,13 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 	}
 
-	function testDebug($title,$msg){
+	function testDebug($title,$msg, $details=null){
 		if($_GET['testonly']){
-			$this->app->debugisp->add('View')->setHTML('<b>'.$title.'</b><br>'.$msg);
+			if(is_array($msg)) $msg = print_r($msg,true);
+			// $a = $this->app->debugisp->add('misc\View_Accordion');
+			// $s = $a->addSection('<b>'.$title.'</b> '.$msg);
+			// $s->add('View')->set($details);
+			$this->app->debugisp->add('View')->setHTML('<b>'.$title.'</b> '.$msg.'<br><small><small>'.$details.'</small></small>');
 		}
 	}
 

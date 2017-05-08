@@ -12,6 +12,10 @@ class page_plan extends \xepan\base\Page {
 
 		$plan = $this->add('xavoc\ispmanager\Model_BasicPlan');
 		$crud = $this->add('xepan\hr\CRUD');
+		if($crud->isEditing()){
+			$form = $crud->form;
+			$form->setLayout('form/plan');
+		}
 		$crud->setModel($plan);
 		$crud->grid->removeColumn('attachment_icon');
 

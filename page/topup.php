@@ -12,6 +12,10 @@ class page_topup extends \xepan\base\Page {
 
 		$plan = $this->add('xavoc\ispmanager\Model_TopUp');
 		$crud = $this->add('xepan\hr\CRUD');
+		if($crud->isEditing()){
+			$form = $crud->form;
+			$form->setLayout('form/topup');
+		}
 		$crud->setModel($plan);
 		$crud->grid->removeColumn('attachment_icon');
 

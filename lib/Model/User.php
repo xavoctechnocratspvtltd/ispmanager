@@ -144,6 +144,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		else
 			$plan_model = $plan;
 
+		$this->testDebug('====================','');
 		$this->testDebug('Setting Plan '.($remove_old?'(Truncate Old Plan Data)':''), $plan_model['name']. ' on '. $on_date);
 
 		$condition_model = $this->add('xavoc\ispmanager\Model_Condition')->addCondition('plan_id',$plan_model->id);
@@ -357,6 +358,11 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	function setEffectiveDataRecord($now=null){
 		if(!$now) $now = isset($this->app->ispnow)? $this->app->ispnow : $this->app->now;
 
+	}
+
+	function cron($date){
+		$this->testDebug('====================','');
+		$this->testDebug('CRON RUN',$date);
 	}
 
 	function testDebug($title,$msg, $details=null){

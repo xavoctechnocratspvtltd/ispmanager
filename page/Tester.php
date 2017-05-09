@@ -33,7 +33,15 @@ class page_Tester extends \xepan\base\Page_Tester{
 
 	function process($data){
 		$i=0;
+
+		$last_action_date=null;
+
 		foreach ($data as $datetime => $action) {
+			
+			if(strtotime($last_action_date) != strtotime(date('Y-m-d',strtotime($datetime)))){
+				$this->user->cron(date('Y-m-d',strtotime($datetime)));
+			}
+
 			$this->setDateTime($datetime);
 			switch (strtolower(substr($action,0,4))) {
 				case 'auth':
@@ -49,6 +57,7 @@ class page_Tester extends \xepan\base\Page_Tester{
 					break;
 			}
 			$i++;
+			$last_action_date = date('Y-m-d',strtotime($datetime));
 		}
 
 		return $r;

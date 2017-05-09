@@ -54,7 +54,14 @@ class Model_Plan extends \xepan\commerce\Model_Item{
 		$condition_model->addcondition('plan_id',$this->id);
 
 		$crud = $page->add('xepan\hr\CRUD');
+
+		if($crud->isEditing()){
+			$form = $crud->form;
+			$form->setLayout('form/condition');
+		}
+
 		$crud->setModel($condition_model);
+
 		$crud->grid->removeColumn('plan');
 	}
 }

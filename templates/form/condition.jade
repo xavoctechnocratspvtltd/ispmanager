@@ -1,0 +1,105 @@
+div.well
+	.row
+		.col-md-6.atk-form-field.atk-form-row
+			label Remark:
+			{$remark}
+		.col-md-6.atk-form-field.atk-form-row
+			label Data Limit:
+			{$data_limit}
+			.p Data Limit in Human Readable Format 20gb, 1tb, 500mb
+div.well
+	.row
+		.col-md-3.atk-form-field.atk-form-row
+			label Download Limit:
+			{$download_limit}
+			.p Limit in KBPS
+		.col-md-3.atk-form-field.atk-form-row
+			label Upload Limit:
+			{$upload_limit}
+			.p Limit in KBPS
+		.col-md-3.atk-form-field.atk-form-row
+			label Fup Download Limit:
+			{$fup_download_limit}
+			.p Limit in KBPS
+		.col-md-3.atk-form-field.atk-form-row
+			label Fup Upload Limit:
+			{$fup_upload_limit}
+			.p Limit in KBPS
+	.row
+		.col-md-6.atk-form-field.atk-form-row
+			label Accounting Download Limit:
+			{$accounting_download_ratio}
+			.p ratio in %
+		.col-md-6.atk-form-field.atk-form-row
+			label Accounting Upload Limit:
+			{$accounting_upload_ratio}
+			.p ratio in %
+
+div.well
+	.row
+		.col-md-12
+			{$is_data_carry_forward}
+	.row
+		.col-md-6
+			label Start Time
+			{$start_time}
+		.col-md-6
+			label End Time
+			{$end_time}
+
+div.well
+	table(style="width:100%;")
+		tr
+			td {$sun}
+			td {$mon}
+			td {$tue}
+			td {$wed}
+			td {$thu}
+			td {$fri}
+			td {$sat}
+		tr
+			td {$d01}
+			td {$d02}
+			td {$d03}
+			td {$d04}
+			td {$d05}
+			td {$d06}
+			td {$d07}
+		tr
+			td {$d08}
+			td {$d09}
+			td {$d10}
+			td {$d11}
+			td {$d12}
+			td {$d13}
+			td {$d14}
+		tr
+			td {$d15}
+			td {$d16}
+			td {$d17}
+			td {$d18}
+			td {$d19}
+			td {$d20}
+			td {$d21}
+		tr
+			td {$d22}
+			td {$d23}
+			td {$d24}
+			td {$d25}
+			td {$d26}
+			td {$d27}
+			td {$d28}
+		tr
+			td {$d29}
+			td {$d30}
+			td {$d31}
+
+div.well
+	.row
+		.col-md-6.atk-form-field.atk-form-row
+			label Data Reset Value:
+			{$data_reset_value}
+		.col-md-6.atk-form-field.atk-form-row
+			label Data Reset Mode:
+			{$data_reset_mode}
+{$Content}

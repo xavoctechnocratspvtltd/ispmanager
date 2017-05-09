@@ -217,10 +217,10 @@ class page_tests_003DayNight extends page_Tester {
         $this->proper_responses['test_MaintainData']=[
             'data_limit_row'=>'Day Plan',
             'bw_limit_row'=>'Day Plan',
-            'dl'=>'2.00MB',
-            'ul'=>'2.00MB',
-            'data_consumed'=>'9.00GB',
-            'access'=>1
+            'dl'=>null,
+            'ul'=>null,
+            'data_consumed'=>'10.00GB',
+            'access'=>0
         ];
     }
 

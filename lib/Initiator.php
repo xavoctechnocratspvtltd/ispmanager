@@ -15,6 +15,7 @@ class Initiator extends \Controller_Addon {
         $m->addItem(['Users','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_user');
         $m->addItem(['Plans','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_plan');
         $m->addItem(['Topups','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_topup');
+        $m->addItem(['Invoices','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_invoice');
         $m->addItem(['Configuration','icon'=>'fa fa-cog'],'xavoc_ispmanager_configuration');
         $m->addItem(['test','icon'=>'fa fa-cog'],'xavoc_ispmanager_test');
 

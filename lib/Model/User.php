@@ -365,6 +365,9 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	function cron($date){
 		$this->testDebug('====================','');
 		$this->testDebug('CRON RUN',$date);
+		$this->add('xepan\commerce\Controller_GenerateRecurringInvoice')->run($date);
+		$this->add('xavoc\ispmanager\Controller_ResetUserPlanAndTopup')->run($date,$this,$this);
+
 	}
 
 	function testDebug($title,$msg, $details=null){

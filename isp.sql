@@ -226,6 +226,7 @@ CREATE TABLE `isp_user_plan_and_topup` (
   `data_limit_row` varchar(255) DEFAULT NULL,
   `duplicated_from_record_id` int(255) DEFAULT NULL,
   `is_data_carry_forward` varchar(255),
+  `carry_data` bigint(20) DEFAULT 0,
   `start_time` time DEFAULT NULL,
   `end_time` time DEFAULT NULL,
   `sun` tinyint(1) DEFAULT NULL,

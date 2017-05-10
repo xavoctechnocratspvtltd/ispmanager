@@ -127,6 +127,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	function getProDataAmount(){
 		if(!$this->loaded()) throw new \Exception("radius user must loaded");
 
+		
 		return 10;
 	}
 
@@ -166,6 +167,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			$u_p->addCondition('user_id',$this->id)
 				->addCondition('is_topup',false);
 			$u_p['plan_id'] = $plan_model->id;
+			$u_p['condition_id'] = $condition['id'];
 			$u_p['is_topup'] = $plan_model['is_topup'];
 
 			// all fields same as condition are setted

@@ -11,6 +11,7 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 
 		$this->hasOne('xavoc\ispmanager\User','user_id');
 		$this->hasOne('xavoc\ispmanager\BasicPlan','plan_id');
+		$this->hasOne('xavoc\ispmanager\Condition','condition_id');
 
 		$this->addField('remark');
 		$this->addField('is_topup')->type('boolean')->defaultValue(0)->caption('TopUp');
@@ -24,7 +25,7 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 		$this->addField('accounting_upload_ratio')->hint('in %')->caption('ACC UL %');
 		$this->addField('start_date')->type('datetime');
 		$this->addField('end_date')->type('datetime');
-		$this->addField('expire_date')->type('datetime'); // start date + expire date 
+		$this->addField('expire_date')->type('datetime');
 		$this->addField('is_expired')->type('boolean')->defaultValue(false);
 		$this->addField('is_recurring')->type('boolean')->defaultValue(false);
 		$this->addField('is_effective')->type('boolean')->defaultValue(false);

@@ -35,10 +35,20 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$user_j->addField('create_invoice')->type('boolean')->defaultValue(false);
 		$user_j->addField('include_pro_data_basis')->type('boolean')->defaultValue(false);
 
-		$user_j->hasMany('xavoc\ispmanager\TopUp','topup_id',null,'topups');
+		$user_j->hasMany('xavoc\ispmanager\UserPlanAndTopup','user_id');
+		// $user_j->hasMany('xavoc\ispmanager\TopUp','user_id',null,'topups');
 
 		// $this->add('dynamic_model/Controller_AutoCreator');
 		// $this->is(['plan_id|to_trim|required']);
+
+		// $this->addExpression('plan_data_limit')->set(function($m,$q){
+		// 	$m->add('xavoc\ispmanager\Model_UserPlanAndTopup')
+		// 		->addCondition('user_id',$m->id)
+		// 		->addCondition('user_id',$m->id)
+		// 		->addCondition([['is_expired',0],['is_expired',null]])
+		// 		;
+		// });
+		// $this->addExpression('consumed_limit');
 
 		$this->addHook('beforeSave',$this);
 		$this->addHook('afterSave',[$this,'updateUserConditon']);
@@ -47,7 +57,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 	function beforeSave(){
 		if($this->dirty['plan_id']){
-			$this->plan_dirty = true;
+			$this->plan_dirty = $this->dirty['plan_id'];
 		}
 		
 		$this['billing_country_id'] = $this['billing_country_id']?:$this['country_id'];
@@ -126,7 +136,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 	function getProDataAmount(){
 		if(!$this->loaded()) throw new \Exception("radius user must loaded");
-
+		if(!$this->plan_dirty) 0;
 		
 		return 10;
 	}
@@ -175,7 +185,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 				$u_p[$field_name] = $condition[$field_name];
 			}
 
-			$end_date = date("Y-m-d H:i:s", strtotime("+1 ".$plan_model['qty_unit'],strtotime($on_date)));
+			$end_date = date("Y-m-d H:i:s", strtotime("+".$plan_model['plan_validity_value']." ".$plan_model['qty_unit'],strtotime($on_date)));
 			
 			if($condition['data_reset_value']){
 

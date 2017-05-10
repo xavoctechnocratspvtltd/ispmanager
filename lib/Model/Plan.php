@@ -36,6 +36,7 @@ class Model_Plan extends \xepan\commerce\Model_Item{
 		$plan_j->addField('is_topup')->type('boolean')->defaultValue(false);
 		$plan_j->addField('is_auto_renew')->type('boolean')->defaultValue(0);
 		$plan_j->addField('available_in_user_control_panel')->type('boolean');
+		$plan_j->addField('plan_validity_value')->type('number')->defaultValue(1);
 
 		$this->hasMany('xavoc\ispmanager\Condition','plan_id',null,'conditions');
 

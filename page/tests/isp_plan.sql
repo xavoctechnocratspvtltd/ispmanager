@@ -156,6 +156,7 @@ CREATE TABLE `isp_plan` (
   `is_auto_renew` tinyint(4) DEFAULT NULL,
   `item_id` int(11) NOT NULL,
   `tax_id` int(11) DEFAULT NULL,
+  `plan_validity_value` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_created_by_id` (`created_by_id`),
   KEY `fk_updated_by_id` (`updated_by_id`)
@@ -164,16 +165,16 @@ CREATE TABLE `isp_plan` (
 -- ----------------------------
 -- Records of isp_plan
 -- ----------------------------
-INSERT INTO `isp_plan` VALUES ('1', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8418', '5');
-INSERT INTO `isp_plan` VALUES ('2', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '0', '8419', '5');
-INSERT INTO `isp_plan` VALUES ('3', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8420', '5');
-INSERT INTO `isp_plan` VALUES ('4', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8421', '4');
-INSERT INTO `isp_plan` VALUES ('5', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8422', '5');
-INSERT INTO `isp_plan` VALUES ('6', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8423', '5');
-INSERT INTO `isp_plan` VALUES ('7', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8424', '5');
-INSERT INTO `isp_plan` VALUES ('8', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8425', '2');
-INSERT INTO `isp_plan` VALUES ('9', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8426', '5');
-INSERT INTO `isp_plan` VALUES ('10', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8427', '4');
+INSERT INTO `isp_plan` VALUES ('1', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8418', '5','1');
+INSERT INTO `isp_plan` VALUES ('2', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '0', '8419', '5','1');
+INSERT INTO `isp_plan` VALUES ('3', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8420', '5','1');
+INSERT INTO `isp_plan` VALUES ('4', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8421', '4','1');
+INSERT INTO `isp_plan` VALUES ('5', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8422', '5','1');
+INSERT INTO `isp_plan` VALUES ('6', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8423', '5','1');
+INSERT INTO `isp_plan` VALUES ('7', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8424', '5','1');
+INSERT INTO `isp_plan` VALUES ('8', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8425', '2','1');
+INSERT INTO `isp_plan` VALUES ('9', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8426', '5','1');
+INSERT INTO `isp_plan` VALUES ('10', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8427','4','1');
 
 -- ----------------------------
 -- Table structure for `item`

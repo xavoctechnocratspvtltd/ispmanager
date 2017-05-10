@@ -11,7 +11,7 @@
 
 namespace xavoc\ispmanager;
 
-class page_tests_004Plan500GB3Month extends page_Tester {
+class page_tests_005Plan500GB3Month extends page_Tester {
 	
 	public $title='Plan500GB3Month';
 	
@@ -26,7 +26,7 @@ class page_tests_004Plan500GB3Month extends page_Tester {
     }
 
     function test_setplan_simpleway($fields){
-        $this->user->setPlan('PL-500-3M-carry ','2017-05-01',true);
+        $this->user->setPlan('PL-500 GB for 3 month data carry','2017-05-01',true);
         $model = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup')
             ->addCondition('user_id',$this->user->id);
         $data=[];
@@ -37,11 +37,11 @@ class page_tests_004Plan500GB3Month extends page_Tester {
         return $this->filterColumns($data,$fields);
     }
 
-    function prepare_setplan_simplaway(){
+    function prepare_setplan_simpleway(){
         $this->proper_responses['test_setplan_simpleway']=[
             [   
                 'user'=>'Test User',
-                'plan'=>'PL-500-3M-carry',
+                'plan'=>'PL-500 GB for 3 month data carry',
                 'data_limit'=>'500.00GB',
                 'download_limit'=>'2.00MB',
                 'upload_limit'=>'2.00MB',

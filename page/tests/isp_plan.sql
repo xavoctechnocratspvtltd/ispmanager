@@ -167,7 +167,7 @@ CREATE TABLE `isp_plan` (
 -- ----------------------------
 INSERT INTO `isp_plan` VALUES ('1', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8418', '5','1');
 INSERT INTO `isp_plan` VALUES ('2', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '0', '8419', '5','6');
-INSERT INTO `isp_plan` VALUES ('3', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8420', '5','1');
+INSERT INTO `isp_plan` VALUES ('3', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8420', '5','3');
 INSERT INTO `isp_plan` VALUES ('4', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8421', '4','1');
 INSERT INTO `isp_plan` VALUES ('5', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8422', '5','1');
 INSERT INTO `isp_plan` VALUES ('6', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8423', '5','1');

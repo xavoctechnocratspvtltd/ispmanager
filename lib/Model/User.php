@@ -224,7 +224,9 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		// limit 1
 
 		$user_plans = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup');
-		$q=$user_plans->dsql();
+		$q=$user_plans->_dsql();
+		$q->field('*');
+		$q->field($q->expr('data_limit + carry_data net_data_limit'));
 		$q->where($q->expr("
 				(
 					(
@@ -237,7 +239,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 							)
 						) 
 						AND
-						is_expired=0
+						(is_expired=0 or is_expired is null)
 					)
 					OR
 					(
@@ -255,6 +257,8 @@ class Model_User extends \xepan\commerce\Model_Customer{
 					AND
 					'$now' <= end_date
 				)
+				AND
+					(is_expired=0 or is_expired is null)
 				AND
 				`user_id`= ". $this->id."
 				".
@@ -306,7 +310,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 		$data_limit_row = $bw_applicable_row;
 
-		if(!$bw_applicable_row['data_limit']) $data_limit_row = $this->getApplicableRow($now,$with_data_limit=true);
+		if(!$bw_applicable_row['net_data_limit']) $data_limit_row = $this->getApplicableRow($now,$with_data_limit=true);
 		$this->testDebug('Applicable Data Row ', $data_limit_row['remark']);
 		
 		// Mark datalimitrow as effective
@@ -316,10 +320,11 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 		// bandwidth or fup ??
 		$if_fup='fup_';
-		if(($data_limit_row['download_data_consumed'] + $data_limit_row['upload_data_consumed']) <= $data_limit_row['data_limit']){
+		if(($data_limit_row['download_data_consumed'] + $data_limit_row['upload_data_consumed']) < $data_limit_row['net_data_limit']){
+			$this->testDebug('Under Data Limit',null,['download_data_consumed'=>$data_limit_row['download_data_consumed'] ,'upload_data_consumed'=> $data_limit_row['upload_data_consumed'],'net_data_limit'=> $data_limit_row['net_data_limit']]);
 			$if_fup='';
 		}else{
-			$this->testDebug('Data Limit Crossed',$data_limit_row['data_consumed']);
+			$this->testDebug('Data Limit Crossed', $this->app->byte2human($data_limit_row['net_data_limit'] - ($data_limit_row['download_data_consumed'] + $data_limit_row['upload_data_consumed'])));
 		}
 
 		$dl_field = $if_fup.'download_limit';
@@ -342,6 +347,8 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$final_row['dl_limit'] = $dl_limit;
 		$final_row['ul_limit'] = $ul_limit;
 		$final_row['data_limit'] = $data_limit_row['data_limit'];
+		$final_row['carry_data'] = $data_limit_row['carry_data'];
+		$final_row['net_data_limit'] = $data_limit_row['net_data_limit'];
 		$final_row['download_data_consumed'] = $data_limit_row['download_data_consumed'];
 		$final_row['upload_data_consumed'] = $data_limit_row['upload_data_consumed'];
 		$final_row['data_limit_row'] = $data_limit_row['remark'];
@@ -349,6 +356,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 		if($human_redable){
 			$final_row['data_limit'] = $this->app->byte2human($final_row['data_limit']);
+			$final_row['net_data_limit'] = $this->app->byte2human($final_row['net_data_limit']);
 			$final_row['dl_limit'] = ($final_row['dl_limit'] !== null ) ? $this->app->byte2human($final_row['dl_limit']):null;
 			$final_row['ul_limit'] = ($final_row['ul_limit'] !== null ) ? $this->app->byte2human($final_row['ul_limit']):null;
 			$final_row['data_consumed'] = $this->app->byte2human($final_row['download_data_consumed'] + $final_row['upload_data_consumed']);

@@ -1,24 +1,22 @@
 /*
- Navicat Premium Data Transfer
+Navicat MySQL Data Transfer
 
- Source Server         : localhost
- Source Server Type    : MariaDB
- Source Server Version : 100118
- Source Host           : localhost
- Source Database       : ispmanager
+Source Server         : localhost
+Source Server Version : 50505
+Source Host           : localhost:3306
+Source Database       : ispmanager
 
- Target Server Type    : MariaDB
- Target Server Version : 100118
- File Encoding         : utf-8
+Target Server Type    : MYSQL
+Target Server Version : 50505
+File Encoding         : 65001
 
- Date: 05/07/2017 17:17:40 PM
+Date: 2017-05-10 16:59:28
 */
 
-SET NAMES utf8;
-SET FOREIGN_KEY_CHECKS = 0;
+SET FOREIGN_KEY_CHECKS=0;
 
 -- ----------------------------
---  Table structure for `document`
+-- Table structure for `document`
 -- ----------------------------
 DROP TABLE IF EXISTS `document`;
 CREATE TABLE `document` (
@@ -35,17 +33,24 @@ CREATE TABLE `document` (
   PRIMARY KEY (`id`),
   KEY `fk_document_epan1_idx` (`epan_id`),
   FULLTEXT KEY `search_string` (`search_string`)
-) ENGINE=InnoDB AUTO_INCREMENT=8428 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=8435 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
---  Records of `document`
+-- Records of document
 -- ----------------------------
-BEGIN;
-INSERT INTO `document` VALUES ('8418', '0', 'Item', null, null, '2017-05-06 18:17:33', null, '2017-05-06 18:17:33', 'active', null), ('8419', '0', 'Item', null, null, '2017-05-06 18:25:42', null, '2017-05-06 18:25:42', 'active', null), ('8420', '0', 'Item', null, null, '2017-05-06 18:28:15', null, '2017-05-06 18:28:15', 'active', null), ('8421', '0', 'Item', null, null, '2017-05-06 18:31:18', null, '2017-05-06 18:31:18', 'active', null), ('8422', '0', 'Item', null, null, '2017-05-06 18:49:53', null, '2017-05-06 18:49:53', 'active', null), ('8423', '0', 'Item', null, null, '2017-05-06 19:06:28', null, '2017-05-06 19:06:28', 'active', null), ('8424', '0', 'Item', null, null, '2017-05-06 19:10:20', null, '2017-05-06 19:10:20', 'active', null), ('8425', '0', 'Item', null, null, '2017-05-06 19:16:49', null, '2017-05-06 19:16:49', 'active', null), ('8426', '0', 'Item', null, null, '2017-05-06 19:18:43', null, '2017-05-06 19:18:43', 'active', null), ('8427', '0', 'Item', null, null, '2017-05-06 19:20:57', null, '2017-05-06 19:20:57', 'active', null);
-COMMIT;
+INSERT INTO `document` VALUES ('8418', '0', 'Item', null, null, '2017-05-06 18:17:33', null, '2017-05-06 18:17:33', 'active', null);
+INSERT INTO `document` VALUES ('8419', '0', 'Item', null, null, '2017-05-06 18:25:42', null, '2017-05-06 18:25:42', 'active', null);
+INSERT INTO `document` VALUES ('8420', '0', 'Item', null, null, '2017-05-06 18:28:15', null, '2017-05-06 18:28:15', 'active', null);
+INSERT INTO `document` VALUES ('8421', '0', 'Item', null, null, '2017-05-06 18:31:18', null, '2017-05-06 18:31:18', 'active', null);
+INSERT INTO `document` VALUES ('8422', '0', 'Item', null, null, '2017-05-06 18:49:53', null, '2017-05-06 18:49:53', 'active', null);
+INSERT INTO `document` VALUES ('8423', '0', 'Item', null, null, '2017-05-06 19:06:28', null, '2017-05-06 19:06:28', 'active', null);
+INSERT INTO `document` VALUES ('8424', '0', 'Item', null, null, '2017-05-06 19:10:20', null, '2017-05-06 19:10:20', 'active', null);
+INSERT INTO `document` VALUES ('8425', '0', 'Item', null, null, '2017-05-06 19:16:49', null, '2017-05-06 19:16:49', 'active', null);
+INSERT INTO `document` VALUES ('8426', '0', 'Item', null, null, '2017-05-06 19:18:43', null, '2017-05-06 19:18:43', 'active', null);
+INSERT INTO `document` VALUES ('8427', '0', 'Item', null, null, '2017-05-06 19:20:57', null, '2017-05-06 19:20:57', 'active', null);
 
 -- ----------------------------
---  Table structure for `isp_condition`
+-- Table structure for `isp_condition`
 -- ----------------------------
 DROP TABLE IF EXISTS `isp_condition`;
 CREATE TABLE `isp_condition` (
@@ -59,7 +64,7 @@ CREATE TABLE `isp_condition` (
   `fup_upload_limit` bigint(20) DEFAULT NULL,
   `accounting_download_ratio` int(11) DEFAULT NULL,
   `accounting_upload_ratio` int(11) DEFAULT NULL,
-  `is_data_carry_forward` tinyint(1) DEFAULT NULL,
+  `is_data_carry_forward` varchar(255) DEFAULT NULL,
   `start_time` time DEFAULT NULL,
   `end_time` time DEFAULT NULL,
   `sun` tinyint(1) DEFAULT NULL,
@@ -104,17 +109,34 @@ CREATE TABLE `isp_condition` (
   `data_reset_mode` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_plan_id` (`plan_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=25 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
---  Records of `isp_condition`
+-- Records of isp_condition
 -- ----------------------------
-BEGIN;
-INSERT INTO `isp_condition` VALUES ('1', '8418', 'Main Plan', '53687091200', '1048576', '1048576', null, null, '100', '100', '0', null, null, '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', 'months'), ('2', '8419', 'Main Plan', '536870912000', '1048576', '1048576', null, null, '100', '100', '0', null, null, '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '6', 'months'), ('3', '8420', 'Main Plan', '536870912000', '2097152', '2097152', null, null, '100', '100', '1', null, null, '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '3', 'months'), ('4', '8421', 'Main Plan', '107374182400', '2097152', '2097152', '524288', '524288', '100', '100', '0', null, null, '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', 'months'), ('5', '8422', 'Day Plan', '10737418240', '2097152', '2097152', null, null, '100', '100', '0', '08:00:00', '20:00:00', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', 'months'), ('6', '8422', 'Night Plan', '10737418240', '2097152', '2097152', null, null, '100', '100', '0', '20:00:00', '08:00:00', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', 'months'), ('7', '8423', 'All Day Plan', '107374182400', '2097152', '2097152', '524288', '524288', '100', '100', '0', null, null, '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', 'months'), ('8', '8423', 'Sunday Offer', null, null, null, null, null, '0', '0', '0', null, null, '1', '0', '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '0', null), ('9', '8424', 'All Days', '107374182400', '2097152', '2097152', '524288', '524288', '100', '100', '0', null, null, '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', 'months'), ('10', '8424', 'Sunday offer', '2147483648', '2097152', '2097152', '1048576', '1048576', '100', '100', '0', null, null, '1', '0', '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', 'days'), ('11', '8425', 'Daily Reset Plan', '1073741824', '2097152', '2097152', '524288', '524288', '100', '100', '0', null, null, '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', 'days'), ('12', '8426', 'Main Plan', '107374182400', '2097152', '2097152', '524288', '524288', '100', '100', '0', null, null, '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', 'months'), ('13', '8426', 'Night Offer', null, null, null, null, null, '0', '0', '0', '22:00:00', '04:00:00', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '', null), ('14', '8427', 'Main Plan', '107374182400', '2097152', '2097152', '524288', '524288', '100', '100', '0', null, null, '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', 'months'), ('15', '8427', 'Night Offer', null, '4194304', '4194304', '2097152', '2097152', '100', '100', '0', '22:00:00', '04:00:00', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '', null);
-COMMIT;
+INSERT INTO `isp_condition` VALUES ('1', '8418', 'Main Plan', '53687091200', '1048576', '1048576', null, null, '100', '100', 'none', null, null, '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', 'months');
+INSERT INTO `isp_condition` VALUES ('2', '8419', 'Main Plan', '536870912000', '1048576', '1048576', null, null, '100', '100', 'none', null, null, '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '6', 'months');
+INSERT INTO `isp_condition` VALUES ('3', '8420', 'Main Plan', '536870912000', '2097152', '2097152', null, null, '100', '100', 'none', null, null, '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '3', 'months');
+INSERT INTO `isp_condition` VALUES ('4', '8421', 'Main Plan', '107374182400', '2097152', '2097152', '524288', '524288', '100', '100', 'none', null, null, '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', 'months');
+INSERT INTO `isp_condition` VALUES ('5', '8422', 'Day Plan', '10737418240', '2097152', '2097152', null, null, '100', '100', 'none', '08:00:00', '20:00:00', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', 'months');
+INSERT INTO `isp_condition` VALUES ('6', '8422', 'Night Plan', '10737418240', '2097152', '2097152', null, null, '100', '100', 'none', '20:00:00', '08:00:00', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', 'months');
+INSERT INTO `isp_condition` VALUES ('7', '8423', 'All Day Plan', '107374182400', '2097152', '2097152', '524288', '524288', '100', '100', 'none', null, null, '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', 'months');
+INSERT INTO `isp_condition` VALUES ('8', '8423', 'Sunday Offer', null, null, null, null, null, '0', '0', 'none', null, null, '1', '0', '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', null, null);
+INSERT INTO `isp_condition` VALUES ('9', '8424', 'All Days', '107374182400', '2097152', '2097152', '524288', '524288', '100', '100', 'none', null, null, '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', 'months');
+INSERT INTO `isp_condition` VALUES ('10', '8424', 'Sunday offer', '2147483648', '2097152', '2097152', '1048576', '1048576', '100', '100', 'none', null, null, '1', '0', '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', 'days');
+INSERT INTO `isp_condition` VALUES ('11', '8425', 'Daily Reset Plan', '1073741824', '2097152', '2097152', '524288', '524288', '100', '100', 'none', null, null, '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', 'days');
+INSERT INTO `isp_condition` VALUES ('12', '8426', 'Main Plan', '107374182400', '2097152', '2097152', '524288', '524288', '100', '100', 'none', null, null, '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', 'months');
+INSERT INTO `isp_condition` VALUES ('13', '8426', 'Night Offer', null, null, null, null, null, '0', '0', 'none', '22:00:00', '04:00:00', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', null, null);
+INSERT INTO `isp_condition` VALUES ('14', '8427', 'Main Plan', '107374182400', '2097152', '2097152', '524288', '524288', '100', '100', 'none', null, null, '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', 'months');
+INSERT INTO `isp_condition` VALUES ('15', '8427', 'Night Offer', null, '4194304', '4194304', '2097152', '2097152', '100', '100', 'none', '22:00:00', '04:00:00', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', null, null);
+INSERT INTO `isp_condition` VALUES ('20', '8432', 'DAY PLAN', '53687091200', '2097152', '2097152', '524288', '524288', '100', '100', 'none', null, null, '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', 'months');
+INSERT INTO `isp_condition` VALUES ('21', '8432', 'UNLIM', null, '2097152', '2097152', '1048576', '1048576', '0', '0', 'none', null, null, '1', '0', '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', 'months');
+INSERT INTO `isp_condition` VALUES ('22', '8433', 'Day Plan', '1073741824', '4194304', '4194304', '131072', '131072', '100', '100', 'none', null, null, '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', 'days');
+INSERT INTO `isp_condition` VALUES ('23', '8434', 'Day Plan', '10737418240', '2097152', '2097152', null, null, '100', '100', 'none', '08:00:00', '20:00:00', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', 'months');
+INSERT INTO `isp_condition` VALUES ('24', '8434', 'Night Plan', '10737418240', '2097152', '2097152', null, null, '100', '100', 'none', '20:00:00', '08:00:00', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', 'months');
 
 -- ----------------------------
---  Table structure for `isp_plan`
+-- Table structure for `isp_plan`
 -- ----------------------------
 DROP TABLE IF EXISTS `isp_plan`;
 CREATE TABLE `isp_plan` (
@@ -137,17 +159,24 @@ CREATE TABLE `isp_plan` (
   PRIMARY KEY (`id`),
   KEY `fk_created_by_id` (`created_by_id`),
   KEY `fk_updated_by_id` (`updated_by_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=18 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
---  Records of `isp_plan`
+-- Records of isp_plan
 -- ----------------------------
-BEGIN;
-INSERT INTO `isp_plan` VALUES ('1', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8418', '5'), ('2', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '0', '8419', '5'), ('3', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8420', '5'), ('4', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8421', '4'), ('5', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8422', '5'), ('6', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8423', '5'), ('7', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8424', '5'), ('8', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8425', '2'), ('9', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8426', '5'), ('10', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8427', '4');
-COMMIT;
+INSERT INTO `isp_plan` VALUES ('1', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8418', '5');
+INSERT INTO `isp_plan` VALUES ('2', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '0', '8419', '5');
+INSERT INTO `isp_plan` VALUES ('3', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8420', '5');
+INSERT INTO `isp_plan` VALUES ('4', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8421', '4');
+INSERT INTO `isp_plan` VALUES ('5', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8422', '5');
+INSERT INTO `isp_plan` VALUES ('6', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8423', '5');
+INSERT INTO `isp_plan` VALUES ('7', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8424', '5');
+INSERT INTO `isp_plan` VALUES ('8', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8425', '2');
+INSERT INTO `isp_plan` VALUES ('9', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8426', '5');
+INSERT INTO `isp_plan` VALUES ('10', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8427', '4');
 
 -- ----------------------------
---  Table structure for `item`
+-- Table structure for `item`
 -- ----------------------------
 DROP TABLE IF EXISTS `item`;
 CREATE TABLE `item` (
@@ -224,17 +253,24 @@ CREATE TABLE `item` (
   KEY `document_id` (`document_id`) USING BTREE,
   KEY `duplicate_from_item_id` (`duplicate_from_item_id`) USING BTREE,
   KEY `to_customer_id` (`to_customer_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
---  Records of `item`
+-- Records of item
 -- ----------------------------
-BEGIN;
-INSERT INTO `item` VALUES ('8418', 'PL-50-M', 'PL-50-M', '100.00', '90.00', null, '', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '4', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null), ('8419', 'PL-500 GB for 6 month', 'PL-500-6M', '1000.00', '900.00', null, '', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '4', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '2', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null), ('8420', 'PL-500 GB for 3 month data carry', 'PL-500-3M-carry', '200.00', '2000.00', null, '', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '4', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '3', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null), ('8421', 'unlimited 100GB-m', 'PL-100GB-2M-unlimited', '3000.00', '200.00', null, '', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '4', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '4', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null), ('8422', 'Day Night plan', 'PL-20GB-2M-Day-Night', '400.00', '300.00', null, '', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '4', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '5', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null), ('8423', 'SUNDAY EXCLUDED 100GB-1m', 'PL-100GB-1M-unlimited', '2000.00', '3000.00', null, '', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '4', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '6', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null), ('8424', '100GB-2mb-HighSpeed on sunday', 'PL-100GB-1M-high-speed', '100.00', '10.00', null, '', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '4', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '7', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null), ('8425', 'jio plan', 'PL-1GB-1D-high-speed', '100.00', '200.00', null, '', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '4', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null), ('8426', 'Night Unlimited', 'PL-10GB-1M-Bight-unlimited', '100.00', '2000.00', null, '', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '4', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '9', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null), ('8427', 'Night highspeed', 'PL-100GB-1M-night-speed', '100.00', '200.00', null, '', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '4', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '10', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
-COMMIT;
+INSERT INTO `item` VALUES ('8418', 'PL-50-M', 'PL-50-M', '100.00', '90.00', null, '', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '4', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '1', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+INSERT INTO `item` VALUES ('8419', 'PL-500 GB for 6 month', 'PL-500-6M', '1000.00', '900.00', null, '', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '4', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '2', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+INSERT INTO `item` VALUES ('8420', 'PL-500 GB for 3 month data carry', 'PL-500-3M-carry', '200.00', '2000.00', null, '', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '4', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '3', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+INSERT INTO `item` VALUES ('8421', 'unlimited 100GB-m', 'PL-100GB-2M-unlimited', '3000.00', '200.00', null, '', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '4', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '4', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+INSERT INTO `item` VALUES ('8422', 'Day Night plan', 'PL-20GB-2M-Day-Night', '400.00', '300.00', null, '', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '4', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '5', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+INSERT INTO `item` VALUES ('8423', 'SUNDAY EXCLUDED 100GB-1m', 'PL-100GB-1M-unlimited', '2000.00', '3000.00', null, '', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '4', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '6', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+INSERT INTO `item` VALUES ('8424', '100GB-2mb-HighSpeed on sunday', 'PL-100GB-1M-high-speed', '100.00', '10.00', null, '', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '4', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '7', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+INSERT INTO `item` VALUES ('8425', 'jio plan', 'PL-1GB-1D-high-speed', '100.00', '200.00', null, '', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '4', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '8', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+INSERT INTO `item` VALUES ('8426', 'Night Unlimited', 'PL-10GB-1M-Bight-unlimited', '100.00', '2000.00', null, '', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '4', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '9', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+INSERT INTO `item` VALUES ('8427', 'Night highspeed', 'PL-100GB-1M-night-speed', '100.00', '200.00', null, '', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '4', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '10', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 
 -- ----------------------------
---  Table structure for `taxation`
+-- Table structure for `taxation`
 -- ----------------------------
 DROP TABLE IF EXISTS `taxation`;
 CREATE TABLE `taxation` (
@@ -250,14 +286,18 @@ CREATE TABLE `taxation` (
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
---  Records of `taxation`
+-- Records of taxation
 -- ----------------------------
-BEGIN;
-INSERT INTO `taxation` VALUES ('1', 'Vat 05 %', '5.00', 'Taxation', '3', null), ('2', 'Vat 14.5 %', '14.50', 'Taxation', '3', null), ('3', 'CST 5 %', '5.00', 'Taxation', '3', null), ('4', 'CST 2 %  Against Form C', '2.00', 'Taxation', '3', null), ('5', 'CST 14.5 %', '14.50', 'Taxation', '3', null), ('6', 'VAT 5.5%', '5.50', 'Taxation', '3', null), ('7', 'CST 05.5%', '5.50', 'Taxation', '3', null);
-COMMIT;
+INSERT INTO `taxation` VALUES ('1', 'Vat 05 %', '5.00', 'Taxation', '3', null);
+INSERT INTO `taxation` VALUES ('2', 'Vat 14.5 %', '14.50', 'Taxation', '3', null);
+INSERT INTO `taxation` VALUES ('3', 'CST 5 %', '5.00', 'Taxation', '3', null);
+INSERT INTO `taxation` VALUES ('4', 'CST 2 %  Against Form C', '2.00', 'Taxation', '3', null);
+INSERT INTO `taxation` VALUES ('5', 'CST 14.5 %', '14.50', 'Taxation', '3', null);
+INSERT INTO `taxation` VALUES ('6', 'VAT 5.5%', '5.50', 'Taxation', '3', null);
+INSERT INTO `taxation` VALUES ('7', 'CST 05.5%', '5.50', 'Taxation', '3', null);
 
 -- ----------------------------
---  Table structure for `unit`
+-- Table structure for `unit`
 -- ----------------------------
 DROP TABLE IF EXISTS `unit`;
 CREATE TABLE `unit` (
@@ -268,14 +308,16 @@ CREATE TABLE `unit` (
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
---  Records of `unit`
+-- Records of unit
 -- ----------------------------
-BEGIN;
-INSERT INTO `unit` VALUES ('1', '1', 'hours'), ('2', '1', 'days'), ('3', '1', 'weeks'), ('4', '1', 'months'), ('5', '1', 'years');
-COMMIT;
+INSERT INTO `unit` VALUES ('1', '1', 'hours');
+INSERT INTO `unit` VALUES ('2', '1', 'days');
+INSERT INTO `unit` VALUES ('3', '1', 'weeks');
+INSERT INTO `unit` VALUES ('4', '1', 'months');
+INSERT INTO `unit` VALUES ('5', '1', 'years');
 
 -- ----------------------------
---  Table structure for `unit_group`
+-- Table structure for `unit_group`
 -- ----------------------------
 DROP TABLE IF EXISTS `unit_group`;
 CREATE TABLE `unit_group` (
@@ -286,10 +328,6 @@ CREATE TABLE `unit_group` (
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
---  Records of `unit_group`
+-- Records of unit_group
 -- ----------------------------
-BEGIN;
 INSERT INTO `unit_group` VALUES ('1', 'Duration', '5');
-COMMIT;
-
-SET FOREIGN_KEY_CHECKS = 1;

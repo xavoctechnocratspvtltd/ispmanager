@@ -17,6 +17,7 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 		$this->addField('is_topup')->type('boolean')->defaultValue(0)->caption('TopUp');
 
 		$this->addField('data_limit')->hint('in MB');
+		$this->addField('carry_data')->defaultValue(0);
 		$this->addField('download_limit')->hint('in KBps');
 		$this->addField('upload_limit')->hint('in KBps');
 		$this->addField('fup_download_limit')->hint('in KBps')->caption('FUP DL');
@@ -37,7 +38,7 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 		// row in which consumptin data value to be stored
 		$this->addField('data_limit_row');
 		$this->addField('duplicated_from_record_id');
-		$this->addField('is_data_carry_forward')->type('boolean')->defaultValue(false);
+		$this->addField('is_data_carry_forward')->enum(['none','once','allways']);
 		$this->addField('start_time');
 		$this->addField('end_time');
 
@@ -84,6 +85,8 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 		$this->addField('d29')->type('boolean')->defaultValue(false);
 		$this->addField('d30')->type('boolean')->defaultValue(false);
 		$this->addField('d31')->type('boolean')->defaultValue(false);
+
+		$this->addExpression('net_data_limit')->set('data_limit+carry_data');
 
 		$this->addHook('beforeSave',$this);
 

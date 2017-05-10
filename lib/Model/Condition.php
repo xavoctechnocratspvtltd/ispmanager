@@ -20,7 +20,8 @@ class Model_Condition extends \xepan\base\Model_Table{
 		$this->addField('accounting_download_ratio')->hint('ratio in %')->defaultValue(100);
 		$this->addField('accounting_upload_ratio')->hint('ratio in %')->defaultValue(100);
 
-		$this->addField('is_data_carry_forward')->type('boolean')->defaultValue(false);
+		$this->addField('is_data_carry_forward')->enum(['none','once','allways']);
+		
 		$this->addField('start_time');//->type('time')->display(['form'=>'TimePicker']);
 		$this->addField('end_time');//->type('time')->display(['form'=>'TimePicker']);
 									

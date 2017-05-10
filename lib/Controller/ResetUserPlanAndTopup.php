@@ -16,8 +16,12 @@ class Controller_ResetUserPlanAndTopup extends \AbstractController {
 		foreach ($upt_model as $key => $model) {
 			// IF TODAY IS RESET DATE
 			if($model['reset_date'] <= $date){
-				if($model['is_data_carry_forward']){
-					//IF DATA IS CARRY FORWARD THEN UPDATE THE DATA LIMIT = (PLAN DATA LIMIT + REMAINING DATA LIMIT OF LAST PERIOD)
+
+				//IF DATA IS CARRY FORWARD THEN UPDATE THE DATA LIMIT = (PLAN DATA LIMIT + REMAINING DATA LIMIT OF LAST PERIOD)
+				if($model['is_data_carry_forward'] == 'once'){
+					$model['carry_data'] = ($model['data_limit'] - $model['data_consumed'])>0?$model['data_limit'] - $model['data_consumed']:0;
+				}elseif($model['is_data_carry_forward'] == "allways"){
+					$model['carry_data'] = ($model['net_data_limit'] - $model['data_consumed'])>0?($model['net_data_limit'] - $model['data_consumed']):0;
 				}
 
 				// RESET TO ZERO OF download_data_consumed AND UPLOAD_data_consumed
@@ -31,10 +35,8 @@ class Controller_ResetUserPlanAndTopup extends \AbstractController {
 				// is expire
 				if($model['expire_date'] <= $date)
 					$model['is_expired'] = true;
-
 				$model->saveAndUnload();
 			}
-			
 		}
 		
 		// IF TODAY IS EXPIRE DATE

@@ -1,9 +1,11 @@
 <?php
 
+
 namespace xavoc\ispmanager;
 
-class page_cron_resetUserPlanAndCondition extends \xepan\base\Page{
 
+class Controller_ResetUserPlanAndTopup extends \AbstractController {
+	
 	function run($date = null){
 		if(!$date) $date = $this->app->now;
 

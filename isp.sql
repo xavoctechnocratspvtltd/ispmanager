@@ -205,6 +205,7 @@ CREATE TABLE `isp_user_plan_and_topup` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) DEFAULT NULL,
   `plan_id` int(11) DEFAULT NULL,
+  `condition_id` int(11) DEFAULT NULL,
   `remark` varchar(255) DEFAULT NULL,
   `is_topup` tinyint(1) DEFAULT NULL,
   `data_limit` bigint(20) DEFAULT NULL,

@@ -41,13 +41,14 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		// $this->add('dynamic_model/Controller_AutoCreator');
 		// $this->is(['plan_id|to_trim|required']);
 
-		// $this->addExpression('plan_data_limit')->set(function($m,$q){
-		// 	$m->add('xavoc\ispmanager\Model_UserPlanAndTopup')
-		// 		->addCondition('user_id',$m->id)
-		// 		->addCondition('user_id',$m->id)
-		// 		->addCondition([['is_expired',0],['is_expired',null]])
-		// 		;
-		// });
+		$this->addExpression('plan_data_limit')->set(function($m,$q){
+			$m->add('xavoc\ispmanager\Model_UserPlanAndTopup')
+				->addCondition('user_id',$m->id)
+				->addCondition('is_topup',false)
+				->addCondition([['is_expired',0],['is_expired',null]])
+				;
+			return $m->sum('net_data_limit');
+		});
 		// $this->addExpression('consumed_limit');
 
 		$this->addHook('beforeSave',$this);

@@ -122,6 +122,7 @@ CREATE TABLE `isp_plan` (
   `is_auto_renew` tinyint(4) DEFAULT NULL,
   `item_id` int(11) NOT NULL,
   `tax_id` int(11) DEFAULT NULL,
+  `plan_validity_value` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_created_by_id` (`created_by_id`),
   KEY `fk_updated_by_id` (`updated_by_id`)

@@ -123,7 +123,7 @@ class page_tests_002SimpleDataPlan extends page_Tester {
         ];
     }
 
-    function test_10_05_dataConsume(){
+    function test_10_05_10gb_dataConsume(){
         $r = $this->process([
                 '2017-05-01 00:00:00'=>'plan-PL-50-M',
                 '2017-05-10 22:30:00'=>'authentication',
@@ -132,8 +132,8 @@ class page_tests_002SimpleDataPlan extends page_Tester {
         return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
     }
 
-    function prepare_10_05_dataConsume(){
-        $this->proper_responses['test_10_05_dataConsume']=[
+    function prepare_10_05_10gb_dataConsume(){
+        $this->proper_responses['test_10_05_10gb_dataConsume']=[
             'data_limit_row'=>'Main Plan',
             'bw_limit_row'=>'Main Plan',
             'dl'=>'1.00MB',

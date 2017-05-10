@@ -1,30 +1,32 @@
 div.well
 	.row
-		.col-md-6.atk-form-field.atk-form-row
-			label Remark:
+		.col-md-4.atk-form-field.atk-form-row
+			label Row Name:
 			{$remark}
-		.col-md-6.atk-form-field.atk-form-row
+		.col-md-4.atk-form-field.atk-form-row
 			label Data Limit:
 			{$data_limit}
-			.p Data Limit in Human Readable Format 20gb, 1tb, 500mb
+			small.text-muted Data limit in Human Readable Format 20gb, 1tb, 500mb
+		.col-md-4.atk-form-field.atk-form-row
+			{$is_data_carry_forward}
 div.well
 	.row
 		.col-md-3.atk-form-field.atk-form-row
 			label Download Limit:
 			{$download_limit}
-			.p Limit in KBPS
+			.p limit per second
 		.col-md-3.atk-form-field.atk-form-row
 			label Upload Limit:
 			{$upload_limit}
-			.p Limit in KBPS
+			.p limit per second
 		.col-md-3.atk-form-field.atk-form-row
 			label Fup Download Limit:
 			{$fup_download_limit}
-			.p Limit in KBPS
+			.p limit per second
 		.col-md-3.atk-form-field.atk-form-row
 			label Fup Upload Limit:
 			{$fup_upload_limit}
-			.p Limit in KBPS
+			.p limit per second
 	.row
 		.col-md-6.atk-form-field.atk-form-row
 			label Accounting Download Limit:
@@ -36,9 +38,6 @@ div.well
 			.p ratio in %
 
 div.well
-	.row
-		.col-md-12
-			{$is_data_carry_forward}
 	.row
 		.col-md-6
 			label Start Time

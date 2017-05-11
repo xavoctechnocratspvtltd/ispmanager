@@ -149,6 +149,10 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		return 10;
 	}
 
+	function addTopup($topup_id,$date=null){
+		$this->setPlan($topup_id,$date,false,true);
+	}
+
 	function setPlan($plan, $on_date=null, $remove_old=false,$is_topup=false){
 
 		if(!$on_date) $on_date = isset($this->app->isptoday)? $this->app->isptoday : $this->app->today;
@@ -430,10 +434,6 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$model->getElement('plan_id')->caption('TopUp');
 		$crud->setModel($model);
 
-	}
-
-	function addTopup($topup_id){
-		$this->setPlan($topup_id,null,false,true);
 	}
 
 	function updateNASCredential(){

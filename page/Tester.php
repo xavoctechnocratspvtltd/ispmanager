@@ -52,6 +52,9 @@ class page_Tester extends \xepan\base\Page_Tester{
 				case 'plan':
 					$r = $this->user->setPlan(substr($action, 5),$datetime,$i===0?true:false);
 					break;
+				case 'top-':
+					$r = $this->user->addTopup(substr($action, 4),$datetime);
+					break;
 				default:
         			$r = $this->user->getAAADetails($now=null,$accounting_data=$action,$human_redable=true);
 					break;

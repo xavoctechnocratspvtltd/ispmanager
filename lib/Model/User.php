@@ -6,7 +6,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	// public $table = "isp_user";
 	public $status = ['Active','InActive'];
 	public $actions = [
-				'Active'=>['view','edit','delete','plans'],
+				'Active'=>['view','edit','delete','Topups'],
 				'InActive'=>['view','edit','delete','active']
 				];
 	public $acl_type= "ispmanager_user";
@@ -406,4 +406,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		}
 	}
 
+	function page_Topups($page){
+		$page->add('View')->set('hello');
+	}
 }

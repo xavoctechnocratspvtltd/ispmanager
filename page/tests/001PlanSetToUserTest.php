@@ -213,7 +213,7 @@ class page_tests_001PlanSetToUserTest extends page_Tester {
                 '2017-01-01 00:00:00'=>'plan-SUNDAY EXCLUDED 100GB-1m',
                 '2017-01-01 00:01:00'=>'authentication',
                 '2017-01-01 00:00:00'=>'2gb',
-                '2017-01-12 23:45:00'=>'100mb',
+                '2017-01-12 23:45:00'=>'10mb',
                 '2017-01-12 23:55:00'=>'1mb',
                 '2017-01-13 00:00:00'=>'10mb',
                 '2017-01-15 00:00:00'=>'2gb',
@@ -228,9 +228,94 @@ class page_tests_001PlanSetToUserTest extends page_Tester {
         $this->proper_responses['test_25_01_dataConsumed']=[
             'data_limit_row'=>'All Day Plan',
             'bw_limit_row'=>'All Day Plan',
+            'dl'=>'2.00MB',
+            'ul'=>'2.00MB',
+            'data_consumed'=>'4.00GB',
+            'access'=>1
+        ];
+    }
+
+    function test_1_02_dataResetInGrace(){
+        $r = $this->process([
+                '2017-01-01 00:00:00'=>'plan-SUNDAY EXCLUDED 100GB-1m',
+                '2017-01-01 00:01:00'=>'authentication',
+                '2017-01-01 22:35:00'=>'50gb',
+                '2017-01-10 22:35:00'=>'5gb',
+                '2017-01-25 22:45:00'=>'20gb',
+                '2017-01-30 22:35:00'=>'20gb',
+                '2017-01-31 22:46:00'=>'authentication',
+                '2017-02-01 00:00:00'=>'authentication',
+            ]);
+        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+    }
+
+    function prepare_1_02_dataResetInGrace(){
+        $this->proper_responses['test_1_02_dataResetInGrace']=[
+            'data_limit_row'=>'All Day Plan',
+            'bw_limit_row'=>'All Day Plan',
+            'dl'=>'2.00MB',
+            'ul'=>'2.00MB',
+            'data_consumed'=>'0.00B',
+            'access'=>1
+        ];
+    }
+
+    function test_05_02_dataConsumedInGrace(){
+        $r = $this->process([
+                '2017-01-01 00:00:00'=>'plan-SUNDAY EXCLUDED 100GB-1m',
+                '2017-01-01 00:01:00'=>'authentication',
+                '2017-01-01 22:35:00'=>'50gb',
+                '2017-01-10 22:35:00'=>'5gb',
+                '2017-01-25 22:45:00'=>'20gb',
+                '2017-01-30 22:35:00'=>'20gb',
+                '2017-01-31 22:46:00'=>'authentication',
+                '2017-02-01 00:00:00'=>'authentication',
+                '2017-02-02 22:35:00'=>'5gb',
+                '2017-02-04 08:35:00'=>'10gb',
+                '2017-02-04 20:35:00'=>'10gb',
+                '2017-02-05 00:00:00'=>'authentication',
+
+            ]);
+        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+    }
+
+    function prepare_05_02_dataConsumedInGrace(){
+        $this->proper_responses['test_05_02_dataConsumedInGrace']=[
+            'data_limit_row'=>'All Day Plan',
+            'bw_limit_row'=>'All Day Plan',
+            'dl'=>'2.00MB',
+            'ul'=>'2.00MB',
+            'data_consumed'=>'25.00GB',
+            'access'=>1
+        ];
+    }
+
+    function test_07_02_ExpieredAfterGrace(){
+        $r = $this->process([
+                '2017-01-01 00:00:00'=>'plan-SUNDAY EXCLUDED 100GB-1m',
+                '2017-01-01 00:01:00'=>'authentication',
+                '2017-01-01 22:35:00'=>'50gb',
+                '2017-01-10 22:35:00'=>'5gb',
+                '2017-01-25 22:45:00'=>'20gb',
+                '2017-01-30 22:35:00'=>'20gb',
+                '2017-01-31 22:46:00'=>'authentication',
+                '2017-02-01 00:00:00'=>'authentication',
+                '2017-02-02 22:35:00'=>'5gb',
+                '2017-02-04 08:35:00'=>'10gb',
+                '2017-02-04 20:35:00'=>'10gb',
+                '2017-02-05 00:00:00'=>'25gb',
+                '2017-02-07 00:00:00'=>'authentication',
+            ]);
+        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+    }
+
+    function prepare_07_02_ExpieredAfterGrace(){
+        $this->proper_responses['test_07_02_ExpieredAfterGrace']=[
+            'data_limit_row'=>'',
+            'bw_limit_row'=>'',
             'dl'=>null,
             'ul'=>null,
-            'data_consumed'=>'4.00GB',
+            'data_consumed'=>'0.00B',
             'access'=>0
         ];
     }

@@ -104,159 +104,238 @@ class page_tests_005Plan500GB3Month extends page_Tester {
     }
 
 
-    // function test_monthDate01_05(){
-    //     $r = $this->process([
-    //             '2017-05-01 00:00:00'=>'PL-500-3M-carry',
-    //             '2017-05-01 00:01:00'=>'authentication'
-    //         ]);
-    //     return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
-    // }
+    function test_monthDate01_05(){
+        $r = $this->process([
+                '2017-05-01 00:00:00'=>'plan-PL-500 GB for 3 month data carry',
+                '2017-05-01 00:01:00'=>'authentication'
+            ]);
+        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+    }
 
-    // function prepare_monthDate01_05(){
-    //     $this->proper_responses['test_monthDate01_05']=[
-    //         'data_limit_row'=>'Main Plan',
-    //         'bw_limit_row'=>'Main Plan',
-    //         'dl'=>'2.00MB',
-    //         'ul'=>'2.00MB',
-    //         'data_consumed'=>'0.00B',
-    //         'access'=>1
-    //     ];
-    // }
+    function prepare_monthDate01_05(){
+        $this->proper_responses['test_monthDate01_05']=[
+            'data_limit_row'=>'Main Plan',
+            'bw_limit_row'=>'Main Plan',
+            'dl'=>'2.00MB',
+            'ul'=>'2.00MB',
+            'data_consumed'=>'0.00B',
+            'access'=>1
+        ];
+    }
 
-    // function test_monthDate01_06_150gb_dataConsume(){
-    //     $r = $this->process([
-    //             '2017-05-01 00:00:00'=>'PL-500-3M-carry',
-    //             '2017-06-01 00:00:00'=>'authentication',
-    //             '2017-06-01 22:35:00'=>'150gb',
-    //         ]);
-    //     return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
-    // }
+    function test_monthDate20_05_70gb(){
+        $r = $this->process([
+                '2017-05-01 00:00:00'=>'plan-PL-500 GB for 3 month data carry',
+                '2017-05-20 00:00:00'=>'authentication',
+                '2017-05-20 22:35:00'=>'70gb',
+            ]);
+        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+    }
 
-    // function prepare_monthDate01_06_150gb_dataConsume(){
-    //     $this->proper_responses['test_monthDate01_06_150gb_dataConsume']=[
-    //         'data_limit_row'=>'Main Plan',
-    //         'bw_limit_row'=>'Main Plan',
-    //         'dl'=>'2.00MB',
-    //         'ul'=>'2.00MB',
-    //         'data_consumed'=>'150.00GB',
-    //         'access'=>1
-    //     ];
-    // }
+    function prepare_monthDate20_05_70gb(){
+        $this->proper_responses['test_monthDate20_05_70gb']=[
+            'data_limit_row'=>'Main Plan',
+            'bw_limit_row'=>'Main Plan',
+            'dl'=>'2.00MB',
+            'ul'=>'2.00MB',
+            'data_consumed'=>'70.00GB',
+            'access'=>1
+        ];
+    }
 
-    // function test_monthDate01_07_dataConsumed(){
-    //     $r = $this->process([
-    //             '2017-05-01 00:00:00'=>'PL-500-3M-carry',
-    //             '2017-05-10 22:30:00'=>'authentication',
-    //             '2017-05-10 22:35:00'=>'40gb',
-    //             '2017-05-18 22:35:00'=>'30gb',
-    //             '2017-05-20 22:35:00'=>'15gb',
-    //             '2017-05-20 22:40:00'=>'5mb',
-    //             '2017-05-20 22:50:00'=>'10gb',
-    //             '2017-05-28 22:45:00'=>'45gb',
-    //             '2017-05-28 22:46:00'=>'authentication',
-    //             '2017-06-10 22:35:00'=>'30gb',
-    //             '2017-06-18 22:35:00'=>'40gb',
-    //             '2017-06-20 22:35:00'=>'20gb',
-    //             '2017-06-20 22:50:00'=>'10gb',
-    //             '2017-06-28 22:45:00'=>'60gb',
-    //             '2017-06-30 22:45:00'=>'authentication',
-    //         ]);
-    //     return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
-    // }
+    function test_monthDate01_06_dataUsed(){
+        $r = $this->process([
+                '2017-05-01 00:00:00'=>'plan-PL-500 GB for 3 month data carry',
+                '2017-05-20 00:00:00'=>'authentication',
+                '2017-05-20 22:30:00'=>'70gb',
+                '2017-05-30 22:45:00'=>'80gb',
+                '2017-06-01 22:25:00'=>'20gb',
+                '2017-06-01 22:35:00'=>'authentication',
+            ]);
+        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+    }
 
-    // function prepare_monthDate01_07_dataConsumed(){
-    //     $this->proper_responses['test_monthDate01_07_dataConsumed']=[
-    //         'data_limit_row'=>'Main Plan',
-    //         'bw_limit_row'=>'Main Plan',
-    //         'dl'=>'2.00MB',
-    //         'ul'=>'2.00MB',
-    //         'data_consumed'=>'300.00GB',
-    //         'access'=>1
-    //     ];
-    // }
+    function prepare_monthDate01_06_dataUsed(){
+        $this->proper_responses['test_monthDate01_06_dataUsed']=[
+            'data_limit_row'=>'Main Plan',
+            'bw_limit_row'=>'Main Plan',
+            'dl'=>'2.00MB',
+            'ul'=>'2.00MB',
+            'data_consumed'=>'170.00GB',
+            'access'=>1
+        ];
+    }
 
-    // function test_monthDate01_08_dataResetInGrace(){
-    //     $r = $this->process([
-    //             '2017-05-01 00:00:00'=>'PL-500-3M-carry',
-    //             '2017-05-10 22:30:00'=>'authentication',
-    //             '2017-05-10 22:35:00'=>'10gb',
-    //             '2017-05-12 22:35:00'=>'20gb',
-    //             '2017-05-13 22:35:00'=>'19gb',
-    //             '2017-05-13 22:40:00'=>'1gb',
-    //             '2017-05-13 22:45:00'=>'1mb',
-    //             '2017-05-13 22:46:00'=>'authentication',
-    //             '2017-06-01 22:46:00'=>'authentication',
-    //         ]);
-    //     return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
-    // }
+    function test_monthDate01_07_dataConsume(){
+        $r = $this->process([
+                '2017-05-01 00:00:00'=>'plan-PL-500 GB for 3 month data carry',
+                '2017-05-20 00:00:00'=>'authentication',
+                '2017-05-20 22:30:00'=>'70gb',
+                '2017-05-30 22:45:00'=>'80gb',
+                '2017-06-01 22:25:00'=>'20gb',
+                '2017-06-01 22:35:00'=>'authentication',
+                '2017-06-10 22:35:00'=>'30gb',
+                '2017-06-18 22:35:00'=>'40gb',
+                '2017-06-20 22:35:00'=>'20gb',
+                '2017-06-20 22:50:00'=>'10gb',
+                '2017-06-28 22:45:00'=>'60gb',
+                '2017-06-30 22:45:00'=>'25gb',
+                '2017-07-01 22:45:00'=>'authentication',
+            ]);
+        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+    }
 
-    // function prepare_monthDate01_08_dataResetInGrace(){
-    //     $this->proper_responses['test_monthDate01_08_dataResetInGrace']=[
-    //         'data_limit_row'=>'Main Plan',
-    //         'bw_limit_row'=>'Main Plan',
-    //         'dl'=>'1.00MB',
-    //         'ul'=>'1.00MB',
-    //         'data_consumed'=>'0.00B',
-    //         'access'=>1
-    //     ];
-    // }
+    function prepare_monthDate01_07_dataConsume(){
+        $this->proper_responses['test_monthDate01_07_dataConsume']=[
+            'data_limit_row'=>'Main Plan',
+            'bw_limit_row'=>'Main Plan',
+            'dl'=>'2.00MB',
+            'ul'=>'2.00MB',
+            'data_consumed'=>'355.00GB',
+            'access'=>1
+        ];
+    }
 
-    // function test_05_06_dataConsumedInGrace(){
-    //     $r = $this->process([
-    //             '2017-05-01 00:00:00'=>'plan-PL-50-M',
-    //             '2017-05-10 22:30:00'=>'authentication',
-    //             '2017-05-10 22:35:00'=>'10gb',
-    //             '2017-05-12 22:35:00'=>'20gb',
-    //             '2017-05-13 22:35:00'=>'19gb',
-    //             '2017-05-13 22:40:00'=>'1gb',
-    //             '2017-05-13 22:45:00'=>'1mb',
-    //             '2017-05-13 22:46:00'=>'authentication',
-    //             '2017-06-01 22:46:00'=>'authentication',
-    //             '2017-06-02 22:46:00'=>'40gb',
-    //             '2017-06-03 22:46:00'=>'10gb',
-    //             '2017-06-04 22:46:00'=>'authentication',
-    //         ]);
-    //     return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
-    // }
+    function test_monthDate01_08_dataConsumed(){
+        $r = $this->process([
+                '2017-05-01 00:00:00'=>'plan-PL-500 GB for 3 month data carry',
+                '2017-05-20 00:00:00'=>'authentication',
+                '2017-05-20 22:30:00'=>'70gb',
+                '2017-05-30 22:45:00'=>'80gb',
+                '2017-06-01 22:25:00'=>'20gb',
+                '2017-06-01 22:35:00'=>'authentication',
+                '2017-06-10 22:35:00'=>'30gb',
+                '2017-06-18 22:35:00'=>'40gb',
+                '2017-06-20 22:35:00'=>'20gb',
+                '2017-06-20 22:50:00'=>'10gb',
+                '2017-06-28 22:45:00'=>'60gb',
+                '2017-06-30 22:45:00'=>'25gb',
+                '2017-07-01 22:45:00'=>'authentication',
+                '2017-07-15 22:35:00'=>'50gb',
+                '2017-07-28 22:35:00'=>'70gb',
+                '2017-07-30 22:35:00'=>'25gb',
+            ]);
+        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+    }
 
-    // function prepare_05_06_dataConsumedInGrace(){
-    //     $this->proper_responses['test_05_06_dataConsumedInGrace']=[
-    //         'data_limit_row'=>'Main Plan',
-    //         'bw_limit_row'=>'Main Plan',
-    //         'dl'=>null,
-    //         'ul'=>null,
-    //         'data_consumed'=>'50.00GB',
-    //         'access'=>0
-    //     ];
-    // }
+    function prepare_monthDate01_08_dataConsumed(){
+        $this->proper_responses['test_monthDate01_08_dataConsumed']=[
+            'data_limit_row'=>'Main Plan',
+            'bw_limit_row'=>'Main Plan',
+            'dl'=>null,
+            'ul'=>null,
+            'data_consumed'=>'500.00GB',
+            'access'=>0
+        ];
+    }
 
-    // function test_07_06_ExpieredAfterGrace(){
-    //     $r = $this->process([
-    //             '2017-05-01 00:00:00'=>'plan-PL-50-M',
-    //             '2017-05-10 22:30:00'=>'authentication',
-    //             '2017-05-10 22:35:00'=>'10gb',
-    //             '2017-05-12 22:35:00'=>'20gb',
-    //             '2017-05-13 22:35:00'=>'19gb',
-    //             '2017-05-13 22:40:00'=>'1gb',
-    //             '2017-05-13 22:45:00'=>'1mb',
-    //             '2017-05-13 22:46:00'=>'authentication',
-    //             '2017-06-01 22:46:00'=>'authentication',
-    //             '2017-06-03 22:46:00'=>'10gb',
-    //             '2017-06-07 22:46:00'=>'authentication',
-    //         ]);
-    //     return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
-    // }
+    function test_monthDate01_08_dataResetInGrace(){
+        $r = $this->process([
+                '2017-05-01 00:00:00'=>'plan-PL-500 GB for 3 month data carry',
+                '2017-05-20 00:00:00'=>'authentication',
+                '2017-05-20 22:30:00'=>'70gb',
+                '2017-05-30 22:45:00'=>'80gb',
+                '2017-06-01 22:25:00'=>'20gb',
+                '2017-06-01 22:35:00'=>'authentication',
+                '2017-06-10 22:35:00'=>'30gb',
+                '2017-06-18 22:35:00'=>'40gb',
+                '2017-06-20 22:35:00'=>'20gb',
+                '2017-06-20 22:50:00'=>'10gb',
+                '2017-06-28 22:45:00'=>'60gb',
+                '2017-06-30 22:45:00'=>'25gb',
+                '2017-07-01 22:45:00'=>'authentication',
+                '2017-07-15 22:35:00'=>'50gb',
+                '2017-07-28 22:35:00'=>'70gb',
+                '2017-07-30 22:35:00'=>'25gb',
+                '2017-08-01 22:50:00'=>'authentication',
+            ]);
+        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+    }
 
-    // function prepare_07_06_ExpieredAfterGrace(){
-    //     $this->proper_responses['test_07_06_ExpieredAfterGrace']=[
-    //         'data_limit_row'=>'',
-    //         'bw_limit_row'=>'',
-    //         'dl'=>null,
-    //         'ul'=>null,
-    //         'data_consumed'=>'0.00B',
-    //         'access'=>0
-    //     ];
-    // }
+    function prepare_monthDate01_08_dataResetInGrace(){
+        $this->proper_responses['test_monthDate01_08_dataResetInGrace']=[
+            'data_limit_row'=>'Main Plan',
+            'bw_limit_row'=>'Main Plan',
+            'dl'=>'2.00MB',
+            'ul'=>'2.00MB',
+            'data_consumed'=>'0.00B',
+            'access'=>1
+        ];
+    }
+
+    function test_monthDate05_08_dataConsumedInGrace(){
+        $r = $this->process([
+                '2017-05-01 00:00:00'=>'plan-PL-500 GB for 3 month data carry',
+                '2017-05-20 00:00:00'=>'authentication',
+                '2017-05-20 22:30:00'=>'70gb',
+                '2017-05-30 22:45:00'=>'80gb',
+                '2017-06-01 22:25:00'=>'20gb',
+                '2017-06-01 22:35:00'=>'authentication',
+                '2017-06-10 22:35:00'=>'30gb',
+                '2017-06-18 22:35:00'=>'40gb',
+                '2017-06-20 22:35:00'=>'20gb',
+                '2017-06-20 22:50:00'=>'10gb',
+                '2017-06-28 22:45:00'=>'60gb',
+                '2017-06-30 22:45:00'=>'25gb',
+                '2017-07-01 22:45:00'=>'authentication',
+                '2017-07-15 22:35:00'=>'50gb',
+                '2017-07-28 22:35:00'=>'70gb',
+                '2017-07-30 22:35:00'=>'25gb',
+                '2017-08-01 22:50:00'=>'authentication',
+                '2017-08-02 22:46:00'=>'100gb',
+                '2017-08-03 22:46:00'=>'50gb',
+                '2017-08-05 22:46:00'=>'authentication',
+            ]);
+        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+    }
+
+    function prepare_monthDate05_08_dataConsumedInGrace(){
+        $this->proper_responses['test_monthDate05_08_dataConsumedInGrace']=[
+            'data_limit_row'=>'Main Plan',
+            'bw_limit_row'=>'Main Plan',
+            'dl'=>'2.00MB',
+            'ul'=>'2.00MB',
+            'data_consumed'=>'150.00GB',
+            'access'=>1
+        ];
+    }
+
+    function test_monthDate07_08_ExpieredAfterGrace(){
+        $r = $this->process([
+                '2017-05-01 00:00:00'=>'plan-PL-500 GB for 3 month data carry',
+                '2017-05-20 00:00:00'=>'authentication',
+                '2017-05-20 22:30:00'=>'70gb',
+                '2017-05-30 22:45:00'=>'80gb',
+                '2017-06-01 22:25:00'=>'20gb',
+                '2017-06-01 22:35:00'=>'authentication',
+                '2017-06-10 22:35:00'=>'30gb',
+                '2017-06-18 22:35:00'=>'40gb',
+                '2017-06-20 22:35:00'=>'20gb',
+                '2017-06-20 22:50:00'=>'10gb',
+                '2017-06-28 22:45:00'=>'60gb',
+                '2017-06-30 22:45:00'=>'25gb',
+                '2017-07-01 22:45:00'=>'authentication',
+                '2017-07-15 22:35:00'=>'50gb',
+                '2017-07-28 22:35:00'=>'70gb',
+                '2017-07-30 22:35:00'=>'25gb',
+                '2017-08-01 22:50:00'=>'authentication',
+                '2017-08-02 22:46:00'=>'100gb',
+                '2017-08-03 22:46:00'=>'50gb',
+                '2017-08-07 22:46:00'=>'authentication',
+            ]);
+        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+    }
+
+    function prepare_monthDate07_08_ExpieredAfterGrace(){
+        $this->proper_responses['test_monthDate07_08_ExpieredAfterGrace']=[
+            'data_limit_row'=>'',
+            'bw_limit_row'=>'',
+            'dl'=>null,
+            'ul'=>null,
+            'data_consumed'=>'0.00B',
+            'access'=>0
+        ];
+    }
 
 
 }

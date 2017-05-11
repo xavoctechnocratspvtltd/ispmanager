@@ -54,9 +54,16 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$this->addHook('beforeSave',$this);
 		$this->addHook('afterSave',[$this,'updateUserConditon']);
 		$this->addHook('afterSave',[$this,'createInvoice']);
+		$this->addHook('afterSave',[$this,'updateNASCredential']);
+
+		$this->is(
+				['radius_username|to_trim|unique']
+				['plan_id|to_trim|reuired']
+			);
 	}
 
 	function beforeSave(){
+
 		if($this->dirty['plan_id']){
 			$this->plan_dirty = $this->dirty['plan_id'];
 		}
@@ -78,7 +85,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	}
 
 	function updateUserConditon(){
-		if(!$this->plan_dirty) return;
+		if(!$this->plan_dirty AND !$this['plan_id']) return;
 		$this->setPlan($this['plan_id']);
 		
 	}
@@ -429,4 +436,13 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$this->setPlan($topup_id,null,false,true);
 	}
 
+	function updateNASCredential(){
+		$radcheck_model = $this->add('xavoc\ispmanager\Model_RadCheck');
+		$radcheck_model->addCondition('username',$this['radius_username']);
+		$radcheck_model->addCondition('attribute',"Cleartext-Password");
+		$radcheck_model->addCondition('op', ":=");
+		$radcheck_model->tryLoadAny();
+		$radcheck_model['value'] = $this['radius_password'];
+		$radcheck_model->save();
+	}
 }

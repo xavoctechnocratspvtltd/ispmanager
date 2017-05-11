@@ -41,14 +41,14 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		// $this->add('dynamic_model/Controller_AutoCreator');
 		// $this->is(['plan_id|to_trim|required']);
 
-		$this->addExpression('plan_data_limit')->set(function($m,$q){
-			$m->add('xavoc\ispmanager\Model_UserPlanAndTopup')
-				->addCondition('user_id',$m->id)
-				->addCondition('is_topup',false)
-				->addCondition([['is_expired',0],['is_expired',null]])
-				;
-			return $m->sum('net_data_limit');
-		});
+		// $this->addExpression('plan_data_limit')->set(function($m,$q){
+		// 	$m->add('xavoc\ispmanager\Model_UserPlanAndTopup')
+		// 		->addCondition('user_id',$m->id)
+		// 		->addCondition('is_topup',false)
+		// 		->addCondition([['is_expired',0],['is_expired',null]])
+		// 		;
+		// 	return $m->sum('net_data_limit');
+		// });
 		// $this->addExpression('consumed_limit');
 
 		$this->addHook('beforeSave',$this);
@@ -142,7 +142,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		return 10;
 	}
 
-	function setPlan($plan, $on_date=null, $remove_old=false){
+	function setPlan($plan, $on_date=null, $remove_old=false,$is_topup=false){
 
 		if(!$on_date) $on_date = isset($this->app->isptoday)? $this->app->isptoday : $this->app->today;
 
@@ -162,12 +162,14 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$condition_model = $this->add('xavoc\ispmanager\Model_Condition')->addCondition('plan_id',$plan_model->id);
 		
 		// set all plan to expire
-		if($remove_old)
-			$update_query = "DELETE FROM  isp_user_plan_and_topup WHERE user_id = '".$this->id."' AND is_topup = '0'";
-		else
-			$update_query = "UPDATE isp_user_plan_and_topup SET is_expired = '1' WHERE user_id = '".$this->id."' AND is_topup = '0'";
-		
-		$this->app->db->dsql()->expr($update_query)->execute();
+		if(!$is_topup){
+			if($remove_old)
+				$update_query = "DELETE FROM  isp_user_plan_and_topup WHERE user_id = '".$this->id."' AND is_topup = '0'";
+			else
+				$update_query = "UPDATE isp_user_plan_and_topup SET is_expired = '1' WHERE user_id = '".$this->id."' AND is_topup = '0'";
+			
+			$this->app->db->dsql()->expr($update_query)->execute();
+		}
 
 		foreach ($condition_model as $key => $condition) {
 			$fields = $condition->getActualFields();
@@ -175,8 +177,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			$fields = array_diff($fields,$unset_field);
 
 			$u_p = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup');
-			$u_p->addCondition('user_id',$this->id)
-				->addCondition('is_topup',false);
+			$u_p['user_id'] = $this->id;
 			$u_p['plan_id'] = $plan_model->id;
 			$u_p['condition_id'] = $condition['id'];
 			$u_p['is_topup'] = $plan_model['is_topup'];
@@ -407,6 +408,25 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	}
 
 	function page_Topups($page){
-		$page->add('View')->set('hello');
+		$form = $page->add('Form');
+		$form->addField('DropDown','topup')->validate('required')->setEmptyText('Please Select Topup')->setModel($this->add('xavoc\ispmanager\Model_TopUp'));
+		$form->addSubmit('Add TopUp');
+
+		$crud = $page->add('CRUD',['allow_edit'=>false,'allow_add'=>false]);
+		if($form->isSubmitted()){
+			$this->addTopup($form['topup']);
+			$form->js(null,$crud->js()->reload())->univ()->successMessage('topup added successfuly')->execute();
+		}
+
+		$model = $page->add('xavoc\ispmanager\Model_UserPlanAndTopup');
+		$model->addCondition('is_topup',true)->addCondition('user_id',$this->id);
+		$model->getElement('plan_id')->caption('TopUp');
+		$crud->setModel($model);
+
 	}
+
+	function addTopup($topup_id){
+		$this->setPlan($topup_id,null,false,true);
+	}
+
 }

@@ -190,7 +190,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			
 			if($condition['data_reset_value']){
 
-				$reset_date = date("Y-m-d H:i:s", strtotime("+".$condition['data_reset_value']." ".$condition['data_reset_mode'],strtotime($this->app->now)));
+				$reset_date = date("Y-m-d H:i:s", strtotime("+".$condition['data_reset_value']." ".$condition['data_reset_mode'],strtotime($on_date)));
 
 				if($condition['data_reset_mode'] == "months"){
 					$reset_date = date('Y-m-01 00:00:00', strtotime($reset_date));

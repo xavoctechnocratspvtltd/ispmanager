@@ -58,6 +58,8 @@ class page_tests_005Plan500GB3Month extends page_Tester {
                 'is_expired'=>0,
                 'is_recurring'=>1,
                 'reset_date'=>'2017-08-01 00:00:00',
+                'data_reset_value'=>'3',
+                'data_reset_mode'=>'months',
                 'sun'=>1,
                 'mon'=>1,
                 'tue'=>1,

@@ -59,6 +59,8 @@ class page_tests_004PL500GBfor6month extends page_Tester{
                 'is_expired'=>0,
                 'is_recurring'=>0,
                 'reset_date'=>'2017-07-01 00:00:00',
+                'data_reset_value'=>'6',
+                'data_reset_mode'=>'months',
                 'sun'=>1,
                 'mon'=>1,
                 'tue'=>1,

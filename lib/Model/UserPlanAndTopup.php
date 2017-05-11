@@ -10,7 +10,7 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 		parent::init();
 
 		$this->hasOne('xavoc\ispmanager\User','user_id');
-		$this->hasOne('xavoc\ispmanager\BasicPlan','plan_id');
+		$this->hasOne('xavoc\ispmanager\Plan','plan_id');
 		$this->hasOne('xavoc\ispmanager\Condition','condition_id');
 
 		$this->addField('remark');
@@ -102,7 +102,7 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 				]);
 
 		$this->setOrder('id');
-
+		$this->is(['plan_id|required']);
 		// $this->add('dynamic_model/Controller_AutoCreator');
 	}
 
@@ -110,6 +110,7 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 		if($this['start_time']=='') $this['start_time']=null;
 		if($this['end_time']=='') $this['end_time']=null;
 		if(!$this['data_reset_value']) $this['data_reset_value']=null;
+		
 	}
 
 	function cron($now=null){

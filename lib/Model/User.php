@@ -6,7 +6,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	// public $table = "isp_user";
 	public $status = ['Active','InActive'];
 	public $actions = [
-				'Active'=>['view','edit','delete','plans'],
+				'Active'=>['view','edit','delete','Topups'],
 				'InActive'=>['view','edit','delete','active']
 				];
 	public $acl_type= "ispmanager_user";
@@ -44,18 +44,26 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		// $this->addExpression('plan_data_limit')->set(function($m,$q){
 		// 	$m->add('xavoc\ispmanager\Model_UserPlanAndTopup')
 		// 		->addCondition('user_id',$m->id)
-		// 		->addCondition('user_id',$m->id)
+		// 		->addCondition('is_topup',false)
 		// 		->addCondition([['is_expired',0],['is_expired',null]])
 		// 		;
+		// 	return $m->sum('net_data_limit');
 		// });
 		// $this->addExpression('consumed_limit');
 
 		$this->addHook('beforeSave',$this);
 		$this->addHook('afterSave',[$this,'updateUserConditon']);
 		$this->addHook('afterSave',[$this,'createInvoice']);
+		$this->addHook('afterSave',[$this,'updateNASCredential']);
+
+		$this->is(
+				['radius_username|to_trim|unique']
+				['plan_id|to_trim|reuired']
+			);
 	}
 
 	function beforeSave(){
+
 		if($this->dirty['plan_id']){
 			$this->plan_dirty = $this->dirty['plan_id'];
 		}
@@ -77,7 +85,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	}
 
 	function updateUserConditon(){
-		if(!$this->plan_dirty) return;
+		if(!$this->plan_dirty AND !$this['plan_id']) return;
 		$this->setPlan($this['plan_id']);
 		
 	}
@@ -141,7 +149,11 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		return 10;
 	}
 
-	function setPlan($plan, $on_date=null, $remove_old=false){
+	function addTopup($topup_id,$date=null){
+		$this->setPlan($topup_id,$date,false,true);
+	}
+
+	function setPlan($plan, $on_date=null, $remove_old=false,$is_topup=false){
 
 		if(!$on_date) $on_date = isset($this->app->isptoday)? $this->app->isptoday : $this->app->today;
 
@@ -161,12 +173,14 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$condition_model = $this->add('xavoc\ispmanager\Model_Condition')->addCondition('plan_id',$plan_model->id);
 		
 		// set all plan to expire
-		if($remove_old)
-			$update_query = "DELETE FROM  isp_user_plan_and_topup WHERE user_id = '".$this->id."' AND is_topup = '0'";
-		else
-			$update_query = "UPDATE isp_user_plan_and_topup SET is_expired = '1' WHERE user_id = '".$this->id."' AND is_topup = '0'";
-		
-		$this->app->db->dsql()->expr($update_query)->execute();
+		if(!$is_topup){
+			if($remove_old)
+				$update_query = "DELETE FROM  isp_user_plan_and_topup WHERE user_id = '".$this->id."' AND is_topup = '0'";
+			else
+				$update_query = "UPDATE isp_user_plan_and_topup SET is_expired = '1' WHERE user_id = '".$this->id."' AND is_topup = '0'";
+			
+			$this->app->db->dsql()->expr($update_query)->execute();
+		}
 
 		foreach ($condition_model as $key => $condition) {
 			$fields = $condition->getActualFields();
@@ -174,8 +188,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			$fields = array_diff($fields,$unset_field);
 
 			$u_p = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup');
-			$u_p->addCondition('user_id',$this->id)
-				->addCondition('is_topup',false);
+			$u_p['user_id'] = $this->id;
 			$u_p['plan_id'] = $plan_model->id;
 			$u_p['condition_id'] = $condition['id'];
 			$u_p['is_topup'] = $plan_model['is_topup'];
@@ -405,4 +418,31 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		}
 	}
 
+	function page_Topups($page){
+		$form = $page->add('Form');
+		$form->addField('DropDown','topup')->validate('required')->setEmptyText('Please Select Topup')->setModel($this->add('xavoc\ispmanager\Model_TopUp'));
+		$form->addSubmit('Add TopUp');
+
+		$crud = $page->add('CRUD',['allow_edit'=>false,'allow_add'=>false]);
+		if($form->isSubmitted()){
+			$this->addTopup($form['topup']);
+			$form->js(null,$crud->js()->reload())->univ()->successMessage('topup added successfuly')->execute();
+		}
+
+		$model = $page->add('xavoc\ispmanager\Model_UserPlanAndTopup');
+		$model->addCondition('is_topup',true)->addCondition('user_id',$this->id);
+		$model->getElement('plan_id')->caption('TopUp');
+		$crud->setModel($model);
+
+	}
+
+	function updateNASCredential(){
+		$radcheck_model = $this->add('xavoc\ispmanager\Model_RadCheck');
+		$radcheck_model->addCondition('username',$this['radius_username']);
+		$radcheck_model->addCondition('attribute',"Cleartext-Password");
+		$radcheck_model->addCondition('op', ":=");
+		$radcheck_model->tryLoadAny();
+		$radcheck_model['value'] = $this['radius_password'];
+		$radcheck_model->save();
+	}
 }

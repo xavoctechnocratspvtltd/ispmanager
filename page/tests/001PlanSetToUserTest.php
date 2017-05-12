@@ -232,7 +232,7 @@ class page_tests_001PlanSetToUserTest extends page_Tester {
             'bw_limit_row'=>'All Day Plan',
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
-            'data_consumed'=>'4.00GB',
+            'data_consumed'=>'4.02GB',
             'access'=>1
         ];
     }

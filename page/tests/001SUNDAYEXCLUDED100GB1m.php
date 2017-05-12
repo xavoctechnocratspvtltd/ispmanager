@@ -31,6 +31,7 @@ class page_tests_001SUNDAYEXCLUDED100GB1m extends page_Tester {
         $r = $this->process([
                 '2017-01-01 00:00:00'=>'plan-SUNDAY EXCLUDED 100GB-1m',
                 '2017-01-10 00:00:00'=>'top-Top-7Days-10MB-HighSpeed',
+                '2017-01-21 00:00:00'=>'top-Top-1Days-5MB-HighSpeed',
                 '2017-01-01 00:01:00'=>'getdata'
             ]);
         return $r;
@@ -442,7 +443,7 @@ class page_tests_001SUNDAYEXCLUDED100GB1m extends page_Tester {
     function prepare_topUpPlanwithSundayOffer(){
         $this->proper_responses['test_topUpPlanwithSundayOffer']=[
             'data_limit_row'=>'All Day Plan',
-            'bw_limit_row'=>'All Day Plan',
+            'bw_limit_row'=>'Sunday Offer',
             'dl'=>'10.00MB',
             'ul'=>'10.00MB',
             'data_consumed'=>'100.00GB',
@@ -471,6 +472,31 @@ class page_tests_001SUNDAYEXCLUDED100GB1m extends page_Tester {
             'dl'=>'512.00KB',
             'ul'=>'512.00KB',
             'data_consumed'=>'100.00GB',
+            'access'=>1
+        ];
+    }
+
+    function test_21_01anotherTopUpPlan(){
+        $r = $this->process([
+                '2017-01-01 00:00:00'=>'plan-SUNDAY EXCLUDED 100GB-1m',
+                '2017-01-01 00:01:00'=>'authentication',
+                '2017-01-11 00:00:00'=>'authentication',
+                '2017-01-11 08:00:00'=>'10gb',
+                '2017-01-12 00:00:00'=>'40gb',
+                '2017-01-15 08:00:00'=>'10gb',
+                '2017-01-18 08:00:00'=>'authentication',
+                '2017-01-21 08:00:00'=>'authentication',
+            ]);
+        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+    }
+
+    function prepare_21_01anotherTopUpPlan(){
+        $this->proper_responses['test_21_01anotherTopUpPlan']=[
+            'data_limit_row'=>'All Day Plan',
+            'bw_limit_row'=>'All Day Plan',
+            'dl'=>'5.00MB',
+            'ul'=>'5.00MB',
+            'data_consumed'=>'50.00GB',
             'access'=>1
         ];
     }

@@ -27,7 +27,7 @@ class page_tests_007SundayHighSpeed extends page_Tester {
 
     
     function test_setplan_allDayAndSunday($fields){
-        $this->user->setPlan('100GB-2mb-HighSpeed on sunday','2017-01-01',true);
+        $this->user->setPlan('High Speed 100GB-2mb',true);
         $model = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup')
             ->addCondition('user_id',$this->user->id);
         $data=[];
@@ -42,7 +42,7 @@ class page_tests_007SundayHighSpeed extends page_Tester {
         $this->proper_responses['test_setplan_allDayAndSunday']=[
             [   
                 'user'=>'Test User',
-                'plan'=>'100GB-2mb-HighSpeed on sunday',
+                'plan'=>'High Speed 100GB-2mb',
                 'data_limit'=>'100.00GB',
                 'download_limit'=>'2.00MB',
                 'upload_limit'=>'2.00MB',
@@ -102,7 +102,7 @@ class page_tests_007SundayHighSpeed extends page_Tester {
             ],
             [   
                 'user'=>'Test User',
-                'plan'=>'100GB-2mb-HighSpeed on sunday',
+                'plan'=>'High Speed 100GB-2mb ',
                 'data_limit'=>'2.00GB',
                 'download_limit'=>'2.00MB',
                 'upload_limit'=>'2.00MB',
@@ -166,7 +166,7 @@ class page_tests_007SundayHighSpeed extends page_Tester {
 
      function test_sundayEffectiveRow(){
         $r = $this->process([
-                '2017-01-01 00:00:00'=>'plan-100GB-2mb-HighSpeed on sunday',
+                '2017-01-01 00:00:00'=>'plan-High Speed 100GB-2mb',
                 '2017-01-01 00:01:00'=>'authentication'
             ]);
         return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
@@ -174,8 +174,8 @@ class page_tests_007SundayHighSpeed extends page_Tester {
 
     function prepare_sundayEffectiveRow(){
         $this->proper_responses['test_sundayEffectiveRow']=[
-            'data_limit_row'=>'Sunday offer',
-            'bw_limit_row'=>'Sunday offer',
+            'data_limit_row'=>'Sunday 2GB Extra',
+            'bw_limit_row'=>'Sunday 2GB Extra',
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
             'data_consumed'=>'0.00B',
@@ -185,7 +185,7 @@ class page_tests_007SundayHighSpeed extends page_Tester {
 
     function test_allDayEffectiveRow(){
         $r = $this->process([
-                '2017-01-01 00:00:00'=>'plan-100GB-2mb-HighSpeed on sunday',
+                '2017-01-01 00:00:00'=>'plan-High Speed 100GB-2mb',
                 '2017-01-01 08:01:00'=>'authentication'
             ]);
         return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
@@ -193,8 +193,8 @@ class page_tests_007SundayHighSpeed extends page_Tester {
 
     function prepare_allDayEffectiveRow(){
         $this->proper_responses['test_allDayEffectiveRow']=[
-            'data_limit_row'=>'All Days',
-            'bw_limit_row'=>'All Days',
+            'data_limit_row'=>'Main Plan',
+            'bw_limit_row'=>'Main Plan',
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
             'data_consumed'=>'0.00B',
@@ -202,28 +202,28 @@ class page_tests_007SundayHighSpeed extends page_Tester {
         ];
     }
 
-    function test_MaintainData(){
-        $r = $this->process([
-                '2017-05-01 00:00:00'=>'plan-Day Night plan',
-                '2017-05-01 07:50:00'=>'authentication',
-                '2017-05-01 07:55:00'=>'1mb',
-                '2017-05-01 08:00:00'=>'1mb',
-                '2017-05-02 08:10:00'=>'1mb',
-                '2017-05-02 08:15:00'=>'10gb',
-                '2017-05-03 08:10:00'=>'login',
-            ]);
-        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
-    }
+    // function test_MaintainData(){
+    //     $r = $this->process([
+    //             '2017-05-01 00:00:00'=>'plan-Day Night plan',
+    //             '2017-05-01 07:50:00'=>'authentication',
+    //             '2017-05-01 07:55:00'=>'1mb',
+    //             '2017-05-01 08:00:00'=>'1mb',
+    //             '2017-05-02 08:10:00'=>'1mb',
+    //             '2017-05-02 08:15:00'=>'10gb',
+    //             '2017-05-03 08:10:00'=>'login',
+    //         ]);
+    //     return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+    // }
 
-    function prepare_MaintainData(){
-        $this->proper_responses['test_MaintainData']=[
-            'data_limit_row'=>'Day Plan',
-            'bw_limit_row'=>'Day Plan',
-            'dl'=>null,
-            'ul'=>null,
-            'data_consumed'=>'10.00GB',
-            'access'=>0
-        ];
-    }
+    // function prepare_MaintainData(){
+    //     $this->proper_responses['test_MaintainData']=[
+    //         'data_limit_row'=>'Day Plan',
+    //         'bw_limit_row'=>'Day Plan',
+    //         'dl'=>null,
+    //         'ul'=>null,
+    //         'data_consumed'=>'10.00GB',
+    //         'access'=>0
+    //     ];
+    // }
 
 }

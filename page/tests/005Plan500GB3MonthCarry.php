@@ -11,7 +11,7 @@
 
 namespace xavoc\ispmanager;
 
-class page_tests_005Plan500GB3Month extends page_Tester {
+class page_tests_005Plan500GB3MonthCarry extends page_Tester {
 	
 	public $title='Plan500GB3Month';
 	
@@ -49,7 +49,7 @@ class page_tests_005Plan500GB3Month extends page_Tester {
                 'fup_upload_limit'=>null,
                 'accounting_download_ratio'=>'100',
                 'accounting_upload_ratio'=>'100',
-                'is_data_carry_forward'=>0,
+                'is_data_carry_forward'=>'once',
                 'start_time'=>null,
                 'end_time'=>null,
                 'start_date'=>'2017-05-01 00:00:00',
@@ -176,7 +176,6 @@ class page_tests_005Plan500GB3Month extends page_Tester {
                 '2017-06-01 22:35:00'=>'authentication',
                 '2017-06-10 22:35:00'=>'30gb',
                 '2017-06-18 22:35:00'=>'40gb',
-                '2017-06-20 22:35:00'=>'20gb',
                 '2017-06-20 22:50:00'=>'10gb',
                 '2017-06-28 22:45:00'=>'60gb',
                 '2017-06-30 22:45:00'=>'25gb',
@@ -191,7 +190,7 @@ class page_tests_005Plan500GB3Month extends page_Tester {
             'bw_limit_row'=>'Main Plan',
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
-            'data_consumed'=>'355.00GB',
+            'data_consumed'=>'335.00GB',
             'access'=>1
         ];
     }
@@ -206,14 +205,13 @@ class page_tests_005Plan500GB3Month extends page_Tester {
                 '2017-06-01 22:35:00'=>'authentication',
                 '2017-06-10 22:35:00'=>'30gb',
                 '2017-06-18 22:35:00'=>'40gb',
-                '2017-06-20 22:35:00'=>'20gb',
                 '2017-06-20 22:50:00'=>'10gb',
                 '2017-06-28 22:45:00'=>'60gb',
                 '2017-06-30 22:45:00'=>'25gb',
                 '2017-07-01 22:45:00'=>'authentication',
                 '2017-07-15 22:35:00'=>'50gb',
-                '2017-07-28 22:35:00'=>'70gb',
-                '2017-07-30 22:35:00'=>'25gb',
+                '2017-07-28 22:35:00'=>'60gb',
+                '2017-07-30 22:35:00'=>'10gb',
             ]);
         return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
     }
@@ -224,7 +222,7 @@ class page_tests_005Plan500GB3Month extends page_Tester {
             'bw_limit_row'=>'Main Plan',
             'dl'=>null,
             'ul'=>null,
-            'data_consumed'=>'500.00GB',
+            'data_consumed'=>'455.00GB',
             'access'=>0
         ];
     }
@@ -245,8 +243,8 @@ class page_tests_005Plan500GB3Month extends page_Tester {
                 '2017-06-30 22:45:00'=>'25gb',
                 '2017-07-01 22:45:00'=>'authentication',
                 '2017-07-15 22:35:00'=>'50gb',
-                '2017-07-28 22:35:00'=>'70gb',
-                '2017-07-30 22:35:00'=>'25gb',
+                '2017-07-28 22:35:00'=>'60gb',
+                '2017-07-30 22:35:00'=>'10gb',
                 '2017-08-01 22:50:00'=>'authentication',
             ]);
         return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
@@ -279,8 +277,8 @@ class page_tests_005Plan500GB3Month extends page_Tester {
                 '2017-06-30 22:45:00'=>'25gb',
                 '2017-07-01 22:45:00'=>'authentication',
                 '2017-07-15 22:35:00'=>'50gb',
-                '2017-07-28 22:35:00'=>'70gb',
-                '2017-07-30 22:35:00'=>'25gb',
+                '2017-07-28 22:35:00'=>'60gb',
+                '2017-07-30 22:35:00'=>'10gb',
                 '2017-08-01 22:50:00'=>'authentication',
                 '2017-08-02 22:46:00'=>'100gb',
                 '2017-08-03 22:46:00'=>'50gb',

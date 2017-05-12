@@ -202,5 +202,28 @@ class page_tests_007SundayHighSpeed extends page_Tester {
         ];
     }
 
+    function test_MaintainData(){
+        $r = $this->process([
+                '2017-05-01 00:00:00'=>'plan-Day Night plan',
+                '2017-05-01 07:50:00'=>'authentication',
+                '2017-05-01 07:55:00'=>'1mb',
+                '2017-05-01 08:00:00'=>'1mb',
+                '2017-05-02 08:10:00'=>'1mb',
+                '2017-05-02 08:15:00'=>'10gb',
+                '2017-05-03 08:10:00'=>'login',
+            ]);
+        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+    }
+
+    function prepare_MaintainData(){
+        $this->proper_responses['test_MaintainData']=[
+            'data_limit_row'=>'Day Plan',
+            'bw_limit_row'=>'Day Plan',
+            'dl'=>null,
+            'ul'=>null,
+            'data_consumed'=>'10.00GB',
+            'access'=>0
+        ];
+    }
 
 }

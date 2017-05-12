@@ -218,7 +218,7 @@ class page_tests_007SundayHighSpeed extends page_Tester {
             'bw_limit_row'=>'Main Plan',
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
-            'data_consumed'=>'5.00GB',
+            'data_consumed'=>'47.00GB',
             'access'=>1
         ];
     }

@@ -11,7 +11,7 @@
 
 namespace xavoc\ispmanager;
 
-class page_tests_001PlanSetToUserTest extends page_Tester {
+class page_tests_001SUNDAYEXCLUDED100GB1m extends page_Tester {
 	
 	public $title='001PlanSetToUserTest';
 	

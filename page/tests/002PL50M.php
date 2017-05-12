@@ -11,7 +11,7 @@
 
 namespace xavoc\ispmanager;
 
-class page_tests_002SimpleDataPlan extends page_Tester {
+class page_tests_002PL50M extends page_Tester {
 	
 	public $title='SimpleDataPlan';
 	

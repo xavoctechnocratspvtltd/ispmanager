@@ -25,16 +25,12 @@ class page_tests_005Plan500GB3MonthCarry extends page_Tester {
         parent::init();
     }
 
-    function test_setplan_simpleway($fields){
-        $this->user->setPlan('PL-500 GB for 3 month data carry','2017-05-01',true);
-        $model = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup')
-            ->addCondition('user_id',$this->user->id);
-        $data=[];
-        foreach ($model as $m) {
-            $data[] =$m->data;    
-        }
-
-        return $this->filterColumns($data,$fields);
+    function test_setplan_simpleway(){
+        $r = $this->process([
+                '2017-05-01 00:00:00'=>'plan-PL-500 GB for 3 month data carry',
+                '2017-05-01 08:01:00'=>'getdata'
+            ]);
+        return $r;
     }
 
     function prepare_setplan_simpleway(){
@@ -220,10 +216,10 @@ class page_tests_005Plan500GB3MonthCarry extends page_Tester {
         $this->proper_responses['test_monthDate01_08_dataConsumed']=[
             'data_limit_row'=>'Main Plan',
             'bw_limit_row'=>'Main Plan',
-            'dl'=>null,
-            'ul'=>null,
+            'dl'=>'2.00MB',
+            'ul'=>'2.00MB',
             'data_consumed'=>'455.00GB',
-            'access'=>0
+            'access'=>1
         ];
     }
 

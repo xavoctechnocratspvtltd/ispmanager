@@ -321,6 +321,12 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			$this->app->db->dsql()->expr($update_query)->execute();
 			
 			$data=$this->app->db->dsql()->table('isp_user_plan_and_topup')->field('download_data_consumed')->field('upload_data_consumed')->field('remark')->where($this->db->dsql()->expr($condition))->getHash();
+
+			if($bw_applicable_row['net_data_limit']) {
+				$bw_applicable_row['download_data_consumed'] = $data['download_data_consumed'];
+				$bw_applicable_row['upload_data_consumed'] = $data['upload_data_consumed'];
+			}
+
 			$data['download_data_consumed'] = $this->app->byte2human($data['download_data_consumed']);
 			$data['upload_data_consumed'] = $this->app->byte2human($data['upload_data_consumed']);
 

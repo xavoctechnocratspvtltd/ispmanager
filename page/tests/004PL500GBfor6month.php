@@ -2,11 +2,10 @@
 
 
 /**
-* description: ATK Page
 * 
-* @author : Gowrav Vishwakarma
-* @email : gowravvishwakarma@gmail.com, info@xavoc.com
-* @website : http://xepan.org
+* @author:Vijay Mali
+*  @email : vijay.mali552@gmail.com
+*  contactno : 9784954128		
 * 
 */
 namespace xavoc\ispmanager;
@@ -61,6 +60,7 @@ class page_tests_004PL500GBfor6month extends page_Tester{
                 'reset_date'=>'2017-07-01 00:00:00',
                 'data_reset_value'=>'6',
                 'data_reset_mode'=>'months',
+                'remark'=>'Main Plan',
                 'sun'=>1,
                 'mon'=>1,
                 'tue'=>1,

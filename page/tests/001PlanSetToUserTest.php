@@ -44,6 +44,7 @@ class page_tests_001PlanSetToUserTest extends page_Tester {
             [   
                 'user'=>'Test User',
                 'plan'=>'SUNDAY EXCLUDED 100GB-1m',
+                'remark'=>'All Day Plan',
                 'data_limit'=>'100.00GB',
                 'download_limit'=>'2.00MB',
                 'upload_limit'=>'2.00MB',
@@ -104,6 +105,7 @@ class page_tests_001PlanSetToUserTest extends page_Tester {
             [   
                 'user'=>'Test User',
                 'plan'=>'SUNDAY EXCLUDED 100GB-1m',
+                'remark'=>'Sunday Offer',
                 'data_limit'=>null,
                 'download_limit'=>null,
                 'upload_limit'=>null,

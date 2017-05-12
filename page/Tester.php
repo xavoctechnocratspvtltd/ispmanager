@@ -52,7 +52,7 @@ class page_Tester extends \xepan\base\Page_Tester{
         			$r = $this->user->getAAADetails($now=null,$accounting_data=null,$human_redable=true);
 					break;
 				case 'plan':
-					$r = $this->user->setPlan(substr($action, 5),$datetime,$first_plan_set?true:false,$first_topup_set?true:false);
+					$r = $this->user->setPlan(substr($action, 5),$datetime,$first_plan_set?true:false,false,$first_topup_set?true:false);
 					$first_plan_set = false;
 					$first_topup_set=false;
 					break;
@@ -66,7 +66,6 @@ class page_Tester extends \xepan\base\Page_Tester{
 			        foreach ($model as $m) {
 			            $data[] =$m->data;    
 			        }
-
 			        $r = $this->filterColumns($data,array_keys($this->proper_responses[debug_backtrace()[1]['function']][0]));
 					break;
 				default:

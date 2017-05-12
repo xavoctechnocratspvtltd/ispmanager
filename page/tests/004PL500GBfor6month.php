@@ -24,17 +24,12 @@ class page_tests_004PL500GBfor6month extends page_Tester{
 
 	}
 
-	function test_setplan($fields){
-        // setted in init
-        $this->user->setPlan('PL-500 GB for 6 month','2017-01-01',true);
-        $model = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup')
-            ->addCondition('user_id',$this->user->id);
-        $data=[];
-        foreach ($model as $m) {
-            $data[] =$m->data;    
-        }
-
-        return $this->filterColumns($data,$fields);
+	function test_setplan(){
+        $r = $this->process([
+                '2017-01-01 00:00:00'=>'plan-PL-500 GB for 6 month',
+                '2017-01-01 08:01:00'=>'getdata'
+            ]);
+        return $r;
     }
 
     function prepare_setplan(){

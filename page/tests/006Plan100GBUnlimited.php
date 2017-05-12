@@ -26,15 +26,11 @@ class page_tests_006Plan100GBUnlimited extends page_Tester {
     }
 
     function test_setplan_unlimited($fields){
-        $this->user->setPlan('unlimited 100GB-m ','2017-01-01',true);
-        $model = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup')
-            ->addCondition('user_id',$this->user->id);
-        $data=[];
-        foreach ($model as $m) {
-            $data[] =$m->data;    
-        }
-
-        return $this->filterColumns($data,$fields);
+        $r = $this->process([
+                '2017-01-01 00:00:00'=>'plan-unlimited 100GB-m',
+                '2017-01-01 08:01:00'=>'getdata'
+            ]);
+        return $r;
     }
 
     function prepare_setplan_unlimited(){

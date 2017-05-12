@@ -19,5 +19,6 @@ class page_plan extends \xepan\base\Page {
 		$crud->setModel($plan);
 		$crud->grid->removeColumn('attachment_icon');
 
+		$crud->grid->addOrder()->move('qty_unit','after','plan_validity_value')->now();
 	}
 }

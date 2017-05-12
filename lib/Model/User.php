@@ -299,20 +299,25 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	function getAAADetails($now=null,$accounting_data=null,$human_redable=false){
 		if(!$now) $now = isset($this->app->ispnow)? $this->app->ispnow : $this->app->now;
 
+		$day = strtolower(date("D", strtotime($now)));
+
 		$this->testDebug("====================",'');
 		if(!$accounting_data)
-			$this->testDebug('Authentication on ', $now);
+			$this->testDebug('Authentication on ', $now . " [ $day ]");
 		else
-			$this->testDebug('Accounting on ', $now);
+			$this->testDebug('Accounting on ', $now . " [ $day ]");
 		// if accounting data
 			// add in effective_row=1
+		$bw_applicable_row = $this->getApplicableRow($now);
+		$this->testDebug('Applicable Row ', $bw_applicable_row['remark'],$bw_applicable_row);
+
 		if($accounting_data){
 			if(!is_array($accounting_data)){
 				$accounting_data=[$accounting_data,0];
 			}
 
 			$condition = "is_effective = 1 AND user_id = ". $this->id;
-			$update_query = "UPDATE isp_user_plan_and_topup SET download_data_consumed = IFNULL(download_data_consumed,0) + ".$this->app->human2byte($accounting_data[0]) . " , upload_data_consumed = IFNULL(upload_data_consumed,0) + ".$this->app->human2byte($accounting_data[1]) . " WHERE ". $condition;
+			$update_query = "UPDATE isp_user_plan_and_topup SET download_data_consumed = IFNULL(download_data_consumed,0) + ".$this->app->human2byte($accounting_data[0]*$bw_applicable_row['accounting_download_ratio']) . " , upload_data_consumed = IFNULL(upload_data_consumed,0) + ".$this->app->human2byte($accounting_data[1]*$bw_applicable_row['accounting_upload_ratio']) . " WHERE ". $condition;
 			$this->app->db->dsql()->expr($update_query)->execute();
 			
 			$data=$this->app->db->dsql()->table('isp_user_plan_and_topup')->field('download_data_consumed')->field('upload_data_consumed')->field('remark')->where($this->db->dsql()->expr($condition))->getHash();
@@ -328,8 +333,6 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		// run effectiveDataRecord again to set flag in database
 		// run getDlUl
 
-		$bw_applicable_row = $this->getApplicableRow($now);
-		$this->testDebug('Applicable Row ', $bw_applicable_row['remark'],$bw_applicable_row);
 
 		$data_limit_row = $bw_applicable_row;
 

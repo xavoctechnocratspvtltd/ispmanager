@@ -149,11 +149,11 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		return 10;
 	}
 
-	function addTopup($topup_id,$date=null){
-		$this->setPlan($topup_id,$date,false,true);
+	function addTopup($topup_id,$date=null,$remove_old_topups=false){
+		$this->setPlan($topup_id,$date,false,true,$remove_old_topups);
 	}
 
-	function setPlan($plan, $on_date=null, $remove_old=false,$is_topup=false){
+	function setPlan($plan, $on_date=null, $remove_old=false,$is_topup=false,$remove_old_topups=false){
 
 		if(!$on_date) $on_date = isset($this->app->isptoday)? $this->app->isptoday : $this->app->today;
 
@@ -168,7 +168,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			$plan_model = $plan;
 
 		$this->testDebug('====================','');
-		$this->testDebug('Setting Plan '.($remove_old?'(Truncate Old Plan Data)':''), $plan_model['name']. ' on '. $on_date);
+		$this->testDebug('Setting Plan '.($remove_old?'(Truncate Old Plan Data)'.($remove_old_topups?' (Removing old topups also)':''):''), $plan_model['name']. ' on '. $on_date);
 
 		$condition_model = $this->add('xavoc\ispmanager\Model_Condition')->addCondition('plan_id',$plan_model->id);
 		
@@ -179,6 +179,11 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			else
 				$update_query = "UPDATE isp_user_plan_and_topup SET is_expired = '1' WHERE user_id = '".$this->id."' AND is_topup = '0'";
 			
+			$this->app->db->dsql()->expr($update_query)->execute();
+		}
+
+		if($remove_old_topups){
+			$update_query = "DELETE FROM  isp_user_plan_and_topup WHERE user_id = '".$this->id."' AND is_topup = '1'";
 			$this->app->db->dsql()->expr($update_query)->execute();
 		}
 

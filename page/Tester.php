@@ -32,7 +32,9 @@ class page_Tester extends \xepan\base\Page_Tester{
 	}
 
 	function process($data){
-		$i=0;
+		
+		$first_plan_set=true;
+		$first_topup_set = true;
 
 		$last_action_date=null;
 
@@ -50,10 +52,22 @@ class page_Tester extends \xepan\base\Page_Tester{
         			$r = $this->user->getAAADetails($now=null,$accounting_data=null,$human_redable=true);
 					break;
 				case 'plan':
-					$r = $this->user->setPlan(substr($action, 5),$datetime,$i===0?true:false);
+					$r = $this->user->setPlan(substr($action, 5),$datetime,$first_plan_set?true:false);
+					$first_plan_set = false;
 					break;
 				case 'top-':
-					$r = $this->user->addTopup(substr($action, 4),$datetime);
+					$r = $this->user->addTopup(substr($action, 4),$datetime, $first_topup_set?true:false);
+					$first_topup_set=false;
+					break;
+				case 'getd':
+					$model = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup')
+			            ->addCondition('user_id',$this->user->id);
+			        $data=[];
+			        foreach ($model as $m) {
+			            $data[] =$m->data;    
+			        }
+
+			        $r = $this->filterColumns($data,array_keys($this->proper_responses[debug_backtrace()[1]['function']][0]));
 					break;
 				default:
         			$r = $this->user->getAAADetails($now=null,$accounting_data=$action,$human_redable=true);

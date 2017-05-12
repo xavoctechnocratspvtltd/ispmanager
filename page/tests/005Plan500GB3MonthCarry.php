@@ -220,10 +220,10 @@ class page_tests_005Plan500GB3MonthCarry extends page_Tester {
         $this->proper_responses['test_monthDate01_08_dataConsumed']=[
             'data_limit_row'=>'Main Plan',
             'bw_limit_row'=>'Main Plan',
-            'dl'=>null,
-            'ul'=>null,
+            'dl'=>'2.00MB',
+            'ul'=>'2.00MB',
             'data_consumed'=>'455.00GB',
-            'access'=>0
+            'access'=>1
         ];
     }
 

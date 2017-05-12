@@ -73,6 +73,8 @@ class Model_Condition extends \xepan\base\Model_Table{
 
 		$this->addHook('beforeSave',$this);
 
+		$this->setOrder('id','asc');
+
 		$this->add('xavoc\ispmanager\Controller_HumanByte')
 			->handleFields([
 					'data_limit',

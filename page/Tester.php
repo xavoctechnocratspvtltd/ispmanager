@@ -52,12 +52,12 @@ class page_Tester extends \xepan\base\Page_Tester{
         			$r = $this->user->getAAADetails($now=null,$accounting_data=null,$human_redable=true);
 					break;
 				case 'plan':
-					$r = $this->user->setPlan(substr($action, 5),$datetime,$first_plan_set?true:false);
+					$r = $this->user->setPlan(substr($action, 5),$datetime,$first_plan_set?true:false,$first_topup_set?true:false);
 					$first_plan_set = false;
+					$first_topup_set=false;
 					break;
 				case 'top-':
-					$r = $this->user->addTopup(substr($action, 4),$datetime, $first_topup_set?true:false);
-					$first_topup_set=false;
+					$r = $this->user->addTopup(substr($action, 4),$datetime);
 					break;
 				case 'getd':
 					$model = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup')
@@ -73,7 +73,6 @@ class page_Tester extends \xepan\base\Page_Tester{
         			$r = $this->user->getAAADetails($now=null,$accounting_data=$action,$human_redable=true);
 					break;
 			}
-			$i++;
 			$last_action_date = date('Y-m-d',strtotime($datetime));
 		}
 

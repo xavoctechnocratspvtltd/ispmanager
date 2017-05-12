@@ -73,7 +73,6 @@ class page_Tester extends \xepan\base\Page_Tester{
         			$r = $this->user->getAAADetails($now=null,$accounting_data=$action,$human_redable=true);
 					break;
 			}
-			$i++;
 			$last_action_date = date('Y-m-d',strtotime($datetime));
 		}
 

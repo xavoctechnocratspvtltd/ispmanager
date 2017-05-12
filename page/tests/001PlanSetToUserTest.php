@@ -13,7 +13,7 @@ namespace xavoc\ispmanager;
 
 class page_tests_001PlanSetToUserTest extends page_Tester {
 	
-	public $title='Test';
+	public $title='001PlanSetToUserTest';
 	
 	public $proper_responses=[''];
 
@@ -191,7 +191,7 @@ class page_tests_001PlanSetToUserTest extends page_Tester {
                 '2017-01-01 00:01:00'=>'authentication',
                 '2017-01-01 07:55:00'=>'1gb',
                 '2017-01-07 23:55:00'=>'2mb',
-                '2017-01-07 23:59:00'=>'1mb',
+                '2017-01-08 00:00:01'=>'1mb',
                 '2017-01-08 08:00:00'=>'10gb',
             ]);
         return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];

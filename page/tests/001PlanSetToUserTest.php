@@ -201,11 +201,11 @@ class page_tests_001PlanSetToUserTest extends page_Tester {
 
     function prepare_includeSunday(){
         $this->proper_responses['test_includeSunday']=[
-            'data_limit_row'=>'Sunday Offer',
+            'data_limit_row'=>'All Day Plan',
             'bw_limit_row'=>'Sunday Offer',
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
-            'data_consumed'=>'0.00B',
+            'data_consumed'=>'2.00MB',
             'access'=>1
         ];
     }

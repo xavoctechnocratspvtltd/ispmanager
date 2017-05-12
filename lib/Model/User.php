@@ -317,7 +317,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			}
 
 			$condition = "is_effective = 1 AND user_id = ". $this->id;
-			$update_query = "UPDATE isp_user_plan_and_topup SET download_data_consumed = IFNULL(download_data_consumed,0) + ".$this->app->human2byte($accounting_data[0]*$bw_applicable_row['accounting_download_ratio']) . " , upload_data_consumed = IFNULL(upload_data_consumed,0) + ".$this->app->human2byte($accounting_data[1]*$bw_applicable_row['accounting_upload_ratio']) . " WHERE ". $condition;
+			$update_query = "UPDATE isp_user_plan_and_topup SET download_data_consumed = IFNULL(download_data_consumed,0) + ".($this->app->human2byte($accounting_data[0])*$bw_applicable_row['accounting_download_ratio']/100) . " , upload_data_consumed = IFNULL(upload_data_consumed,0) + ".($this->app->human2byte($accounting_data[1])*$bw_applicable_row['accounting_upload_ratio']/100) . " WHERE ". $condition;
 			$this->app->db->dsql()->expr($update_query)->execute();
 			
 			$data=$this->app->db->dsql()->table('isp_user_plan_and_topup')->field('download_data_consumed')->field('upload_data_consumed')->field('remark')->where($this->db->dsql()->expr($condition))->getHash();

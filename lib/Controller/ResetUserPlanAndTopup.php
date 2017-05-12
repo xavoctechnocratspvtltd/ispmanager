@@ -19,9 +19,9 @@ class Controller_ResetUserPlanAndTopup extends \AbstractController {
 
 
 		foreach ($upt_model as $key => $model) {
-			$this->testDebug('Checking non expired',$model['remark'],['reset_date'=>$model['reset_date'],'on_date'=>$date]);
+			$this->testDebug('Checking non expired',$model['remark'],['existing_reset_date'=>$model['reset_date'],'on_date'=>$date]);
 			// IF TODAY IS RESET DATE
-			if(strtotime($model['reset_date']) <= strtotime($date)){
+			if($model['reset_date'] && strtotime($model['reset_date']) <= strtotime($date)){
 				//IF DATA IS CARRY FORWARD THEN UPDATE THE DATA LIMIT = (PLAN DATA LIMIT + REMAINING DATA LIMIT OF LAST PERIOD)
 				if($model['is_data_carry_forward'] == 'once'){
 					$model['carry_data'] = ($model['data_limit'] - $model['data_consumed'])>0?$model['data_limit'] - $model['data_consumed']:0;
@@ -38,14 +38,11 @@ class Controller_ResetUserPlanAndTopup extends \AbstractController {
 				if($model['data_reset_value']){
 					$model['start_date'] = date("Y-m-d H:i:s", strtotime("+".$model['data_reset_value']." ".$model['data_reset_mode'],strtotime($model['start_date'])));;
 					$model['end_date'] = date("Y-m-d H:i:s", strtotime("+".$model['data_reset_value']." ".$model['data_reset_mode'],strtotime($model['end_date'])));;
+					// UPDATE THE RESET DATE = (PLAN RESET INTERVAL + CONDITION RESET DATE)
+					$reset_date = date("Y-m-d H:i:s", strtotime("+".$model['data_reset_value']." ".$model['data_reset_mode'],strtotime($model['reset_date'])));
+					$model['reset_date'] = $reset_date;
+					$this->testDebug('Next reset date set ',$reset_date);
 				}
-
-				// UPDATE THE RESET DATE = (PLAN RESET INTERVAL + CONDITION RESET DATE)
-				$reset_date = date("Y-m-d H:i:s", strtotime("+".$model['data_reset_value']." ".$model['data_reset_mode'],strtotime($model['reset_date'])));
-				$model['reset_date'] = $reset_date;
-
-				$this->testDebug('Next reset date set ',$reset_date);
-		
 			}
 			
 			// is expire

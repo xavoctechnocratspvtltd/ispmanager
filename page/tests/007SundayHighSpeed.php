@@ -203,8 +203,8 @@ class page_tests_007SundayHighSpeed extends page_Tester {
         $r = $this->process([
                 '2017-01-01 00:00:00'=>'plan-High Speed 100GB-2mb',
                 '2017-01-01 07:50:00'=>'authentication',
-                '2017-01-01 07:55:00'=>'10gb',
-                '2017-01-01 08:00:00'=>'12gb',
+                '2017-01-01 07:55:00'=>'1gb',
+                '2017-01-01 08:00:00'=>'1gb',
                 '2017-01-02 08:10:00'=>'20gb',
                 '2017-01-03 08:15:00'=>'5gb',
                 '2017-01-04 08:10:00'=>'login',
@@ -218,7 +218,7 @@ class page_tests_007SundayHighSpeed extends page_Tester {
             'bw_limit_row'=>'Main Plan',
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
-            'data_consumed'=>'47.00GB',
+            'data_consumed'=>'27.00GB',
             'access'=>1
         ];
     }

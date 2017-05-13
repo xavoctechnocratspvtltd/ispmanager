@@ -214,8 +214,8 @@ class page_tests_007SundayHighSpeed extends page_Tester {
 
     function prepare_MaintainAllDayData(){
         $this->proper_responses['test_MaintainAllDayData']=[
-            'data_limit_row'=>'Main Plan',
-            'bw_limit_row'=>'Main Plan',
+            'data_limit_row'=>'Sunday 2GB Extra',
+            'bw_limit_row'=>'Sunday 2GB Extra',
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
             'data_consumed'=>'27.00GB',

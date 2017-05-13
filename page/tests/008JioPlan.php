@@ -11,9 +11,9 @@
 
 namespace xavoc\ispmanager;
 
-class page_tests_006Plan100GBUnlimited extends page_Tester {
+class page_tests_008JioPlan extends page_Tester {
 	
-	public $title='Plan100GBUnlimited';
+	public $title='PerDay1GBjioPlan';
 	
 	public $proper_responses=[''];
 
@@ -25,20 +25,20 @@ class page_tests_006Plan100GBUnlimited extends page_Tester {
         parent::init();
     }
 
-    function test_setplan_unlimited(){
+    function test_setplan_jio1GB(){
         $r = $this->process([
-                '2017-01-01 00:00:00'=>'plan-unlimited 100GB-m',
+                '2017-01-01 00:00:00'=>'plan-jio plan',
                 '2017-01-01 08:01:00'=>'getdata'
             ]);
         return $r;
     }
 
-    function prepare_setplan_unlimited(){
-        $this->proper_responses['test_setplan_unlimited']=[
+    function prepare_setplan_jio1GB(){
+        $this->proper_responses['test_setplan_jio1GB']=[
             [   
                 'user'=>'Test User',
-                'plan'=>'unlimited 100GB-m',
-                'data_limit'=>'100.00GB',
+                'plan'=>'jio plan',
+                'data_limit'=>'1.00GB',
                 'download_limit'=>'2.00MB',
                 'upload_limit'=>'2.00MB',
                 'fup_download_limit'=>'512.00KB',
@@ -53,7 +53,7 @@ class page_tests_006Plan100GBUnlimited extends page_Tester {
                 'expire_date'=>'2017-02-06 00:00:00',
                 'is_expired'=>0,
                 'is_recurring'=>1,
-                'reset_date'=>'2017-02-01 00:00:00',
+                'reset_date'=>'2017-01-02 00:00:00',
                 'sun'=>1,
                 'mon'=>1,
                 'tue'=>1,
@@ -94,20 +94,20 @@ class page_tests_006Plan100GBUnlimited extends page_Tester {
                 'd31'=>1
             ]
         ];
-        return [array_keys($this->proper_responses['test_setplan_unlimited'][0])];
+        return [array_keys($this->proper_responses['test_setplan_jio1GB'][0])];
     }
 
 
-    function test_unlimitedMonth01_01(){
+    function test_jio01_01(){
         $r = $this->process([
-                '2017-01-01 00:00:00'=>'plan-unlimited 100GB-m',
+                '2017-01-01 00:00:00'=>'plan-jio plan',
                 '2017-01-01 00:01:00'=>'authentication'
             ]);
         return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
     }
 
-    function prepare_unlimitedMonth01_01(){
-        $this->proper_responses['test_unlimitedMonth01_01']=[
+    function prepare_jio01_01(){
+        $this->proper_responses['test_jio01_01']=[
             'data_limit_row'=>'Main Plan',
             'bw_limit_row'=>'Main Plan',
             'dl'=>'2.00MB',
@@ -117,118 +117,133 @@ class page_tests_006Plan100GBUnlimited extends page_Tester {
         ];
     }
 
-    function test_unlimitedMonth15_01_60gb(){
+    function test_jioConsume01_01_1gb(){
         $r = $this->process([
-                '2017-01-01 00:00:00'=>'plan-unlimited 100GB-m',
-                '2017-01-15 00:00:00'=>'authentication',
-                '2017-01-15 22:35:00'=>'60gb',
+                '2017-01-01 00:00:00'=>'plan-jio plan',
+                '2017-01-01 10:59:59'=>'authentication',
+                '2017-01-01 18:35:00'=>'500mb',
             ]);
         return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
     }
 
-    function prepare_unlimitedMonth15_01_60gb(){
-        $this->proper_responses['test_unlimitedMonth15_01_60gb']=[
+    function prepare_jioConsume01_01_1gb(){
+        $this->proper_responses['test_jioConsume01_01_1gb']=[
             'data_limit_row'=>'Main Plan',
             'bw_limit_row'=>'Main Plan',
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
-            'data_consumed'=>'60.00GB',
+            'data_consumed'=>'500.00MB',
             'access'=>1
         ];
     }
 
-    function test_unlimitedMonth25_01_dataConsume(){
+    function test_jiodataConsumed(){
         $r = $this->process([
-                '2017-01-01 00:00:00'=>'plan-unlimited 100GB-m',
-                '2017-01-15 00:00:00'=>'authentication',
-                '2017-01-15 22:35:00'=>'60gb',
-                '2017-01-20 22:45:00'=>'20gb',
-                '2017-01-25 22:25:00'=>'20gb',
-                '2017-01-25 22:35:00'=>'authentication',
+                '2017-01-01 00:00:00'=>'plan-jio plan',
+                '2017-01-01 10:59:59'=>'authentication',
+                '2017-01-01 18:35:00'=>'500mb',
+                '2017-01-01 22:35:00'=>'524mb',
             ]);
         return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
     }
 
-    function prepare_unlimitedMonth25_01_dataConsume(){
-        $this->proper_responses['test_unlimitedMonth25_01_dataConsume']=[
+    function prepare_jiodataConsumed(){
+        $this->proper_responses['test_jiodataConsumed']=[
             'data_limit_row'=>'Main Plan',
             'bw_limit_row'=>'Main Plan',
             'dl'=>'512.00KB',
             'ul'=>'512.00KB',
-            'data_consumed'=>'100.00GB',
+            'data_consumed'=>'1.00GB',
             'access'=>1
         ];
     }
 
-    function test_unlimitedMonth30_01_dataResetInGrace(){
+    function test_jio01_01_dataResetInGrace(){
         $r = $this->process([
-                '2017-01-01 00:00:00'=>'plan-unlimited 100GB-m',
-                '2017-01-15 00:00:00'=>'authentication',
-                '2017-01-15 22:35:00'=>'60gb',
-                '2017-01-20 22:45:00'=>'20gb',
-                '2017-01-25 22:25:00'=>'20gb',
-                '2017-01-25 22:35:00'=>'authentication',
-                '2017-01-30 22:50:00'=>'authentication',
+                '2017-01-01 00:00:00'=>'plan-jio plan',
+                '2017-01-01 10:59:59'=>'authentication',
+                '2017-01-01 18:35:00'=>'500mb',
+                '2017-01-01 22:35:00'=>'524mb',
+                '2017-01-01 23:59:59'=>'authentication',
             ]);
         return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
     }
 
-    function prepare_unlimitedMonth30_01_dataResetInGrace(){
-        $this->proper_responses['test_unlimitedMonth30_01_dataResetInGrace']=[
+    function prepare_jio01_01_dataResetInGrace(){
+        $this->proper_responses['test_jio01_01_dataResetInGrace']=[
             'data_limit_row'=>'Main Plan',
             'bw_limit_row'=>'Main Plan',
             'dl'=>'512.00KB',
             'ul'=>'512.00KB',
-            'data_consumed'=>'100.00GB',
+            'data_consumed'=>'1.00GB',
             'access'=>1
         ];
     }
 
-    function test_unlimitedMonth05_02_dataConsumedInGrace(){
+    function test_jio01_02_dataConsumed(){
         $r = $this->process([
-                '2017-01-01 00:00:00'=>'plan-unlimited 100GB-m',
-                '2017-01-15 00:00:00'=>'authentication',
-                '2017-01-15 22:35:00'=>'60gb',
-                '2017-01-20 22:45:00'=>'20gb',
-                '2017-01-25 22:25:00'=>'20gb',
-                '2017-01-25 22:35:00'=>'authentication',
-                '2017-01-30 22:50:00'=>'authentication',
-                '2017-02-02 22:45:00'=>'20gb',
-                '2017-02-04 22:25:00'=>'20gb',
-                '2017-02-05 22:46:00'=>'authentication',
+                '2017-01-01 00:00:00'=>'plan-jio plan',
+                '2017-01-01 10:59:59'=>'authentication',
+                '2017-01-01 18:35:00'=>'500mb',
+                '2017-01-01 22:35:00'=>'524mb',
+                '2017-01-02 01:10:00'=>'100mb',
+                
             ]);
         return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
     }
 
-    function prepare_unlimitedMonth05_02_dataConsumedInGrace(){
-        $this->proper_responses['test_unlimitedMonth05_02_dataConsumedInGrace']=[
+    function prepare_jio01_02_dataConsumed(){
+        $this->proper_responses['test_jio02_01_dataConsumed']=[
             'data_limit_row'=>'Main Plan',
             'bw_limit_row'=>'Main Plan',
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
-            'data_consumed'=>'40.00GB',
+            'data_consumed'=>'100.00MB',
             'access'=>1
         ];
     }
 
-    function test_unlimitedMonth07_02_ExpieredAfterGrace(){
+    function test_jio01_02_dataConsumedInGrace(){
         $r = $this->process([
-                '2017-01-01 00:00:00'=>'plan-unlimited 100GB-m',
-                '2017-01-15 00:00:00'=>'authentication',
-                '2017-01-15 22:35:00'=>'60gb',
-                '2017-01-20 22:45:00'=>'20gb',
-                '2017-01-25 22:25:00'=>'20gb',
-                '2017-01-25 22:35:00'=>'authentication',
-                '2017-01-30 22:50:00'=>'authentication',
-                '2017-02-02 22:45:00'=>'20gb',
-                '2017-02-04 22:25:00'=>'20gb',
-                '2017-02-07 22:46:00'=>'authentication',
+                '2017-01-01 00:00:00'=>'plan-jio plan',
+                '2017-01-01 10:59:59'=>'authentication',
+                '2017-01-01 18:35:00'=>'500mb',
+                '2017-01-01 22:35:00'=>'524mb',
+                '2017-01-02 01:10:00'=>'100mb',
+                '2017-01-02 10:35:00'=>'100mb',
+                '2017-01-02 18:00:00'=>'authentication',
+                
             ]);
         return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
     }
 
-    function prepare_unlimitedMonth07_02_ExpieredAfterGrace(){
-        $this->proper_responses['test_unlimitedMonth07_02_ExpieredAfterGrace']=[
+    function prepare_jio02_01_dataConsumedInGrace(){
+        $this->proper_responses['test_jio02_01_dataConsumedInGrace']=[
+            'data_limit_row'=>'Main Plan',
+            'bw_limit_row'=>'Main Plan',
+            'dl'=>'2.00MB',
+            'ul'=>'2.00MB',
+            'data_consumed'=>'200.00MB',
+            'access'=>1
+        ];
+    }
+    function test_jio02_01_ExpieredAfterGrace(){
+        $r = $this->process([
+                '2017-01-01 00:00:00'=>'plan-jio plan',
+                '2017-01-01 10:59:59'=>'authentication',
+                '2017-01-01 18:35:00'=>'500mb',
+                '2017-01-01 22:35:00'=>'524mb',
+                '2017-01-01 23:59:59'=>'authentication',
+                '2017-02-01 00:00:00'=>'100mb',
+                '2017-02-01 10:35:00'=>'100mb',
+                '2017-02-01 18:00:00'=>'authentication',
+                '2017-02-0 22:46:00'=>'authentication',
+            ]);
+        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+    }
+
+    function prepare_jio02_01_ExpieredAfterGrace(){
+        $this->proper_responses['test_jio02_01_ExpieredAfterGrace']=[
             'data_limit_row'=>'',
             'bw_limit_row'=>'',
             'dl'=>null,

@@ -49,8 +49,8 @@ class page_runtests extends \xepan\base\Page_TestRunner {
 		$user_model->tryLoadAny();
 		$user_model['first_name'] = 'test';
 		$user_model['last_name'] = 'user';
-		$user_model['radius_username'] = 'test';
-		$user_model['radius_password'] = 'test';
+		$user_model['radius_username'] = 'xavoc';
+		$user_model['radius_password'] = 'xavoc';
 		$user_model->save();
 	}
 

@@ -34,6 +34,8 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$user_j->addField('custom_radius_attributes')->type('text')->caption('Custom RADIUS Attributes');
 		$user_j->addField('create_invoice')->type('boolean')->defaultValue(false);
 		$user_j->addField('include_pro_data_basis')->type('boolean')->defaultValue(false);
+		$user_j->addField('last_dl_limit')->type('boolean')->defaultValue(false);
+		$user_j->addField('last_ul_limit')->type('boolean')->defaultValue(false);
 
 		$user_j->hasMany('xavoc\ispmanager\UserPlanAndTopup','user_id');
 		// $user_j->hasMany('xavoc\ispmanager\TopUp','user_id',null,'topups');
@@ -85,8 +87,11 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	}
 
 	function updateUserConditon(){
-		if(!$this->plan_dirty AND !$this['plan_id']) return;
-		$this->setPlan($this['plan_id']);
+		// if(!$this->plan_dirty AND !$this['plan_id']) return;
+		
+		// if($this->dirty['plan_id'] != $this['plan_id']){
+		// 	$this->setPlan($this['plan_id']);
+		// }
 		
 	}
 
@@ -156,7 +161,6 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	function setPlan($plan, $on_date=null, $remove_old=false,$is_topup=false,$remove_old_topups=false){
 
 		if(!$on_date) $on_date = isset($this->app->isptoday)? $this->app->isptoday : $this->app->today;
-
 
 		if(is_numeric($plan)){
 			$plan_model = $this->add('xavoc\ispmanager\Model_Plan')->load($plan);
@@ -233,8 +237,13 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			$u_p->save();
 		}
 
+		$this['last_dl_limit']=null;
+		$this['last_ul_limit']=null;
+		$this->save();
+
 		return $plan_model;
 	}
+
 
 	function getApplicableRow($now=null,$with_data_limit=false){
 		if(!$now) $now = isset($this->app->ispnow)? $this->app->ispnow : $this->app->now;
@@ -244,6 +253,8 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$current_time = date("H:i:s",strtotime($now));
 		$today = date('Y-m-d',strtotime($now));
 
+		$username = $this['radius_username'];
+
 		// if start_time is not null then is me in between start-end time
 		// is me (day) checked
 		// is me (date) checked
@@ -251,53 +262,61 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		// order by topup, id desc
 		// limit 1
 
-		$user_plans = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup');
-		$q=$user_plans->_dsql();
-		$q->field('*');
-		$q->field($q->expr('data_limit + carry_data net_data_limit'));
-		$q->where($q->expr("
-				(
-					(
+		$query = "
+					SELECT 
+						*, 
+						data_limit + carry_data AS net_data_limit,
+						user.last_dl_limit last_dl_limit,
+						user.last_ul_limit last_ul_limit
+					FROM
+						isp_user_plan_and_topup
+						JOIN
+						isp_user user on isp_user_plan_and_topup.user_id=user.customer_id
+					WHERE
 						(
-							CAST('$current_time' AS time) BETWEEN `start_time` AND `end_time` 
-							OR 
 							(
-								NOT CAST('$current_time' AS time) BETWEEN `end_time` AND `start_time` 
-								AND `start_time` > `end_time`
+								(
+									CAST('$current_time' AS time) BETWEEN `start_time` AND `end_time` 
+									OR 
+									(
+										NOT CAST('$current_time' AS time) BETWEEN `end_time` AND `start_time` 
+										AND `start_time` > `end_time`
+									)
+								) 
+								AND
+								(is_expired=0 or is_expired is null)
 							)
-						) 
+							OR
+							(
+								`start_time` is null
+							)
+							OR (`start_time`='00:00:00' and `end_time`='00:00:00')
+						)
 						AND
-						(is_expired=0 or is_expired is null)
-					)
-					OR
-					(
-						`start_time` is null
-					)
-					OR (`start_time`='00:00:00' and `end_time`='00:00:00')
-				)
-				AND
-				`$day`=1
-				AND
-				`$date` = 1
-				AND
-				(
-					'$now' >= start_date
-					AND
-					'$now' <= end_date
-				)
-				AND
-					(is_expired=0 or is_expired is null)
-				AND
-				`user_id`= ". $this->id."
-				".
-				($with_data_limit? " AND data_limit is not null AND data_limit >0 ":'')
-				)
-		);
+						`$day`=1
+						AND
+						`$date` = 1
+						AND
+						(
+							'$now' >= start_date
+							AND
+							'$now' <= end_date
+						)
+						AND
+							(is_expired=0 or is_expired is null)
+						AND
+						`user_id`= (SELECT customer_id from isp_user where radius_username = '$username')
+						".
+						($with_data_limit? " AND data_limit is not null AND data_limit >0 ":'')
+						.
+						"
+						order by is_topup desc, isp_user_plan_and_topup.id desc
+						limit 1
+						"
+						;
 
-		$q->order('is_topup desc, id desc');
-		$q->limit(1);
-		$this->testDebug('Querying for '.($with_data_limit?'Data Limit':'Bw Limit').' Row ',null,$q->render());
-		$x = $q->getHash();
+		$x = $this->app->db->dsql()->expr($query)->getHash();
+		$this->testDebug('Querying for '.($with_data_limit?'Data Limit':'Bw Limit').' Row ',null,$query);
 		return $x;
 	}
 
@@ -379,6 +398,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 		$access= true;
 		if(!$dl_limit && !$ul_limit) $access=false;
+
 		
 		$final_row = $bw_applicable_row;
 		$final_row['dl_limit'] = $dl_limit;
@@ -390,6 +410,14 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$final_row['upload_data_consumed'] = $data_limit_row['upload_data_consumed'];
 		$final_row['data_limit_row'] = $data_limit_row['remark'];
 		$final_row['bw_limit_row'] = $bw_applicable_row['remark'];
+		
+		$final_row['coa'] = false;
+		if($dl_limit !== $this['last_dl_limit'] || $ul_limit !== $this['last_ul_limit'] || !$access){
+			$final_row['coa'] = true;
+			$this['last_dl_limit'] = $dl_limit;
+			$this['last_dl_limit'] = $ul_limit;
+			$this->save();
+		}
 
 		if($human_redable){
 			$final_row['data_limit'] = $this->app->byte2human($final_row['data_limit']);

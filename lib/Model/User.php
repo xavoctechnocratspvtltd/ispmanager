@@ -264,7 +264,8 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 		$query = "
 					SELECT 
-						*, 
+						*,
+						isp_user_plan_and_topup.id id,
 						data_limit + carry_data AS net_data_limit,
 						user.last_dl_limit last_dl_limit,
 						user.last_ul_limit last_ul_limit
@@ -371,8 +372,9 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		
 		// Mark datalimitrow as effective
 		$this->app->db->dsql()->table('isp_user_plan_and_topup')->set('is_effective',0)->where('user_id',$this->id)->update();
-		$this->app->db->dsql()->table('isp_user_plan_and_topup')->set('is_effective',1)->where('id',$data_limit_row['id'])->update();
-		$this->testDebug('Mark Effecting for Next Accounting', $data_limit_row['remark'],$data_limit_row);
+		$q=$this->app->db->dsql()->table('isp_user_plan_and_topup')->set('is_effective',1)->where('id',$data_limit_row['id']);
+		$q->update();
+		$this->testDebug('Mark Effecting for Next Accounting', $data_limit_row['remark'],['data_limit_row'=>$data_limit_row, 'query'=>$q->getDebugQuery($q->render())]);
 
 		// bandwidth or fup ??
 		$if_fup='fup_';
@@ -412,11 +414,13 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$final_row['bw_limit_row'] = $bw_applicable_row['remark'];
 		
 		$final_row['coa'] = false;
-		if($dl_limit !== $this['last_dl_limit'] || $ul_limit !== $this['last_ul_limit'] || !$access){
+		
+		$this['last_dl_limit'] = $dl_limit;
+		$this['last_dl_limit'] = $ul_limit;
+		$this->save();
+
+		if($accounting_data && ($dl_limit !== $this['last_dl_limit'] || $ul_limit !== $this['last_ul_limit'] || !$access)){
 			$final_row['coa'] = true;
-			$this['last_dl_limit'] = $dl_limit;
-			$this['last_dl_limit'] = $ul_limit;
-			$this->save();
 		}
 
 		if($human_redable){

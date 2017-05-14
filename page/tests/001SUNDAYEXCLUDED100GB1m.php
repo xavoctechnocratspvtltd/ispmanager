@@ -296,7 +296,7 @@ class page_tests_001SUNDAYEXCLUDED100GB1m extends page_Tester {
                 '2017-01-01 00:00:00'=>'plan-SUNDAY EXCLUDED 100GB-1m',
                 '2017-01-01 00:01:00'=>'authentication'
             ]);
-        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access'],'coa'=>$r['result']['coa']];
+        return $this->result($r);
     }
 
     function prepare_allDayPlan(){
@@ -306,7 +306,8 @@ class page_tests_001SUNDAYEXCLUDED100GB1m extends page_Tester {
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
             'data_consumed'=>'0.00B',
-            'access'=>1
+            'access'=>1,
+            'coa' => false
         ];
     }
 
@@ -319,7 +320,7 @@ class page_tests_001SUNDAYEXCLUDED100GB1m extends page_Tester {
                 '2017-01-08 00:00:01'=>'1mb',
                 '2017-01-08 08:00:00'=>'10gb',
             ]);
-        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+        return $this->result($r);
     }
 
     function prepare_includeSunday(){
@@ -329,7 +330,8 @@ class page_tests_001SUNDAYEXCLUDED100GB1m extends page_Tester {
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
             'data_consumed'=>'2.00MB',
-            'access'=>1
+            'access'=>1,
+            'coa' => false
         ];
     }
 
@@ -346,7 +348,7 @@ class page_tests_001SUNDAYEXCLUDED100GB1m extends page_Tester {
                 '2017-01-25 00:00:00'=>'2gb',
                 '2017-01-25 08:12:00'=>'authentication',
             ]);
-        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+        return $this->result($r);
     }
 
     function prepare_25_01_dataConsumed(){
@@ -356,7 +358,8 @@ class page_tests_001SUNDAYEXCLUDED100GB1m extends page_Tester {
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
             'data_consumed'=>'4.02GB',
-            'access'=>1
+            'access'=>1,
+            'coa' => false
         ];
     }
 
@@ -371,7 +374,7 @@ class page_tests_001SUNDAYEXCLUDED100GB1m extends page_Tester {
                 '2017-01-31 22:46:00'=>'authentication',
                 '2017-02-01 00:00:00'=>'authentication',
             ]);
-        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+        return $this->result($r);
     }
 
     function prepare_1_02_dataResetInGrace(){
@@ -381,7 +384,8 @@ class page_tests_001SUNDAYEXCLUDED100GB1m extends page_Tester {
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
             'data_consumed'=>'0.00B',
-            'access'=>1
+            'access'=>1,
+            'coa' => false
         ];
     }
 
@@ -401,7 +405,7 @@ class page_tests_001SUNDAYEXCLUDED100GB1m extends page_Tester {
                 '2017-02-05 00:00:00'=>'authentication',
 
             ]);
-        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+        return $this->result($r);
     }
 
     function prepare_05_02_dataConsumedInGrace(){
@@ -411,7 +415,8 @@ class page_tests_001SUNDAYEXCLUDED100GB1m extends page_Tester {
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
             'data_consumed'=>'25.00GB',
-            'access'=>1
+            'access'=>1,
+            'coa' => false
         ];
     }
 
@@ -431,7 +436,7 @@ class page_tests_001SUNDAYEXCLUDED100GB1m extends page_Tester {
                 '2017-02-05 00:00:00'=>'25gb',
                 '2017-02-07 00:00:00'=>'authentication',
             ]);
-        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+        return $this->result($r);
     }
 
     function prepare_07_02_ExpieredAfterGrace(){
@@ -441,7 +446,8 @@ class page_tests_001SUNDAYEXCLUDED100GB1m extends page_Tester {
             'dl'=>null,
             'ul'=>null,
             'data_consumed'=>'0.00B',
-            'access'=>0
+            'access'=>0,
+            'coa' => false
         ];
     }
 
@@ -452,7 +458,7 @@ class page_tests_001SUNDAYEXCLUDED100GB1m extends page_Tester {
                 '2017-01-11 00:00:00'=>'authentication',
                 '2017-01-11 08:00:00'=>'10gb',
             ]);
-        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+        return $this->result($r);
     }
 
     function prepare_topUpPlan(){
@@ -462,7 +468,8 @@ class page_tests_001SUNDAYEXCLUDED100GB1m extends page_Tester {
             'dl'=>'10.00MB',
             'ul'=>'10.00MB',
             'data_consumed'=>'10.00GB',
-            'access'=>1
+            'access'=>1,
+            'coa' => false
         ];
     }
 
@@ -475,7 +482,7 @@ class page_tests_001SUNDAYEXCLUDED100GB1m extends page_Tester {
                 '2017-01-12 00:00:00'=>'40gb',
                 '2017-01-13 00:00:00'=>'50gb',
             ]);
-        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+        return $this->result($r);
     }
 
     function prepare_topUpPlanwithDataConsume(){
@@ -485,7 +492,8 @@ class page_tests_001SUNDAYEXCLUDED100GB1m extends page_Tester {
             'dl'=>'10.00MB',
             'ul'=>'10.00MB',
             'data_consumed'=>'100.00GB',
-            'access'=>1
+            'access'=>1,
+            'coa' => false
         ];
     }
 
@@ -499,7 +507,7 @@ class page_tests_001SUNDAYEXCLUDED100GB1m extends page_Tester {
                 '2017-01-13 00:00:00'=>'50gb',
                 '2017-01-15 08:00:00'=>'10gb',
             ]);
-        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+        return $this->result($r);
     }
 
     function prepare_topUpPlanwithSundayOffer(){
@@ -509,7 +517,8 @@ class page_tests_001SUNDAYEXCLUDED100GB1m extends page_Tester {
             'dl'=>'10.00MB',
             'ul'=>'10.00MB',
             'data_consumed'=>'100.00GB',
-            'access'=>1
+            'access'=>1,
+            'coa' => false
         ];
     }
 
@@ -524,7 +533,7 @@ class page_tests_001SUNDAYEXCLUDED100GB1m extends page_Tester {
                 '2017-01-15 08:00:00'=>'10gb',
                 '2017-01-18 08:00:00'=>'authentication',
             ]);
-        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+        return $this->result($r);
     }
 
     function prepare_18_01afterTopUpPlanExpired(){
@@ -534,7 +543,8 @@ class page_tests_001SUNDAYEXCLUDED100GB1m extends page_Tester {
             'dl'=>'512.00KB',
             'ul'=>'512.00KB',
             'data_consumed'=>'100.00GB',
-            'access'=>1
+            'access'=>1,
+            'coa' => false
         ];
     }
 
@@ -549,7 +559,7 @@ class page_tests_001SUNDAYEXCLUDED100GB1m extends page_Tester {
                 '2017-01-18 08:00:00'=>'authentication',
                 '2017-01-21 08:00:00'=>'authentication',
             ]);
-        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+        return $this->result($r);
     }
 
     function prepare_21_01anotherTopUpPlan(){
@@ -559,7 +569,8 @@ class page_tests_001SUNDAYEXCLUDED100GB1m extends page_Tester {
             'dl'=>'5.00MB',
             'ul'=>'5.00MB',
             'data_consumed'=>'50.00GB',
-            'access'=>1
+            'access'=>1,
+            'coa' => false
         ];
     }
 

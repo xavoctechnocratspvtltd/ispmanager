@@ -8,6 +8,9 @@ class page_Tester extends \xepan\base\Page_Tester{
 
 
 	function init(){
+		ini_set('memory_limit', '2048M');
+        set_time_limit(0);
+        gc_enable();
 		parent::init();
 		
 	}

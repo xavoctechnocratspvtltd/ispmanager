@@ -296,7 +296,7 @@ class page_tests_001SUNDAYEXCLUDED100GB1m extends page_Tester {
                 '2017-01-01 00:00:00'=>'plan-SUNDAY EXCLUDED 100GB-1m',
                 '2017-01-01 00:01:00'=>'authentication'
             ]);
-        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access'],'coa'=>$r['result']['coa']];
     }
 
     function prepare_allDayPlan(){

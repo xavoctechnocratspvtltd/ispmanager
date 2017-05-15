@@ -180,30 +180,30 @@ class page_tests_008JioPlan extends page_Tester {
         ];
     }
 
-    function test_jio01_02_dataConsumed(){
-        $r = $this->process([
-                '2017-01-01 00:00:00'=>'plan-jio plan',
-                '2017-01-01 10:59:59'=>'authentication',
-                '2017-01-01 18:35:00'=>'500mb',
-                '2017-01-01 22:35:00'=>'524mb',
-                '2017-01-02 01:10:00'=>'100mb',
+    // function test_jio01_02_dataConsumed(){
+    //     $r = $this->process([
+    //             '2017-01-01 00:00:00'=>'plan-jio plan',
+    //             '2017-01-01 10:59:59'=>'authentication',
+    //             '2017-01-01 18:35:00'=>'500mb',
+    //             '2017-01-01 22:35:00'=>'524mb',
+    //             '2017-01-02 01:10:00'=>'100mb',
                 
-            ]);
-        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
-    }
+    //         ]);
+    //     return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+    // }
 
-    function prepare_jio01_02_dataConsumed(){
-        $this->proper_responses['test_jio02_01_dataConsumed']=[
-            'data_limit_row'=>'Main Plan',
-            'bw_limit_row'=>'Main Plan',
-            'dl'=>'2.00MB',
-            'ul'=>'2.00MB',
-            'data_consumed'=>'100.00MB',
-            'access'=>1
-        ];
-    }
+    // function prepare_jio01_02_dataConsumed(){
+    //     $this->proper_responses['test_jio01_02_dataConsumed']=[
+    //         'data_limit_row'=>'Main Plan',
+    //         'bw_limit_row'=>'Main Plan',
+    //         'dl'=>'2.00MB',
+    //         'ul'=>'2.00MB',
+    //         'data_consumed'=>'100.00MB',
+    //         'access'=>1
+    //     ];
+    // }
 
-    function test_jio01_02_dataConsumedInGrace(){
+    function test_jiodataConsumedInGrace(){
         $r = $this->process([
                 '2017-01-01 00:00:00'=>'plan-jio plan',
                 '2017-01-01 10:59:59'=>'authentication',
@@ -217,8 +217,8 @@ class page_tests_008JioPlan extends page_Tester {
         return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
     }
 
-    function prepare_jio02_01_dataConsumedInGrace(){
-        $this->proper_responses['test_jio02_01_dataConsumedInGrace']=[
+    function prepare_jiodataConsumedInGrace(){
+        $this->proper_responses['test_jiodataConsumedInGrace']=[
             'data_limit_row'=>'Main Plan',
             'bw_limit_row'=>'Main Plan',
             'dl'=>'2.00MB',
@@ -227,23 +227,50 @@ class page_tests_008JioPlan extends page_Tester {
             'access'=>1
         ];
     }
-    function test_jio02_01_ExpieredAfterGrace(){
+
+    function test_jiodataBeforeExpire(){
         $r = $this->process([
                 '2017-01-01 00:00:00'=>'plan-jio plan',
                 '2017-01-01 10:59:59'=>'authentication',
                 '2017-01-01 18:35:00'=>'500mb',
                 '2017-01-01 22:35:00'=>'524mb',
-                '2017-01-01 23:59:59'=>'authentication',
-                '2017-02-01 00:00:00'=>'100mb',
-                '2017-02-01 10:35:00'=>'100mb',
-                '2017-02-01 18:00:00'=>'authentication',
-                '2017-02-0 22:46:00'=>'authentication',
+                '2017-01-02 01:10:00'=>'100mb',
+                '2017-01-02 10:35:00'=>'100mb',
+                '2017-01-02 18:00:00'=>'authentication',
+                '2017-02-02 00:00:00'=>'1gb',
+                '2017-02-03 20:00:00'=>'1gb',
+                // '2017-02-05 00:00:00'=>'authentication',
+                
             ]);
         return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
     }
 
-    function prepare_jio02_01_ExpieredAfterGrace(){
-        $this->proper_responses['test_jio02_01_ExpieredAfterGrace']=[
+    function prepare_jiodataBeforeExpire(){
+        $this->proper_responses['test_jiodataBeforeExpire']=[
+            'data_limit_row'=>'Main Plan',
+            'bw_limit_row'=>'Main Plan',
+            'dl'=>'512.00KB',
+            'ul'=>'512.00KB',
+            'data_consumed'=>'1.00GB',
+            'access'=>1
+        ];
+    }
+    function test_jioExpieredAfterGrace(){
+        $r = $this->process([
+                '2017-01-01 00:00:00'=>'plan-jio plan',
+                '2017-01-01 10:59:59'=>'authentication',
+                '2017-01-01 18:35:00'=>'500mb',
+                '2017-01-01 22:35:00'=>'524mb',
+                '2017-01-02 01:10:00'=>'100mb',
+                '2017-01-02 10:35:00'=>'100mb',
+                '2017-01-02 18:00:00'=>'authentication',
+                '2017-02-07 22:46:00'=>'authentication',
+            ]);
+        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+    }
+
+    function prepare_jioExpieredAfterGrace(){
+        $this->proper_responses['test_jioExpieredAfterGrace']=[
             'data_limit_row'=>'',
             'bw_limit_row'=>'',
             'dl'=>null,

@@ -166,7 +166,7 @@ class page_tests_007SundayHighSpeed extends page_Tester {
                 '2017-01-01 00:00:00'=>'plan-High Speed 100GB-2mb',
                 '2017-01-01 00:01:00'=>'authentication'
             ]);
-        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+        return $this->result($r);
     }
 
     function prepare_sundayEffectiveRow(){
@@ -176,7 +176,8 @@ class page_tests_007SundayHighSpeed extends page_Tester {
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
             'data_consumed'=>'0.00B',
-            'access'=>1
+            'access'=>1,
+            'coa' => false
         ];
     }
 
@@ -185,7 +186,7 @@ class page_tests_007SundayHighSpeed extends page_Tester {
                 '2017-01-02 00:00:00'=>'plan-High Speed 100GB-2mb',
                 '2017-01-02 08:01:00'=>'authentication'
             ]);
-        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+        return $this->result($r);
     }
 
     function prepare_allDayEffectiveRow(){
@@ -195,7 +196,8 @@ class page_tests_007SundayHighSpeed extends page_Tester {
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
             'data_consumed'=>'0.00B',
-            'access'=>1
+            'access'=>1,
+            'coa' => false
         ];
     }
 
@@ -209,7 +211,7 @@ class page_tests_007SundayHighSpeed extends page_Tester {
                 '2017-01-03 08:15:00'=>'5gb',
                 '2017-01-04 08:10:00'=>'login',
             ]);
-        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+        return $this->result($r);
     }
 
     function prepare_MaintainAllDayData(){
@@ -218,8 +220,9 @@ class page_tests_007SundayHighSpeed extends page_Tester {
             'bw_limit_row'=>'Sunday 2GB Extra',
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
-            'data_consumed'=>'27.00GB',
-            'access'=>1
+            'data_consumed'=>'47.00GB',
+            'access'=>1,
+            'coa' => false
         ];
     }
     

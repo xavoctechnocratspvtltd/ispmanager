@@ -163,7 +163,7 @@ class page_tests_003DayNight extends page_Tester {
                 '2017-05-01 00:00:00'=>'plan-Day Night plan',
                 '2017-05-01 00:01:00'=>'authentication'
             ]);
-        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+        return $this->result($r);
     }
 
     function prepare_nightEffectiveRow(){
@@ -173,7 +173,8 @@ class page_tests_003DayNight extends page_Tester {
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
             'data_consumed'=>'0.00B',
-            'access'=>1
+            'access'=>1,
+            'coa' => false
         ];
     }
 
@@ -182,7 +183,7 @@ class page_tests_003DayNight extends page_Tester {
                 '2017-05-01 00:00:00'=>'plan-Day Night plan',
                 '2017-05-01 08:01:00'=>'authentication'
             ]);
-        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+        return $this->result($r);
     }
 
     function prepare_dayEffectiveRow(){
@@ -192,7 +193,8 @@ class page_tests_003DayNight extends page_Tester {
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
             'data_consumed'=>'0.00B',
-            'access'=>1
+            'access'=>1,
+            'coa' => false
         ];
     }
 
@@ -206,7 +208,7 @@ class page_tests_003DayNight extends page_Tester {
                 '2017-05-02 08:15:00'=>'10gb',
                 '2017-05-03 08:10:00'=>'login',
             ]);
-        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+        return $this->result($r);
     }
 
     function prepare_MaintainData(){
@@ -216,66 +218,70 @@ class page_tests_003DayNight extends page_Tester {
             'dl'=>null,
             'ul'=>null,
             'data_consumed'=>'10.00GB',
-            'access'=>0
+            'access'=>0,
+            'coa' => false
         ];
     }
 
-    // function test_10_05_dataConsume(){
-    //     $r = $this->process([
-    //             '2017-05-01 00:00:00'=>'plan-PL-50-M',
-    //             '2017-05-10 22:30:00'=>'authentication',
-    //             '2017-05-10 22:35:00'=>'10gb',
-    //         ]);
-    //     return ['data_limit'=>$r['result']['data_limit'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
-    // }
+    function test_10_05_dataConsume(){
+        $r = $this->process([
+                '2017-05-01 00:00:00'=>'plan-PL-50-M',
+                '2017-05-10 22:30:00'=>'authentication',
+                '2017-05-10 22:35:00'=>'10gb',
+            ]);
+        return $this->result($r);
+    }
 
-    // function prepare_10_05_dataConsume(){
-    //     $this->proper_responses['test_10_05_dataConsume']=[
-    //         'data_limit'=>'50.00GB',
-    //         'dl'=>'1.00MB',
-    //         'ul'=>'1.00MB',
-    //         'data_consumed'=>'10.00GB',
-    //         'access'=>1
-    //     ];
-    // }
+    function prepare_10_05_dataConsume(){
+        $this->proper_responses['test_10_05_dataConsume']=[
+            'data_limit'=>'50.00GB',
+            'dl'=>'1.00MB',
+            'ul'=>'1.00MB',
+            'data_consumed'=>'10.00GB',
+            'access'=>1,
+            'coa' => false
+        ];
+    }
 
-    // function test_15_05_dataConsumed(){
-    //     $r = $this->process([
-    //             '2017-05-01 00:00:00'=>'plan-PL-50-M',
-    //             '2017-05-10 22:30:00'=>'authentication',
-    //             '2017-05-10 22:35:00'=>'10gb',
-    //             '2017-05-12 22:35:00'=>'20gb',
-    //             '2017-05-13 22:35:00'=>'19gb',
-    //             '2017-05-13 22:40:00'=>'1gb',
-    //             '2017-05-13 22:45:00'=>'1mb',
-    //             '2017-05-13 22:46:00'=>'authentication',
-    //         ]);
-    //     return ['data_limit'=>$r['result']['data_limit'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
-    // }
+    function test_15_05_dataConsumed(){
+        $r = $this->process([
+                '2017-05-01 00:00:00'=>'plan-PL-50-M',
+                '2017-05-10 22:30:00'=>'authentication',
+                '2017-05-10 22:35:00'=>'10gb',
+                '2017-05-12 22:35:00'=>'20gb',
+                '2017-05-13 22:35:00'=>'19gb',
+                '2017-05-13 22:40:00'=>'1gb',
+                '2017-05-13 22:45:00'=>'1mb',
+                '2017-05-13 22:46:00'=>'authentication',
+            ]);
+        return $this->result($r);
+    }
 
-    // function prepare_15_05_dataConsumed(){
-    //     $this->proper_responses['test_15_05_dataConsumed']=[
-    //         'data_limit'=>'50.00GB',
-    //         'dl'=>null,
-    //         'ul'=>null,
-    //         'data_consumed'=>'50.00GB',
-    //         'access'=>0
-    //     ];
-    // }
+    function prepare_15_05_dataConsumed(){
+        $this->proper_responses['test_15_05_dataConsumed']=[
+            'data_limit'=>'50.00GB',
+            'dl'=>null,
+            'ul'=>null,
+            'data_consumed'=>'50.00GB',
+            'access'=>0,
+            'coa' => false
+        ];
+    }
 
-    // function test_1_06(){
-    //     $this->setDateTime('2017-06-01 00:01:00'); // next month after disconnect
-    //     $r = $this->user->getAAADetails($now=null,$accounting_data=null,$human_redable=true);
-    //     return ['data_limit'=>$r['result']['data_limit'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'access'=>$r['access']];
-    // }
+    function test_1_06(){
+        $this->setDateTime('2017-06-01 00:01:00'); // next month after disconnect
+        $r = $this->user->getAAADetails($now=null,$accounting_data=null,$human_redable=true);
+        return $this->result($r);
+    }
 
-    // function prepare_1_06(){
-    //     $this->proper_responses['test_1_06']=[
-    //         'data_limit'=>'50.00GB',
-    //         'dl'=>'1.00MB',
-    //         'ul'=>'1.00MB',
-    //         'access'=>'1'
-    //     ];
-    // }
+    function prepare_1_06(){
+        $this->proper_responses['test_1_06']=[
+            'data_limit'=>'50.00GB',
+            'dl'=>'1.00MB',
+            'ul'=>'1.00MB',
+            'access'=>1,
+            'coa' => false
+        ];
+    }
 
 }

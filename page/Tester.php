@@ -8,6 +8,9 @@ class page_Tester extends \xepan\base\Page_Tester{
 
 
 	function init(){
+		ini_set('memory_limit', '2048M');
+        set_time_limit(0);
+        gc_enable();
 		parent::init();
 		
 	}
@@ -76,6 +79,10 @@ class page_Tester extends \xepan\base\Page_Tester{
 		}
 
 		return $r;
+	}
+
+	function result($r){
+		return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access'],'coa'=>$r['result']['coa']];
 	}
 	
 	function defaultTemplate(){

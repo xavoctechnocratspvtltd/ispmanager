@@ -105,7 +105,7 @@ class page_tests_005Plan500GB3MonthCarry extends page_Tester {
                 '2017-05-01 00:00:00'=>'plan-PL-500 GB for 3 month data carry',
                 '2017-05-01 00:01:00'=>'authentication'
             ]);
-        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+        return $this->result($r);
     }
 
     function prepare_monthDate01_05(){
@@ -115,7 +115,8 @@ class page_tests_005Plan500GB3MonthCarry extends page_Tester {
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
             'data_consumed'=>'0.00B',
-            'access'=>1
+            'access'=>1,
+            'coa' => false
         ];
     }
 
@@ -125,7 +126,7 @@ class page_tests_005Plan500GB3MonthCarry extends page_Tester {
                 '2017-05-20 00:00:00'=>'authentication',
                 '2017-05-20 22:35:00'=>'70gb',
             ]);
-        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+        return $this->result($r);
     }
 
     function prepare_monthDate20_05_70gb(){
@@ -135,7 +136,8 @@ class page_tests_005Plan500GB3MonthCarry extends page_Tester {
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
             'data_consumed'=>'70.00GB',
-            'access'=>1
+            'access'=>1,
+            'coa' => false
         ];
     }
 
@@ -148,7 +150,7 @@ class page_tests_005Plan500GB3MonthCarry extends page_Tester {
                 '2017-06-01 22:25:00'=>'20gb',
                 '2017-06-01 22:35:00'=>'authentication',
             ]);
-        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+        return $this->result($r);
     }
 
     function prepare_monthDate01_06_dataUsed(){
@@ -158,7 +160,8 @@ class page_tests_005Plan500GB3MonthCarry extends page_Tester {
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
             'data_consumed'=>'170.00GB',
-            'access'=>1
+            'access'=>1,
+            'coa' => false
         ];
     }
 
@@ -177,7 +180,7 @@ class page_tests_005Plan500GB3MonthCarry extends page_Tester {
                 '2017-06-30 22:45:00'=>'25gb',
                 '2017-07-01 22:45:00'=>'authentication',
             ]);
-        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+        return $this->result($r);
     }
 
     function prepare_monthDate01_07_dataConsume(){
@@ -187,7 +190,8 @@ class page_tests_005Plan500GB3MonthCarry extends page_Tester {
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
             'data_consumed'=>'335.00GB',
-            'access'=>1
+            'access'=>1,
+            'coa' => false
         ];
     }
 
@@ -209,7 +213,7 @@ class page_tests_005Plan500GB3MonthCarry extends page_Tester {
                 '2017-07-28 22:35:00'=>'60gb',
                 '2017-07-30 22:35:00'=>'10gb',
             ]);
-        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+        return $this->result($r);
     }
 
     function prepare_monthDate01_08_dataConsumed(){
@@ -219,7 +223,8 @@ class page_tests_005Plan500GB3MonthCarry extends page_Tester {
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
             'data_consumed'=>'455.00GB',
-            'access'=>1
+            'access'=>1,
+            'coa' => false
         ];
     }
 
@@ -243,7 +248,7 @@ class page_tests_005Plan500GB3MonthCarry extends page_Tester {
                 '2017-07-30 22:35:00'=>'10gb',
                 '2017-08-01 22:50:00'=>'authentication',
             ]);
-        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+        return $this->result($r);
     }
 
     function prepare_monthDate01_08_dataResetInGrace(){
@@ -253,7 +258,8 @@ class page_tests_005Plan500GB3MonthCarry extends page_Tester {
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
             'data_consumed'=>'0.00B',
-            'access'=>1
+            'access'=>1,
+            'coa' => false
         ];
     }
 
@@ -280,7 +286,7 @@ class page_tests_005Plan500GB3MonthCarry extends page_Tester {
                 '2017-08-03 22:46:00'=>'50gb',
                 '2017-08-05 22:46:00'=>'authentication',
             ]);
-        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+        return $this->result($r);
     }
 
     function prepare_monthDate05_08_dataConsumedInGrace(){
@@ -290,7 +296,8 @@ class page_tests_005Plan500GB3MonthCarry extends page_Tester {
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
             'data_consumed'=>'150.00GB',
-            'access'=>1
+            'access'=>1,
+            'coa' => false
         ];
     }
 
@@ -317,7 +324,7 @@ class page_tests_005Plan500GB3MonthCarry extends page_Tester {
                 '2017-08-03 22:46:00'=>'50gb',
                 '2017-08-07 22:46:00'=>'authentication',
             ]);
-        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+        return $this->result($r);
     }
 
     function prepare_monthDate07_08_ExpieredAfterGrace(){
@@ -327,7 +334,8 @@ class page_tests_005Plan500GB3MonthCarry extends page_Tester {
             'dl'=>null,
             'ul'=>null,
             'data_consumed'=>'0.00B',
-            'access'=>0
+            'access'=>0,
+            'coa' => false
         ];
     }
 

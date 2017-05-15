@@ -11,9 +11,9 @@
 
 namespace xavoc\ispmanager;
 
-class page_tests_009NightUnlimited extends page_Tester {
+class page_tests_010NightHighSpeed extends page_Tester {
 	
-	public $title='Night Unlimited Plan';
+	public $title='Night High Speed';
 	
 	public $proper_responses=[''];
 
@@ -22,14 +22,13 @@ class page_tests_009NightUnlimited extends page_Tester {
 
     function init(){
         $this->user = $this->add('xavoc\ispmanager\Model_User')->loadBy('name','test user');
-        // $this->user->setPlan('PL-50-M','2017-05-01',true);
         parent::init();
     }
 
     function test_setplan(){
         $r = $this->process([
-                '2017-05-01 00:00:00'=>'plan-Night Unlimited',
-                '2017-05-01 08:01:00'=>'getdata'
+                '2017-01-01 00:00:00'=>'plan-Night highspeed',
+                '2017-01-01 08:01:00'=>'getdata'
             ]);
         return $r;
     }
@@ -38,7 +37,7 @@ class page_tests_009NightUnlimited extends page_Tester {
         $this->proper_responses['test_setplan']=[
             [   
                 'user'=>'Test User',
-                'plan'=>'Night Unlimited',
+                'plan'=>'Night highspeed',
                 'remark'=>'Main Plan',
                 'data_limit'=>'100.00GB',
                 'download_limit'=>'2.00MB',
@@ -50,12 +49,12 @@ class page_tests_009NightUnlimited extends page_Tester {
                 'is_data_carry_forward'=>0,
                 'start_time'=>null,
                 'end_time'=>null,
-                'start_date'=>'2017-05-01 00:00:00',
-                'end_date'=>'2017-06-01 00:00:00',
-                'expire_date'=>'2017-06-06 00:00:00',
+                'start_date'=>'2017-01-01 00:00:00',
+                'end_date'=>'2017-02-01 00:00:00',
+                'expire_date'=>'2017-02-06 00:00:00',
                 'is_expired'=>0,
                 'is_recurring'=>1,
-                'reset_date'=>'2017-06-01 00:00:00',
+                'reset_date'=>'2017-02-01 00:00:00',
                 'sun'=>1,
                 'mon'=>1,
                 'tue'=>1,
@@ -97,24 +96,24 @@ class page_tests_009NightUnlimited extends page_Tester {
             ],
             [   
                 'user'=>'Test User',
-                'plan'=>'Night Unlimited',
-                'remark'=>'Night Unlimited',
+                'plan'=>'Night highspeed',
+                'remark'=>'Night High Speed',
                 'data_limit'=>null,
-                'download_limit'=>'2.00MB',
-                'upload_limit'=>'2.00MB',
-                'fup_download_limit'=>null,
-                'fup_upload_limit'=>null,
-                'accounting_download_ratio'=>'0',
-                'accounting_upload_ratio'=>'0',
+                'download_limit'=>'4.00MB',
+                'upload_limit'=>'4.00MB',
+                'fup_download_limit'=>'2.00MB',
+                'fup_upload_limit'=>'2.00MB',
+                'accounting_download_ratio'=>'100',
+                'accounting_upload_ratio'=>'100',
                 'is_data_carry_forward'=>0,
                 'start_time'=>'22:00:00',
                 'end_time'=>'04:00:00',
-                'start_date'=>'2017-05-01 00:00:00',
-                'end_date'=>'2017-06-01 00:00:00',
-                'expire_date'=>'2017-06-06 00:00:00',
+                'start_date'=>'2017-01-01 00:00:00',
+                'end_date'=>'2017-02-01 00:00:00',
+                'expire_date'=>'2017-02-06 00:00:00',
                 'is_expired'=>0,
                 'is_recurring'=>1,
-                'reset_date'=>null,
+                'reset_date'=>'2017-01-02 00:00:00',
                 'sun'=>1,
                 'mon'=>1,
                 'tue'=>1,
@@ -160,8 +159,8 @@ class page_tests_009NightUnlimited extends page_Tester {
 
     function test_mainPlanEffectiveRow(){
         $r = $this->process([
-                '2017-05-01 05:00:00'=>'plan-Night Unlimited',
-                '2017-05-01 05:01:00'=>'authentication'
+                '2017-01-01 05:00:00'=>'plan-Night highspeed',
+                '2017-01-01 05:10:00'=>'authentication'
             ]);
         return $this->result($r);
     }
@@ -178,18 +177,18 @@ class page_tests_009NightUnlimited extends page_Tester {
         ];
     }
 
-    function test_nightEffectiveRow(){
+    function test_nightSpeedEffectiveRow(){
         $r = $this->process([
-                '2017-05-01 02:00:00'=>'plan-Night Unlimited',
-                '2017-05-01 02:01:00'=>'authentication'
+                '2017-01-01 02:00:00'=>'plan-Night highspeed',
+                '2017-01-01 02:10:00'=>'authentication'
             ]);
         return $this->result($r);
     }
 
-    function prepare_nightEffectiveRow(){
-        $this->proper_responses['test_nightEffectiveRow']=[
+    function prepare_nightSpeedEffectiveRow(){
+        $this->proper_responses['test_nightSpeedEffectiveRow']=[
             'data_limit_row'=>'Main Plan',
-            'bw_limit_row'=>'Night Unlimited',
+            'bw_limit_row'=>'Night High Speed',
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
             'data_consumed'=>'0.00B',
@@ -198,19 +197,19 @@ class page_tests_009NightUnlimited extends page_Tester {
         ];
     }
 
-    function test_05_01MaintainData(){
+    function test_01_01MaintainData(){
         $r = $this->process([
-                '2017-05-01 05:00:00'=>'plan-Night Unlimited',
-                '2017-05-01 05:01:00'=>'authentication',
-                '2017-05-01 05:20:00'=>'2gb',
-                '2017-05-01 10:30:00'=>'2gb',
-                '2017-05-01 14:10:00'=>'1gb',
+                '2017-01-01 05:00:00'=>'plan-Night highspeed',
+                '2017-01-01 05:01:00'=>'authentication',
+                '2017-01-01 05:20:00'=>'2gb',
+                '2017-01-01 10:30:00'=>'2gb',
+                '2017-01-01 14:10:00'=>'1gb',
             ]);
         return $this->result($r);
     }
 
-    function prepare_05_01MaintainData(){
-        $this->proper_responses['test_05_01MaintainData']=[
+    function prepare_01_01MaintainData(){
+        $this->proper_responses['test_01_01MaintainData']=[
             'data_limit_row'=>'Main Plan',
             'bw_limit_row'=>'Main Plan',
             'dl'=>'2.00MB',
@@ -221,52 +220,75 @@ class page_tests_009NightUnlimited extends page_Tester {
         ];
     }
 
-    function test_dataConsume(){
+    function test_01_01MaintainDataforNight(){
         $r = $this->process([
-                '2017-05-01 05:00:00'=>'plan-Night Unlimited',
-                '2017-05-01 05:01:00'=>'authentication',
-                '2017-05-01 05:20:00'=>'2gb',
-                '2017-05-01 10:30:00'=>'2gb',
-                '2017-05-01 14:10:00'=>'1gb',
-                '2017-05-01 20:10:00'=>'4gb',
-                '2017-05-01 22:10:00'=>'5gb',
+                '2017-01-01 05:00:00'=>'plan-Night highspeed',
+                '2017-01-01 05:01:00'=>'authentication',
+                '2017-01-01 05:20:00'=>'2gb',
+                '2017-01-01 10:30:00'=>'2gb',
+                '2017-01-01 14:10:00'=>'1gb',
+                '2017-01-01 23:10:00'=>'authentication',
             ]);
         return $this->result($r);
     }
 
-    function prepare_dataConsume(){
-        $this->proper_responses['test_dataConsume']=[
-            'data_limit_row'=>'Night Unlimited',
-            'dl'=>'2.00MB',
-            'ul'=>'2.00MB',
-            'data_consumed'=>'9.00GB',
+    function prepare_01_01MaintainDataforNight(){
+        $this->proper_responses['test_01_01MaintainDataforNight']=[
+            'data_limit_row'=>'Main Plan',
+            'bw_limit_row'=>'Night High Speed',
+            'dl'=>'4.00MB',
+            'ul'=>'4.00MB',
+            'data_consumed'=>'5.00GB',
             'access'=>1,
-            'coa'=> false
+            'coa'=> true
         ];
     }
 
-    function test_dataConsumeInNight(){
+    function test_dataConsumeinNight(){
         $r = $this->process([
-                '2017-05-01 23:00:00'=>'plan-Night Unlimited',
-                '2017-05-01 23:10:00'=>'authentication',
-                '2017-05-01 01:10:00'=>'10gb',
-                '2017-05-01 01:59:59'=>'12gb',
-                '2017-05-01 03:59:59'=>'20gb',
+                '2017-01-01 23:00:00'=>'plan-Night highspeed',
+                '2017-01-01 23:59:59'=>'authentication',
+                '2017-01-02 02:00:00'=>'4gb',
+                '2017-01-02 03:55:00'=>'3gb',
+                '2017-01-02 03:59:59'=>'authentication',
             ]);
         return $this->result($r);
     }
 
-    function prepare_dataConsumeInNight(){
-        $this->proper_responses['test_dataConsumeInNight']=[
-            'data_limit_row'=>'Night Unlimited',
-            'bw_limit_row'=>'Night Unlimited',
-            'dl'=>'2.00MB',
-            'ul'=>'2.00MB',
-            'data_consumed'=>'0.00GB',
-            'access'=>0,
-            'coa'=> false
+    function prepare_dataConsumeinNight(){
+        $this->proper_responses['test_dataConsumeinNight']=[
+            'data_limit_row'=>'Main Plan',
+            'bw_limit_row'=>'Night High Speed',
+            'dl'=>'4.00MB',
+            'ul'=>'4.00MB',
+            'data_consumed'=>'7.00GB',
+            'access'=>1,
+            'coa'=> true
         ];
     }
+
+    // function test_dataConsumeInNight(){
+    //     $r = $this->process([
+    //             '2017-05-01 23:00:00'=>'plan-Night Unlimited',
+    //             '2017-05-01 23:10:00'=>'authentication',
+    //             '2017-05-01 01:10:00'=>'10gb',
+    //             '2017-05-01 01:59:59'=>'12gb',
+    //             '2017-05-01 03:59:59'=>'20gb',
+    //         ]);
+    //     return $this->result($r);
+    // }
+
+    // function prepare_dataConsumeInNight(){
+    //     $this->proper_responses['test_dataConsumeInNight']=[
+    //         'data_limit_row'=>'Night Unlimited',
+    //         'bw_limit_row'=>'Night Unlimited',
+    //         'dl'=>'2.00MB',
+    //         'ul'=>'2.00MB',
+    //         'data_consumed'=>'0.00GB',
+    //         'access'=>0,
+    //         'coa'=> false
+    //     ];
+    // }1111
     
 
     // function test_15_05_dataConsumed(){

@@ -195,7 +195,7 @@ CREATE TABLE `isp_user` (
   `create_invoice` tinyint(4) DEFAULT NULL,
   `include_pro_data_basis` tinyint(4) DEFAULT NULL,
   `last_dl_limit` bigint(20) DEFAULT NULL,
-  `last_ul_limit` bigint(20) DEFAULT NULL
+  `last_ul_limit` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_plan_id` (`plan_id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=19 DEFAULT CHARSET=latin1;

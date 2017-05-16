@@ -352,6 +352,8 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			$data['upload_data_consumed'] = $this->app->byte2human($data['upload_data_consumed']);
 
 			$accounting_data['remark']= $data['remark'];
+			$accounting_data['dl_ratio']= $this['last_accounting_dl_ratio'];
+			$accounting_data['ul_ratio']= $this['last_accounting_ul_ratio'];
 
 			$this->testDebug('Saving Accounting Data ',$accounting_data,$update_query);
 			$this->testDebug('Total Accounting data ',$data);
@@ -443,7 +445,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		if($accounting_data !==null && ($dl_limit !== $this['last_dl_limit'] || $ul_limit !== $this['last_ul_limit'] || !$access)){
 			$final_row['coa'] = true;
 			$this['last_dl_limit'] = $dl_limit;
-			$this['last_dl_limit'] = $ul_limit;
+			$this['last_ul_limit'] = $ul_limit;
 			$this->save();
 			$this->testDebug('Saving Dl/UL Limits', 'dl '.$dl_limit.', ul '. $ul_limit);
 		}
@@ -451,6 +453,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		if($this['last_accounting_dl_ratio'] != $bw_applicable_row['accounting_download_ratio'] || $this['last_accounting_ul_ratio'] != $bw_applicable_row['accounting_upload_ratio']){
 			$this['last_accounting_dl_ratio'] = $bw_applicable_row['accounting_download_ratio'];
 			$this['last_accounting_ul_ratio'] = $bw_applicable_row['accounting_upload_ratio'];
+			$this->testDebug('Saving Dl/UL Ratio for next accounting data', 'dl '.$bw_applicable_row['accounting_download_ratio'].', ul '. $bw_applicable_row['accounting_upload_ratio']);
 			$this->save();
 		}
 			

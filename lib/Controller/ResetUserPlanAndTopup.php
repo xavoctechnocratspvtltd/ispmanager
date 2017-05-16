@@ -38,10 +38,15 @@ class Controller_ResetUserPlanAndTopup extends \AbstractController {
 				if($model['data_reset_value']){
 					$model['start_date'] = date("Y-m-d H:i:s", strtotime("+".$model['data_reset_value']." ".$model['data_reset_mode'],strtotime($model['start_date'])));;
 					$model['end_date'] = date("Y-m-d H:i:s", strtotime("+".$model['data_reset_value']." ".$model['data_reset_mode'],strtotime($model['end_date'])));;
+					
 					// UPDATE THE RESET DATE = (PLAN RESET INTERVAL + CONDITION RESET DATE)
-					$reset_date = date("Y-m-d H:i:s", strtotime("+".$model['data_reset_value']." ".$model['data_reset_mode'],strtotime($model['reset_date'])));
-					$model['reset_date'] = $reset_date;
-					$this->testDebug('Next reset date set ',$reset_date);
+					if(!$model['is_topup']){
+						$reset_date = date("Y-m-d H:i:s", strtotime("+".$model['data_reset_value']." ".$model['data_reset_mode'],strtotime($model['reset_date'])));
+						$model['reset_date'] = $reset_date;
+						$this->testDebug('Next reset date set ',$reset_date);
+					}else{
+						$this->testDebug('Next reset not set as it is topup ',$model['remark']);
+					}
 				}
 			}
 			

@@ -65,8 +65,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	}
 
 	function beforeSave(){
-
-		if($this->dirty['plan_id']){
+		if($this->isDirty('plan_id')){
 			$this->plan_dirty = $this->dirty['plan_id'];
 		}
 		
@@ -87,19 +86,20 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	}
 
 	function updateUserConditon(){
-		// if(!$this->plan_dirty AND !$this['plan_id']) return;
+		if(!$this->plan_dirty OR !$this['plan_id']) return;
 		
-		// if($this->dirty['plan_id'] != $this['plan_id']){
-		// 	$this->setPlan($this['plan_id']);
-		// }
+		if($this->plan_dirty != $this['plan_id']){
+			$this->setPlan($this['plan_id']);
+		}
 		
 	}
 
 	function createInvoice(){
-		if(!$this->plan_dirty AND !$this['create_invoice'] ) return;
 
 		if(!$this->loaded()) throw new \Exception("model radius user must loaded");
 		$this->reload();
+
+		if(!$this['plan_id'] AND !$this['create_invoice'] ) return;
 
 		$qsp_master = $this->add('xepan\commerce\Model_QSP_Master');
 		$master_data = [];
@@ -149,7 +149,6 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 	function getProDataAmount(){
 		if(!$this->loaded()) throw new \Exception("radius user must loaded");
-		if(!$this->plan_dirty) 0;
 		
 		return 10;
 	}
@@ -363,8 +362,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		
 		// run effectiveDataRecord again to set flag in database
 		// run getDlUl
-
-
+		
 		$data_limit_row = $bw_applicable_row;
 
 		if(!$bw_applicable_row['net_data_limit']) $data_limit_row = $this->getApplicableRow($now,$with_data_limit=true);

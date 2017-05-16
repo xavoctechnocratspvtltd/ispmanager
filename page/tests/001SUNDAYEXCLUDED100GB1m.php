@@ -177,7 +177,7 @@ class page_tests_001SUNDAYEXCLUDED100GB1m extends page_Tester {
                 'start_date'=>'2017-01-10 00:00:00',
                 'end_date'=>'2017-01-17 00:00:00',
                 'expire_date'=>'2017-01-17 00:00:00',
-                'is_expired'=>0,
+                'is_expired'=>1,
                 'is_recurring'=>0,
                 'is_data_carry_forward'=>'none',
                 'start_time'=>null,

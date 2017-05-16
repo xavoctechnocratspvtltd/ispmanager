@@ -420,8 +420,8 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$dl_limit = $bw_applicable_row[$dl_field];
 		$ul_limit = $bw_applicable_row[$ul_field];
 
-		if($dl_limit !== '') $dl_limit = $data_limit_row[$dl_field];
-		if($ul_limit !== '') $ul_limit = $data_limit_row[$ul_field];
+		if($dl_limit === null) $dl_limit = $data_limit_row[$dl_field];
+		if($ul_limit === null) $ul_limit = $data_limit_row[$ul_field];
 		// from data if not 
 		// if fup is null or 0 it is a reject authentication command
 

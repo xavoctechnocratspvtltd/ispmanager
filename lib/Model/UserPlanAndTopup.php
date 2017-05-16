@@ -16,7 +16,7 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 		$this->addField('remark');
 		$this->addField('is_topup')->type('boolean')->defaultValue(0)->caption('TopUp');
 
-		$this->addField('data_limit')->hint('in MB')->defaultValue(0);
+		$this->addField('data_limit')->hint('in MB'); // no default value keep null as null
 		$this->addField('carry_data')->defaultValue(0);
 		$this->addExpression('net_data_limit')->set('data_limit+carry_data');
 		

@@ -95,7 +95,8 @@ class page_tests_007SundayHighSpeed extends page_Tester {
                 'd28'=>1,
                 'd29'=>1,
                 'd30'=>1,
-                'd31'=>1
+                'd31'=>1,
+                'treat_fup_as_dl_for_last_limit_row'=>0
             ],
             [   
                 'user'=>'Test User',
@@ -155,7 +156,8 @@ class page_tests_007SundayHighSpeed extends page_Tester {
                 'd28'=>1,
                 'd29'=>1,
                 'd30'=>1,
-                'd31'=>1
+                'd31'=>1,
+                'treat_fup_as_dl_for_last_limit_row'=>1
             ]
         ];
         return [array_keys($this->proper_responses['test_setplan_allDayAndSunday'][0])];
@@ -178,6 +180,49 @@ class page_tests_007SundayHighSpeed extends page_Tester {
             'data_consumed'=>'0.00B',
             'access'=>1,
             'coa' => false
+        ];
+    }
+
+    function test_sundayUnderDataLimit(){
+        $r = $this->process([
+                '2017-01-01 00:00:00'=>'plan-High Speed 100GB-2mb',
+                '2017-01-01 00:01:00'=>'authentication',
+                '2017-01-01 10:01:00'=>'1.5gb'
+            ]);
+        return $this->result($r);
+    }
+
+    function prepare_sundayUnderDataLimit(){
+        $this->proper_responses['test_sundayUnderDataLimit'] = [
+            'data_limit_row'=>'Sunday 2GB Extra',
+            'bw_limit_row'=>'Sunday 2GB Extra',
+            'dl'=>'2.00MB',
+            'ul'=>'2.00MB',
+            'data_consumed'=>'1.50GB',
+            'access'=>1,
+            'coa'=>false
+        ];
+    }
+
+    function test_sundayDataLimitCrossed(){
+        $r = $this->process([
+                '2017-01-01 00:00:00'=>'plan-High Speed 100GB-2mb',
+                '2017-01-01 00:01:00'=>'authentication',
+                '2017-01-01 10:01:00'=>'1.5gb',
+                '2017-01-01 13:01:00'=>'1.0gb'
+            ]);
+        return $this->result($r);
+    }
+
+    function prepare_sundayDataLimitCrossed(){
+        $this->proper_responses['test_sundayDataLimitCrossed'] = [
+            'data_limit_row'=>'Main Plan',
+            'bw_limit_row'=>'Sunday 2GB Extra',
+            'dl'=>'1.00MB',
+            'ul'=>'1.00MB',
+            'data_consumed'=>'2.50GB',
+            'access'=>1,
+            'coa'=>1,
         ];
     }
 

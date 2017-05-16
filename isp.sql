@@ -87,6 +87,7 @@ CREATE TABLE `isp_condition` (
   `d31` tinyint(1) DEFAULT NULL,
   `data_reset_value` varchar(255) DEFAULT NULL,
   `data_reset_mode` varchar(255) DEFAULT NULL,
+  `treat_fup_as_dl_for_last_limit_row` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_plan_id` (`plan_id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
@@ -196,6 +197,8 @@ CREATE TABLE `isp_user` (
   `include_pro_data_basis` tinyint(4) DEFAULT NULL,
   `last_dl_limit` bigint(20) DEFAULT NULL,
   `last_ul_limit` bigint(20) DEFAULT NULL,
+  `last_accounting_dl_ratio` int(11) DEFAULT NULL,
+  `last_accounting_ul_ratio` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_plan_id` (`plan_id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=19 DEFAULT CHARSET=latin1;
@@ -273,6 +276,7 @@ CREATE TABLE `isp_user_plan_and_topup` (
   `d07` tinyint(1) DEFAULT NULL,
   `d08` tinyint(1) DEFAULT NULL,
   `d09` tinyint(1) DEFAULT NULL,
+  `treat_fup_as_dl_for_last_limit_row` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_user_id` (`user_id`),
   KEY `fk_plan_id` (`plan_id`)

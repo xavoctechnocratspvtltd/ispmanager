@@ -34,8 +34,10 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$user_j->addField('custom_radius_attributes')->type('text')->caption('Custom RADIUS Attributes');
 		$user_j->addField('create_invoice')->type('boolean')->defaultValue(false);
 		$user_j->addField('include_pro_data_basis')->type('boolean')->defaultValue(false);
-		$user_j->addField('last_dl_limit')->type('boolean')->defaultValue(false);
-		$user_j->addField('last_ul_limit')->type('boolean')->defaultValue(false);
+		$user_j->addField('last_dl_limit');
+		$user_j->addField('last_ul_limit');
+		$user_j->addField('last_accounting_dl_ratio');
+		$user_j->addField('last_accounting_ul_ratio');
 
 		$user_j->hasMany('xavoc\ispmanager\UserPlanAndTopup','user_id');
 		// $user_j->hasMany('xavoc\ispmanager\TopUp','user_id',null,'topups');
@@ -244,7 +246,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	}
 
 
-	function getApplicableRow($now=null,$with_data_limit=false){
+	function getApplicableRow($now=null,$with_data_limit=false,$less_then_this_id=0){
 		if(!$now) $now = isset($this->app->ispnow)? $this->app->ispnow : $this->app->now;
 		
 		$day = strtolower(date("D", strtotime($now)));
@@ -260,6 +262,8 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		// not expired
 		// order by topup, id desc
 		// limit 1
+		$less_then_id_condition = "";
+		if($less_then_this_id) $less_then_id_condition = "AND isp_user_plan_and_topup.id < ".$less_then_this_id;
 
 		$query = "
 					SELECT 
@@ -304,11 +308,13 @@ class Model_User extends \xepan\commerce\Model_Customer{
 						)
 						AND
 							(is_expired=0 or is_expired is null)
+
 						AND
 						`user_id`= (SELECT customer_id from isp_user where radius_username = '$username')
 						".
 						($with_data_limit? " AND data_limit is not null AND data_limit >0 ":'')
 						.
+						$less_then_id_condition.
 						"
 						order by is_topup desc, isp_user_plan_and_topup.id desc
 						limit 1
@@ -332,25 +338,16 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			$this->testDebug('Accounting on ', $now . " [ $day ]");
 		// if accounting data
 			// add in effective_row=1
-		$bw_applicable_row = $this->getApplicableRow($now);
-		$this->testDebug('Applicable Row ', $bw_applicable_row['remark'],$bw_applicable_row);
-
 		if($accounting_data){
 			if(!is_array($accounting_data)){
 				$accounting_data=[$accounting_data,0];
 			}
 
 			$condition = "is_effective = 1 AND user_id = ". $this->id;
-			$update_query = "UPDATE isp_user_plan_and_topup SET download_data_consumed = IFNULL(download_data_consumed,0) + ".($this->app->human2byte($accounting_data[0])*$bw_applicable_row['accounting_download_ratio']/100) . " , upload_data_consumed = IFNULL(upload_data_consumed,0) + ".($this->app->human2byte($accounting_data[1])*$bw_applicable_row['accounting_upload_ratio']/100) . " WHERE ". $condition;
+			$update_query = "UPDATE isp_user_plan_and_topup SET download_data_consumed = IFNULL(download_data_consumed,0) + ".($this->app->human2byte($accounting_data[0])*$this['last_accounting_dl_ratio']/100) . " , upload_data_consumed = IFNULL(upload_data_consumed,0) + ".($this->app->human2byte($accounting_data[1])*$this['last_accounting_ul_ratio']/100) . " WHERE ". $condition;
 			$this->app->db->dsql()->expr($update_query)->execute();
 			
-			$data=$this->app->db->dsql()->table('isp_user_plan_and_topup')->field('download_data_consumed')->field('upload_data_consumed')->field('remark')->where($this->db->dsql()->expr($condition))->getHash();
-
-			if($bw_applicable_row['net_data_limit']) {
-				$bw_applicable_row['download_data_consumed'] = $data['download_data_consumed'];
-				$bw_applicable_row['upload_data_consumed'] = $data['upload_data_consumed'];
-			}
-
+			$data = $this->app->db->dsql()->table('isp_user_plan_and_topup')->field('download_data_consumed')->field('upload_data_consumed')->field('remark')->where($this->db->dsql()->expr($condition))->getHash();
 			$data['download_data_consumed'] = $this->app->byte2human($data['download_data_consumed']);
 			$data['upload_data_consumed'] = $this->app->byte2human($data['upload_data_consumed']);
 
@@ -359,20 +356,17 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			$this->testDebug('Saving Accounting Data ',$accounting_data,$update_query);
 			$this->testDebug('Total Accounting data ',$data);
 		}
-		
+		// --------------------- end of accounting
+
+		$bw_applicable_row = $this->getApplicableRow($now);
+		$this->testDebug('Applicable Row ', $bw_applicable_row['remark'],$bw_applicable_row);
 		// run effectiveDataRecord again to set flag in database
 		// run getDlUl
-		
+		// echo $bw_applicable_row['net_data_limit']." = ".$bw_applicable_row['download_data_consumed'] ." + ".$bw_applicable_row['upload_data_consumed']."<br/>";
 		$data_limit_row = $bw_applicable_row;
 
 		if(!$bw_applicable_row['net_data_limit']) $data_limit_row = $this->getApplicableRow($now,$with_data_limit=true);
 		$this->testDebug('Applicable Data Row ', $data_limit_row['remark']);
-		
-		// Mark datalimitrow as effective
-		$this->app->db->dsql()->table('isp_user_plan_and_topup')->set('is_effective',0)->where('user_id',$this->id)->update();
-		$q=$this->app->db->dsql()->table('isp_user_plan_and_topup')->set('is_effective',1)->where('id',$data_limit_row['id']);
-		$q->update();
-		$this->testDebug('Mark Effecting for Next Accounting', $data_limit_row['remark'],['data_limit_row'=>$data_limit_row, 'query'=>$q->getDebugQuery($q->render())]);
 
 		// bandwidth or fup ??
 		$if_fup='fup_';
@@ -380,8 +374,41 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			$this->testDebug('Under Data Limit',null,['download_data_consumed'=>$data_limit_row['download_data_consumed'] ,'upload_data_consumed'=> $data_limit_row['upload_data_consumed'],'net_data_limit'=> $data_limit_row['net_data_limit']]);
 			$if_fup='';
 		}else{
+			// this is 'this line'
+			// if trat_ cegckbox is on {
+				// find another data_limit_row
+					// if that is also consumed use that lines fup 
+					// else use this line's fup as main data limit 
+			// }
+			if($bw_applicable_row['treat_fup_as_dl_for_last_limit_row']){
+				
+				$next_data_limit_row = $this->getApplicableRow($now,null,$data_limit_row['id']);
+				// echo "old id ".$data_limit_row['id']."<br/>";
+				// echo "new id ".$next_data_limit_row['id']."<br/>";
+
+				if( ($next_data_limit_row['download_data_consumed'] + $next_data_limit_row['upload_data_consumed']) > $next_data_limit_row['net_data_limit'] ){
+					$data_limit_row['download_limit'] = $next_data_limit_row['fup_download_limit'];
+					$data_limit_row['upload_limit'] = $next_data_limit_row['fup_upload_limit'];
+					$data_limit_row['remark'] = $next_data_limit_row['remark'];
+					// echo "next fup"."<br/>";
+				}else{
+
+					$data_limit_row['download_limit'] = $bw_applicable_row['fup_download_limit'];
+					$data_limit_row['upload_limit'] = $bw_applicable_row['fup_upload_limit'];
+					$data_limit_row['remark'] = $next_data_limit_row['remark'];
+					// echo "old ".$next_data_limit_row['remark']."<br/>";
+				}
+			}
+
 			$this->testDebug('Data Limit Crossed', $this->app->byte2human($data_limit_row['net_data_limit'] - ($data_limit_row['download_data_consumed'] + $data_limit_row['upload_data_consumed'])));
 		}
+
+		// Mark datalimitrow as effective
+		$this->app->db->dsql()->table('isp_user_plan_and_topup')->set('is_effective',0)->where('user_id',$this->id)->update();
+		$q=$this->app->db->dsql()->table('isp_user_plan_and_topup')->set('is_effective',1)->where('id',$data_limit_row['id']);
+		$q->update();
+		$this->testDebug('Mark Effecting for Next Accounting', $data_limit_row['remark'],['data_limit_row'=>$data_limit_row, 'query'=>$q->getDebugQuery($q->render())]);
+
 
 		$dl_field = $if_fup.'download_limit';
 		$ul_field = $if_fup.'upload_limit';
@@ -394,7 +421,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		if($dl_limit !== '') $dl_limit = $data_limit_row[$dl_field];
 		if($ul_limit !== '') $ul_limit = $data_limit_row[$ul_field];
 		// from data if not 
-		// if fup is null or 0 it is a reject authentication command 
+		// if fup is null or 0 it is a reject authentication command
 
 		$access= true;
 		if(!$dl_limit && !$ul_limit) $access=false;
@@ -413,14 +440,20 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		
 		$final_row['coa'] = false;
 		
-		$this['last_dl_limit'] = $dl_limit;
-		$this['last_dl_limit'] = $ul_limit;
-		$this->save();
-		$this->testDebug('Saving Dl/UL Limits', 'dl '.$dl_limit.', ul '. $ul_limit);
-
 		if($accounting_data !==null && ($dl_limit !== $this['last_dl_limit'] || $ul_limit !== $this['last_ul_limit'] || !$access)){
 			$final_row['coa'] = true;
+			$this['last_dl_limit'] = $dl_limit;
+			$this['last_dl_limit'] = $ul_limit;
+			$this->save();
+			$this->testDebug('Saving Dl/UL Limits', 'dl '.$dl_limit.', ul '. $ul_limit);
 		}
+
+		if($this['last_accounting_dl_ratio'] != $bw_applicable_row['accounting_download_ratio'] || $this['last_accounting_ul_ratio'] != $bw_applicable_row['accounting_upload_ratio']){
+			$this['last_accounting_dl_ratio'] = $bw_applicable_row['accounting_download_ratio'];
+			$this['last_accounting_ul_ratio'] = $bw_applicable_row['accounting_upload_ratio'];
+			$this->save();
+		}
+			
 
 		if($human_redable){
 			$final_row['data_limit'] = $this->app->byte2human($final_row['data_limit']);

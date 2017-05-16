@@ -92,8 +92,9 @@ class Model_Condition extends \xepan\base\Model_Table{
 		if($this['end_time']=='') $this['end_time']=null;
 		if(!$this['data_reset_value']) $this['data_reset_value']=null;
 
-		if($this['data_limit'] && (!$this['data_reset_value'] || !$this['data_reset_mode']))
-			throw $this->exception('Value mandatory if having Data Limit','ValidityCheck')
+		if($this['data_limit'] && !$this->ref('plan_id')->get('is_topup') && (!$this['data_reset_value'] || !$this['data_reset_mode']))
+			throw $this->exception('Value mandatory if having Data Limit '. ($this->ref('plan_id')->get('is_topup') ? 'Y':'N'),'ValidityCheck')
+						->addMoreInfo('PLan is toptup',$this->ref('plan_id')->get('is_topup'))
 						->setField(!$this['data_reset_value']?'data_reset_value':'data_reset_mode');
 	}
 

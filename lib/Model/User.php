@@ -416,8 +416,9 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$this['last_dl_limit'] = $dl_limit;
 		$this['last_dl_limit'] = $ul_limit;
 		$this->save();
+		$this->testDebug('Saving Dl/UL Limits', 'dl '.$dl_limit.', ul '. $ul_limit);
 
-		if($accounting_data && ($dl_limit !== $this['last_dl_limit'] || $ul_limit !== $this['last_ul_limit'] || !$access)){
+		if($accounting_data !==null && ($dl_limit !== $this['last_dl_limit'] || $ul_limit !== $this['last_ul_limit'] || !$access)){
 			$final_row['coa'] = true;
 		}
 

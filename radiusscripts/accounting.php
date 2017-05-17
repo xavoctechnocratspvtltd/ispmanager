@@ -19,7 +19,7 @@ if($_SERVER['ACCT_STATUS_TYPE'] === 'Start') {
 				isp_user_plan_and_topup 
 			SET 
 				download_data_consumed = IFNULL(download_data_consumed,0) + ". ($_SERVER['ACCT_INPUT_OCTETS']*$bw_applicable_row['accounting_download_ratio']/100) . ",
-				upload_data_consumed = IFNULL(upload_data_consumed,0) + ".($_SERVER['ACCT_OUTPUT_OCTETS']*$bw_applicable_row['accounting_upload_ratio']/100) . " 
+				upload_data_consumed = IFNULL(upload_data_consumed,0) + ".($_SERVER['ACCT_OUTPUT_OCTETS']*$bw_applicable_row['accounting_upload_ratio']/100) . "
 			WHERE 
 					is_effective = 1 AND user_id = (SELECT customer_id from isp_user where radius_username = '$username')
 				";
@@ -44,6 +44,21 @@ $if_fup='fup_';
 if(($data_limit_row['download_data_consumed'] + $data_limit_row['upload_data_consumed']) < $data_limit_row['net_data_limit']){
 	$if_fup='';
 }else{
+
+	if($bw_applicable_row['treat_fup_as_dl_for_last_limit_row']){
+		$next_data_limit_row = $this->getApplicableRow(null,null,$data_limit_row['id']);
+		
+		if( ($next_data_limit_row['download_data_consumed'] + $next_data_limit_row['upload_data_consumed']) > $next_data_limit_row['net_data_limit'] ){
+			$data_limit_row['download_limit'] = $next_data_limit_row['fup_download_limit'];
+			$data_limit_row['upload_limit'] = $next_data_limit_row['fup_upload_limit'];
+			$data_limit_row['remark'] = $next_data_limit_row['remark'];
+
+		}else{
+			$data_limit_row['download_limit'] = $bw_applicable_row['fup_download_limit'];
+			$data_limit_row['upload_limit'] = $bw_applicable_row['fup_upload_limit'];
+			$data_limit_row['remark'] = $next_data_limit_row['remark'];
+		}
+	}
 }
 
 $dl_field = $if_fup.'download_limit';
@@ -65,6 +80,34 @@ if(!$dl_limit && !$ul_limit){
 	echo "Tmp-Integer-0 := 0\n";
 }else{
 	echo "Tmp-Integer-0 := 1\n";
+}
+
+
+// save last dl, ul, Acc_ul, Acc_dl values into user table
+$accountng_data = ($_SERVER['ACCT_INPUT_OCTETS'] + $_SERVER['ACCT_OUTPUT_OCTETS']);
+$user_query = "SELECT customer_id from isp_user where radius_username = '$username'";
+$stmt = $db->prepare($user_query);
+$stmt->execute();
+$user_data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+
+$user_update_query = "UPDATE isp_user SET ";
+$speed_value = "";
+if(!$accountng_data OR ($accounting_data !== null && ($dl_limit !== $user_data['last_dl_limit'] || $ul_limit !== $user_data['last_ul_limit'] || !$access)) ){
+	$speed_value = "last_dl_limit = ".$dl_limit.",last_ul_limit = ".$ul_limit;
+	$user_update_query .= $speed_value;
+}
+
+$accounting_value = ""
+if($user_data['last_accounting_dl_ratio'] != $bw_applicable_row['accounting_download_ratio'] || $user_data['last_accounting_ul_ratio'] != $bw_applicable_row['accounting_upload_ratio']){
+	$accounting_value = "last_accounting_dl_ratio = ".$bw_applicable_row['accounting_download_ratio'].",last_accounting_ul_ratio = ".$bw_applicable_row['accounting_upload_ratio'];
+	$user_update_query .= $accounting_value;
+}
+
+$user_update_query .= "WHERE user_id = (SELECT customer_id from isp_user where radius_username = '$username');";
+
+if(count($speed_value) OR count($accounting_value)){
+	$db->exec($user_update_query);
 }
 
 echo "Tmp-String-1 := \"$ul_limit/$dl_limit\"\n";

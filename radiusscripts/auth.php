@@ -34,6 +34,33 @@ if($ul_limit !== '') $ul_limit = $data_limit_row[$ul_field];
 // from data if not 
 // if fup is null or 0 it is a reject authentication command 
 
+// if user dl, ul, accounting not equal to current dl ul then update
+$user_query = "SELECT customer_id from isp_user where radius_username = '$username'";
+$stmt = $db->prepare($user_query);
+$stmt->execute();
+$user_data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+$user_update_query = "UPDATE isp_user SET ";
+$speed_value = "";
+if($dl_limit !== $user_data['last_dl_limit'] || $ul_limit !== $user_data['last_ul_limit'] ){
+	$speed_value = "last_dl_limit = ".$dl_limit.",last_ul_limit = ".$ul_limit;
+	$user_update_query .= $speed_value;
+}
+
+$accounting_value = ""
+if($user_data['last_accounting_dl_ratio'] != $bw_applicable_row['accounting_download_ratio'] || $user_data['last_accounting_ul_ratio'] != $bw_applicable_row['accounting_upload_ratio']){
+	$accounting_value = "last_accounting_dl_ratio = ".$bw_applicable_row['accounting_download_ratio'].",last_accounting_ul_ratio = ".$bw_applicable_row['accounting_upload_ratio'];
+	$user_update_query .= $accounting_value;
+}
+
+$user_update_query .= "WHERE user_id = (SELECT customer_id from isp_user where radius_username = '$username');";
+
+if(count($speed_value) OR count($accounting_value)){
+	$db->exec($user_update_query);
+}
+
+
+
 $access= true;
 if($dl_limit ===null && $ul_limit === null) exit(1);
 

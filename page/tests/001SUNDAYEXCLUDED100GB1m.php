@@ -293,8 +293,8 @@ class page_tests_001SUNDAYEXCLUDED100GB1m extends page_Tester {
 
     function test_allDayPlan(){
         $r = $this->process([
-                '2017-01-01 00:00:00'=>'plan-SUNDAY EXCLUDED 100GB-1m',
-                '2017-01-01 00:01:00'=>'authentication'
+                '2017-01-03 00:00:00'=>'plan-SUNDAY EXCLUDED 100GB-1m',
+                '2017-01-03 00:01:00'=>'authentication'
             ]);
         return $this->result($r);
     }
@@ -465,8 +465,8 @@ class page_tests_001SUNDAYEXCLUDED100GB1m extends page_Tester {
         $this->proper_responses['test_topUpPlan']=[
             'data_limit_row'=>'All Day Plan',
             'bw_limit_row'=>'All Day Plan',
-            'dl'=>'10.00MB',
-            'ul'=>'10.00MB',
+            'dl'=>'2.00MB',
+            'ul'=>'2.00MB',
             'data_consumed'=>'10.00GB',
             'access'=>1,
             'coa' => false
@@ -480,7 +480,7 @@ class page_tests_001SUNDAYEXCLUDED100GB1m extends page_Tester {
                 '2017-01-11 00:00:00'=>'authentication',
                 '2017-01-11 08:00:00'=>'10gb',
                 '2017-01-12 00:00:00'=>'40gb',
-                '2017-01-13 00:00:00'=>'50gb',
+                '2017-01-13 00:00:00'=>'51gb',
             ]);
         return $this->result($r);
     }
@@ -489,11 +489,11 @@ class page_tests_001SUNDAYEXCLUDED100GB1m extends page_Tester {
         $this->proper_responses['test_topUpPlanwithDataConsume']=[
             'data_limit_row'=>'All Day Plan',
             'bw_limit_row'=>'All Day Plan',
-            'dl'=>'10.00MB',
-            'ul'=>'10.00MB',
-            'data_consumed'=>'100.00GB',
+            'dl'=>'512.00KB',
+            'ul'=>'512.00KB',
+            'data_consumed'=>'101.00GB',
             'access'=>1,
-            'coa' => false
+            'coa' => 1
         ];
     }
 
@@ -514,8 +514,8 @@ class page_tests_001SUNDAYEXCLUDED100GB1m extends page_Tester {
         $this->proper_responses['test_topUpPlanwithSundayOffer']=[
             'data_limit_row'=>'All Day Plan',
             'bw_limit_row'=>'Sunday Offer',
-            'dl'=>'10.00MB',
-            'ul'=>'10.00MB',
+            'dl'=>'512.00KB',
+            'ul'=>'512.00KB',
             'data_consumed'=>'100.00GB',
             'access'=>1,
             'coa' => false
@@ -566,8 +566,8 @@ class page_tests_001SUNDAYEXCLUDED100GB1m extends page_Tester {
         $this->proper_responses['test_21_01anotherTopUpPlan']=[
             'data_limit_row'=>'All Day Plan',
             'bw_limit_row'=>'All Day Plan',
-            'dl'=>'5.00MB',
-            'ul'=>'5.00MB',
+            'dl'=>'2.00MB',
+            'ul'=>'2.00MB',
             'data_consumed'=>'50.00GB',
             'access'=>1,
             'coa' => false

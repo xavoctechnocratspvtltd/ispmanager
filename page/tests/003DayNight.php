@@ -225,7 +225,7 @@ class page_tests_003DayNight extends page_Tester {
 
     function test_10_05_dataConsume(){
         $r = $this->process([
-                '2017-05-01 00:00:00'=>'plan-PL-50-M',
+                '2017-05-01 00:00:00'=>'plan-Day Night plan',
                 '2017-05-10 22:30:00'=>'authentication',
                 '2017-05-10 22:35:00'=>'10gb',
             ]);
@@ -234,18 +234,19 @@ class page_tests_003DayNight extends page_Tester {
 
     function prepare_10_05_dataConsume(){
         $this->proper_responses['test_10_05_dataConsume']=[
-            'data_limit'=>'50.00GB',
-            'dl'=>'1.00MB',
-            'ul'=>'1.00MB',
+            'data_limit_row'=>'Night Plan',
+            'bw_limit_row'=>'Night Plan',
+            'dl'=>'',
+            'ul'=>'',
             'data_consumed'=>'10.00GB',
-            'access'=>1,
-            'coa' => false
+            'access'=>0,
+            'coa' => 1
         ];
     }
 
     function test_15_05_dataConsumed(){
         $r = $this->process([
-                '2017-05-01 00:00:00'=>'plan-PL-50-M',
+                '2017-05-01 00:00:00'=>'plan-Day Night plan',
                 '2017-05-10 22:30:00'=>'authentication',
                 '2017-05-10 22:35:00'=>'10gb',
                 '2017-05-12 22:35:00'=>'20gb',
@@ -259,7 +260,8 @@ class page_tests_003DayNight extends page_Tester {
 
     function prepare_15_05_dataConsumed(){
         $this->proper_responses['test_15_05_dataConsumed']=[
-            'data_limit'=>'50.00GB',
+            'data_limit_row'=>'Night Plan',
+            'bw_limit_row'=>'Night Plan',
             'dl'=>null,
             'ul'=>null,
             'data_consumed'=>'50.00GB',
@@ -270,15 +272,21 @@ class page_tests_003DayNight extends page_Tester {
 
     function test_1_06(){
         $this->setDateTime('2017-06-01 00:01:00'); // next month after disconnect
-        $r = $this->user->getAAADetails($now=null,$accounting_data=null,$human_redable=true);
+        $r = $this->process([
+            '2017-06-01 00:00:00'=>'plan-Day Night plan',
+            '2017-06-10 01:10:00'=>'authentication'
+        ]);
+
         return $this->result($r);
     }
 
     function prepare_1_06(){
         $this->proper_responses['test_1_06']=[
-            'data_limit'=>'50.00GB',
-            'dl'=>'1.00MB',
-            'ul'=>'1.00MB',
+            'data_limit_row'=>'Night Plan',
+            'bw_limit_row'=>'Night Plan',
+            'data_consumed'=>'0.00B',
+            'dl'=>'2.00MB',
+            'ul'=>'2.00MB',
             'access'=>1,
             'coa' => false
         ];

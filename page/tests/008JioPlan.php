@@ -91,7 +91,8 @@ class page_tests_008JioPlan extends page_Tester {
                 'd28'=>1,
                 'd29'=>1,
                 'd30'=>1,
-                'd31'=>1
+                'd31'=>1,
+                'treat_fup_as_dl_for_last_limit_row'=>0
             ]
         ];
         return [array_keys($this->proper_responses['test_setplan_jio1GB'][0])];

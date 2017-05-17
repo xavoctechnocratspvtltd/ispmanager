@@ -93,15 +93,16 @@ class page_tests_009NightUnlimited extends page_Tester {
                 'd28'=>1,
                 'd29'=>1,
                 'd30'=>1,
-                'd31'=>1
+                'd31'=>1,
+                'treat_fup_as_dl_for_last_limit_row'=>0
             ],
             [   
                 'user'=>'Test User',
                 'plan'=>'Night Unlimited',
                 'remark'=>'Night Unlimited',
                 'data_limit'=>null,
-                'download_limit'=>'2.00MB',
-                'upload_limit'=>'2.00MB',
+                'download_limit'=>"",
+                'upload_limit'=>"",
                 'fup_download_limit'=>null,
                 'fup_upload_limit'=>null,
                 'accounting_download_ratio'=>'0',
@@ -152,7 +153,8 @@ class page_tests_009NightUnlimited extends page_Tester {
                 'd28'=>1,
                 'd29'=>1,
                 'd30'=>1,
-                'd31'=>1
+                'd31'=>1,
+                'treat_fup_as_dl_for_last_limit_row'=>0
             ]
         ];
     }
@@ -174,7 +176,7 @@ class page_tests_009NightUnlimited extends page_Tester {
             'ul'=>'2.00MB',
             'data_consumed'=>'0.00B',
             'access'=>1,
-            'coa' => false
+            'coa' => 1
         ];
     }
 
@@ -194,7 +196,7 @@ class page_tests_009NightUnlimited extends page_Tester {
             'ul'=>'2.00MB',
             'data_consumed'=>'0.00B',
             'access'=>1,
-            'coa' => false
+            'coa' => 1
         ];
     }
 
@@ -217,7 +219,7 @@ class page_tests_009NightUnlimited extends page_Tester {
             'ul'=>'2.00MB',
             'data_consumed'=>'5.00GB',
             'access'=>1,
-            'coa'=> true
+            'coa'=>false
         ];
     }
 
@@ -236,12 +238,13 @@ class page_tests_009NightUnlimited extends page_Tester {
 
     function prepare_dataConsume(){
         $this->proper_responses['test_dataConsume']=[
-            'data_limit_row'=>'Night Unlimited',
+            'data_limit_row'=>'Main Plan',
+            'bw_limit_row'=>'Night Unlimited',
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
-            'data_consumed'=>'9.00GB',
+            'data_consumed'=>'14.00GB',
             'access'=>1,
-            'coa'=> false
+            'coa'=> 1
         ];
     }
 
@@ -262,9 +265,9 @@ class page_tests_009NightUnlimited extends page_Tester {
             'bw_limit_row'=>'Night Unlimited',
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
-            'data_consumed'=>'0.00GB',
-            'access'=>0,
-            'coa'=> false
+            'data_consumed'=>'0.00B',
+            'access'=>1,
+            'coa'=>0
         ];
     }
     

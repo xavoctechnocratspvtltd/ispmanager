@@ -111,9 +111,9 @@ class page_tests_010NightHighSpeed extends page_Tester {
                 'start_date'=>'2017-01-01 00:00:00',
                 'end_date'=>'2017-02-01 00:00:00',
                 'expire_date'=>'2017-02-06 00:00:00',
+                'reset_date'=>'',
                 'is_expired'=>0,
                 'is_recurring'=>1,
-                'reset_date'=>'2017-01-02 00:00:00',
                 'sun'=>1,
                 'mon'=>1,
                 'tue'=>1,
@@ -193,7 +193,7 @@ class page_tests_010NightHighSpeed extends page_Tester {
             'ul'=>'2.00MB',
             'data_consumed'=>'0.00B',
             'access'=>1,
-            'coa' => false
+            'coa' => 1
         ];
     }
 
@@ -202,8 +202,8 @@ class page_tests_010NightHighSpeed extends page_Tester {
                 '2017-01-01 05:00:00'=>'plan-Night highspeed',
                 '2017-01-01 05:01:00'=>'authentication',
                 '2017-01-01 05:20:00'=>'2gb',
-                '2017-01-01 10:30:00'=>'2gb',
-                '2017-01-01 14:10:00'=>'1gb',
+                '2017-01-01 10:30:00'=>'97gb',
+                '2017-01-01 14:10:00'=>'2gb',
             ]);
         return $this->result($r);
     }
@@ -212,11 +212,11 @@ class page_tests_010NightHighSpeed extends page_Tester {
         $this->proper_responses['test_01_01MaintainData']=[
             'data_limit_row'=>'Main Plan',
             'bw_limit_row'=>'Main Plan',
-            'dl'=>'2.00MB',
-            'ul'=>'2.00MB',
-            'data_consumed'=>'5.00GB',
+            'dl'=>'512.00KB',
+            'ul'=>'512.00KB',
+            'data_consumed'=>'101.00GB',
             'access'=>1,
-            'coa'=> true
+            'coa'=> 1
         ];
     }
 
@@ -263,7 +263,7 @@ class page_tests_010NightHighSpeed extends page_Tester {
             'ul'=>'4.00MB',
             'data_consumed'=>'7.00GB',
             'access'=>1,
-            'coa'=> true
+            'coa'=> false
         ];
     }
 

@@ -179,7 +179,7 @@ class page_tests_007SundayHighSpeed extends page_Tester {
             'ul'=>'2.00MB',
             'data_consumed'=>'0.00B',
             'access'=>1,
-            'coa' => false
+            'coa' => 1
         ];
     }
 
@@ -200,7 +200,7 @@ class page_tests_007SundayHighSpeed extends page_Tester {
             'ul'=>'2.00MB',
             'data_consumed'=>'1.50GB',
             'access'=>1,
-            'coa'=>false
+            'coa'=>0
         ];
     }
 
@@ -209,7 +209,8 @@ class page_tests_007SundayHighSpeed extends page_Tester {
                 '2017-01-01 00:00:00'=>'plan-High Speed 100GB-2mb',
                 '2017-01-01 00:01:00'=>'authentication',
                 '2017-01-01 10:01:00'=>'1.5gb',
-                '2017-01-01 13:01:00'=>'1.0gb'
+                '2017-01-01 13:03:00'=>'0.6gb',
+                // '2017-01-01 14:00:00'=>'1.0gb'
             ]);
         return $this->result($r);
     }
@@ -220,7 +221,7 @@ class page_tests_007SundayHighSpeed extends page_Tester {
             'bw_limit_row'=>'Sunday 2GB Extra',
             'dl'=>'1.00MB',
             'ul'=>'1.00MB',
-            'data_consumed'=>'2.50GB',
+            'data_consumed'=>'2.10GB',
             'access'=>1,
             'coa'=>1,
         ];
@@ -242,7 +243,7 @@ class page_tests_007SundayHighSpeed extends page_Tester {
             'ul'=>'2.00MB',
             'data_consumed'=>'0.00B',
             'access'=>1,
-            'coa' => false
+            'coa' => 1
         ];
     }
 
@@ -261,13 +262,13 @@ class page_tests_007SundayHighSpeed extends page_Tester {
 
     function prepare_MaintainAllDayData(){
         $this->proper_responses['test_MaintainAllDayData']=[
-            'data_limit_row'=>'Sunday 2GB Extra',
-            'bw_limit_row'=>'Sunday 2GB Extra',
+            'data_limit_row'=>'Main Plan',
+            'bw_limit_row'=>'Main Plan',
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
-            'data_consumed'=>'47.00GB',
+            'data_consumed'=>'25.00GB',
             'access'=>1,
-            'coa' => false
+            'coa' => 1
         ];
     }
     

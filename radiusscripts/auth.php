@@ -61,7 +61,7 @@ if($dl_limit !== $user_data['last_dl_limit'] || $ul_limit !== $user_data['last_u
 	$user_update_query .= $speed_value;
 }
 
-$accounting_value = ""
+$accounting_value = "";
 if($user_data['last_accounting_dl_ratio'] != $bw_applicable_row['accounting_download_ratio'] || $user_data['last_accounting_ul_ratio'] != $bw_applicable_row['accounting_upload_ratio']){
 	$accounting_value = "last_accounting_dl_ratio = ".$bw_applicable_row['accounting_download_ratio'].",last_accounting_ul_ratio = ".$bw_applicable_row['accounting_upload_ratio'];
 	$user_update_query .= $accounting_value;

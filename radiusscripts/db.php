@@ -10,7 +10,7 @@ $db = new PDO('mysql:host='.$host.';dbname='.$database, $db_username, $db_passwo
 $username = str_replace('"', '', $_SERVER['USER_NAME']);
 
 
-function getApplicableRow($now=null,$with_data_limit=false){
+function getApplicableRow($now=null,$with_data_limit=false,$less_then_this_id=0){
 		global $db;
 		global $username;
 
@@ -20,7 +20,9 @@ function getApplicableRow($now=null,$with_data_limit=false){
 		$date = 'd'.strtolower(date("d", strtotime($now)));
 		$current_time = date("H:i:s",strtotime($now));
 		$today = date('Y-m-d',strtotime($now));
-
+		
+		$less_then_id_condition = "";
+		if($less_then_this_id) $less_then_id_condition = "AND isp_user_plan_and_topup.id < ".$less_then_this_id;
 		// if start_time is not null then is me in between start-end time
 		// is me (day) checked
 		// is me (date) checked
@@ -71,6 +73,7 @@ function getApplicableRow($now=null,$with_data_limit=false){
 						".
 						($with_data_limit? " AND data_limit is not null AND data_limit >0 ":'')
 						.
+						$less_then_id_condition.
 						"
 						order by is_topup desc, id desc
 						limit 1

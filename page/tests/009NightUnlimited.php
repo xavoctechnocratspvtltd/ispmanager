@@ -252,16 +252,16 @@ class page_tests_009NightUnlimited extends page_Tester {
         $r = $this->process([
                 '2017-05-01 23:00:00'=>'plan-Night Unlimited',
                 '2017-05-01 23:10:00'=>'authentication',
-                '2017-05-01 01:10:00'=>'10gb',
-                '2017-05-01 01:59:59'=>'12gb',
-                '2017-05-01 03:59:59'=>'20gb',
+                '2017-05-02 01:10:00'=>'10gb',
+                '2017-05-02 01:59:59'=>'12gb',
+                '2017-05-02 03:59:59'=>'20gb',
             ]);
         return $this->result($r);
     }
 
     function prepare_dataConsumeInNight(){
         $this->proper_responses['test_dataConsumeInNight']=[
-            'data_limit_row'=>'Night Unlimited',
+            'data_limit_row'=>'Main Plan',
             'bw_limit_row'=>'Night Unlimited',
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',

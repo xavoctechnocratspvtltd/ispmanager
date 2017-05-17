@@ -19,6 +19,20 @@ $if_fup='fup_';
 if(($data_limit_row['download_data_consumed'] + $data_limit_row['upload_data_consumed']) < $data_limit_row['net_data_limit']){
 	$if_fup='';
 }else{
+	if($bw_applicable_row['treat_fup_as_dl_for_last_limit_row']){
+		$next_data_limit_row = $this->getApplicableRow(null,null,$data_limit_row['id']);
+		
+		if( ($next_data_limit_row['download_data_consumed'] + $next_data_limit_row['upload_data_consumed']) > $next_data_limit_row['net_data_limit'] ){
+			$data_limit_row['download_limit'] = $next_data_limit_row['fup_download_limit'];
+			$data_limit_row['upload_limit'] = $next_data_limit_row['fup_upload_limit'];
+			$data_limit_row['remark'] = $next_data_limit_row['remark'];
+
+		}else{
+			$data_limit_row['download_limit'] = $bw_applicable_row['fup_download_limit'];
+			$data_limit_row['upload_limit'] = $bw_applicable_row['fup_upload_limit'];
+			$data_limit_row['remark'] = $next_data_limit_row['remark'];
+		}
+	}
 }
 
 $dl_field = $if_fup.'download_limit';

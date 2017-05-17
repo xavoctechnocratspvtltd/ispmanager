@@ -82,6 +82,7 @@ if(!$dl_limit && !$ul_limit){
 	echo "Tmp-Integer-0 := 1\n";
 }
 
+echo "Tmp-String-1 := \"$ul_limit/$dl_limit\"\n";
 
 // save last dl, ul, Acc_ul, Acc_dl values into user table
 $accountng_data = ($_SERVER['ACCT_INPUT_OCTETS'] + $_SERVER['ACCT_OUTPUT_OCTETS']);
@@ -89,7 +90,6 @@ $user_query = "SELECT customer_id from isp_user where radius_username = '$userna
 $stmt = $db->prepare($user_query);
 $stmt->execute();
 $user_data = $stmt->fetch(PDO::FETCH_ASSOC);
-
 
 $user_update_query = "UPDATE isp_user SET ";
 $speed_value = "";
@@ -110,7 +110,6 @@ if(count($speed_value) OR count($accounting_value)){
 	$db->exec($user_update_query);
 }
 
-echo "Tmp-String-1 := \"$ul_limit/$dl_limit\"\n";
 // echo "Tmp-String-1 := \"512k/512k\"\n";
 
 // here comes some diffrence from auth.php

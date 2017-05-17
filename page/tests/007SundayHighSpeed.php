@@ -179,7 +179,7 @@ class page_tests_007SundayHighSpeed extends page_Tester {
             'ul'=>'2.00MB',
             'data_consumed'=>'0.00B',
             'access'=>1,
-            'coa' => false
+            'coa' => 1
         ];
     }
 
@@ -243,7 +243,7 @@ class page_tests_007SundayHighSpeed extends page_Tester {
             'ul'=>'2.00MB',
             'data_consumed'=>'0.00B',
             'access'=>1,
-            'coa' => false
+            'coa' => 1
         ];
     }
 
@@ -268,7 +268,7 @@ class page_tests_007SundayHighSpeed extends page_Tester {
             'ul'=>'2.00MB',
             'data_consumed'=>'25.00GB',
             'access'=>1,
-            'coa' => false
+            'coa' => 1
         ];
     }
     

@@ -242,7 +242,7 @@ class page_tests_009NightUnlimited extends page_Tester {
             'bw_limit_row'=>'Night Unlimited',
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
-            'data_consumed'=>'9.00GB',
+            'data_consumed'=>'14.00GB',
             'access'=>1,
             'coa'=> 1
         ];
@@ -267,7 +267,7 @@ class page_tests_009NightUnlimited extends page_Tester {
             'ul'=>'2.00MB',
             'data_consumed'=>'0.00B',
             'access'=>1,
-            'coa'=>1
+            'coa'=>0
         ];
     }
     

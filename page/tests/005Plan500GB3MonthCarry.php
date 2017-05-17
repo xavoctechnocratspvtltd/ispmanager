@@ -93,7 +93,8 @@ class page_tests_005Plan500GB3MonthCarry extends page_Tester {
                 'd28'=>1,
                 'd29'=>1,
                 'd30'=>1,
-                'd31'=>1
+                'd31'=>1,
+                'treat_fup_as_dl_for_last_limit_row'=>0
             ]
         ];
         return [array_keys($this->proper_responses['test_setplan_simpleway'][0])];
@@ -116,7 +117,7 @@ class page_tests_005Plan500GB3MonthCarry extends page_Tester {
             'ul'=>'2.00MB',
             'data_consumed'=>'0.00B',
             'access'=>1,
-            'coa' => false
+            'coa' => 1
         ];
     }
 
@@ -161,7 +162,7 @@ class page_tests_005Plan500GB3MonthCarry extends page_Tester {
             'ul'=>'2.00MB',
             'data_consumed'=>'170.00GB',
             'access'=>1,
-            'coa' => false
+            'coa' => 1
         ];
     }
 
@@ -191,7 +192,7 @@ class page_tests_005Plan500GB3MonthCarry extends page_Tester {
             'ul'=>'2.00MB',
             'data_consumed'=>'335.00GB',
             'access'=>1,
-            'coa' => false
+            'coa' => 1
         ];
     }
 
@@ -259,7 +260,7 @@ class page_tests_005Plan500GB3MonthCarry extends page_Tester {
             'ul'=>'2.00MB',
             'data_consumed'=>'0.00B',
             'access'=>1,
-            'coa' => false
+            'coa' => 1
         ];
     }
 
@@ -297,7 +298,7 @@ class page_tests_005Plan500GB3MonthCarry extends page_Tester {
             'ul'=>'2.00MB',
             'data_consumed'=>'150.00GB',
             'access'=>1,
-            'coa' => false
+            'coa' => 1
         ];
     }
 
@@ -335,7 +336,7 @@ class page_tests_005Plan500GB3MonthCarry extends page_Tester {
             'ul'=>null,
             'data_consumed'=>'0.00B',
             'access'=>0,
-            'coa' => false
+            'coa' => 1
         ];
     }
 

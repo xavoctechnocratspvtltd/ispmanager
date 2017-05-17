@@ -93,7 +93,8 @@ class page_tests_003DayNight extends page_Tester {
                 'd28'=>1,
                 'd29'=>1,
                 'd30'=>1,
-                'd31'=>1
+                'd31'=>1,
+                'treat_fup_as_dl_for_last_limit_row'=>0
             ],
             [   
                 'user'=>'Test User',
@@ -152,7 +153,8 @@ class page_tests_003DayNight extends page_Tester {
                 'd28'=>1,
                 'd29'=>1,
                 'd30'=>1,
-                'd31'=>1
+                'd31'=>1,
+                'treat_fup_as_dl_for_last_limit_row'=>0
             ]
         ];
     }
@@ -174,7 +176,7 @@ class page_tests_003DayNight extends page_Tester {
             'ul'=>'2.00MB',
             'data_consumed'=>'0.00B',
             'access'=>1,
-            'coa' => false
+            'coa' => 1
         ];
     }
 
@@ -194,7 +196,7 @@ class page_tests_003DayNight extends page_Tester {
             'ul'=>'2.00MB',
             'data_consumed'=>'0.00B',
             'access'=>1,
-            'coa' => false
+            'coa' => 1
         ];
     }
 
@@ -219,7 +221,7 @@ class page_tests_003DayNight extends page_Tester {
             'ul'=>null,
             'data_consumed'=>'10.00GB',
             'access'=>0,
-            'coa' => false
+            'coa' => 1
         ];
     }
 
@@ -266,7 +268,7 @@ class page_tests_003DayNight extends page_Tester {
             'ul'=>null,
             'data_consumed'=>'50.00GB',
             'access'=>0,
-            'coa' => false
+            'coa' => 1
         ];
     }
 
@@ -288,7 +290,7 @@ class page_tests_003DayNight extends page_Tester {
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
             'access'=>1,
-            'coa' => false
+            'coa' => 1
         ];
     }
 

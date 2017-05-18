@@ -84,7 +84,7 @@ if($_SERVER['ACCT_STATUS_TYPE'] === 'Start') {
 
 	$user_update_query = "UPDATE isp_user SET ";
 	$speed_value = null;
-	if(!$accounting_data OR ($accounting_data !== null && ($dl_limit !== $user_data['last_dl_limit'] || $ul_limit !== $user_data['last_ul_limit'] || !$access)) ){
+	if(($dl_limit != $user_data['last_dl_limit'] || $ul_limit != $user_data['last_ul_limit'])){
 		$speed_value = "last_dl_limit = ".$dl_limit.",last_ul_limit = ".$ul_limit;
 		$user_update_query .= $speed_value;
 	}
@@ -92,30 +92,30 @@ if($_SERVER['ACCT_STATUS_TYPE'] === 'Start') {
 	$accounting_value = null;
 
 	if($user_data['last_accounting_dl_ratio'] != $bw_applicable_row['accounting_download_ratio'] || $user_data['last_accounting_ul_ratio'] != $bw_applicable_row['accounting_upload_ratio']){
-		$accounting_value = "last_accounting_dl_ratio = ".$bw_applicable_row['accounting_download_ratio'].",last_accounting_ul_ratio = ".$bw_applicable_row['accounting_upload_ratio'];
+		$accounting_value = ", last_accounting_dl_ratio = ".$bw_applicable_row['accounting_download_ratio'].",last_accounting_ul_ratio = ".$bw_applicable_row['accounting_upload_ratio'];
 		$user_update_query .= $accounting_value;
 	}
 
-	$user_update_query .= "WHERE user_id = (SELECT customer_id from isp_user where radius_username = '$username');";
+	$user_update_query .= " WHERE radius_username = '$username';";
 
 	if($speed_value OR $accounting_value){
+		// echo $user_update_query;
 		$db->exec($user_update_query);
 	}
 
-	$access= true;
 	if(($dl_limit===null && $ul_limit===null) || $speed_value){
-		$access = false;
 		if($dl_limit === null || $ul_limit === null ){
 			echo "Tmp-Integer-0 := 2\n"; // disconnect
 		}else{
 			echo "Tmp-Integer-0 := 0\n"; // change
+			echo "Tmp-String-1 := \"$ul_limit/$dl_limit\"\n";
+			echo "Tmp-String-2 := \"$speed_value\"\n";
 		}
 		// changed and coa yes
 	}else{
 		echo "Tmp-Integer-0 := 1\n"; // do nothing
 	}
 
-	echo "Tmp-String-1 := \"$ul_limit/$dl_limit\"\n";
 }
 // echo "Tmp-String-1 := \"512k/512k\"\n";
 

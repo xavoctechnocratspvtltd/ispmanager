@@ -6,7 +6,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	// public $table = "isp_user";
 	public $status = ['Active','InActive'];
 	public $actions = [
-				'Active'=>['view','edit','delete','Topups'],
+				'Active'=>['view','edit','delete','AddTopups','CurrentConditions'],
 				'InActive'=>['view','edit','delete','active']
 				];
 	public $acl_type= "ispmanager_user";
@@ -502,7 +502,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		}
 	}
 
-	function page_Topups($page){
+	function page_AddTopups($page){
 		$form = $page->add('Form');
 		$form->addField('DropDown','topup')->validate('required')->setEmptyText('Please Select Topup')->setModel($this->add('xavoc\ispmanager\Model_TopUp'));
 		$form->addSubmit('Add TopUp');
@@ -529,4 +529,13 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$radcheck_model['value'] = $this['radius_password'];
 		$radcheck_model->save();
 	}
+
+	function page_CurrentConditions($page){
+		$crud = $page->add('xepan\hr\CRUD');
+		$model = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup');
+		$model->addCondition('user_id',$this->id);
+		$crud->setModel($model);
+
+	}
+
 }

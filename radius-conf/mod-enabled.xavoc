@@ -1,0 +1,17 @@
+exec xavocauthphp {
+        wait = yes
+        input_pairs = request
+	output_pairs = reply
+        shell_escape = yes
+        timeout = 10
+	program = "/usr/bin/php /etc/freeradius/xavocphpscripts/auth.php"
+}
+
+exec xavocacctphp {
+        wait = yes
+        input_pairs = request
+	output_pairs = control
+        shell_escape = yes
+        timeout = 10
+	program = "/usr/bin/php /etc/freeradius/xavocphpscripts/accounting.php"
+}

@@ -1,0 +1,27 @@
+xavocauth {
+	xavocauthphp
+}
+
+xavocacct {
+	xavocacctphp
+	# check some vars in control and 
+	# send coa accordingly if needed
+	
+	if(&control:Tmp-Integer-0 == 0){
+		update coa {
+	        User-Name = "%{User-Name}"
+	        Acct-Session-Id = "%{Acct-Session-Id}"
+	        NAS-IP-Address = "%{NAS-IP-Address}"
+	        Framed-IP-Address = "%{Framed-IP-Address}"
+	        Mikrotik-Rate-Limit = "%{control:Tmp-String-1}"
+		}
+	}
+	if(&control:Tmp-Integer-0 == 2){
+        update disconnect {
+			User-Name = "%{User-Name}"
+	        Acct-Session-Id = "%{Acct-Session-Id}"
+	        NAS-IP-Address = "%{NAS-IP-Address}"
+	        Framed-IP-Address = "%{Framed-IP-Address}"
+		}
+	}
+}

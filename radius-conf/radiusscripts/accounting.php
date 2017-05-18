@@ -105,10 +105,14 @@ if($_SERVER['ACCT_STATUS_TYPE'] === 'Start') {
 	$access= true;
 	if(($dl_limit===null && $ul_limit===null) || $speed_value){
 		$access = false;
-		echo "Tmp-Integer-0 := 0\n";
+		if($dl_limit === null || $ul_limit === null ){
+			echo "Tmp-Integer-0 := 2\n"; // disconnect
+		}else{
+			echo "Tmp-Integer-0 := 0\n"; // change
+		}
 		// changed and coa yes
 	}else{
-		echo "Tmp-Integer-0 := 1\n";
+		echo "Tmp-Integer-0 := 1\n"; // do nothing
 	}
 
 	echo "Tmp-String-1 := \"$ul_limit/$dl_limit\"\n";

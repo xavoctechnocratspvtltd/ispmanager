@@ -49,7 +49,7 @@ if($ul_limit !== '') $ul_limit = $data_limit_row[$ul_field];
 // if fup is null or 0 it is a reject authentication command 
 
 // if user dl, ul, accounting not equal to current dl ul then update
-$user_query = "SELECT customer_id from isp_user where radius_username = '$username'";
+$user_query = "SELECT * from isp_user where radius_username = '$username'";
 $stmt = $db->prepare($user_query);
 $stmt->execute();
 $user_data = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -62,6 +62,7 @@ if($dl_limit !== $user_data['last_dl_limit'] || $ul_limit !== $user_data['last_u
 }
 
 $accounting_value = "";
+
 if($user_data['last_accounting_dl_ratio'] != $bw_applicable_row['accounting_download_ratio'] || $user_data['last_accounting_ul_ratio'] != $bw_applicable_row['accounting_upload_ratio']){
 	$accounting_value = "last_accounting_dl_ratio = ".$bw_applicable_row['accounting_download_ratio'].",last_accounting_ul_ratio = ".$bw_applicable_row['accounting_upload_ratio'];
 	$user_update_query .= $accounting_value;

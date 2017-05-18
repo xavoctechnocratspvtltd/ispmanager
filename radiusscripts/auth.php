@@ -55,13 +55,13 @@ $stmt->execute();
 $user_data = $stmt->fetch(PDO::FETCH_ASSOC);
 
 $user_update_query = "UPDATE isp_user SET ";
-$speed_value = "";
+$speed_value = null;
 if($dl_limit !== $user_data['last_dl_limit'] || $ul_limit !== $user_data['last_ul_limit'] ){
 	$speed_value = "last_dl_limit = ".$dl_limit.",last_ul_limit = ".$ul_limit;
 	$user_update_query .= $speed_value;
 }
 
-$accounting_value = "";
+$accounting_value = null;
 
 if($user_data['last_accounting_dl_ratio'] != $bw_applicable_row['accounting_download_ratio'] || $user_data['last_accounting_ul_ratio'] != $bw_applicable_row['accounting_upload_ratio']){
 	$accounting_value = "last_accounting_dl_ratio = ".$bw_applicable_row['accounting_download_ratio'].",last_accounting_ul_ratio = ".$bw_applicable_row['accounting_upload_ratio'];
@@ -70,7 +70,7 @@ if($user_data['last_accounting_dl_ratio'] != $bw_applicable_row['accounting_down
 
 $user_update_query .= "WHERE user_id = (SELECT customer_id from isp_user where radius_username = '$username');";
 
-if(count($speed_value) OR count($accounting_value)){
+if($speed_value OR $accounting_value){
 	$db->exec($user_update_query);
 }
 

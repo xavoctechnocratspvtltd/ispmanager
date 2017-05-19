@@ -244,11 +244,52 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		return $plan_model;
 	}
 
-	// ===== DB.php =========
-	function getApplicableRow($now=null,$with_data_limit=false,$less_then_this_id=0){
+
+	// site-enables/default.conf file simulated
+	function getAAADetails($now=null,$accounting_data=null,$human_redable=false){
+		
+		if(!$now) $now = isset($this->app->ispnow)? $this->app->ispnow : $this->app->now;
+
+		// ===== DB.php =========
 		$username = $this['radius_username'];
 
-		if(!$now) $now = isset($this->app->ispnow)? $this->app->ispnow : $this->app->now;
+		$user_query = "SELECT * from isp_user where radius_username = '$username'";
+		$user_data = $this->app->db->dsql()->expr($user_query)->getHash();
+
+		// ===== DB.php =========
+
+		$day = strtolower(date("D", strtotime($now)));
+
+		$this->testDebug("====================",'');
+		if($accounting_data ===null){
+			$this->testDebug('Authentication on ', $now . " [ $day ]");
+			$final_row = $this->checkAuthentication($now,$day,$username,$user_data);
+			// echo "step 2";
+			// die();
+		}else{
+			if(!is_array($accounting_data)){
+				$accounting_data=[$accounting_data,0];
+			}
+			$this->testDebug('Accounting on ', $now . " [ $day ]",$accounting_data);
+			$dl_data = $this->human2byte($accounting_data[0]);
+			$ul_data = $this->human2byte($accounting_data[1]);
+			$final_row = $this->updateAccountingData($dl_data,$ul_data,$now,$day,$username, $user_data);
+		}
+
+		if($human_redable){
+			$final_row['data_limit'] = $this->byte2human($final_row['data_limit']);
+			$final_row['net_data_limit'] = $this->byte2human($final_row['net_data_limit']);
+			$final_row['dl_limit'] = ($final_row['dl_limit'] !== null ) ? $this->byte2human($final_row['dl_limit']):null;
+			$final_row['ul_limit'] = ($final_row['ul_limit'] !== null ) ? $this->byte2human($final_row['ul_limit']):null;
+			$final_row['data_consumed'] = $this->byte2human($final_row['download_data_consumed'] + $final_row['upload_data_consumed']);
+		}
+
+		return ['access'=>$final_row['access'], 'result'=>$final_row];
+
+	}
+
+	// ===== DB.php Start =========
+	function getApplicableRow($username,$now,$with_data_limit=false,$less_then_this_id=null){
 		
 		$day = strtolower(date("D", strtotime($now)));
 		$date = 'd'.strtolower(date("d", strtotime($now)));
@@ -322,62 +363,18 @@ class Model_User extends \xepan\commerce\Model_Customer{
 						;
 
 		// echo "step 3 in applicable row ".$query;
-		$x = $this->app->db->dsql()->expr($query)->getHash();
+		$x = $this->runQuery($query,true);
 		if(!count($x)) $x= null;
 		$this->testDebug('Querying for '.($with_data_limit?'Data Limit':'Bw Limit').' Row ',null,$query);
 		$this->testDebug('Found '.($with_data_limit?'Data Limit':'Bw Limit').' Row ',isset($x['remark'])?$x['remark']:'-',$x);
 		return $x;
-	}
-	// ===== DB.php =========
-
-	// site-enables/default.conf file simulated
-	function getAAADetails($now=null,$accounting_data=null,$human_redable=false){
-		
-		if(!$now) $now = isset($this->app->ispnow)? $this->app->ispnow : $this->app->now;
-
-		// ===== DB.php =========
-		$username = $this['radius_username'];
-
-		$user_query = "SELECT * from isp_user where radius_username = '$username'";
-		$user_data = $this->app->db->dsql()->expr($user_query)->getHash();
-
-		// ===== DB.php =========
-
-		$day = strtolower(date("D", strtotime($now)));
-
-		$this->testDebug("====================",'');
-		if($accounting_data ===null){
-			$this->testDebug('Authentication on ', $now . " [ $day ]");
-			$final_row = $this->checkAuthentication($now,$day,$username,$user_data);
-			// echo "step 2";
-			// die();
-		}else{
-			if(!is_array($accounting_data)){
-				$accounting_data=[$accounting_data,0];
-			}
-			$this->testDebug('Accounting on ', $now . " [ $day ]",$accounting_data);
-			$dl_data = $this->app->human2byte($accounting_data[0]);
-			$ul_data = $this->app->human2byte($accounting_data[1]);
-			$final_row = $this->updateAccountingData($dl_data,$ul_data,$now,$day,$username, $user_data);
-		}
-
-		if($human_redable){
-			$final_row['data_limit'] = $this->app->byte2human($final_row['data_limit']);
-			$final_row['net_data_limit'] = $this->app->byte2human($final_row['net_data_limit']);
-			$final_row['dl_limit'] = ($final_row['dl_limit'] !== null ) ? $this->app->byte2human($final_row['dl_limit']):null;
-			$final_row['ul_limit'] = ($final_row['ul_limit'] !== null ) ? $this->app->byte2human($final_row['ul_limit']):null;
-			$final_row['data_consumed'] = $this->app->byte2human($final_row['download_data_consumed'] + $final_row['upload_data_consumed']);
-		}
-
-		return ['access'=>$final_row['access'], 'result'=>$final_row];
-
 	}
 
 	function checkAuthentication($now,$day,$username, $user_data){
 
 		$this->testDebug('User',null,$user_data);
 
-		$bw_applicable_row = $this->getApplicableRow($now);
+		$bw_applicable_row = $this->getApplicableRow($username,$now);
 
 		if(!$bw_applicable_row) {
 			// exit in radius
@@ -385,14 +382,14 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		}
 
 		$data_limit_row = $bw_applicable_row;
-		if(!$bw_applicable_row['net_data_limit']) $data_limit_row = $this->getApplicableRow($now,$with_data_limit=true);
+		if(!$bw_applicable_row['net_data_limit']) $data_limit_row = $this->getApplicableRow($username, $now,$with_data_limit=true);
 		
 		$if_fup='fup_';
 		if(($data_limit_row['download_data_consumed'] + $data_limit_row['upload_data_consumed']) < $data_limit_row['net_data_limit']){
 			$if_fup='';
 		}else{
 			if($bw_applicable_row['treat_fup_as_dl_for_last_limit_row']){
-				$next_data_limit_row = $this->getApplicableRow(null,null,$data_limit_row['id']);
+				$next_data_limit_row = $this->getApplicableRow($username, $now,null,$data_limit_row['id']);
 				
 				if( ($next_data_limit_row['download_data_consumed'] + $next_data_limit_row['upload_data_consumed']) > $next_data_limit_row['net_data_limit'] ){
 					$data_limit_row['download_limit'] = $next_data_limit_row['fup_download_limit'];
@@ -490,26 +487,42 @@ class Model_User extends \xepan\commerce\Model_Customer{
 					is_effective = 1 AND user_id = (SELECT customer_id from isp_user where radius_username = '$username')
 				";
 		$this->runQuery($update_query);
-		$this->testDebug('Updating Accounting Data',['dl'=>$this->app->byte2human($consumed_dl_data), 'ul'=>$this->app->byte2human($consumed_ul_data)],$update_query);
+		$this->testDebug('Updating Accounting Data',['dl'=>$this->byte2human($consumed_dl_data), 'ul'=>$this->byte2human($consumed_ul_data)],$update_query);
 		
 		$final_row = $this->checkAuthentication($now,$day, $username, $user_data);
 
-		$final_row['Tmp-Integer-0'] = ($final_row['access'] && !$final_row['coa'])
-											? '0' 		// no change
-											: ($final_row['access'] && $final_row['coa'])
-												? '1' 	// coa
-												: '2' 	// disconnect
-										;
+		if($final_row['access']==='1' || $final_row['access']===1){
+			if($final_row['coa'] === '1' || $final_row['coa'] === 1)
+				$final_row['Tmp-Integer-0'] = '1';
+			else
+				$final_row['Tmp-Integer-0'] = '0';		
+		}else{
+			$final_row['Tmp-Integer-0'] = '2';
+		}
 
-		if($final_row['Tmp-Integer-0']==='2'){
+		if($final_row['Tmp-Integer-0']==='1'){
 			$final_row['Tmp-String-0'] = $final_row['ul_limit'].'/'.$final_row['dl_limit'];
 		}
 
 		return $final_row;
 	}
 
-	function runQuery($query){
-		$this->app->db->dsql()->expr($query)->execute();
+	// ===== DB.php End =========
+
+	function runQuery($query, $gethash=false){
+		if($gethash){
+			return $this->app->db->dsql()->expr($query)->getHash();
+		}else{
+			return $this->app->db->dsql()->expr($query)->execute();
+		}
+	}
+
+	function byte2human($bytes, $decimal =2){
+		return $this->app->byte2human($bytes, $decimal);
+	}
+
+	function human2byte($value){
+		return $this->app->human2byte($value);
 	}
 
 
@@ -531,12 +544,12 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	// 		}
 
 	// 		$condition = "is_effective = 1 AND user_id = ". $this->id;
-	// 		$update_query = "UPDATE isp_user_plan_and_topup SET download_data_consumed = IFNULL(download_data_consumed,0) + ".($this->app->human2byte($accounting_data[0])*$this['last_accounting_dl_ratio']/100) . " , upload_data_consumed = IFNULL(upload_data_consumed,0) + ".($this->app->human2byte($accounting_data[1])*$this['last_accounting_ul_ratio']/100) . " WHERE ". $condition;
+	// 		$update_query = "UPDATE isp_user_plan_and_topup SET download_data_consumed = IFNULL(download_data_consumed,0) + ".($this->human2byte($accounting_data[0])*$this['last_accounting_dl_ratio']/100) . " , upload_data_consumed = IFNULL(upload_data_consumed,0) + ".($this->human2byte($accounting_data[1])*$this['last_accounting_ul_ratio']/100) . " WHERE ". $condition;
 	// 		$this->app->db->dsql()->expr($update_query)->execute();
 			
 	// 		$data = $this->app->db->dsql()->table('isp_user_plan_and_topup')->field('download_data_consumed')->field('upload_data_consumed')->field('remark')->where($this->db->dsql()->expr($condition))->getHash();
-	// 		$data['download_data_consumed'] = $this->app->byte2human($data['download_data_consumed']);
-	// 		$data['upload_data_consumed'] = $this->app->byte2human($data['upload_data_consumed']);
+	// 		$data['download_data_consumed'] = $this->byte2human($data['download_data_consumed']);
+	// 		$data['upload_data_consumed'] = $this->byte2human($data['upload_data_consumed']);
 
 	// 		$accounting_data['remark']= $data['remark'];
 	// 		$accounting_data['dl_ratio']= $this['last_accounting_dl_ratio'];
@@ -589,7 +602,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	// 			}
 	// 		}
 
-	// 		$this->testDebug('Data Limit Crossed', $this->app->byte2human($data_limit_row['net_data_limit'] - ($data_limit_row['download_data_consumed'] + $data_limit_row['upload_data_consumed'])));
+	// 		$this->testDebug('Data Limit Crossed', $this->byte2human($data_limit_row['net_data_limit'] - ($data_limit_row['download_data_consumed'] + $data_limit_row['upload_data_consumed'])));
 	// 	}
 
 	// 	// Mark datalimitrow as effective
@@ -649,11 +662,11 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			
 
 	// 	if($human_redable){
-	// 		$final_row['data_limit'] = $this->app->byte2human($final_row['data_limit']);
-	// 		$final_row['net_data_limit'] = $this->app->byte2human($final_row['net_data_limit']);
-	// 		$final_row['dl_limit'] = ($final_row['dl_limit'] !== null ) ? $this->app->byte2human($final_row['dl_limit']):null;
-	// 		$final_row['ul_limit'] = ($final_row['ul_limit'] !== null ) ? $this->app->byte2human($final_row['ul_limit']):null;
-	// 		$final_row['data_consumed'] = $this->app->byte2human($final_row['download_data_consumed'] + $final_row['upload_data_consumed']);
+	// 		$final_row['data_limit'] = $this->byte2human($final_row['data_limit']);
+	// 		$final_row['net_data_limit'] = $this->byte2human($final_row['net_data_limit']);
+	// 		$final_row['dl_limit'] = ($final_row['dl_limit'] !== null ) ? $this->byte2human($final_row['dl_limit']):null;
+	// 		$final_row['ul_limit'] = ($final_row['ul_limit'] !== null ) ? $this->byte2human($final_row['ul_limit']):null;
+	// 		$final_row['data_consumed'] = $this->byte2human($final_row['download_data_consumed'] + $final_row['upload_data_consumed']);
 	// 	}
 
 	// 	return ['access'=>$access, 'result'=>$final_row];

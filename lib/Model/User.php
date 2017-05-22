@@ -893,4 +893,13 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 	}
 
+	// function updateQSPBeforeSave($app,$master_data,$detail_data,$type){
+	// 	echo $type;
+	// 	echo "<pre>";
+	// 	print_r($master_data);
+	// 	print_r($detail_data);
+	// 	echo "</pre>";
+	// 	die();
+	// }
+
 }

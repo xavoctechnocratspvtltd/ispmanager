@@ -224,6 +224,8 @@ class page_tests_007SundayHighSpeed extends page_Tester {
             'data_consumed'=>'2.10GB',
             'access'=>1,
             'coa'=>1,
+            'Tmp-Integer-0'=>'1',
+            'Tmp-String-0'=>'1048576/1048576'
         ];
     }
 

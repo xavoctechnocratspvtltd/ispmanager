@@ -45,9 +45,12 @@ class page_Tester extends \xepan\base\Page_Tester{
 			
 			if(strtotime($last_action_date) != strtotime(date('Y-m-d',strtotime($datetime)))){
 				$this->user->cron(date('Y-m-d',strtotime($datetime)));
-				$this->user->testDebug('Adding 0 byte accounting at mid night',date('Y-m-d',strtotime($datetime)));
-				$r = $this->user->getAAADetails(date('Y-m-d 00:00:00',strtotime($datetime)),$accounting_data='0',$human_redable=true);
+				if(strtolower(substr($action,0,4)) !=='plan' || !$first_plan_set){
+					$this->user->testDebug('Adding 0 byte accounting at mid night',date('Y-m-d',strtotime($datetime)));
+					$r = $this->user->getAAADetails(date('Y-m-d 00:00:00',strtotime($datetime)),$accounting_data='0',$human_redable=true);
+				}
 			}
+
 
 			$this->setDateTime($datetime);
 			switch (strtolower(substr($action,0,4))) {
@@ -84,7 +87,7 @@ class page_Tester extends \xepan\base\Page_Tester{
 	}
 
 	function result($r){
-		return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access'],'coa'=>$r['result']['coa']];
+		return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access'],'coa'=>$r['result']['coa'],'Tmp-Integer-0'=>$r['result']['Tmp-Integer-0'],'Tmp-String-0'=>$r['result']['Tmp-String-0']];
 	}
 	
 	function defaultTemplate(){

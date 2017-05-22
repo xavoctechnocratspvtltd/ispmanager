@@ -7,7 +7,7 @@ xavocacct {
 	# check some vars in control and 
 	# send coa accordingly if needed
 	
-	if(&control:Tmp-Integer-0 == 0){
+	if(&control:Tmp-Integer-0 == 1){
 		update coa {
 	        User-Name = "%{User-Name}"
 	        Acct-Session-Id = "%{Acct-Session-Id}"

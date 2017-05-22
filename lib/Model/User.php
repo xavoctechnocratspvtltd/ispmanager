@@ -32,8 +32,11 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$user_j->addField('simultaneous_use')->type('Number');
 		$user_j->addField('grace_period_in_days')->type('number')->defaultValue(0);
 		$user_j->addField('custom_radius_attributes')->type('text')->caption('Custom RADIUS Attributes');
+		
 		$user_j->addField('create_invoice')->type('boolean')->defaultValue(false);
-		$user_j->addField('include_pro_data_basis')->type('boolean')->defaultValue(false);
+		$user_j->addField('is_invoice_date_first_to_first')->type('boolean')->defaultValue(false);
+		$user_j->addField('include_pro_data_basis')->setValueList(['none'=>'None','invoice_only'=>'Invoice Only','data_only'=>'Data Only','invoice_and_data_both'=>'Invoice and Data Both'])->defaultValue('none');
+
 		$user_j->addField('last_dl_limit');
 		$user_j->addField('last_ul_limit');
 		$user_j->addField('last_accounting_dl_ratio');
@@ -66,7 +69,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			);
 	}
 
-	function beforeSave(){
+	function beforeSave(){		
 		if($this->isDirty('plan_id')){
 			$this->plan_dirty = $this->dirty['plan_id'];
 		}
@@ -85,15 +88,16 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$this['shipping_name'] = $this['shipping_name']?:$this['organization_name'];
 		$this['shipping_pincode'] = $this['shipping_pincode']?:$this['pin_code'];
 
+		if(!$this['is_invoice_date_first_to_first']){
+			$this['include_pro_data_basis'] = 'none';
+		}
 	}
 
 	function updateUserConditon(){
+		
 		if(!$this->plan_dirty OR !$this['plan_id']) return;
 		
-		if($this->plan_dirty != $this['plan_id']){
-			$this->setPlan($this['plan_id']);
-		}
-		
+		$this->setPlan($this['plan_id']);
 	}
 
 	function createInvoice(){
@@ -104,6 +108,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		if(!$this['plan_id'] AND !$this['create_invoice'] ) return;
 
 		$qsp_master = $this->add('xepan\commerce\Model_QSP_Master');
+		
 		$master_data = [];
 
 		$master_data['qsp_no'] = $this->add('xepan\commerce\Model_SalesInvoice')->newNumber();
@@ -127,7 +132,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$master_data['is_express_shipping'] = 0;
 		$master_data['due_date'] = date("Y-m-d H:i:s", strtotime("+".$this['grace_period_in_days']." days",strtotime($this->app->now)));
 		$master_data['round_amount'] = 0;
-		$master_data['discount_amount'] = $this->getProDataAmount();
+		$master_data['discount_amount'] = 0;
 		$master_data['exchange_rate'] = 1;
 		$master_data['tnc_id'] = 0;
 
@@ -145,14 +150,52 @@ class Model_User extends \xepan\commerce\Model_Customer{
 					'qty_unit_id'=>$plan_model['qty_unit_id'],
 					'discount'=>0
 				];
+		
+		if( date('d',strtotime($this->app->today)) != 1 && $this['is_invoice_date_first_to_first'] && in_array($this['include_pro_data_basis'], ['invoice_only','invoice_and_data_both'])){
+			
+			if($plan_model['renewable_unit'] && $plan_model['renewable_value']){
+				$item_renew_date = date("Y-m-01", strtotime("+".$plan_model['renewable_value']." ".$plan_model['renewable_unit'],strtotime($this->app->today)));
+				$item_renew_time = strtotime($item_renew_date);
+				$invoice_create_time = strtotime($this->app->today);
+				$invoice_month_start_time = strtotime(date('Y-m-01',strtotime($this->app->today)));
+
+				$total_days = ceil(abs( $item_renew_time - $invoice_month_start_time ) / (60 * 60 * 24));
+				$actual_days = ceil(abs($item_renew_time - $invoice_create_time) / (60 * 60 * 24));
+
+				$one_day_price = $item['price'] / $total_days;
+				$actual_price = $one_day_price * $actual_days;
+				$item['price'] = $actual_price;
+
+				if($_GET['debug']){
+					echo "Invoice Price Pro data----"."<br/>";
+					echo "renewable value = ".$plan_model['renewable_value']." ".$plan_model['renewable_unit']."<br/>";
+					echo "invoice create date = ".$this->app->today."<br/>";
+					echo "invoice month start date = ".date('Y-m-01',strtotime($this->app->today))."<br/>";
+					echo "item renew date = ".$item_renew_date."<br/>";
+					echo "total days = ".$total_days."<br/>";
+					echo "actual days = ".$actual_days."<br/>";
+					echo "one_day_price = ".$one_day_price."<br/>";
+					echo "actual_price = ".$actual_price."<br/>";
+					echo "plan price = ".$plan_model['sale_price']."<br/>";
+					echo "--------------"."<br/>";
+				}
+			}
+		}
+
 		array_push($detail_data, $item);
+		if($_GET['debug']){
+			echo "<pre>";
+			print_r($master_data);
+			print_r($detail_data);
+			echo "</pre>";
+		}
 		$qsp_master->createQSP($master_data,$detail_data,"SalesInvoice");
 	}
 
 	function getProDataAmount(){
 		if(!$this->loaded()) throw new \Exception("radius user must loaded");
 		
-		return 10;
+		return 0;
 	}
 
 	function addTopup($topup_id,$date=null,$remove_old_topups=false){
@@ -160,7 +203,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	}
 
 	function setPlan($plan, $on_date=null, $remove_old=false,$is_topup=false,$remove_old_topups=false){
-
+		
 		if(!$on_date) $on_date = isset($this->app->isptoday)? $this->app->isptoday : $this->app->today;
 
 		if(is_numeric($plan)){
@@ -191,8 +234,9 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			$update_query = "DELETE FROM  isp_user_plan_and_topup WHERE user_id = '".$this->id."' AND is_topup = '1'";
 			$this->app->db->dsql()->expr($update_query)->execute();
 		}
-
+		
 		foreach ($condition_model as $key => $condition) {
+			
 			$fields = $condition->getActualFields();
 			$unset_field =  ['id','plan_id','plan'];
 			$fields = array_diff($fields,$unset_field);
@@ -210,14 +254,26 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 			$end_date = date("Y-m-d H:i:s", strtotime("+".$plan_model['plan_validity_value']." ".$plan_model['qty_unit'],strtotime($on_date)));
 			
+			// set end date last
+			if($this['is_invoice_date_first_to_first']){
+				$end_date = date("Y-m-t H:i:s", strtotime($end_date));
+			}
+
 			if($condition['data_reset_value']){
 
 				$reset_date = date("Y-m-d H:i:s", strtotime("+".$condition['data_reset_value']." ".$condition['data_reset_mode'],strtotime($on_date)));
 
 				if($condition['data_reset_mode'] == "months"){
-					$reset_date = date('Y-m-01 00:00:00', strtotime($reset_date));
+					if($this['is_invoice_date_first_to_first'])
+						$reset_date = date('Y-m-01 00:00:00', strtotime($reset_date));
+					else
+						$reset_date = date('Y-m-d 00:00:00', strtotime($reset_date));
+
 				}elseif ($condition['data_reset_mode'] == "years") {
-					$reset_date = date('Y-m-01 00:00:00', strtotime($reset_date));
+					if($this['is_invoice_date_first_to_first'])
+						$reset_date = date('Y-m-01 00:00:00', strtotime($reset_date));
+					else					
+						$reset_date = date('Y-m-d 00:00:00', strtotime($reset_date));
 				}elseif ($condition['data_reset_mode'] == "days") {
 					$reset_date = date('Y-m-d 00:00:00', strtotime($reset_date));
 				}elseif($condition['data_reset_mode'] == "hours"){
@@ -227,6 +283,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 				$reset_date = null;
 			}
 
+
 			// factor based on implemention
 			$u_p['start_date'] = $on_date;						
 			$u_p['end_date'] = $end_date;
@@ -235,16 +292,43 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			$u_p['reset_date'] = $reset_date;
 			$u_p['is_effective'] = 0;
 			$u_p['data_limit_row'] = null; //id condition has data_limit then set empty else previous data row limit id;
+			
+			// pro data update data_limit
+			if($this['is_invoice_date_first_to_first'] && in_array($this['include_pro_data_basis'], ['data_only','invoice_and_data_both']) && $reset_date){
+				$end_time = strtotime(date('Y-m-d',strtotime($reset_date)));
+				$day_first_start_time = strtotime(date('Y-m-01',strtotime($on_date)));
+				$actual_start_time = strtotime($on_date);
+
+				$total_days = ceil(abs( $end_time - $day_first_start_time ) / (60 * 60 * 24));
+				$actual_days = ceil(abs($end_time - $actual_start_time) / (60 * 60 * 24));
+
+				if($total_days != $actual_days){
+					$one_day_limit = $this->app->human2byte($condition['data_limit']) / $total_days;
+					$pro_data_limit = $actual_days * $one_day_limit;
+					$u_p['data_limit'] = $pro_data_limit;
+				}
+
+				if($_GET['debug']){
+				echo "set Plan =----------"."<br/>";
+					echo "reset Date = ".$reset_date."<br/>";
+					echo "on Date = ".$on_date."<br/>";
+					echo "actual_days= ".$actual_days."</br>";
+					echo "total_days= ".$total_days."</br>";
+					echo "total limit = ".$condition['data_limit']."</br>";
+					echo "actual limit = ".$pro_data_limit."</br>";
+				echo "------------------"."<br/>";
+				}
+			}
+
 			$u_p->save();
 		}
 
 		$this['last_dl_limit']=null;
 		$this['last_ul_limit']=null;
 		$this->save();
-
+		
 		return $plan_model;
 	}
-
 
 	function getApplicableRow($now=null,$with_data_limit=false,$less_then_this_id=0){
 		if(!$now) $now = isset($this->app->ispnow)? $this->app->ispnow : $this->app->now;

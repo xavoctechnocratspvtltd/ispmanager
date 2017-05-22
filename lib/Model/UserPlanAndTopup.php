@@ -88,6 +88,7 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 		$this->addField('d30')->type('boolean')->defaultValue(false);
 		$this->addField('d31')->type('boolean')->defaultValue(false);
 		$this->addField('treat_fup_as_dl_for_last_limit_row')->type('boolean')->defaultValue(false);
+		$this->addField('is_pro_data_affected')->type('boolean')->defaultValue(false);
 
 
 		$this->addHook('beforeSave',$this);

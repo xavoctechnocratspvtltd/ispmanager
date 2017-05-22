@@ -150,7 +150,6 @@ class Model_User extends \xepan\commerce\Model_Customer{
 				];
 		
 		if( date('d',strtotime($this->app->today)) != 1 && $this['is_invoice_date_first_to_first'] && in_array($this['include_pro_data_basis'], ['invoice_only','invoice_and_data_both'])){
-			
 			if($plan_model['renewable_unit'] && $plan_model['renewable_value']){
 				$item_renew_date = date("Y-m-01", strtotime("+".$plan_model['renewable_value']." ".$plan_model['renewable_unit'],strtotime($this->app->today)));
 				$item_renew_time = strtotime($item_renew_date);
@@ -289,7 +288,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			$u_p['data_limit_row'] = null; //id condition has data_limit then set empty else previous data row limit id;
 			
 			// pro data update data_limit
-			if($this['is_invoice_date_first_to_first'] && in_array($this['include_pro_data_basis'], ['data_only','invoice_and_data_both']) && $reset_date){
+			if( $condition['is_pro_data_affected'] && $this['is_invoice_date_first_to_first'] && in_array($this['include_pro_data_basis'], ['data_only','invoice_and_data_both']) && $reset_date){
 				$end_time = strtotime(date('Y-m-d',strtotime($reset_date)));
 				$day_first_start_time = strtotime(date('Y-m-01',strtotime($on_date)));
 				$actual_start_time = strtotime($on_date);

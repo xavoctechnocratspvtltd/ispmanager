@@ -21,6 +21,9 @@ class Initiator extends \Controller_Addon {
 
         $this->addAppFunctions();
 
+        $user = $this->add('xavoc\ispmanager\Model_User');
+        // $this->app->addHook('beforeQSPSave',[$user,'updateQSPBeforeSave']);
+
         return $this;
     }
 

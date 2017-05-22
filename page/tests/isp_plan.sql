@@ -103,7 +103,7 @@ CREATE TABLE `isp_condition` (
   `data_reset_mode` varchar(255) DEFAULT NULL,
   `remark` varchar(255) DEFAULT NULL,
   `treat_fup_as_dl_for_last_limit_row` tinyint(1) DEFAULT NULL,
-  'is_pro_data_affected'  tinyint(1) DEFAULT NULL,
+  `is_pro_data_affected`  tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_plan_id` (`plan_id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=28 DEFAULT CHARSET=utf8;

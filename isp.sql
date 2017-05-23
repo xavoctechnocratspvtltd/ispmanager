@@ -195,7 +195,7 @@ CREATE TABLE `isp_user` (
   `grace_period_in_days` varchar(255) DEFAULT NULL,
   `customer_id` int(11) NOT NULL,
   `create_invoice` tinyint(4) DEFAULT NULL,
-  `include_pro_data_basis` tinyint(4) DEFAULT NULL,
+  `include_pro_data_basis` varchar(255) DEFAULT NULL,
   `is_invoice_date_first_to_first` tinyint(4) DEFAULT NULL,
   `last_dl_limit` bigint(20) DEFAULT NULL,
   `last_ul_limit` bigint(20) DEFAULT NULL,

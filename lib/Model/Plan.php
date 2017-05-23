@@ -4,10 +4,10 @@ namespace xavoc\ispmanager;
 
 class Model_Plan extends \xepan\commerce\Model_Item{
 	// public $table = "isp_plan";
-	public $status = ['active','deactive'];
+	public $status = ['Published','UnPublished'];
 	public $actions = [
-				'active'=>['view','edit','delete','condition'],
-				'deactive'=>['view','edit','delete','active']
+				'Published'=>['view','edit','delete','condition'],
+				'UnPublished'=>['view','edit','delete','Published']
 				];
 	
 	public $acl_type="ispmanager_plan";
@@ -23,7 +23,7 @@ class Model_Plan extends \xepan\commerce\Model_Item{
 			if($this->hasElement($field))
 				$this->getElement($field)->destroy();
 		}
-		$this->getElement('status')->enum(['active','deactive'])->defaultValue('active');
+		$this->getElement('status')->defaultValue('Published');
 		
 		// if($this->hasElement('minimum_order_qty'))
 		// 	$this->getElement('minimum_order_qty')->set(1);

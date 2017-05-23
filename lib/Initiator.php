@@ -52,9 +52,12 @@ class Initiator extends \Controller_Addon {
     }
 
     function setup_frontend(){
-        $this->routePages('xavoc_ispmanager');
+        $this->routePages('xavoc_prompt-web');
         $this->addLocation(array('template'=>'templates','js'=>'templates/js','css'=>'templates/css'))
         ->setBaseURL('./shared/apps/xavoc/ispmanager/');
+        
+        $this->app->exportFrontEndTool('xavoc\ispmanager\Tool_Login','ISPMANAGER');
+
         return $this;
     }
 

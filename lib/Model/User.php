@@ -368,6 +368,10 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 	}
 
+	function canAccess(){
+		return $this->getAAADetails()['access'];
+	}
+
 	// ===== DB.php Start =========
 	function getApplicableRow($username,$now,$with_data_limit=false,$less_then_this_id=null){
 		

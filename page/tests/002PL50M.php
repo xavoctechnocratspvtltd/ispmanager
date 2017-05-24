@@ -97,7 +97,7 @@ class page_tests_002PL50M extends page_Tester {
                 'd30'=>1,
                 'd31'=>1,
                 'treat_fup_as_dl_for_last_limit_row'=>0
-            ]
+            ],
             [   
                 'user'=>'Test User',
                 'plan'=>'Top-7Days-10MB-HighSpeed',

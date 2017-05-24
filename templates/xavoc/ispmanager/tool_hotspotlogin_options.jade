@@ -1,0 +1,32 @@
+.xepan-tool-options(id='{$_name}' style="display:none" for-xepan-component='xavoc/ispmanager/Tool_HotspotLogin')
+	.xepan-cms-group-panel.clearfix
+		h3.collapsed(data-toggle='collapse', data-target='#collapse-carousel', aria-expanded='false')
+			span Hotspot Login
+		#collapse-carousel.xepan-cms-tools-bar-panel.row-fluid.collapse.in
+			.panel-body
+				table.table.table-condensed.table-hover
+					tr
+						td 
+							| Redirect Page URL
+						td
+							input(type='text', name='redirect_url', data-attr='redirect_url')
+					tr
+						td 
+							| Registration Page URL
+						td
+							input(type='text', name='registration_url', data-attr='registration_url')
+					tr
+						td 
+							| Form Button Label
+						td
+							input(type='text', name='button_label', data-attr='button_label')		
+      
+script(type='text/javascript').
+	$('\\#{$_name} [data-attr]').on('change',function(){
+		$(current_selected_component).attr($(this).data('attr'),$(this).val());
+	});
+	$('\\#{$_name}').on('show',function(event){
+		$('\\#{$_name} [data-attr]').each(function(index,value){
+			$(this).val($(current_selected_component).attr($(this).data('attr')));
+		});
+	});

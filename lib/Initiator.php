@@ -58,6 +58,8 @@ class Initiator extends \Controller_Addon {
         
         $this->app->exportFrontEndTool('xavoc\ispmanager\Tool_Login','ISPMANAGER');
         $this->app->exportFrontEndTool('xavoc\ispmanager\Tool_Register','ISPMANAGER');
+        $this->app->exportFrontEndTool('xavoc\ispmanager\Tool_HotspotLogin','ISPMANAGER');
+        $this->app->exportFrontEndTool('xavoc\ispmanager\Tool_HotspotRegistration','ISPMANAGER');
 
         return $this;
     }

@@ -1,0 +1,113 @@
+.container(id="{$_name}")
+	.row
+		.col-md-6.col-md-offset-3
+			.panel.panel-login
+				.panel-heading
+					.row
+						.col-xs-6
+							a#login-form-link.active(href='#') Hotspot Login
+						.col-xs-6
+							a#register-form-link(href='#') Hotspot Register
+					hr
+				.panel-body
+					.row
+						.col-lg-12
+							form#login-form(action='http://phpoll.com/login/process', method='post', role='form', style='display: block;')
+								.form-group.atk-form-row.atk-form-field
+									{$mobile_no}
+								.form-group.atk-form-row.atk-form-field
+									{$password}
+								.form-group
+									.row
+										.col-sm-6
+											{$FormButtons}
+										.col-sm-6
+											a.btn.btn-success.btn-lg.text-center.btn-block(href="{$registration_url}")|Registration
+								.form-group
+									.row
+										.col-lg-12
+											.text-center
+												a.forgot-password(href='http://phpoll.com/recover', tabindex='5') Forgot Password?
+style.
+	.panel-login {
+		border-color: #ccc;
+		-webkit-box-shadow: 0px 2px 3px 0px rgba(0,0,0,0.2);
+		-moz-box-shadow: 0px 2px 3px 0px rgba(0,0,0,0.2);
+		box-shadow: 0px 2px 3px 0px rgba(0,0,0,0.2);
+	}
+	.panel-login>.panel-heading {
+		color: #00415d;
+		background-color: #fff;
+		border-color: #fff;
+		text-align:center;
+	}
+	.panel-login>.panel-heading a{
+		text-decoration: none;
+		color: #666;
+		font-weight: bold;
+		font-size: 15px;
+		-webkit-transition: all 0.1s linear;
+		-moz-transition: all 0.1s linear;
+		transition: all 0.1s linear;
+	}
+	.panel-login>.panel-heading a.active{
+		color: #029f5b;
+		font-size: 18px;
+	}
+	.panel-login>.panel-heading hr{
+		margin-top: 10px;
+		margin-bottom: 0px;
+		clear: both;
+		border: 0;
+		height: 1px;
+		background-image: -webkit-linear-gradient(left,rgba(0, 0, 0, 0),rgba(0, 0, 0, 0.15),rgba(0, 0, 0, 0));
+		background-image: -moz-linear-gradient(left,rgba(0,0,0,0),rgba(0,0,0,0.15),rgba(0,0,0,0));
+		background-image: -ms-linear-gradient(left,rgba(0,0,0,0),rgba(0,0,0,0.15),rgba(0,0,0,0));
+		background-image: -o-linear-gradient(left,rgba(0,0,0,0),rgba(0,0,0,0.15),rgba(0,0,0,0));
+	}
+	.panel-login input[type="text"], input[type="password"]{
+		height: 45px;
+		border: 1px solid #ddd;
+		font-size: 16px;
+		-webkit-transition: all 0.1s linear;
+		-moz-transition: all 0.1s linear;
+		transition: all 0.1s linear;
+		width:100%;
+	}
+	.panel-login input:hover,
+	.panel-login input:focus {
+		outline:none;
+		-webkit-box-shadow: none;
+		-moz-box-shadow: none;
+		box-shadow: none;
+		border-color: #ccc;
+	}
+	.forgot-password {
+		text-decoration: underline;
+		color: #888;
+	}
+	.forgot-password:hover,
+	.forgot-password:focus {
+		text-decoration: underline;
+		color: #666;
+	}
+
+script.
+	$(function() {
+
+		$('#login-form-link').click(function(e) {
+			$("#login-form").delay(100).fadeIn(100);
+	 		$("#register-form").fadeOut(100);
+			$('#register-form-link').removeClass('active');
+			$(this).addClass('active');
+			e.preventDefault();
+		});
+		$('#register-form-link').click(function(e) {
+			$("#register-form").delay(100).fadeIn(100);
+	 		$("#login-form").fadeOut(100);
+			$('#login-form-link').removeClass('active');
+			$(this).addClass('active');
+			e.preventDefault();
+		});
+
+	});

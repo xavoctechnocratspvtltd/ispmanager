@@ -17,7 +17,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 		// destroy extra fields
 		// $cust_fields = $this->add('xepan\commerce\Model_Customer')->getActualFields();
-		$destroy_field = ['assign_to_id','scope','user_id','is_designer','score','freelancer_type','related_with','related_id','assign_to','created_by_id','source'];
+		$destroy_field = ['assign_to_id','scope','is_designer','score','freelancer_type','related_with','related_id','assign_to','created_by_id','source'];
 		foreach ($destroy_field as $key => $field) {
 			if($this->hasElement($field))
 				$this->getElement($field)->system(true);
@@ -62,6 +62,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$this->addHook('afterSave',[$this,'updateUserConditon']);
 		$this->addHook('afterSave',[$this,'createInvoice']);
 		$this->addHook('afterSave',[$this,'updateNASCredential']);
+		$this->addHook('afterSave',[$this,'updateWebsiteUser']);
 
 		$this->is(
 				['radius_username|to_trim|unique']
@@ -923,5 +924,30 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			$this->api->db->rollback();
 			throw new \Exception($e->getMessage());
 		}
+	}
+
+	function updateWebsiteUser(){
+
+		$username = $this['radius_username'];
+		if(!filter_var($username, FILTER_VALIDATE_EMAIL)){
+			$username .= "@isp-fake.com";
+		}
+
+		$user = $this->add('xepan\base\Model_User');
+		$user->addCondition('scope','WebsiteUser');
+		$user->addCondition('username',$username);
+		$user->tryLoadAny();
+		if($user->loaded())
+			throw new \Exception("username already exist");
+		
+		// $user=$this->add('xepan\base\Model_User');
+		$this->add('BasicAuth')
+			->usePasswordEncryption('md5')
+			->addEncryptionHook($user);
+		$user['password'] = $this['radius_password'];
+		$user->save();
+		
+		$this['user_id'] = $user->id;
+		$this->save();
 	}
 }

@@ -70,6 +70,16 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	}
 
 	function beforeSave(){
+
+		// check unique radius_username 
+		$old_model = $this->add('xavoc\ispmanager\Model_User');
+		$old_model->addCondition('radius_username',$this['radius_username']);
+		if($this->loaded())
+			$old_model->addCondition('id','<>',$this['id']);
+		$old_model->tryLoadAny();
+		if($old_model->loaded())
+			throw $this->Exception("(".$this['radius_username'].') radius user is already exist ','ValidityCheck')->setField('radius_username');
+
 		if($this->isDirty('plan_id')){
 			$this->plan_dirty = $this->dirty['plan_id'];
 		}
@@ -833,4 +843,60 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	// 	die();
 	// }
 
+	function import($data){
+		// get all plan list
+		$plan_list = [];
+		foreach ($this->add('xavoc\ispmanager\Model_Plan')->getRows() as $key => $plan) {
+			$plan_list[strtolower(trim($plan['name']))] = $plan['id'];
+		}
+
+		// get all country list
+		$country_list = [];
+		foreach ($this->add('xepan\base\Model_Country') as $key => $country) {
+			$country_list[strtolower(trim($country['name']))] = $country['id'];
+		}
+
+		$state_list = [];
+		$state_model = $this->add('xepan\base\Model_State');
+		foreach ($state_model as $key => $state) {
+			$state_list[strtolower(trim($state['name']))] = $state['id'];
+		}
+
+		// echo "<pre>";
+		// print_r($country_list);
+		// print_r($state_list);
+		// echo "</pre>";
+		// die();
+
+		try{
+			$this->api->db->beginTransaction();
+			foreach ($data as $key => $record) {
+				$user = $this->add('xavoc\ispmanager\Model_User');
+				$plan_name = strtolower(trim($record['PLAN']));
+
+				$plan_id = isset($plan_list[$plan_name])?$plan_list[$plan_name]:0;
+				$user['plan_id'] = $plan_id;
+				
+				$country_name = strtolower(trim($record['COUNTRY']));
+				$country_id = isset($country_list[$country_name])?$country_list[$country_name]:0;
+				$user['country_id'] = $country_id;
+
+				$state_name = strtolower(trim($record['STATE']));
+				$state_id = isset($state_list[$state_name])?$state_list[$state_name]:0;
+				$user['state_id'] = $state_id;
+				
+				foreach ($record as $field => $value) {
+					$field_name = strtolower(trim($field));
+					$user[$field_name] = $value;
+				}
+				$user->save();
+			}
+
+			$this->api->db->commit();
+
+		}catch(\Exception $e){
+			$this->api->db->rollback();
+			throw new \Exception($e->getMessage());
+		}
+	}
 }

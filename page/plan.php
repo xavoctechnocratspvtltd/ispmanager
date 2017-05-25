@@ -23,7 +23,7 @@ class page_plan extends \xepan\base\Page {
 		
 		$grid = $crud->grid;
 		$import_btn = $grid->addButton('Import CSV')->addClass('btn btn-primary');
-		$import_btn->setIcon('ui-icon-arrowthick-1-n');
+		$import_btn->setIcon('fa fa fa-arrow-up');
 
 		$import_btn->js('click')
 			->univ()

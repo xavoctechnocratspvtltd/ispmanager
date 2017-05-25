@@ -51,6 +51,14 @@ class page_runtests extends \xepan\base\Page_TestRunner {
 		$user_model['last_name'] = 'user';
 		$user_model['radius_username'] = 'xavoc';
 		$user_model['radius_password'] = 'xavoc';
+
+		$login_user= $this->add('xepan\base\Model_User')
+						->addCondition('username','xavoc')
+						->addCondition('password','xavoc')
+						->tryLoadAny()
+						;
+		$user_model['user_id'] = $login_user->id;
+
 		$user_model->save();
 	}
 

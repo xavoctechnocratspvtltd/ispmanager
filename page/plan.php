@@ -66,7 +66,7 @@ class page_plan extends \xepan\base\Page {
 
 		$this->add('View')->setElement('iframe')->setAttr('src',$this->api->url('./execute',array('cut_page'=>1)))->setAttr('width','100%');
 		
-		$this->add('View')->set("Import File Detail");
+		$this->add('View',null,null,['view/planscvdetail']);
 	}
 
 	function page_import_execute(){

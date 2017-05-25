@@ -65,4 +65,73 @@ class Model_Plan extends \xepan\commerce\Model_Item{
 
 		$crud->grid->removeColumn('plan');
 	}
+
+	function import($data){
+		// get list of plan
+		$plan_list = [];
+		foreach ($this->add('xavoc\ispmanager\Model_Plan')->getRows() as $key => $plan) {
+			$plan_list[$plan['name']] = $plan['id'];
+		}
+
+		// get list of unit
+		$unit_list = [];
+		foreach ($this->add('xepan\commerce\Model_Unit')->getRows() as $key => $unit) {
+			$unit_list[$unit['name']] = $unit['id'];
+		}
+
+		// get list of tax
+		$tax_list = [];
+		foreach ($this->add('xepan\commerce\Model_Taxation')->getRows() as $key => $tax) {
+			$tax_list[$tax['name']] = $tax['id'];
+		}
+
+		$reset_mode = ['hours'=>'hours','hour'=>'hours','days'=>'days','day'=>'days','months'=>'months','month'=>'months','years'=>'years','year'=>'years'];
+		
+		// echo "<pre>";
+		// print_r($data);
+		// echo "</pre>";
+
+		try{
+
+			foreach ($data as $key => $record) {
+				// update plan
+				$plan_field = ['NAME','CODE','STATUS','ORIGINAL_PRICE','SALE_PRICE','TAX','PLAN_VALIDITY_VALUE','PLAN_VALIDITY_UNIT','DESCRIPTION','RENEWABLE_VALUE','RENEWABLE_UNIT','IS_AUTO_RENEW','AVAILABLE_IN_USER_CONTROL_PANEL'];
+				$plan_name = trim($record['NAME']);
+
+				if(!isset($plan_list[$plan_name])){
+					$plan_model = $this->add('xavoc\ispmanager\Model_Plan');
+					foreach ($plan_field as $key=>$field) {
+						$field_name = strtolower(trim($field));
+						if($field_name == "code") $field_name = "sku";
+						$plan_model[$field_name] = $record[$field];
+					}
+					$plan_model->save();
+					$plan_list[$plan_name] = $plan_model->id;
+				}
+
+				$plan_id = $plan_list[$plan_name];
+
+
+				// unset plan field
+				foreach ($plan_field as $key => $field) {
+					unset($record[$field]);
+				}
+				
+				//  add condition
+				$condition_data = $record;
+				$condition = $this->add('xavoc\ispmanager\Model_Condition');
+				$condition->addCondition('plan_id',$plan_id);
+
+				foreach ($condition_data as $field => $value) {
+					$field = strtolower(trim($field));
+					$condition[$field] = $value;
+				}
+				$condition->save();
+			}
+		}catch(\Exception $e){
+
+		}
+
+	}
+
 }

@@ -47,7 +47,7 @@ class page_user extends \xepan\base\Page {
 		$form->addSubmit('Download Sample File')->addClass('btn btn-primary');
 		
 		if($_GET['download_sample_csv_file']){
-			$output = ['RADIUS_USERNAME','RADIUS_PASSWORD','PLAN','SIMULTANEOUS_USE','GRACE_PERIOD_IN_DAYS','FIRST_NAME','LAST_NAME','COUNTRY','STATE','CITY','ADDRESS','PIN_CODE','CREATE_INVOICE','IS_INVOICE_DATE_FIRST_TO_FIRST','INCLUDE_PRO_DATA_BASIS','CUSTOM_RADIUS_ATTRIBUTES'];
+			$output = ['RADIUS_USERNAME','RADIUS_PASSWORD','PLAN','SIMULTANEOUS_USE','GRACE_PERIOD_IN_DAYS','FIRST_NAME','LAST_NAME','COUNTRY','STATE','CITY','ADDRESS','PIN_CODE','CREATE_INVOICE','IS_INVOICE_DATE_FIRST_TO_FIRST','INCLUDE_PRO_DATA_BASIS','CUSTOM_RADIUS_ATTRIBUTES','DATA_CONSUMED'];
 			$output = implode(",", $output);
 	    	header("Content-type: text/csv");
 	        header("Content-disposition: attachment; filename=\"sample_xepan_isp_user_import.csv\"");
@@ -70,7 +70,7 @@ class page_user extends \xepan\base\Page {
 
 		$this->add('View')->setElement('iframe')->setAttr('src',$this->api->url('./execute',array('cut_page'=>1)))->setAttr('width','100%');
 		
-		$this->add('View')->set('CSV Field Detail: set include_pro_data_basis value in list 1. none 2. invoice_only 3. data_only 4. invoice_and_data_both ');
+		$this->add('View')->setHtml('CSV Field Detail: set include_pro_data_basis value in list 1. none 2. invoice_only 3. data_only 4. invoice_and_data_both <br/> Data_Consumed: dl/ul/remark');
 	}
 
 	function page_import_execute(){

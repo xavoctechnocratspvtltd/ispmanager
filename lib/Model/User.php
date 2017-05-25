@@ -890,6 +890,31 @@ class Model_User extends \xepan\commerce\Model_Customer{
 					$user[$field_name] = $value;
 				}
 				$user->save();
+
+				// data_Remark: eg.dl/up/remark, 1039/209/MainPlan,3089/Topupplan
+				if($record['DATA_CONSUMED']){
+					$condition_consumed_list = explode(",", $record['DATA_CONSUMED']);
+
+					foreach ($condition_consumed_list as $key => $c_c) {
+						$consumed_condition = explode("/", $c_c);
+						if(count($consumed_condition) != 3 ) continue;
+						$dl_data_consumed = $consumed_condition[0];
+						$up_data_consumed = $consumed_condition[1];
+						$remark = trim($consumed_condition[2]);
+
+						$upt = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup');
+						$upt->addCondition('user_id',$user->id);
+						$upt->addCondition('plan_id',$plan_id);
+						$upt->addCondition('remark',$remark);
+						$upt->tryLoadAny();
+						if(!$upt->loaded()) continue;
+
+						$upt['download_data_consumed'] = $dl_data_consumed;
+						$upt['upload_data_consumed'] = $up_data_consumed;
+						$upt->save();
+					}	
+				}
+
 			}
 
 			$this->api->db->commit();

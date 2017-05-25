@@ -35,8 +35,12 @@ class page_plan extends \xepan\base\Page {
 
 	function page_import(){
 
-		$form = $this->add('Form');
-		$form->addSubmit('Download Sample File');
+		$col = $this->add('Columns');
+		$col1 = $col->addColumn('6')->addClass('col-md-6 col-lg-6 col-sm-12');
+		$col2 = $col->addColumn('6')->addClass('col-md-6 col-lg-6 col-sm-12');
+
+		$form = $col1->add('Form');
+		$form->addSubmit('Download Sample File')->addClass('btn btn-primary');
 		
 		if($_GET['download_sample_csv_file']){
 			$output = ['NAME','CODE','STATUS','ORIGINAL_PRICE','SALE_PRICE','TAX','PLAN_VALIDITY_VALUE','PLAN_VALIDITY_UNIT','DESCRIPTION','RENEWABLE_VALUE','RENEWABLE_UNIT','IS_AUTO_RENEW','AVAILABLE_IN_USER_CONTROL_PANEL','REMARK','DATA_LIMIT','DOWNLOAD_LIMIT','UPLOAD_LIMIT','FUP_DOWNLOAD_LIMIT','FUP_UPLOAD_LIMIT','ACCOUNTING_DOWNLOAD_RATIO','ACCOUNTING_UPLOAD_RATIO','IS_DATA_CARRY_FORWARD','START_TIME','END_TIME','SUN','MON','TUE','WED','THU','FRI','SAT','D01','D02','D03','D04','D05','D06','D07','D08','D09','D10','D11','D12','D13','D14','D15','D16','D17','D18','D19','D20','D21','D22','D23','D24','D25','D26','D27','D28','D29','D30','D31','DATA_RESET_VALUE','DATA_RESET_MODE','TREAT_FUP_AS_DL_FOR_LAST_LIMIT_ROW','IS_PRO_DATA_AFFECTED'];
@@ -53,7 +57,16 @@ class page_plan extends \xepan\base\Page {
 			$form->js()->univ()->newWindow($form->app->url('xavoc_ispmanager_plan_import',['download_sample_csv_file'=>true]))->execute();
 		}
 
+		$form_delete = $col2->add('Form');
+		$form_delete->addSubmit('Delete All Plan')->addClass('btn btn-danger');
+		if($form_delete->isSubmitted()){
+			$this->add('xavoc\ispmanager\Model_Plan')->deleteAll();
+			$form_delete->js()->univ()->successMessage("Plan's Deleted Successfully")->execute();
+		}
+
 		$this->add('View')->setElement('iframe')->setAttr('src',$this->api->url('./execute',array('cut_page'=>1)))->setAttr('width','100%');
+		
+		$this->add('View')->set("Import File Detail");
 	}
 
 	function page_import_execute(){

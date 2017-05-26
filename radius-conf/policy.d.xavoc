@@ -13,7 +13,7 @@ xavocacct {
 	        Acct-Session-Id = "%{Acct-Session-Id}"
 	        NAS-IP-Address = "%{NAS-IP-Address}"
 	        Framed-IP-Address = "%{Framed-IP-Address}"
-	        Mikrotik-Rate-Limit = "%{control:Tmp-String-1}"
+	        Mikrotik-Rate-Limit = "%{control:Tmp-String-0}"
 		}
 	}
 	if(&control:Tmp-Integer-0 == 2){

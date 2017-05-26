@@ -34,6 +34,8 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 		$this->addField('is_effective')->type('boolean')->defaultValue(false);
 		$this->addField('download_data_consumed')->hint('in MB')->defaultValue(0);
 		$this->addField('upload_data_consumed')->hint('in MB')->defaultValue(0);
+		// $this->addField('time_limit');
+		// $this->addField('time_consumed')->system(true);
 
 		$this->addExpression('data_consumed')->set('download_data_consumed+upload_data_consumed');
 		

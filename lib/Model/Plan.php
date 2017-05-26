@@ -48,6 +48,15 @@ class Model_Plan extends \xepan\commerce\Model_Item{
 	function beforeSave(){
 		// $this['original_price'] = $this['sale_price'];
 		$this['minimum_order_qty'] = 1;
+
+		// plan name must not be same
+		$old_model = $this->add("xavoc\ispmanager\Model_Plan");
+		$old_model->addCondition('name',$this['name']);
+		if($this->loaded())
+			$old_model->addCondition('id','<>',$this->id);
+		$old_model->tryLoadAny();
+		if($old_model->loaded())
+			throw $this->Exception("(".$this['name'].') plan name is already exist ','ValidityCheck')->setField('name');
 	}
 
 	function page_condition($page){
@@ -70,28 +79,30 @@ class Model_Plan extends \xepan\commerce\Model_Item{
 		// get list of plan
 		$plan_list = [];
 		foreach ($this->add('xavoc\ispmanager\Model_Plan')->getRows() as $key => $plan) {
-			$plan_list[$plan['name']] = $plan['id'];
+			$plan_list[trim($plan['name'])] = $plan['id'];
 		}
 
 		// get list of unit
 		$unit_list = [];
 		foreach ($this->add('xepan\commerce\Model_Unit')->getRows() as $key => $unit) {
-			$unit_list[$unit['name']] = $unit['id'];
+			$unit_list[trim($unit['name'])] = $unit['id'];
 		}
 
 		// get list of tax
 		$tax_list = [];
 		foreach ($this->add('xepan\commerce\Model_Taxation')->getRows() as $key => $tax) {
-			$tax_list[$tax['name']] = $tax['id'];
+			$tax_list[trim($tax['name'])] = $tax['id'];
 		}
 
-		$reset_mode = ['hours'=>'hours','hour'=>'hours','days'=>'days','day'=>'days','months'=>'months','month'=>'months','years'=>'years','year'=>'years'];
+		$reset_mode = ['hours'=>'hours','hour'=>'hours','days'=>'days','day'=>'days','week'=>'weeks','weeks'=>'weeks','months'=>'months','month'=>'months','years'=>'years','year'=>'years'];
 		
 		// echo "<pre>";
 		// print_r($data);
 		// echo "</pre>";
+		// die();
 
 		try{
+			$this->api->db->beginTransaction();
 
 			foreach ($data as $key => $record) {
 				// update plan
@@ -103,7 +114,27 @@ class Model_Plan extends \xepan\commerce\Model_Item{
 					foreach ($plan_field as $key=>$field) {
 						$field_name = strtolower(trim($field));
 						if($field_name == "code") $field_name = "sku";
-						$plan_model[$field_name] = $record[$field];
+						
+						$value = $record[$field];
+						if(in_array($field_name, ['plan_validity_unit','renewable_unit','tax'])){
+							switch ($field_name) {
+								case 'plan_validity_unit':
+									$field_name = "qty_unit_id";
+									$value = isset($unit_list[trim($value)])?$unit_list[trim($value)]:0;
+									break;
+
+								case 'renewable_unit':
+									$value = strtoupper($value);
+									break;
+
+								case 'tax':
+									$field_name = 'tax_id';
+									$value = isset($tax_list[trim($value)])?$tax_list[trim($value)]:0;
+									break;
+							}
+						}
+
+						$plan_model[$field_name] = $value;
 					}
 					$plan_model->save();
 					$plan_list[$plan_name] = $plan_model->id;
@@ -124,12 +155,17 @@ class Model_Plan extends \xepan\commerce\Model_Item{
 
 				foreach ($condition_data as $field => $value) {
 					$field = strtolower(trim($field));
+					if(in_array($field, ['data_limit','download_limit','upload_limit','fup_download_limit','fup_upload_limit']))
+						$value = $this->app->human2byte($value);
 					$condition[$field] = $value;
 				}
 				$condition->save();
 			}
-		}catch(\Exception $e){
 
+			$this->api->db->commit();
+		}catch(\Exception $e){
+			$this->api->db->rollback();
+			throw new \Exception($e->getMessage());
 		}
 
 	}

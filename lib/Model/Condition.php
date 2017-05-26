@@ -12,7 +12,7 @@ class Model_Condition extends \xepan\base\Model_Table{
 		$this->hasOne('xavoc\ispmanager\Plan','plan_id');
 		
 		$this->addField('remark');
-		$this->addField('data_limit')->hint('Data Limit in HUman redable format 20gb, 1tb, 500mb');
+		$this->addField('data_limit')->hint('Data Limit in Human redable format 20gb, 1tb, 500mb');
 		$this->addField('download_limit')->hint('Limit in KBPS');
 		$this->addField('upload_limit')->hint('Limit in KBPS');
 		$this->addField('fup_download_limit')->hint('limit per second');
@@ -20,7 +20,7 @@ class Model_Condition extends \xepan\base\Model_Table{
 		$this->addField('accounting_download_ratio')->hint('ratio in %')->defaultValue(100);
 		$this->addField('accounting_upload_ratio')->hint('ratio in %')->defaultValue(100);
 
-		$this->addField('is_data_carry_forward')->enum(['none','once','allways']);
+		$this->addField('is_data_carry_forward')->enum(['none','once','allways'])->defaultValue('none');
 		
 		$this->addField('start_time');//->type('time')->display(['form'=>'TimePicker']);
 		$this->addField('end_time');//->type('time')->display(['form'=>'TimePicker']);

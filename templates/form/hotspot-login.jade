@@ -4,10 +4,10 @@
 			.panel.panel-login
 				.panel-heading
 					.row
-						.col-xs-6
+						.col-xs-12
 							a#login-form-link.active(href='#') Hotspot Login
-						.col-xs-6
-							a#register-form-link(href='#') Hotspot Register
+						//- .col-xs-6
+						//- 	a#register-form-link(href='#') Hotspot Register
 					hr
 				.panel-body
 					.row
@@ -22,12 +22,13 @@
 										.col-sm-6
 											{$FormButtons}
 										.col-sm-6
-											a.btn.btn-success.btn-lg.text-center.btn-block(href="{$registration_url}&register=1")|Registration
+											a.btn.btn-success.btn-lg.text-center.btn-block(href="{$registration_url}")|Registration
 								.form-group
 									.row
 										.col-lg-12
 											.text-center
-												a.forgot-password(href='http://phpoll.com/recover', tabindex='5') Forgot Password?
+												a.forgot-password(href='#a', tabindex='5') Forgot Password?
+												//- a.forgot-password(href='http://phpoll.com/recover', tabindex='5') Forgot Password?
 style.
 	.panel-login {
 		border-color: #ccc;

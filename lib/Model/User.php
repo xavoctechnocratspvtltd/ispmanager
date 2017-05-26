@@ -17,7 +17,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 		// destroy extra fields
 		// $cust_fields = $this->add('xepan\commerce\Model_Customer')->getActualFields();
-		$destroy_field = ['assign_to_id','scope','user_id','is_designer','score','freelancer_type','related_with','related_id','assign_to','created_by_id','source'];
+		$destroy_field = ['assign_to_id','scope','is_designer','score','freelancer_type','related_with','related_id','assign_to','created_by_id','source'];
 		foreach ($destroy_field as $key => $field) {
 			if($this->hasElement($field))
 				$this->getElement($field)->system(true);
@@ -62,6 +62,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$this->addHook('afterSave',[$this,'updateUserConditon']);
 		$this->addHook('afterSave',[$this,'createInvoice']);
 		$this->addHook('afterSave',[$this,'updateNASCredential']);
+		$this->addHook('afterSave',[$this,'updateWebsiteUser']);
 
 		$this->is(
 				['radius_username|to_trim|unique']
@@ -70,6 +71,16 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	}
 
 	function beforeSave(){
+
+		// check unique radius_username 
+		$old_model = $this->add('xavoc\ispmanager\Model_User');
+		$old_model->addCondition('radius_username',$this['radius_username']);
+		if($this->loaded())
+			$old_model->addCondition('id','<>',$this['id']);
+		$old_model->tryLoadAny();
+		if($old_model->loaded())
+			throw $this->Exception("(".$this['radius_username'].') radius user is already exist ','ValidityCheck')->setField('radius_username');
+
 		if($this->isDirty('plan_id')){
 			$this->plan_dirty = $this->dirty['plan_id'];
 		}
@@ -833,4 +844,110 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	// 	die();
 	// }
 
+	function import($data){
+		// get all plan list
+		$plan_list = [];
+		foreach ($this->add('xavoc\ispmanager\Model_Plan')->getRows() as $key => $plan) {
+			$plan_list[strtolower(trim($plan['name']))] = $plan['id'];
+		}
+
+		// get all country list
+		$country_list = [];
+		foreach ($this->add('xepan\base\Model_Country') as $key => $country) {
+			$country_list[strtolower(trim($country['name']))] = $country['id'];
+		}
+
+		$state_list = [];
+		$state_model = $this->add('xepan\base\Model_State');
+		foreach ($state_model as $key => $state) {
+			$state_list[strtolower(trim($state['name']))] = $state['id'];
+		}
+
+		// echo "<pre>";
+		// print_r($country_list);
+		// print_r($state_list);
+		// echo "</pre>";
+		// die();
+
+		try{
+			$this->api->db->beginTransaction();
+			foreach ($data as $key => $record) {
+				$user = $this->add('xavoc\ispmanager\Model_User');
+				$plan_name = strtolower(trim($record['PLAN']));
+
+				$plan_id = isset($plan_list[$plan_name])?$plan_list[$plan_name]:0;
+				$user['plan_id'] = $plan_id;
+				
+				$country_name = strtolower(trim($record['COUNTRY']));
+				$country_id = isset($country_list[$country_name])?$country_list[$country_name]:0;
+				$user['country_id'] = $country_id;
+
+				$state_name = strtolower(trim($record['STATE']));
+				$state_id = isset($state_list[$state_name])?$state_list[$state_name]:0;
+				$user['state_id'] = $state_id;
+				
+				foreach ($record as $field => $value) {
+					$field_name = strtolower(trim($field));
+					$user[$field_name] = $value;
+				}
+				$user->save();
+
+				// data_Remark: eg.dl/up/remark, 1039/209/MainPlan,3089/Topupplan
+				if($record['DATA_CONSUMED']){
+					$condition_consumed_list = explode(",", $record['DATA_CONSUMED']);
+
+					foreach ($condition_consumed_list as $key => $c_c) {
+						$consumed_condition = explode("/", $c_c);
+						if(count($consumed_condition) != 3 ) continue;
+						$dl_data_consumed = $consumed_condition[0];
+						$up_data_consumed = $consumed_condition[1];
+						$remark = trim($consumed_condition[2]);
+
+						$upt = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup');
+						$upt->addCondition('user_id',$user->id);
+						$upt->addCondition('plan_id',$plan_id);
+						$upt->addCondition('remark',$remark);
+						$upt->tryLoadAny();
+						if(!$upt->loaded()) continue;
+
+						$upt['download_data_consumed'] = $dl_data_consumed;
+						$upt['upload_data_consumed'] = $up_data_consumed;
+						$upt->save();
+					}	
+				}
+
+			}
+
+			$this->api->db->commit();
+
+		}catch(\Exception $e){
+			$this->api->db->rollback();
+			throw new \Exception($e->getMessage());
+		}
+	}
+
+	function updateWebsiteUser(){
+
+		$username = $this['radius_username'];
+		if(!filter_var($username, FILTER_VALIDATE_EMAIL)){
+			$username .= "@isp-fake.com";
+		}
+
+		$user = $this->add('xepan\base\Model_User');
+		$user->addCondition('scope','WebsiteUser');
+		$user->addCondition('username',$username);
+		$user->tryLoadAny();
+		if($user->loaded())
+			throw new \Exception("username already exist");
+		
+		// $user=$this->add('xepan\base\Model_User');
+		$this->add('BasicAuth')
+			->usePasswordEncryption('md5')
+			->addEncryptionHook($user);
+		$user['password'] = $this['radius_password'];
+		$user->save();
+		
+		$this['user_id'] = $user->id;
+		$this->save();
+	}
 }

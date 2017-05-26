@@ -28,7 +28,7 @@ class Tool_HotspotLogin extends \xepan\cms\View_Tool{
 
 		$form->addSubmit($this->options['button_label'])->addClass('btn btn-primary btn-lg text-center btn-block');
 
-		if($_GET['register']){
+		if($this->options['registration_url']){
 			$form->layout->template->trySet('registration_url',$this->app->url($this->options['registration_url']));
 		}
 

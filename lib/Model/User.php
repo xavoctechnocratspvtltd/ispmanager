@@ -937,8 +937,8 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$user->addCondition('scope','WebsiteUser');
 		$user->addCondition('username',$username);
 		$user->tryLoadAny();
-		if($user->loaded())
-			throw new \Exception("username already exist");
+		if($user->loaded() && $user->id != $this['user_id'])
+			throw new \Exception("user name already user with other isp user");
 		
 		// $user=$this->add('xepan\base\Model_User');
 		$this->add('BasicAuth')

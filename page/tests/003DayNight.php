@@ -250,12 +250,11 @@ class page_tests_003DayNight extends page_Tester {
         $r = $this->process([
                 '2017-05-01 00:00:00'=>'plan-Day Night plan',
                 '2017-05-10 22:30:00'=>'authentication',
-                '2017-05-10 22:35:00'=>'10gb',
-                '2017-05-12 22:35:00'=>'20gb',
-                '2017-05-13 22:35:00'=>'19gb',
-                '2017-05-13 22:40:00'=>'1gb',
-                '2017-05-13 22:45:00'=>'1mb',
-                '2017-05-13 22:46:00'=>'authentication',
+                '2017-05-10 22:35:00'=>'1gb',
+                '2017-05-12 22:35:00'=>'5gb',
+                '2017-05-13 22:35:00'=>'2gb',
+                '2017-05-13 22:40:00'=>'2000mb',
+                '2017-05-13 22:45:00'=>'50mb',
             ]);
         return $this->result($r);
     }
@@ -266,7 +265,7 @@ class page_tests_003DayNight extends page_Tester {
             'bw_limit_row'=>'Night Plan',
             'dl'=>null,
             'ul'=>null,
-            'data_consumed'=>'50.00GB',
+            'data_consumed'=>'10.00GB',
             'access'=>0,
             'coa' => 1
         ];

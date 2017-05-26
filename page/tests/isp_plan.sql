@@ -106,7 +106,7 @@ CREATE TABLE `isp_condition` (
   `is_pro_data_affected`  tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_plan_id` (`plan_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=28 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Records of `isp_condition`
@@ -140,7 +140,7 @@ CREATE TABLE `isp_plan` (
   PRIMARY KEY (`id`),
   KEY `fk_created_by_id` (`created_by_id`),
   KEY `fk_updated_by_id` (`updated_by_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=21 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 --  Records of `isp_plan`

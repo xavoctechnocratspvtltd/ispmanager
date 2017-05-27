@@ -28,7 +28,7 @@ class Tool_UserDashBoard extends \xepan\cms\View_Tool{
 			return;
 		}else{
 			$this->add('View')->setHTML("
-					<form name='redirect' action='http://".$this->options['nas_ip']."/login' target='_ispmanager_nas_login'>
+					<form name='redirect' action='http://".$this->options['nas_ip']."/login'>
 						<input type='hidden' name='username' value='".$user['radius_username']."' />
 						<input type='hidden' name='password' value='".$user['radius_password']."' />
 					</form>

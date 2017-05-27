@@ -36,6 +36,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$user_j->addField('create_invoice')->type('boolean')->defaultValue(false);
 		$user_j->addField('is_invoice_date_first_to_first')->type('boolean')->defaultValue(false);
 		$user_j->addField('include_pro_data_basis')->setValueList(['none'=>'None','invoice_only'=>'Invoice Only','data_only'=>'Data Only','invoice_and_data_both'=>'Invoice and Data Both'])->defaultValue('none');
+		$user_j->addField('mac_address');
 
 		$user_j->addField('last_dl_limit');
 		$user_j->addField('last_ul_limit');
@@ -825,6 +826,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$radcheck_model->tryLoadAny();
 		$radcheck_model['value'] = $this['radius_password'];
 		$radcheck_model->save();
+		
 	}
 
 	function page_CurrentConditions($page){
@@ -937,8 +939,8 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$user->addCondition('scope','WebsiteUser');
 		$user->addCondition('username',$username);
 		$user->tryLoadAny();
-		if($user->loaded())
-			throw new \Exception("username already exist");
+		if($user->loaded() && $user->id != $this['user_id'])
+			throw new \Exception("user name already user with other isp user");
 		
 		// $user=$this->add('xepan\base\Model_User');
 		$this->add('BasicAuth')

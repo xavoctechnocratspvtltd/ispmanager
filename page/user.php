@@ -15,7 +15,7 @@ class page_user extends \xepan\base\Page {
 			$form = $crud->form;
 			$form->setLayout('form/user');
 		}
-		$crud->setModel($model,['net_data_limit','radius_username','radius_password','plan_id','simultaneous_use','grace_period_in_days','custom_radius_attributes','first_name','last_name','create_invoice','is_invoice_date_first_to_first','include_pro_data_basis','country_id','state_id','city','address','pin_code','qty_unit_id'],['radius_username','plan','simultaneous_use','grace_period_in_days','custom_radius_attributes','first_name','last_name','net_data_limit','is_invoice_date_first_to_first']);
+		$crud->setModel($model,['net_data_limit','radius_username','radius_password','plan_id','simultaneous_use','grace_period_in_days','custom_radius_attributes','first_name','last_name','create_invoice','is_invoice_date_first_to_first','include_pro_data_basis','country_id','state_id','city','address','pin_code','qty_unit_id','mac_address'],['radius_username','plan','simultaneous_use','grace_period_in_days','custom_radius_attributes','first_name','last_name','net_data_limit','is_invoice_date_first_to_first','mac_address']);
 		$crud->grid->removeColumn('attachment_icon');
 
 		if($crud->isEditing()){
@@ -47,7 +47,7 @@ class page_user extends \xepan\base\Page {
 		$form->addSubmit('Download Sample File')->addClass('btn btn-primary');
 		
 		if($_GET['download_sample_csv_file']){
-			$output = ['RADIUS_USERNAME','RADIUS_PASSWORD','PLAN','SIMULTANEOUS_USE','GRACE_PERIOD_IN_DAYS','FIRST_NAME','LAST_NAME','COUNTRY','STATE','CITY','ADDRESS','PIN_CODE','CREATE_INVOICE','IS_INVOICE_DATE_FIRST_TO_FIRST','INCLUDE_PRO_DATA_BASIS','CUSTOM_RADIUS_ATTRIBUTES','DATA_CONSUMED'];
+			$output = ['RADIUS_USERNAME','RADIUS_PASSWORD','PLAN','SIMULTANEOUS_USE','GRACE_PERIOD_IN_DAYS','FIRST_NAME','LAST_NAME','COUNTRY','STATE','CITY','ADDRESS','PIN_CODE','CREATE_INVOICE','IS_INVOICE_DATE_FIRST_TO_FIRST','INCLUDE_PRO_DATA_BASIS','CUSTOM_RADIUS_ATTRIBUTES','DATA_CONSUMED','MAC_ADDRESS'];
 			$output = implode(",", $output);
 	    	header("Content-type: text/csv");
 	        header("Content-disposition: attachment; filename=\"sample_xepan_isp_user_import.csv\"");

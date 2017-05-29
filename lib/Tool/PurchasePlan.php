@@ -12,6 +12,6 @@ class Tool_PurchasePlan extends \xepan\cms\View_Tool{
 	function init(){
 		parent::init();
 
-		$this->add('H1')->setHTML('I am Purchase Plan Tool');
+		$this->add('View_Error')->setHTML('I am Purchase Plan Tool');
 	}
 }		

@@ -1,0 +1,50 @@
+.xepan-tool-options(id='{$_name}' style="display:none" for-xepan-component='xavoc/ispmanager/Tool_PurchasePlan')
+	.xepan-cms-group-panel.clearfix
+		h3.collapsed(data-toggle='collapse', data-target='#collapse-carousel', aria-expanded='false')
+			span Plan Options
+		#collapse-carousel.xepan-cms-tools-bar-panel.row-fluid.collapse.in
+			.panel-body
+				table.table.table-condensed.table-hover
+					tr
+						.xepan-tool-option
+							td.xepan-tool-option-title Show BuyNow Button
+							td.xepan-tool-option-value 
+								select#show_buynowbtn(data-attr='show_buy_now_btn' data-defaultvalue="true")
+									option(value="true") True
+									option(value="false") False
+						tr.xepan-commerce-itemlist-option-toggle
+							.xepan-tool-option
+								td.xepan-tool-option-title Buy Now Button Name
+								td.xepan-tool-option-value 
+									input#buy_now_button_name(data-attr='buy_now_button_name' value="buynow" data-defaultvalue="buynow")
+
+						tr
+							.xepan-tool-option
+								td.xepan-tool-option-title Checkout Page Url
+								td.xepan-tool-option-value 
+									input#checkout_page_url(data-attr='checkout_page_url_page_url')
+script.
+	$('\#{$_name} [data-attr]').on('change',function(){
+		$(current_selected_component).attr($(this).data('attr'),$(this).val());
+		// show or hide the toggle class
+		if($(this).data('toggleclass')){
+			var value = $(this).data('togglevalue').toString();
+			if($(this).val() === value){
+				$($(this).data('toggleclass')).show();
+			}else
+				$($(this).data('toggleclass')).hide();
+		}
+
+	});
+
+	$('\#{$_name}').on('show',function(event){
+		$('\#{$_name} [data-attr]').each(function(index,value){
+			// setting up default value if no option selected
+			var default_value = $(this).attr('data-defaultvalue');
+			if($(current_selected_component).attr($(this).data('attr')))
+				default_value = $(current_selected_component).attr($(this).data('attr'));
+			
+			$(this).val(default_value);
+		});
+		
+	});	

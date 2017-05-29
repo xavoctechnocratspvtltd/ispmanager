@@ -111,7 +111,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$this->setPlan($this['plan_id']);
 	}
 
-	function createInvoice(){
+	function createInvoice($detail_data=[]){
 
 		if(!$this->loaded()) throw new \Exception("model radius user must loaded");
 		$this->reload();
@@ -142,63 +142,65 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$master_data['is_express_shipping'] = 0;
 		$master_data['due_date'] = date("Y-m-d H:i:s", strtotime("+".$this['grace_period_in_days']." days",strtotime($this->app->now)));
 		$master_data['round_amount'] = 0;
-		$master_data['discount_amount'] = 0;
+		$master_data['discount_amount'] = $this->getProDataAmount();
 		$master_data['exchange_rate'] = 1;
 		$master_data['tnc_id'] = 0;
 
-		$detail_data = [];
-		$plan_model = $this->add('xavoc\ispmanager\Model_Plan')->load($this['plan_id']);
-		$item = [
-					'item_id'=>$plan_model->id,
-					'price'=>$plan_model['sale_price'],
-					'quantity'=>1,
-					'taxation_id'=>$plan_model['tax_id'],
-					'shipping_charge'=>0,
-					'shipping_duration'=>"",
-					'express_shipping_charge'=>0,
-					'express_shipping_duration'=>"",
-					'qty_unit_id'=>$plan_model['qty_unit_id'],
-					'discount'=>0
-				];
-		
-		if( date('d',strtotime($this->app->today)) != 1 && $this['is_invoice_date_first_to_first'] && in_array($this['include_pro_data_basis'], ['invoice_only','invoice_and_data_both'])){
-			if($plan_model['renewable_unit'] && $plan_model['renewable_value']){
-				$item_renew_date = date("Y-m-01", strtotime("+".$plan_model['renewable_value']." ".$plan_model['renewable_unit'],strtotime($this->app->today)));
-				$item_renew_time = strtotime($item_renew_date);
-				$invoice_create_time = strtotime($this->app->today);
-				$invoice_month_start_time = strtotime(date('Y-m-01',strtotime($this->app->today)));
+		if(!count($detail_data)){
+			$detail_data = [];
+			$plan_model = $this->add('xavoc\ispmanager\Model_Plan')->load($this['plan_id']);
+			$item = [
+						'item_id'=>$plan_model->id,
+						'price'=>$plan_model['sale_price'],
+						'quantity'=>1,
+						'taxation_id'=>$plan_model['tax_id'],
+						'shipping_charge'=>0,
+						'shipping_duration'=>"",
+						'express_shipping_charge'=>0,
+						'express_shipping_duration'=>"",
+						'qty_unit_id'=>$plan_model['qty_unit_id'],
+						'discount'=>0
+					];
+			
+			if( date('d',strtotime($this->app->today)) != 1 && $this['is_invoice_date_first_to_first'] && in_array($this['include_pro_data_basis'], ['invoice_only','invoice_and_data_both'])){
+				if($plan_model['renewable_unit'] && $plan_model['renewable_value']){
+					$item_renew_date = date("Y-m-01", strtotime("+".$plan_model['renewable_value']." ".$plan_model['renewable_unit'],strtotime($this->app->today)));
+					$item_renew_time = strtotime($item_renew_date);
+					$invoice_create_time = strtotime($this->app->today);
+					$invoice_month_start_time = strtotime(date('Y-m-01',strtotime($this->app->today)));
 
-				$total_days = ceil(abs( $item_renew_time - $invoice_month_start_time ) / (60 * 60 * 24));
-				$actual_days = ceil(abs($item_renew_time - $invoice_create_time) / (60 * 60 * 24));
+					$total_days = ceil(abs( $item_renew_time - $invoice_month_start_time ) / (60 * 60 * 24));
+					$actual_days = ceil(abs($item_renew_time - $invoice_create_time) / (60 * 60 * 24));
 
-				$one_day_price = $item['price'] / $total_days;
-				$actual_price = $one_day_price * $actual_days;
-				$item['price'] = $actual_price;
+					$one_day_price = $item['price'] / $total_days;
+					$actual_price = $one_day_price * $actual_days;
+					$item['price'] = $actual_price;
 
-				if($_GET['debug']){
-					echo "Invoice Price Pro data----"."<br/>";
-					echo "renewable value = ".$plan_model['renewable_value']." ".$plan_model['renewable_unit']."<br/>";
-					echo "invoice create date = ".$this->app->today."<br/>";
-					echo "invoice month start date = ".date('Y-m-01',strtotime($this->app->today))."<br/>";
-					echo "item renew date = ".$item_renew_date."<br/>";
-					echo "total days = ".$total_days."<br/>";
-					echo "actual days = ".$actual_days."<br/>";
-					echo "one_day_price = ".$one_day_price."<br/>";
-					echo "actual_price = ".$actual_price."<br/>";
-					echo "plan price = ".$plan_model['sale_price']."<br/>";
-					echo "--------------"."<br/>";
+					if($_GET['debug']){
+						echo "Invoice Price Pro data----"."<br/>";
+						echo "renewable value = ".$plan_model['renewable_value']." ".$plan_model['renewable_unit']."<br/>";
+						echo "invoice create date = ".$this->app->today."<br/>";
+						echo "invoice month start date = ".date('Y-m-01',strtotime($this->app->today))."<br/>";
+						echo "item renew date = ".$item_renew_date."<br/>";
+						echo "total days = ".$total_days."<br/>";
+						echo "actual days = ".$actual_days."<br/>";
+						echo "one_day_price = ".$one_day_price."<br/>";
+						echo "actual_price = ".$actual_price."<br/>";
+						echo "plan price = ".$plan_model['sale_price']."<br/>";
+						echo "--------------"."<br/>";
+					}
 				}
 			}
+			array_push($detail_data, $item);
 		}
 
-		array_push($detail_data, $item);
 		if($_GET['debug']){
 			echo "<pre>";
 			print_r($master_data);
 			print_r($detail_data);
 			echo "</pre>";
 		}
-		$qsp_master->createQSP($master_data,$detail_data,"SalesInvoice");
+		return $qsp_master->createQSP($master_data,$detail_data,"SalesInvoice",$mapping_array=[]);
 	}
 
 	function getProDataAmount(){

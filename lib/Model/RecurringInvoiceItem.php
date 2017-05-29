@@ -5,6 +5,12 @@
  class Model_RecurringInvoiceItem extends \xepan\commerce\Model_QSP_Detail{
 
  	public $on_date;
+ 	public $customer_id;
+
+ 	public $acl_type = 'RecurringInvoiceItem';
+	public $status = ['All'];
+	public $actions = ['All'=>['view','edit','delete','create_invoice']];
+	public $acl = true;
 
 	function init(){
 		parent::init();
@@ -39,7 +45,7 @@
 		});
 		
 		$this->addExpression('invoice_renewable_date')->set(function($m,$q){
-			return $q->expr('DATE_ADD([invoice_created_at],INTERVAL [renewable_value] [renewable_unit])',['invoice_created_at'=>$m->getElement('created_at'),'renewable_value'=>$m->getElement('renewable_value'),'renewable_unit'=>'month']);
+			return $q->expr('DATE_FORMAT(DATE_ADD([invoice_created_at],INTERVAL [renewable_value] [renewable_unit]),"%Y-%m-%d")',['invoice_created_at'=>$m->getElement('created_at'),'renewable_value'=>$m->getElement('renewable_value'),'renewable_unit'=>'month']);
 		})->type('datetime');
 
 		$this->addExpression('invoice_recurring_date')->set(function($m,$q){
@@ -66,8 +72,46 @@
 		$this->addCondition('is_recurring',true);
 		$this->addCondition([['recurring_qsp_detail_id',0],['recurring_qsp_detail_id',null]]);
 		$this->addCondition('invoice_recurring_date','<=',$this->on_date);
-		$this->addCondition('include_pro_data_basis',['invoice_and_data_both','invoice_only']);
-		
+		if($this['is_invoice_date_first_to_first']){
+			$this->addCondition('include_pro_data_basis',['invoice_and_data_both','invoice_only']);
+		}
+		if($this->customer_id){
+			$this->addCondition('customer_id',$this->customer_id);
+		}
+
+		$this->addExpression('status')->set('"All"');
 		$this->setOrder('customer_id');
 	}
+
+	function page_create_invoice($page){
+
+		$recu_items = $this->add('xavoc\ispmanager\Model_RecurringInvoiceItem',['customer_id'=>$this['customer_id']]);
+		$page->add('View')->set(" invoice item ".$recu_items->count()->getOne());
+
+		$user = $this->add('xavoc\ispmanager\Model_User')->load($this['customer_id']);
+		$detail_data = [];
+
+		foreach ($recu_items as $key => $recu_item) {
+			$item = [
+						'item_id'=>$recu_item['item_id'],
+						'price'=>$recu_item['new_invoice_price'],
+						'quantity'=>$recu_item['quantity'],
+						'taxation_id'=>$recu_item['tax_id'],
+						'shipping_charge'=>$recu_item['shipping_charge'],
+						'shipping_duration'=>$recu_item['shipping_duration'],
+						'express_shipping_charge'=>$recu_item['express_shipping_charge'],
+						'express_shipping_duration'=>$recu_item['express_shipping_duration'],
+						'qty_unit_id'=>$recu_item['qty_unit_id'],
+						'discount'=>$recu_item['discount']
+					];
+			array_push($detail_data, $item);
+		}
+
+		$detail_data = $user->createInvoice($detail_data);
+
+		// echo("<pre>");
+		// print_r($detail_data);
+		// echo("</pre>");
+	}
+
 }

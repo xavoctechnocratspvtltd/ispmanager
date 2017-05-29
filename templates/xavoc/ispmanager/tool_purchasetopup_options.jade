@@ -1,8 +1,8 @@
-.xepan-tool-options(id='{$_name}' style="display:none" for-xepan-component='xepan/ispmanager/Tool_PurchaseTopUp')
+.xepan-tool-options(id='{$_name}' style="display:none" for-xepan-component='xavoc/ispmanager/Tool_PurchaseTopUp')
 	.xepan-cms-group-panel.clearfix
-		h3.collapsed(data-toggle="collapse" data-target="#collapse-plan-item-list" aria-expanded="false")
-			span|ISP TopUp
-		#collapse-plan-item-list.xepan-cms-tools-bar-panel.row-fluid.collapse.in
+		h3.collapsed(data-toggle='collapse', data-target='#collapse-carousel', aria-expanded='false')
+			span TopUp Options
+		#collapse-carousel.xepan-cms-tools-bar-panel.row-fluid.collapse.in
 			.panel-body
 				table.table.table-condensed.table-hover
 					tr
@@ -12,7 +12,7 @@
 								select#show_buynowbtn(data-attr='show_buy_now_btn' data-defaultvalue="true")
 									option(value="true") True
 									option(value="false") False
-						tr.xepan-commerce-itemlist-option-toggle(style="display:none;")
+						tr.xepan-commerce-itemlist-option-toggle
 							.xepan-tool-option
 								td.xepan-tool-option-title Buy Now Button Name
 								td.xepan-tool-option-value 

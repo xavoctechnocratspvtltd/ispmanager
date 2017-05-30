@@ -122,6 +122,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 		$qsp_master = $this->add('xepan\commerce\Model_QSP_Master');
 		$master_data = [];
+		$created_at = $this['created_at']?:$this->app->now;
 
 		$master_data['qsp_no'] = $this->add('xepan\commerce\Model_SalesInvoice')->newNumber();
 		$master_data['contact_id'] = $this->id;
@@ -142,7 +143,8 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 		$master_data['is_shipping_inclusive_tax'] = 0;
 		$master_data['is_express_shipping'] = 0;
-		$master_data['due_date'] = date("Y-m-d H:i:s", strtotime("+".$this['grace_period_in_days']." days",strtotime($this->app->now)));
+		$master_data['created_at'] = $created_at;
+		$master_data['due_date'] = date("Y-m-d H:i:s", strtotime("+".$this['grace_period_in_days']." days",strtotime($created_at)));
 		$master_data['round_amount'] = 0;
 		$master_data['discount_amount'] = $this->getProDataAmount();
 		$master_data['exchange_rate'] = 1;
@@ -897,6 +899,8 @@ class Model_User extends \xepan\commerce\Model_Customer{
 					$field_name = strtolower(trim($field));
 					$user[$field_name] = $value;
 				}
+				
+				$user['created_at'] = date('Y-m-d H:i:s',strtotime($record['INVOICE_DATE']))?:$this->app->now;
 				$user->save();
 
 				// data_Remark: eg.dl/up/remark, 1039/209/MainPlan,3089/Topupplan

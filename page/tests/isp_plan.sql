@@ -52,6 +52,7 @@ CREATE TABLE `isp_condition` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `plan_id` int(11) DEFAULT NULL,
   `data_limit` bigint(20) DEFAULT NULL,
+  `time_limit` int(11) DEFAULT NULL,
   `download_limit` bigint(20) DEFAULT NULL,
   `upload_limit` bigint(20) DEFAULT NULL,
   `fup_download_limit` bigint(20) DEFAULT NULL,

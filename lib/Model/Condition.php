@@ -13,6 +13,7 @@ class Model_Condition extends \xepan\base\Model_Table{
 		
 		$this->addField('remark');
 		$this->addField('data_limit')->hint('Data Limit in Human redable format 20gb, 1tb, 500mb');
+		$this->addField('time_limit')->hint('Time Limit in Minutes');
 		$this->addField('download_limit')->hint('Limit in KBPS');
 		$this->addField('upload_limit')->hint('Limit in KBPS');
 		$this->addField('fup_download_limit')->hint('limit per second');

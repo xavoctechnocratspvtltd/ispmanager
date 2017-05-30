@@ -113,7 +113,8 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$this->setPlan($this['plan_id']);
 	}
 
-	function createInvoice($detail_data=[]){
+	function createInvoice($m,$detail_data=[]){
+		if(is_array($m)) $detail_data = $m;
 
 		if(!$this->loaded()) throw new \Exception("model radius user must loaded");
 		$this->reload();
@@ -149,7 +150,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$master_data['discount_amount'] = $this->getProDataAmount();
 		$master_data['exchange_rate'] = 1;
 		$master_data['tnc_id'] = 0;
-
+		
 		if(!count($detail_data)){
 			$detail_data = [];
 			$plan_model = $this->add('xavoc\ispmanager\Model_Plan')->load($this['plan_id']);
@@ -939,7 +940,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 	function updateWebsiteUser(){
 
-		$username = $this['radius_username'];
+		$username = str_replace(" ", "",$this['radius_username']);
 		if(!filter_var($username, FILTER_VALIDATE_EMAIL)){
 			$username .= "@isp-fake.com";
 		}

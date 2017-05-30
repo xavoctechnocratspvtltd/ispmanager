@@ -1,13 +1,18 @@
 div.well
 	.row
-		.col-md-4.atk-form-field.atk-form-row
+		.col-md-3.col-lg-3.col-sm-3.atk-form-field.atk-form-row
 			label Row Name:
 			{$remark}
-		.col-md-4.atk-form-field.atk-form-row
+		.col-md-3.col-lg-3.col-sm-3.atk-form-field.atk-form-row
 			label Data Limit:
 			{$data_limit}
 			small.text-muted Data limit in Human Readable Format 20gb, 1tb, 500mb
-		.col-md-4.atk-form-field.atk-form-row
+		.col-md-3.col-lg-3.col-sm-3.atk-form-field.atk-form-row
+			label Time Limit:
+			{$time_limit}
+			small.text-muted Time Limit in minutes
+		.col-md-3.col-lg-3.col-sm-3.atk-form-field.atk-form-row
+			label Data Carry Forward:
 			{$is_data_carry_forward}
 div.well
 	.row

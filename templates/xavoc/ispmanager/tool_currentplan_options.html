@@ -1,0 +1,58 @@
+
+<div id="{$_name}" style="display:none" for-xepan-component="xavoc/ispmanager/Tool_CurrentPlan" class="xepan-tool-options">
+  <div class="xepan-cms-group-panel clearfix">
+    <h3 data-toggle="collapse" data-target="#collapse-carousel" aria-expanded="false" class="collapsed"><span>Show Current Plan Status</span></h3>
+    <div id="collapse-carousel" class="xepan-cms-tools-bar-panel row-fluid collapse in">
+      <div class="panel-body">
+        <table class="table table-condensed table-hover">
+          <tr>
+            <td>
+               
+              Show Data
+            </td>
+            <td>
+              <input type="checkbox" name="show_data" data-attr="show_data"/>
+            </td>
+          </tr>
+          <tr>
+            <td>
+               
+              Show Validity
+            </td>
+            <td>
+              <input type="checkbox" name="show_validity" data-attr="show_validity"/>
+            </td>
+          </tr>
+          <tr>
+            <td>
+               
+              Show BandWidth
+            </td>
+            <td>
+              <input type="checkbox" name="show_bandwith" data-attr="show_bandwith"/>
+            </td>
+          </tr>
+          <tr>
+            <td>
+               
+              Show FUP
+            </td>
+            <td>
+              <input type="checkbox" name="show_fup" data-attr="show_fup"/>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  $('\#{$_name} [data-attr]').on('change',function(){
+  	$(current_selected_component).attr($(this).data('attr'),$(this).val());
+  });
+  $('\#{$_name}').on('show',function(event){
+  	$('\#{$_name} [data-attr]').each(function(index,value){
+  		$(this).val($(current_selected_component).attr($(this).data('attr')));
+  	});
+  });
+</script>

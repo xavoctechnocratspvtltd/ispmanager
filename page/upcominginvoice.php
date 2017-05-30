@@ -10,9 +10,26 @@ class page_upcominginvoice extends \xepan\base\Page {
 	function init(){
 		parent::init();
 
-		$model = $this->add('xavoc\ispmanager\Model_RecurringInvoiceItem');
+		$from_date = $this->app->stickyGET('from_date')?$_GET['from_date']:(date('Y-m-01',strtotime($this->app->today)));
+		$to_date = $this->app->stickyGET('to_date')?$_GET['to_date']:$this->app->today;
+
+		$form = $this->add('Form');
+		$col = $form->add('Columns');
+		$col1 = $col->addColumn(4)->addClass('col-md-4 col-sm-4 col-lg-4');
+		$col2 = $col->addColumn(4)->addClass('col-md-4 col-sm-4 col-lg-4');
+		$col3 = $col->addColumn(4)->addClass('col-md-4 col-sm-4 col-lg-4');
+		$col1->addField('DatePicker','from_date')->set($from_date);
+		$col2->addField('DatePicker','to_date')->set($to_date);
+		$col3->addSubmit("Filter")->addClass('btn btn-primary btn-block');
+
+		$model = $this->add('xavoc\ispmanager\Model_RecurringInvoiceItem',['from_date'=>$from_date,'to_date'=>$to_date]);
 		$crud = $this->add('xepan\hr\CRUD',['allow_add'=>false]);
-		
+
+		// filter form submission
+		if($form->isSubmitted()){
+			$form->js(null,$crud->js()->reload(['from_date'=>$form['from_date'],'to_date'=>$form['to_date']]))->univ()->execute();
+		}
+
 		$this->customer_list = [];
 		$crud->grid->addHook('formatRow',function($g){
 
@@ -38,7 +55,7 @@ class page_upcominginvoice extends \xepan\base\Page {
 		$order->move('new_invoice_price','after','price');
 		$order->now();
 
-		$removeColumn = ['customer_id','qsp_master','item_template_design','rate','item_designer','item_nominal','total_amount','extra_info','customer_id','qsp_status','name','shipping_charge','shipping_duration','express_shipping_charge','express_shipping_duration','is_shipping_inclusive_tax','amount_excluding_tax','amount_excluding_tax_and_shipping','item_designer_id','item_nominal_id','item_qty_unit_id','item_qty_unit','qsp_type','sub_tax','renewable_value','renewable_unit','narration','tax_amount','taxation','is_invoice_date_first_to_first','invoice_renewable_date','invoice_recurring_date','include_pro_data_basis','created_at','status','attachment_icon','edit','delete'];
+		$removeColumn = ['customer_id','qsp_master','item_template_design','rate','item_designer','item_nominal','total_amount','extra_info','customer_id','qsp_status','name','shipping_charge','shipping_duration','express_shipping_charge','express_shipping_duration','is_shipping_inclusive_tax','amount_excluding_tax','amount_excluding_tax_and_shipping','item_designer_id','item_nominal_id','item_qty_unit_id','item_qty_unit','qsp_type','sub_tax','renewable_value','renewable_unit','narration','tax_amount','taxation','is_invoice_date_first_to_first','invoice_renewable_date','include_pro_data_basis','created_at','status','attachment_icon','edit','delete'];
 		foreach ($removeColumn as $key => $field_name) {
 			$grid->removeColumn($field_name);
 		}

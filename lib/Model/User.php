@@ -12,6 +12,8 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	public $acl_type= "ispmanager_user";
 	private $plan_dirty = false;
 
+	public $debug = false;
+
 	function init(){
 		parent::init();
 
@@ -176,7 +178,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 					$actual_price = $one_day_price * $actual_days;
 					$item['price'] = $actual_price;
 
-					if($_GET['debug']){
+					if($this->debug){
 						echo "Invoice Price Pro data----"."<br/>";
 						echo "renewable value = ".$plan_model['renewable_value']." ".$plan_model['renewable_unit']."<br/>";
 						echo "invoice create date = ".$this->app->today."<br/>";
@@ -194,13 +196,14 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			array_push($detail_data, $item);
 		}
 
-		if($_GET['debug']){
+		if($this->debug){
 			echo "<pre>";
 			print_r($master_data);
 			print_r($detail_data);
 			echo "</pre>";
 		}
-		return $qsp_master->createQSP($master_data,$detail_data,"SalesInvoice",$mapping_array=[]);
+
+		return $qsp_master->createQSP($master_data,$detail_data,"SalesInvoice");
 	}
 
 	function getProDataAmount(){

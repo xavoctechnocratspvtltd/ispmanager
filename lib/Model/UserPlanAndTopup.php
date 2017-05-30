@@ -98,7 +98,8 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 		$this->addField('burst_threshold_ul_limit')->hint('limit per second');
 		$this->addField('burst_dl_time')->hint('time in second');
 		$this->addField('burst_ul_time')->hint('time in second');
-		
+		$this->addField('priority');
+
 		$this->addHook('beforeSave',$this);
 
 		$this->add('xavoc\ispmanager\Controller_HumanByte')

@@ -490,7 +490,9 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		
 
 		$data_limit_row = $bw_applicable_row;
-		if(!$bw_applicable_row['net_data_limit']) $data_limit_row = $this->getApplicableRow($username, $now,$with_data_limit=true);
+		if(!$bw_applicable_row['net_data_limit']){
+			$d = $this->getApplicableRow($username, $now,$with_data_limit=true);
+		} 
 		
 		$if_fup='fup_';
 		if(($data_limit_row['download_data_consumed'] + $data_limit_row['upload_data_consumed'] + $data_limit_row['SessionInputOctets'] + $data_limit_row['SessionOutputOctets']) < $data_limit_row['net_data_limit']){
@@ -527,8 +529,47 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$dl_limit = $bw_applicable_row[$dl_field];
 		$ul_limit = $bw_applicable_row[$ul_field];
 
-		if($dl_limit === null) $dl_limit = $data_limit_row[$dl_field];
-		if($ul_limit === null) $ul_limit = $data_limit_row[$ul_field];
+
+		$dl_from_row = 'bw';
+		$ul_from_row = 'bw';
+		if($dl_limit === null){
+			$dl_limit = $data_limit_row[$dl_field];
+			$dl_from_row = "data";
+		}
+
+		if($ul_limit === null){
+			$ul_limit = $data_limit_row[$ul_field];
+			$ul_from_row = "data";
+		} 
+
+
+		$burst_dl_limit = 0;
+		$burst_threshold_dl_limit = 0;
+		$burst_dl_time = 0;
+		$burst_ul_limit = 0;
+		$burst_threshold_ul_limit = 0;
+		$burst_ul_time = 0;
+
+		// burst dl/ul if fup is not
+		if($if_fup != "fup_"){
+			// setting up burst applicable row
+			$burst_dl_row = $bw_applicable_row;
+			$burst_ul_row = $bw_applicable_row;
+
+			if($dl_from_row == "data") $burst_dl_row = $data_limit_row;
+			if($ul_from_row == "data") $burst_ul_row = $data_limit_row;
+
+			$burst_dl_limit = $burst_dl_row['burst_dl_limit'];
+			$burst_threshold_dl_limit = $burst_dl_row['burst_threshold_dl_limit'];
+			$burst_dl_time = $burst_dl_row['burst_dl_time'];
+
+			$burst_ul_limit = $burst_ul_row['burst_ul_limit'];
+			$burst_threshold_ul_limit = $burst_ul_row['burst_threshold_ul_limit'];
+			$burst_ul_time = $burst_ul_row['burst_ul_time'];	
+			
+			$priority = ($bw_applicable_row['priority'] > $data_limit_row['priority'])?$bw_applicable_row['priority']:$data_limit_row['priority'];
+		}
+		
 		// from data if not 
 		// if fup is null or 0 it is a reject authentication command
 		// if user dl, ul, accounting not equal to current dl ul then update
@@ -566,6 +607,14 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$final_row['upload_data_consumed'] = $data_limit_row['upload_data_consumed'];
 		$final_row['data_limit_row'] = $data_limit_row['remark'];
 		$final_row['bw_limit_row'] = $bw_applicable_row['remark'];
+		$final_row['burst_dl_limit'] = $burst_dl_limit;
+		$final_row['burst_threshold_dl_limit'] = $burst_threshold_dl_limit;
+		$final_row['burst_dl_time'] = $burst_dl_time;
+		$final_row['burst_ul_limit'] = $burst_ul_limit;
+		$final_row['burst_threshold_ul_limit'] = $burst_threshold_ul_limit;
+		$final_row['burst_ul_time'] = $burst_ul_time;
+		$final_row['priority'] = $priority;
+		
 		$final_row['coa'] = $coa?'1':'0';
 		$final_row['access'] = 1;
 		

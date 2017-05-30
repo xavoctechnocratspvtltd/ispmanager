@@ -25,7 +25,7 @@ class Model_Condition extends \xepan\base\Model_Table{
 		
 		$this->addField('start_time');//->type('time')->display(['form'=>'TimePicker']);
 		$this->addField('end_time');//->type('time')->display(['form'=>'TimePicker']);
-									
+
 		// for factor day
 		$this->addField('sun')->type('boolean')->defaultValue(true);
 		$this->addField('mon')->type('boolean')->defaultValue(true);
@@ -73,6 +73,14 @@ class Model_Condition extends \xepan\base\Model_Table{
 		$this->addField('data_reset_mode')->enum(['hours','days','months','years']);
 		$this->addField('treat_fup_as_dl_for_last_limit_row')->type('boolean')->defaultValue(false);
 		$this->addField('is_pro_data_affected')->type('boolean')->defaultValue(false);
+		
+		$this->addField('burst_dl_limit')->hint('limit per second');
+		$this->addField('burst_ul_limit')->hint('limit per second');
+		$this->addField('burst_threshold_dl_limit')->hint('limit per second');
+		$this->addField('burst_threshold_ul_limit')->hint('limit per second');
+		$this->addField('burst_dl_time')->hint('time in second');
+		$this->addField('burst_ul_time')->hint('time in second');
+
 
 		$this->addHook('beforeSave',$this);
 

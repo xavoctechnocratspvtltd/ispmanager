@@ -92,7 +92,13 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 		$this->addField('treat_fup_as_dl_for_last_limit_row')->type('boolean')->defaultValue(false);
 		$this->addField('is_pro_data_affected')->type('boolean')->defaultValue(false);
 
-
+		$this->addField('burst_dl_limit')->hint('limit per second');
+		$this->addField('burst_ul_limit')->hint('limit per second');
+		$this->addField('burst_threshold_dl_limit')->hint('limit per second');
+		$this->addField('burst_threshold_ul_limit')->hint('limit per second');
+		$this->addField('burst_dl_time')->hint('time in second');
+		$this->addField('burst_ul_time')->hint('time in second');
+		
 		$this->addHook('beforeSave',$this);
 
 		$this->add('xavoc\ispmanager\Controller_HumanByte')

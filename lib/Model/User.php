@@ -346,7 +346,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 
 	// site-enables/default.conf file simulated
-	function getAAADetails($now=null,$accounting_data=null,$human_redable=false){
+	function getAAADetails($now=null,$accounting_data=null,$accounting_time=0,$human_redable=false){
 		
 		if(!$now) $now = isset($this->app->ispnow)? $this->app->ispnow : $this->app->now;
 
@@ -373,7 +373,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			$this->testDebug('Accounting on ', $now . " [ $day ]",$accounting_data);
 			$dl_data = $this->human2byte($accounting_data[0]);
 			$ul_data = $this->human2byte($accounting_data[1]);
-			$final_row = $this->updateAccountingData($dl_data,$ul_data,$now,$day,$username, $user_data);
+			$final_row = $this->updateAccountingData($dl_data,$ul_data,$now,$day,$username, $user_data,$accounting_time);
 		}
 
 		if($human_redable){
@@ -416,7 +416,10 @@ class Model_User extends \xepan\commerce\Model_Customer{
 						isp_user_plan_and_topup.id id,
 						data_limit + carry_data AS net_data_limit,
 						user.last_dl_limit last_dl_limit,
-						user.last_ul_limit last_ul_limit
+						user.last_ul_limit last_ul_limit,
+						IFNULL( (select radacct.acctinputoctets from radacct where username = '$username' and acctstoptime is null) , 0 ) SessionInputOctets ,
+						IFNULL( (select radacct.acctoutputoctets  from radacct where username = '$username' and acctstoptime is null), 0 ) SessionOutputOctets,
+						IFNULL( (select radacct.acctsessiontime  from radacct where username = '$username' and acctstoptime is null), 0 ) SessionTime,
 					FROM
 						isp_user_plan_and_topup
 						JOIN
@@ -490,7 +493,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		if(!$bw_applicable_row['net_data_limit']) $data_limit_row = $this->getApplicableRow($username, $now,$with_data_limit=true);
 		
 		$if_fup='fup_';
-		if(($data_limit_row['download_data_consumed'] + $data_limit_row['upload_data_consumed']) < $data_limit_row['net_data_limit']){
+		if(($data_limit_row['download_data_consumed'] + $data_limit_row['upload_data_consumed'] + $data_limit_row['SessionInputOctets'] + $data_limit_row['SessionOutputOctets']) < $data_limit_row['net_data_limit']){
 			$if_fup='';
 		}else{
 			if($bw_applicable_row['treat_fup_as_dl_for_last_limit_row']){
@@ -567,16 +570,19 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$final_row['access'] = 1;
 		
 		$access= true;
-		if($dl_limit ===null && $ul_limit === null){
+		$time_consumed = $data_limit_row['time_consumed'] + $data_limit_row['SessionTime'];
+		
+		if(($dl_limit === null && $ul_limit === null) OR ($time_consumed >= $data_limit_row['time_limit'] && $data_limit_row['time_limit'] > 0)){
 			// exit(1);
 			$final_row['access'] = 0;
 		} 
+		// 
 
 		return $final_row;
 
 	}
 
-	function updateAccountingData($dl_data,$ul_data,$now,$day,$username, $user_data){
+	function updateAccountingData($dl_data,$ul_data,$now,$day,$username,$user_data,$time_consumed=0){
 
 		$this->testDebug('User','in accounting',$user_data);
 		
@@ -588,7 +594,8 @@ class Model_User extends \xepan\commerce\Model_Customer{
 				isp_user_plan_and_topup 
 			SET 
 				download_data_consumed = IFNULL(download_data_consumed,0) + ". ($consumed_dl_data) . ",
-				upload_data_consumed = IFNULL(upload_data_consumed,0) + ".($consumed_ul_data) . "
+				upload_data_consumed = IFNULL(upload_data_consumed,0) + ".($consumed_ul_data) . ",
+				time_consumed = IFNULL(time_consumed,0) + ".($time_consumed) . "
 			WHERE 
 					is_effective = 1 AND user_id = (SELECT customer_id from isp_user where radius_username = '$username')
 				";

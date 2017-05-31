@@ -119,6 +119,7 @@ CREATE TABLE `isp_condition` (
 -- ----------------------------
 -- Records of isp_condition
 -- ----------------------------
+BEGIN;
 INSERT INTO `isp_condition` VALUES ('1', '8418', '53687091200', null, '1048576', '1048576', null, null, '100', '100', 'none', null, null, '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', 'months', 'Main Plan', '0', '0', null, null, null, null, null, null, null);
 INSERT INTO `isp_condition` VALUES ('2', '8419', '536870912000', null, '1048576', '1048576', null, null, '100', '100', 'none', null, null, '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '6', 'months', 'Main Plan', '0', '0', null, null, null, null, null, null, null);
 INSERT INTO `isp_condition` VALUES ('3', '8420', '536870912000', null, '2097152', '2097152', null, null, '100', '100', 'once', null, null, '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '3', 'months', 'Main Plan', '0', '0', null, null, null, null, null, null, null);
@@ -141,7 +142,8 @@ INSERT INTO `isp_condition` VALUES ('19', '8453', '5368709120', null, '4194304',
 INSERT INTO `isp_condition` VALUES ('20', '8454', null, '4194304', null, '4194304', '2097152', '2097152', '100', '100', 'none', null, null, '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', 'months', 'Main Topup', '0', '0', null, null, null, null, null, null, null);
 INSERT INTO `isp_condition` VALUES ('21', '8455', null, '5242880', null, '5242880', null, null, '100', '100', 'none', '20:00:00', null, '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', 'days', 'Main Topup', '0', '0', null, null, null, null, null, null, null);
 INSERT INTO `isp_condition` VALUES ('22', '8456', '21474836480', null, null, null, null, null, '100', '100', 'none', null, null, '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', 'months', 'Main Topup', '0', '0', null, null, null, null, null, null, null);
-
+INSERT INTO `isp_condition` VALUES ('28', '8459', '1073741824', '14400', '4194304', '4194304', null, null, '100', '100', 'none', null, null, '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', 'days', 'Time Plan', '0', '0', '0', '0', '0', '0', '0', '0', '0');
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `isp_plan`
@@ -174,7 +176,26 @@ CREATE TABLE `isp_plan` (
 --  Records of `isp_plan`
 -- ----------------------------
 BEGIN;
-INSERT INTO `isp_plan` VALUES ('1', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8418', '5', '1'), ('2', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '0', '8419', '5', '6'), ('3', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8420', '5', '3'), ('4', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8421', '4', '1'), ('5', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8422', '5', '1'), ('6', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8423', '5', '1'), ('7', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8424', '5', '1'), ('8', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8425', '2', '1'), ('9', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8426', '5', '1'), ('10', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8427', '4', '1'), ('11', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '0', '8449', null, '1'), ('13', null, null, null, null, null, null, null, null, '1', '0', '1', '1', '0', '8451', '2', '7'), ('14', null, null, null, null, null, null, null, null, '0', '0', '1', '0', '0', '8452', '2', '1'), ('15', null, null, null, null, null, null, null, null, '0', '0', '1', '1', '0', '8453', '3', '4'), ('16', null, null, null, null, null, null, null, null, '0', '0', '1', '0', '0', '8454', '2', '1'), ('17', null, null, null, null, null, null, null, null, '0', '0', '1', '0', '0', '8455', '2', '1'), ('18', null, null, null, null, null, null, null, null, '0', '0', '1', '1', '1', '8456', '3', '1'), ('19', null, null, null, null, null, null, null, null, '0', '0', '1', '1', '1', '8457', '3', '1'), ('20', null, null, null, null, null, null, null, null, '0', '0', '1', '1', '1', '8458', '3', '1');
+INSERT INTO `isp_plan` VALUES ('1', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8418', '5', '1');
+INSERT INTO `isp_plan` VALUES ('2', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '0', '8419', '5', '6');
+INSERT INTO `isp_plan` VALUES ('3', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8420', '5', '3');
+INSERT INTO `isp_plan` VALUES ('4', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8421', '4', '1');
+INSERT INTO `isp_plan` VALUES ('5', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8422', '5', '1');
+INSERT INTO `isp_plan` VALUES ('6', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8423', '5', '1');
+INSERT INTO `isp_plan` VALUES ('7', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8424', '5', '1');
+INSERT INTO `isp_plan` VALUES ('8', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8425', '2', '1');
+INSERT INTO `isp_plan` VALUES ('9', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8426', '5', '1');
+INSERT INTO `isp_plan` VALUES ('10', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '1', '8427', '4', '1');
+INSERT INTO `isp_plan` VALUES ('11', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '0', '8449', null, '1');
+INSERT INTO `isp_plan` VALUES ('13', null, null, null, null, null, null, null, null, '1', '0', '1', '1', '0', '8451', '2', '7');
+INSERT INTO `isp_plan` VALUES ('14', null, null, null, null, null, null, null, null, '0', '0', '1', '0', '0', '8452', '2', '1');
+INSERT INTO `isp_plan` VALUES ('15', null, null, null, null, null, null, null, null, '0', '0', '1', '1', '0', '8453', '3', '4');
+INSERT INTO `isp_plan` VALUES ('16', null, null, null, null, null, null, null, null, '0', '0', '1', '0', '0', '8454', '2', '1');
+INSERT INTO `isp_plan` VALUES ('17', null, null, null, null, null, null, null, null, '0', '0', '1', '0', '0', '8455', '2', '1');
+INSERT INTO `isp_plan` VALUES ('18', null, null, null, null, null, null, null, null, '0', '0', '1', '1', '1', '8456', '3', '1');
+INSERT INTO `isp_plan` VALUES ('19', null, null, null, null, null, null, null, null, '0', '0', '1', '1', '1', '8457', '3', '1');
+INSERT INTO `isp_plan` VALUES ('20', null, null, null, null, null, null, null, null, '0', '0', '1', '1', '1', '8458', '3', '1');
+INSERT INTO `isp_plan` VALUES ('21', null, null, null, null, null, null, null, null, '0', '0', '0', '1', '0', '8459', '2', '1');
 COMMIT;
 
 -- ----------------------------

@@ -77,12 +77,12 @@ class page_Tester extends \xepan\base\Page_Tester{
 			        $r = $this->filterColumns($data,array_keys($this->proper_responses[debug_backtrace()[1]['function']][0]));
 					break;
 				default:
+					$accounting_data = $action;
 					$temp = explode("/", $action);
 					if(count($temp) == 2){
 						$accounting_data = $temp[0];
 						$time_limit = $temp[1]?:0;
 					}
-
         			$r = $this->user->getAAADetails($now=null,$accounting_data,$time_limit,$human_redable=true);
 					break;
 			}

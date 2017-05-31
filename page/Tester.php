@@ -35,19 +35,18 @@ class page_Tester extends \xepan\base\Page_Tester{
 	}
 
 	function process($data){
-		
 		$first_plan_set=true;
 		$first_topup_set = true;
 
 		$last_action_date=null;
-		$time_limit = 0;
+		$time_consumed = 0;
 		foreach ($data as $datetime => $action) {
 			
 			if(strtotime($last_action_date) != strtotime(date('Y-m-d',strtotime($datetime)))){
 				$this->user->cron(date('Y-m-d',strtotime($datetime)));
 				if(strtolower(substr($action,0,4)) !=='plan' || !$first_plan_set){
 					$this->user->testDebug('Adding 0 byte accounting at mid night',date('Y-m-d',strtotime($datetime)));
-					$r = $this->user->getAAADetails(date('Y-m-d 00:00:00',strtotime($datetime)),$accounting_data='0',$time_limit='0',$human_redable=true);
+					$r = $this->user->getAAADetails(date('Y-m-d 00:00:00',strtotime($datetime)),$accounting_data='0',$time_consumed='0',$human_redable=true);
 				}
 			}
 
@@ -57,7 +56,7 @@ class page_Tester extends \xepan\base\Page_Tester{
 				case 'auth':
 				case 'logi':
 				case 'conn':
-        			$r = $this->user->getAAADetails($now=null,$accounting_data=null,$time_limit='0',$human_redable=true);
+        			$r = $this->user->getAAADetails($now=null,$accounting_data=null,$time_consumed='0',$human_redable=true);
 					break;
 				case 'plan':
 					$r = $this->user->setPlan(substr($action, 5),$datetime,$first_plan_set?true:false,false,$first_topup_set?true:false);
@@ -81,9 +80,10 @@ class page_Tester extends \xepan\base\Page_Tester{
 					$temp = explode("/", $action);
 					if(count($temp) == 2){
 						$accounting_data = $temp[0];
-						$time_limit = $temp[1]?:0;
+						$time_consumed = $temp[1]?:0;
 					}
-        			$r = $this->user->getAAADetails($now=null,$accounting_data,$time_limit,$human_redable=true);
+
+        			$r = $this->user->getAAADetails($now=null,$accounting_data,$time_consumed,$human_redable=true);
 					break;
 			}
 			$last_action_date = date('Y-m-d',strtotime($datetime));
@@ -92,7 +92,7 @@ class page_Tester extends \xepan\base\Page_Tester{
 	}
 
 	function result($r){
-		return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access'],'coa'=>$r['result']['coa']];
+		return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access'],'coa'=>$r['result']['coa'],'time_limit'=>$r['result']['time_limit'],'time_consumed'=>$r['result']['time_consumed']];
 	}
 	
 	function defaultTemplate(){

@@ -483,7 +483,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$this->testDebug('User',null,$user_data);
 		
 		$bw_applicable_row = $this->getApplicableRow($username,$now);
-
+		$coa = false;
 		if(!$bw_applicable_row) {
 			// exit in radius
 			return ['access' => 0];
@@ -530,17 +530,22 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$dl_limit = $bw_applicable_row[$dl_field];
 		$ul_limit = $bw_applicable_row[$ul_field];
 
+		if($bw_applicable_row['time_consumed'] >= $bw_applicable_row['time_limit']) $coa = true;
 
 		$dl_from_row = 'bw';
 		$ul_from_row = 'bw';
 		if($dl_limit === null){
 			$dl_limit = $data_limit_row[$dl_field];
 			$dl_from_row = "data";
+
+			if($data_limit_row['time_consumed'] >= $data_limit_row['time_limit']) $coa = true;
 		}
 
 		if($ul_limit === null){
 			$ul_limit = $data_limit_row[$ul_field];
 			$ul_from_row = "data";
+
+			if($data_limit_row['time_consumed'] >= $data_limit_row['time_limit']) $coa = true;
 		} 
 
 
@@ -592,7 +597,6 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$user_update_query .= " WHERE radius_username = '$username';";
 
 
-		$coa = false;
 		if($speed_value OR $accounting_value ){
 			$coa = true;
 			$this->testDebug('Updating User',null,$user_update_query);
@@ -649,9 +653,9 @@ class Model_User extends \xepan\commerce\Model_Customer{
 				time_consumed = IFNULL(time_consumed,0) + ".($time_consumed) . "
 			WHERE 
 					is_effective = 1 AND user_id = (SELECT customer_id from isp_user where radius_username = '$username')
-				;";
+				";
 		$this->runQuery($update_query);
-		$this->testDebug('Updating Accounting Data',['dl'=>$this->byte2human($consumed_dl_data), 'ul'=>$this->byte2human($consumed_ul_data)],$update_query);
+		$this->testDebug('Updating Accounting Data',['dl'=>$this->byte2human($consumed_dl_data), 'ul'=>$this->byte2human($consumed_ul_data),'time_consumed'=>$time_consumed],$update_query);
 		
 		$final_row = $this->checkAuthentication($now,$day, $username, $user_data);
 

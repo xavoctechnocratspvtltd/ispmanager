@@ -214,7 +214,7 @@ class page_tests_002PL50M extends page_Tester {
                 '2017-05-12 22:35:00'=>'20gb',
                 '2017-05-13 22:35:00'=>'19gb',
                 '2017-05-13 22:40:00'=>'1gb',
-                '2017-05-10 22:45:00'=>'authentication',
+                '2017-05-14 22:45:00'=>'authentication',
             ]);
         return $this->result($r);
     }
@@ -240,8 +240,8 @@ class page_tests_002PL50M extends page_Tester {
                 '2017-05-13 22:35:00'=>'19gb',
                 '2017-05-13 22:40:00'=>'1gb',
                 '2017-05-13 22:45:00'=>'1mb',
-                '2017-05-13 22:46:00'=>'authentication',
-                '2017-06-01 22:46:00'=>'authentication',
+                // '2017-05-14 22:45:00'=>'authentication',
+                '2017-06-01 10:00:00'=>'authentication',
             ]);
         return $this->result($r);
     }

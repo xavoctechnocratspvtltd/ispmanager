@@ -41,6 +41,7 @@ class page_tests_003DayNight extends page_Tester {
                 'plan'=>'Day Night plan',
                 'remark'=>'Night Plan',
                 'data_limit'=>'10.00GB',
+                'time_limit'=>0,
                 'download_limit'=>'2.00MB',
                 'upload_limit'=>'2.00MB',
                 'fup_download_limit'=>null,
@@ -101,6 +102,7 @@ class page_tests_003DayNight extends page_Tester {
                 'plan'=>'Day Night plan',
                 'remark'=>'Day Plan',
                 'data_limit'=>'10.00GB',
+                'time_limit'=>0,
                 'download_limit'=>'2.00MB',
                 'upload_limit'=>'2.00MB',
                 'fup_download_limit'=>null,
@@ -175,6 +177,8 @@ class page_tests_003DayNight extends page_Tester {
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
             'data_consumed'=>'0.00B',
+            'time_limit'=>0,
+            'time_consumed'=>0,
             'access'=>1,
             'coa' => 1
         ];
@@ -195,6 +199,8 @@ class page_tests_003DayNight extends page_Tester {
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
             'data_consumed'=>'0.00B',
+            'time_limit'=>0,
+            'time_consumed'=>0,
             'access'=>1,
             'coa' => 1
         ];
@@ -220,6 +226,8 @@ class page_tests_003DayNight extends page_Tester {
             'dl'=>null,
             'ul'=>null,
             'data_consumed'=>'10.00GB',
+            'time_limit'=>0,
+            'time_consumed'=>0,
             'access'=>0,
             'coa' => 1
         ];
@@ -241,6 +249,8 @@ class page_tests_003DayNight extends page_Tester {
             'dl'=>'',
             'ul'=>'',
             'data_consumed'=>'10.00GB',
+            'time_limit'=>0,
+            'time_consumed'=>0,
             'access'=>0,
             'coa' => 1
         ];
@@ -253,7 +263,7 @@ class page_tests_003DayNight extends page_Tester {
                 '2017-05-10 22:35:00'=>'1gb',
                 '2017-05-12 22:35:00'=>'5gb',
                 '2017-05-13 22:35:00'=>'2gb',
-                '2017-05-13 22:40:00'=>'2000mb',
+                '2017-05-13 22:40:00'=>'2gb',
                 '2017-05-13 22:45:00'=>'50mb',
             ]);
         return $this->result($r);
@@ -265,7 +275,9 @@ class page_tests_003DayNight extends page_Tester {
             'bw_limit_row'=>'Night Plan',
             'dl'=>null,
             'ul'=>null,
-            'data_consumed'=>'10.00GB',
+            'data_consumed'=>'10.05GB',
+            'time_limit'=>0,
+            'time_consumed'=>0,
             'access'=>0,
             'coa' => 1
         ];
@@ -288,6 +300,8 @@ class page_tests_003DayNight extends page_Tester {
             'data_consumed'=>'0.00B',
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
+            'time_limit'=>0,
+            'time_consumed'=>0,
             'access'=>1,
             'coa' => 1
         ];

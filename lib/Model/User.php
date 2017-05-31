@@ -530,7 +530,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$dl_limit = $bw_applicable_row[$dl_field];
 		$ul_limit = $bw_applicable_row[$ul_field];
 
-		if($bw_applicable_row['time_consumed'] >= $bw_applicable_row['time_limit']) $coa = true;
+		if($bw_applicable_row['time_consumed'] >= $bw_applicable_row['time_limit'] && $bw_applicable_row['time_limit'] > 0) $coa = true;
 
 		$dl_from_row = 'bw';
 		$ul_from_row = 'bw';
@@ -538,14 +538,14 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			$dl_limit = $data_limit_row[$dl_field];
 			$dl_from_row = "data";
 
-			if($data_limit_row['time_consumed'] >= $data_limit_row['time_limit']) $coa = true;
+			if($data_limit_row['time_consumed'] >= $data_limit_row['time_limit'] && $bw_applicable_row['time_limit'] > 0) $coa = true;
 		}
 
 		if($ul_limit === null){
 			$ul_limit = $data_limit_row[$ul_field];
 			$ul_from_row = "data";
 
-			if($data_limit_row['time_consumed'] >= $data_limit_row['time_limit']) $coa = true;
+			if($data_limit_row['time_consumed'] >= $data_limit_row['time_limit'] && $bw_applicable_row['time_limit'] > 0) $coa = true;
 		} 
 
 

@@ -205,7 +205,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			print_r($detail_data);
 			echo "</pre>";
 		}
-
+		
 		return $qsp_master->createQSP($master_data,$detail_data,"SalesInvoice");
 	}
 
@@ -250,6 +250,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			$this->app->db->dsql()->expr($update_query)->execute();
 		}
 		
+						
 		foreach ($condition_model as $key => $condition) {
 			
 			$fields = $condition->getActualFields();
@@ -340,7 +341,6 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$this['last_dl_limit']=null;
 		$this['last_ul_limit']=null;
 		$this->save();
-		
 		return $plan_model;
 	}
 
@@ -419,7 +419,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 						user.last_ul_limit last_ul_limit,
 						IFNULL( (select radacct.acctinputoctets from radacct where username = '$username' and acctstoptime is null) , 0 ) SessionInputOctets ,
 						IFNULL( (select radacct.acctoutputoctets  from radacct where username = '$username' and acctstoptime is null), 0 ) SessionOutputOctets,
-						IFNULL( (select radacct.acctsessiontime  from radacct where username = '$username' and acctstoptime is null), 0 ) SessionTime,
+						IFNULL( (select radacct.acctsessiontime  from radacct where username = '$username' and acctstoptime is null), 0 ) SessionTime
 					FROM
 						isp_user_plan_and_topup
 						JOIN
@@ -470,6 +470,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 						;
 
 		// echo "step 3 in applicable row ".$query;
+		$this->testDebug('Get Applicable Row ',$username,$query);
 		$x = $this->runQuery($query,true);
 		if(!count($x)) $x= null;
 		$this->testDebug('Querying for '.($with_data_limit?'Data Limit':'Bw Limit').' Row ',null,$query);
@@ -480,7 +481,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	function checkAuthentication($now,$day,$username, $user_data){
 
 		$this->testDebug('User',null,$user_data);
-
+		
 		$bw_applicable_row = $this->getApplicableRow($username,$now);
 
 		if(!$bw_applicable_row) {
@@ -543,12 +544,13 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		} 
 
 
-		$burst_dl_limit = 0;
-		$burst_threshold_dl_limit = 0;
-		$burst_dl_time = 0;
-		$burst_ul_limit = 0;
-		$burst_threshold_ul_limit = 0;
-		$burst_ul_time = 0;
+		$burst_dl_limit = null;
+		$burst_threshold_dl_limit = null;
+		$burst_dl_time = null;
+		$burst_ul_limit = null;
+		$burst_threshold_ul_limit = null;
+		$burst_ul_time = null;
+		$priority = null;
 
 		// burst dl/ul if fup is not
 		if($if_fup != "fup_"){
@@ -647,7 +649,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 				time_consumed = IFNULL(time_consumed,0) + ".($time_consumed) . "
 			WHERE 
 					is_effective = 1 AND user_id = (SELECT customer_id from isp_user where radius_username = '$username')
-				";
+				;";
 		$this->runQuery($update_query);
 		$this->testDebug('Updating Accounting Data',['dl'=>$this->byte2human($consumed_dl_data), 'ul'=>$this->byte2human($consumed_ul_data)],$update_query);
 		

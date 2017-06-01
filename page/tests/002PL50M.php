@@ -41,7 +41,7 @@ class page_tests_002PL50M extends page_Tester {
                 'user'=>'Test User',
                 'plan'=>'PL-50-M',
                 'data_limit'=>'50.00GB',
-                'time_limit'=>null,
+                'time_limit'=>0,
                 'download_limit'=>'1.00MB',
                 'upload_limit'=>'1.00MB',
                 'fup_download_limit'=>null,
@@ -264,7 +264,7 @@ class page_tests_002PL50M extends page_Tester {
             'time_limit'=>0,
             'time_consumed'=>0,
             'access'=>1,
-            'coa' => 1
+            'coa' => 0
         ];
     }
 
@@ -327,7 +327,7 @@ class page_tests_002PL50M extends page_Tester {
             'time_limit'=>0,
             'time_consumed'=>0,
             'access'=>0,
-            'coa' => 1
+            'coa' => 0
         ];
     }
 

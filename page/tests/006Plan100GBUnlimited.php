@@ -38,7 +38,9 @@ class page_tests_006Plan100GBUnlimited extends page_Tester {
             [   
                 'user'=>'Test User',
                 'plan'=>'unlimited 100GB-m',
+                'remark'=>'Main Plan',
                 'data_limit'=>'100.00GB',
+                'time_limit'=>0,
                 'download_limit'=>'2.00MB',
                 'upload_limit'=>'2.00MB',
                 'fup_download_limit'=>'512.00KB',
@@ -54,6 +56,8 @@ class page_tests_006Plan100GBUnlimited extends page_Tester {
                 'is_expired'=>0,
                 'is_recurring'=>1,
                 'reset_date'=>'2017-02-01 00:00:00',
+                'data_reset_value'=>'1',
+                'data_reset_mode'=>'months',
                 'sun'=>1,
                 'mon'=>1,
                 'tue'=>1,
@@ -114,6 +118,8 @@ class page_tests_006Plan100GBUnlimited extends page_Tester {
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
             'data_consumed'=>'0.00B',
+            'time_limit'=>0,
+            'time_consumed'=>0,
             'access'=>1,
             'coa' => 1
         ];
@@ -135,8 +141,10 @@ class page_tests_006Plan100GBUnlimited extends page_Tester {
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
             'data_consumed'=>'60.00GB',
+            'time_limit'=>0,
+            'time_consumed'=>0,
             'access'=>1,
-            'coa' => false
+            'coa' => 0
         ];
     }
 
@@ -147,7 +155,7 @@ class page_tests_006Plan100GBUnlimited extends page_Tester {
                 '2017-01-15 22:35:00'=>'60gb',
                 '2017-01-20 22:45:00'=>'20gb',
                 '2017-01-25 22:25:00'=>'20gb',
-                '2017-01-25 22:35:00'=>'authentication',
+                // '2017-01-25 22:35:00'=>'authentication',
             ]);
         return $this->result($r);
     }
@@ -159,33 +167,37 @@ class page_tests_006Plan100GBUnlimited extends page_Tester {
             'dl'=>'512.00KB',
             'ul'=>'512.00KB',
             'data_consumed'=>'100.00GB',
+            'time_limit'=>0,
+            'time_consumed'=>0,
             'access'=>1,
-            'coa' => true
+            'coa' => 1
         ];
     }
 
-    function test_unlimitedMonth30_01_dataResetInGrace(){
+    function test_unlimitedMonth01_02_dataResetInGrace(){
         $r = $this->process([
                 '2017-01-01 00:00:00'=>'plan-unlimited 100GB-m',
                 '2017-01-15 00:00:00'=>'authentication',
                 '2017-01-15 22:35:00'=>'60gb',
                 '2017-01-20 22:45:00'=>'20gb',
                 '2017-01-25 22:25:00'=>'20gb',
-                '2017-01-25 22:35:00'=>'authentication',
-                '2017-01-30 22:50:00'=>'authentication',
+                // '2017-01-25 22:35:00'=>'authentication',
+                '2017-02-01 01:00:00'=>'authentication',
             ]);
         return $this->result($r);
     }
 
-    function prepare_unlimitedMonth30_01_dataResetInGrace(){
-        $this->proper_responses['test_unlimitedMonth30_01_dataResetInGrace']=[
+    function prepare_unlimitedMonth01_02_dataResetInGrace(){
+        $this->proper_responses['test_unlimitedMonth01_02_dataResetInGrace']=[
             'data_limit_row'=>'Main Plan',
             'bw_limit_row'=>'Main Plan',
-            'dl'=>'512.00KB',
-            'ul'=>'512.00KB',
-            'data_consumed'=>'100.00GB',
+            'dl'=>'2.00MB',
+            'ul'=>'2.00MB',
+            'data_consumed'=>'0.00B',
+            'time_limit'=>0,
+            'time_consumed'=>0,
             'access'=>1,
-            'coa' => true
+            'coa' => 1
         ];
     }
 
@@ -196,8 +208,8 @@ class page_tests_006Plan100GBUnlimited extends page_Tester {
                 '2017-01-15 22:35:00'=>'60gb',
                 '2017-01-20 22:45:00'=>'20gb',
                 '2017-01-25 22:25:00'=>'20gb',
-                '2017-01-25 22:35:00'=>'authentication',
-                '2017-01-30 22:50:00'=>'authentication',
+                // '2017-01-25 22:35:00'=>'authentication',
+                '2017-02-01 01:00:00'=>'authentication',
                 '2017-02-02 22:45:00'=>'20gb',
                 '2017-02-04 22:25:00'=>'20gb',
                 '2017-02-05 22:46:00'=>'authentication',
@@ -212,8 +224,10 @@ class page_tests_006Plan100GBUnlimited extends page_Tester {
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
             'data_consumed'=>'40.00GB',
+            'time_limit'=>0,
+            'time_consumed'=>0,
             'access'=>1,
-            'coa' => true
+            'coa' => 0
         ];
     }
 
@@ -228,7 +242,7 @@ class page_tests_006Plan100GBUnlimited extends page_Tester {
                 '2017-01-30 22:50:00'=>'authentication',
                 '2017-02-02 22:45:00'=>'20gb',
                 '2017-02-04 22:25:00'=>'20gb',
-                '2017-02-07 22:46:00'=>'authentication',
+                '2017-02-07 01:00:00'=>'authentication',
             ]);
         return $this->result($r);
     }
@@ -237,11 +251,13 @@ class page_tests_006Plan100GBUnlimited extends page_Tester {
         $this->proper_responses['test_unlimitedMonth07_02_ExpieredAfterGrace']=[
             'data_limit_row'=>'',
             'bw_limit_row'=>'',
-            'dl'=>null,
-            'ul'=>null,
+            'dl'=>'2.00MB',
+            'ul'=>'2.00MB',
             'data_consumed'=>'0.00B',
-            'access'=>0,
-            'coa' => true
+            'time_limit'=>0,
+            'time_consumed'=>0,
+            'access'=>1,
+            'coa' => 1
         ];
     }
 

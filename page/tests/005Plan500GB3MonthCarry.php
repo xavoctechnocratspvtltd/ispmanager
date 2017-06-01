@@ -38,7 +38,9 @@ class page_tests_005Plan500GB3MonthCarry extends page_Tester {
             [   
                 'user'=>'Test User',
                 'plan'=>'PL-500 GB for 3 month data carry',
+                'remark'=>'Main Plan',
                 'data_limit'=>'500.00GB',
+                'time_limit'=>0,
                 'download_limit'=>'2.00MB',
                 'upload_limit'=>'2.00MB',
                 'fup_download_limit'=>null,
@@ -116,6 +118,8 @@ class page_tests_005Plan500GB3MonthCarry extends page_Tester {
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
             'data_consumed'=>'0.00B',
+            'time_limit'=>0,
+            'time_consumed'=>0,
             'access'=>1,
             'coa' => 1
         ];
@@ -137,8 +141,10 @@ class page_tests_005Plan500GB3MonthCarry extends page_Tester {
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
             'data_consumed'=>'70.00GB',
+            'time_limit'=>0,
+            'time_consumed'=>0,
             'access'=>1,
-            'coa' => false
+            'coa' => 0
         ];
     }
 
@@ -161,8 +167,10 @@ class page_tests_005Plan500GB3MonthCarry extends page_Tester {
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
             'data_consumed'=>'170.00GB',
+            'time_limit'=>0,
+            'time_consumed'=>0,
             'access'=>1,
-            'coa' => 1
+            'coa' => 0
         ];
     }
 
@@ -191,8 +199,10 @@ class page_tests_005Plan500GB3MonthCarry extends page_Tester {
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
             'data_consumed'=>'335.00GB',
+            'time_limit'=>0,
+            'time_consumed'=>0,
             'access'=>1,
-            'coa' => 1
+            'coa' => 0
         ];
     }
 
@@ -224,8 +234,10 @@ class page_tests_005Plan500GB3MonthCarry extends page_Tester {
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
             'data_consumed'=>'455.00GB',
+            'time_limit'=>0,
+            'time_consumed'=>0,
             'access'=>1,
-            'coa' => false
+            'coa' => 0
         ];
     }
 
@@ -259,6 +271,8 @@ class page_tests_005Plan500GB3MonthCarry extends page_Tester {
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
             'data_consumed'=>'0.00B',
+            'time_limit'=>0,
+            'time_consumed'=>0,
             'access'=>1,
             'coa' => 1
         ];
@@ -284,7 +298,7 @@ class page_tests_005Plan500GB3MonthCarry extends page_Tester {
                 '2017-07-30 22:35:00'=>'10gb',
                 '2017-08-01 22:50:00'=>'authentication',
                 '2017-08-02 22:46:00'=>'100gb',
-                '2017-08-03 22:46:00'=>'50gb',
+                '2017-08-03 22:46:00'=>'400gb',
                 '2017-08-05 22:46:00'=>'authentication',
             ]);
         return $this->result($r);
@@ -296,9 +310,11 @@ class page_tests_005Plan500GB3MonthCarry extends page_Tester {
             'bw_limit_row'=>'Main Plan',
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
-            'data_consumed'=>'150.00GB',
+            'data_consumed'=>'500.00GB',
+            'time_limit'=>0,
+            'time_consumed'=>0,
             'access'=>1,
-            'coa' => 1
+            'coa' => 0
         ];
     }
 
@@ -322,8 +338,8 @@ class page_tests_005Plan500GB3MonthCarry extends page_Tester {
                 '2017-07-30 22:35:00'=>'25gb',
                 '2017-08-01 22:50:00'=>'authentication',
                 '2017-08-02 22:46:00'=>'100gb',
-                '2017-08-03 22:46:00'=>'50gb',
-                '2017-08-07 22:46:00'=>'authentication',
+                '2017-08-03 22:46:00'=>'400gb',
+                '2017-08-07 01:00:00'=>'authentication',
             ]);
         return $this->result($r);
     }
@@ -335,6 +351,8 @@ class page_tests_005Plan500GB3MonthCarry extends page_Tester {
             'dl'=>null,
             'ul'=>null,
             'data_consumed'=>'0.00B',
+            'time_limit'=>0,
+            'time_consumed'=>0,
             'access'=>0,
             'coa' => 1
         ];

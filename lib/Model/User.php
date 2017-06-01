@@ -492,7 +492,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 		$data_limit_row = $bw_applicable_row;
 		if(!$bw_applicable_row['net_data_limit']){
-			$d = $this->getApplicableRow($username, $now,$with_data_limit=true);
+			$data_limit_row = $this->getApplicableRow($username, $now,$with_data_limit=true);
 		} 
 		
 		$if_fup='fup_';
@@ -502,7 +502,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			if($bw_applicable_row['treat_fup_as_dl_for_last_limit_row']){
 				$next_data_limit_row = $this->getApplicableRow($username, $now,null,$data_limit_row['id']);
 				
-				if( ($next_data_limit_row['download_data_consumed'] + $next_data_limit_row['upload_data_consumed']) > $next_data_limit_row['net_data_limit'] ){
+				if( ($next_data_limit_row['download_data_consumed'] + $next_data_limit_row['upload_data_consumed'] + $next_data_limit_row['SessionInputOctets'] + $next_data_limit_row['SessionOutputOctets']) > $next_data_limit_row['net_data_limit'] ){
 					$data_limit_row['download_limit'] = $next_data_limit_row['fup_download_limit'];
 					$data_limit_row['upload_limit'] = $next_data_limit_row['fup_upload_limit'];
 					$data_limit_row['remark'] = $next_data_limit_row['remark'];
@@ -530,7 +530,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$dl_limit = $bw_applicable_row[$dl_field];
 		$ul_limit = $bw_applicable_row[$ul_field];
 
-		if($bw_applicable_row['time_consumed'] >= $bw_applicable_row['time_limit'] && $bw_applicable_row['time_limit'] > 0) $coa = true;
+		if(($bw_applicable_row['time_consumed'] + $bw_applicable_row['SessionTime']) >= $bw_applicable_row['time_limit'] && $bw_applicable_row['time_limit'] > 0) $coa = true;
 
 		$dl_from_row = 'bw';
 		$ul_from_row = 'bw';
@@ -538,7 +538,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			$dl_limit = $data_limit_row[$dl_field];
 			$dl_from_row = "data";
 
-			if($data_limit_row['time_consumed'] >= $data_limit_row['time_limit'] && $bw_applicable_row['time_limit'] > 0) $coa = true;
+			if(($data_limit_row['time_consumed'] + $data_limit_row['SessionTime']) >= $data_limit_row['time_limit'] && $data_limit_row['time_limit'] > 0) $coa = true;
 		}
 
 		if($ul_limit === null){

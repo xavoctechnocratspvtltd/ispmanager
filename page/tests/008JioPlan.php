@@ -38,7 +38,9 @@ class page_tests_008JioPlan extends page_Tester {
             [   
                 'user'=>'Test User',
                 'plan'=>'jio plan',
+                'remark'=>'Main Plan',
                 'data_limit'=>'1.00GB',
+                'time_limit'=>0,
                 'download_limit'=>'2.00MB',
                 'upload_limit'=>'2.00MB',
                 'fup_download_limit'=>'512.00KB',
@@ -104,7 +106,7 @@ class page_tests_008JioPlan extends page_Tester {
                 '2017-01-01 00:00:00'=>'plan-jio plan',
                 '2017-01-01 00:01:00'=>'authentication'
             ]);
-        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+        return $this->result($r);
     }
 
     function prepare_jio01_01(){
@@ -114,7 +116,11 @@ class page_tests_008JioPlan extends page_Tester {
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
             'data_consumed'=>'0.00B',
-            'access'=>1
+            'time_limit'=>0,
+            'time_consumed'=>0,
+            'access'=>1,
+            'coa'=>1
+
         ];
     }
 
@@ -124,7 +130,7 @@ class page_tests_008JioPlan extends page_Tester {
                 '2017-01-01 10:59:59'=>'authentication',
                 '2017-01-01 18:35:00'=>'500mb',
             ]);
-        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+        return $this->result($r);
     }
 
     function prepare_jioConsume01_01_1gb(){
@@ -134,7 +140,10 @@ class page_tests_008JioPlan extends page_Tester {
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
             'data_consumed'=>'500.00MB',
-            'access'=>1
+            'time_limit'=>0,
+            'time_consumed'=>0,
+            'access'=>1,
+            'coa'=>0
         ];
     }
 
@@ -145,7 +154,7 @@ class page_tests_008JioPlan extends page_Tester {
                 '2017-01-01 18:35:00'=>'500mb',
                 '2017-01-01 22:35:00'=>'524mb',
             ]);
-        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+        return $this->result($r);
     }
 
     function prepare_jiodataConsumed(){
@@ -155,29 +164,35 @@ class page_tests_008JioPlan extends page_Tester {
             'dl'=>'512.00KB',
             'ul'=>'512.00KB',
             'data_consumed'=>'1.00GB',
-            'access'=>1
+            'time_limit'=>0,
+            'time_consumed'=>0,
+            'access'=>1,
+            'coa'=>1
         ];
     }
 
-    function test_jio01_01_dataResetInGrace(){
+    function test_jio01_02_dataResetInGrace(){
         $r = $this->process([
                 '2017-01-01 00:00:00'=>'plan-jio plan',
                 '2017-01-01 10:59:59'=>'authentication',
                 '2017-01-01 18:35:00'=>'500mb',
                 '2017-01-01 22:35:00'=>'524mb',
-                '2017-01-01 23:59:59'=>'authentication',
+                '2017-01-02 01:00:00'=>'authentication',
             ]);
-        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+        return $this->result($r);
     }
 
-    function prepare_jio01_01_dataResetInGrace(){
-        $this->proper_responses['test_jio01_01_dataResetInGrace']=[
+    function prepare_jio01_02_dataResetInGrace(){
+        $this->proper_responses['test_jio01_02_dataResetInGrace']=[
             'data_limit_row'=>'Main Plan',
             'bw_limit_row'=>'Main Plan',
-            'dl'=>'512.00KB',
-            'ul'=>'512.00KB',
-            'data_consumed'=>'1.00GB',
-            'access'=>1
+            'dl'=>'2.00MB',
+            'ul'=>'2.00MB',
+            'data_consumed'=>'0.00B',
+            'time_limit'=>0,
+            'time_consumed'=>0,
+            'access'=>1,
+            'coa'=>0
         ];
     }
 
@@ -215,7 +230,7 @@ class page_tests_008JioPlan extends page_Tester {
                 '2017-01-02 18:00:00'=>'authentication',
                 
             ]);
-        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+        return $this->result($r);
     }
 
     function prepare_jiodataConsumedInGrace(){
@@ -225,7 +240,10 @@ class page_tests_008JioPlan extends page_Tester {
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
             'data_consumed'=>'200.00MB',
-            'access'=>1
+            'time_limit'=>0,
+            'time_consumed'=>0,
+            'access'=>1,
+            'coa'=>0
         ];
     }
 
@@ -243,7 +261,7 @@ class page_tests_008JioPlan extends page_Tester {
                 // '2017-02-05 00:00:00'=>'authentication',
                 
             ]);
-        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+        return $this->result($r);
     }
 
     function prepare_jiodataBeforeExpire(){
@@ -253,7 +271,10 @@ class page_tests_008JioPlan extends page_Tester {
             'dl'=>'512.00KB',
             'ul'=>'512.00KB',
             'data_consumed'=>'1.00GB',
-            'access'=>1
+            'time_limit'=>0,
+            'time_consumed'=>0,
+            'access'=>1,
+            'coa'=>1
         ];
     }
     function test_jioExpieredAfterGrace(){
@@ -264,10 +285,10 @@ class page_tests_008JioPlan extends page_Tester {
                 '2017-01-01 22:35:00'=>'524mb',
                 '2017-01-02 01:10:00'=>'100mb',
                 '2017-01-02 10:35:00'=>'100mb',
-                '2017-01-02 18:00:00'=>'authentication',
-                '2017-02-07 22:46:00'=>'authentication',
+                // '2017-01-02 18:00:00'=>'authentication',
+                '2017-02-06 01:00:00'=>'authentication',
             ]);
-        return ['data_limit_row'=>$r['result']['data_limit_row'],'bw_limit_row'=>$r['result']['bw_limit_row'],'dl'=>$r['result']['dl_limit'],'ul'=>$r['result']['ul_limit'],'data_consumed'=>$r['result']['data_consumed'],'access'=>$r['access']];
+        return $this->result($r);
     }
 
     function prepare_jioExpieredAfterGrace(){
@@ -277,7 +298,10 @@ class page_tests_008JioPlan extends page_Tester {
             'dl'=>null,
             'ul'=>null,
             'data_consumed'=>'0.00B',
-            'access'=>0
+            'time_limit'=>0,
+            'time_consumed'=>0,
+            'access'=>0,
+            'coa'=>1
         ];
     }
 

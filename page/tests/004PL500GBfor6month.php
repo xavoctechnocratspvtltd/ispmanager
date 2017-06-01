@@ -37,7 +37,9 @@ class page_tests_004PL500GBfor6month extends page_Tester{
             [   
                 'user'=>'Test User',
                 'plan'=>'PL-500 GB for 6 month',
+                'remark'=>'Main Plan',
                 'data_limit'=>'500.00GB',
+                'time_limit'=>0,
                 'download_limit'=>'1.00MB',
                 'upload_limit'=>'1.00MB',
                 'fup_download_limit'=>null,
@@ -115,6 +117,8 @@ class page_tests_004PL500GBfor6month extends page_Tester{
             'dl'=>'1.00MB',
             'ul'=>'1.00MB',
             'data_consumed'=>'0.00B',
+            'time_limit'=>0,
+            'time_consumed'=>0,
             'access'=>1,
             'coa' => 1
         ];
@@ -136,8 +140,10 @@ class page_tests_004PL500GBfor6month extends page_Tester{
             'dl'=>'1.00MB',
             'ul'=>'1.00MB',
             'data_consumed'=>'20.00GB',
+            'time_limit'=>0,
+            'time_consumed'=>0,
             'access'=>1,
-            'coa' => false
+            'coa' => 0
         ];
     }
 
@@ -149,7 +155,7 @@ class page_tests_004PL500GBfor6month extends page_Tester{
                 '2017-02-12 22:35:00'=>'50gb',
                 '2017-03-12 22:45:00'=>'200gb',
                 '2017-04-25 22:35:00'=>'200gb',
-                '2017-06-13 22:46:00'=>'authentication',
+                // '2017-06-13 22:46:00'=>'authentication',
             ]);
         return $this->result($r);
     }
@@ -161,6 +167,8 @@ class page_tests_004PL500GBfor6month extends page_Tester{
             'dl'=>null,
             'ul'=>null,
             'data_consumed'=>'500.00GB',
+            'time_limit'=>0,
+            'time_consumed'=>0,
             'access'=>0,
             'coa' => 1
         ];
@@ -174,7 +182,7 @@ class page_tests_004PL500GBfor6month extends page_Tester{
                 '2017-02-12 22:35:00'=>'50gb',
                 '2017-03-12 22:45:00'=>'200gb',
                 '2017-04-25 22:35:00'=>'200gb',
-                '2017-06-13 22:46:00'=>'authentication',
+                // '2017-06-13 22:46:00'=>'authentication',
                 '2017-07-01 00:00:00'=>'authentication',
             ]);
         return $this->result($r);
@@ -187,6 +195,8 @@ class page_tests_004PL500GBfor6month extends page_Tester{
             'dl'=>'1.00MB',
             'ul'=>'1.00MB',
             'data_consumed'=>'0.00B',
+            'time_limit'=>0,
+            'time_consumed'=>0,
             'access'=>1,
             'coa' => 1
         ];
@@ -216,8 +226,10 @@ class page_tests_004PL500GBfor6month extends page_Tester{
             'dl'=>'1.00MB',
             'ul'=>'1.00MB',
             'data_consumed'=>'125.00GB',
+            'time_limit'=>0,
+            'time_consumed'=>0,
             'access'=>1,
-            'coa' => 1
+            'coa' => 0
         ];
     }
 
@@ -233,7 +245,7 @@ class page_tests_004PL500GBfor6month extends page_Tester{
                 '2017-07-01 00:00:00'=>'authentication',
                 '2017-07-02 22:46:00'=>'25gb',
                 '2017-07-03 22:46:00'=>'100gb',
-                '2017-07-07 22:46:00'=>'authentication',
+                '2017-07-07 05:00:00'=>'authentication',
             ]);
         return $this->result($r);
     }
@@ -245,6 +257,8 @@ class page_tests_004PL500GBfor6month extends page_Tester{
             'dl'=>null,
             'ul'=>null,
             'data_consumed'=>'0.00B',
+            'time_limit'=>0,
+            'time_consumed'=>0,
             'access'=>0,
             'coa' => 1
         ];

@@ -279,7 +279,7 @@ class page_tests_003DayNight extends page_Tester {
             'time_limit'=>0,
             'time_consumed'=>0,
             'access'=>0,
-            'coa' => 1
+            'coa' => 0
         ];
     }
 
@@ -303,7 +303,7 @@ class page_tests_003DayNight extends page_Tester {
             'time_limit'=>0,
             'time_consumed'=>0,
             'access'=>1,
-            'coa' => 1
+            'coa' => 0
         ];
     }
 

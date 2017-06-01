@@ -40,7 +40,9 @@ class page_tests_007SundayHighSpeed extends page_Tester {
             [   
                 'user'=>'Test User',
                 'plan'=>'High Speed 100GB-2mb',
+                'remark'=>'Main Plan',
                 'data_limit'=>'100.00GB',
+                'time_limit'=>0,
                 'download_limit'=>'2.00MB',
                 'upload_limit'=>'2.00MB',
                 'fup_download_limit'=>'512.00KB',
@@ -101,7 +103,9 @@ class page_tests_007SundayHighSpeed extends page_Tester {
             [   
                 'user'=>'Test User',
                 'plan'=>'High Speed 100GB-2mb',
+                'remark'=>'Sunday 2GB Extra',
                 'data_limit'=>'2.00GB',
+                'time_limit'=>0,
                 'download_limit'=>'2.00MB',
                 'upload_limit'=>'2.00MB',
                 'fup_download_limit'=>'1.00MB',
@@ -178,6 +182,8 @@ class page_tests_007SundayHighSpeed extends page_Tester {
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
             'data_consumed'=>'0.00B',
+            'time_limit'=>0,
+            'time_consumed'=>0,
             'access'=>1,
             'coa' => 1
         ];
@@ -199,6 +205,8 @@ class page_tests_007SundayHighSpeed extends page_Tester {
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
             'data_consumed'=>'1.50GB',
+            'time_limit'=>0,
+            'time_consumed'=>0,
             'access'=>1,
             'coa'=>0
         ];
@@ -222,10 +230,12 @@ class page_tests_007SundayHighSpeed extends page_Tester {
             'dl'=>'1.00MB',
             'ul'=>'1.00MB',
             'data_consumed'=>'2.10GB',
+            'time_limit'=>0,
+            'time_consumed'=>0,
             'access'=>1,
             'coa'=>1,
-            'Tmp-Integer-0'=>'1',
-            'Tmp-String-0'=>'1048576/1048576'
+            // 'Tmp-Integer-0'=>'1',
+            // 'Tmp-String-0'=>'1048576/1048576'
         ];
     }
 
@@ -244,6 +254,8 @@ class page_tests_007SundayHighSpeed extends page_Tester {
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
             'data_consumed'=>'0.00B',
+            'time_limit'=>0,
+            'time_consumed'=>0,
             'access'=>1,
             'coa' => 1
         ];
@@ -269,6 +281,35 @@ class page_tests_007SundayHighSpeed extends page_Tester {
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
             'data_consumed'=>'25.00GB',
+            'time_limit'=>0,
+            'time_consumed'=>0,
+            'access'=>1,
+            'coa' => 0
+        ];
+    }
+
+    function test_01_02_dataConsume(){
+        $r = $this->process([
+                '2017-01-02 08:10:00'=>'plan-High Speed 100GB-2mb',
+                '2017-01-02 08:10:00'=>'authentication',
+                '2017-01-02 08:10:00'=>'10gb',
+                '2017-01-03 08:10:00'=>'20gb',
+                '2017-01-10 08:10:00'=>'30gb',
+                '2017-01-15 08:15:00'=>'40gb',
+                // '2017-02-01 01:00:00'=>'authentication',
+            ]);
+        return $this->result($r);
+    }
+
+    function prepare_01_02_dataConsume(){
+        $this->proper_responses['test_01_02_dataConsume']=[
+            'data_limit_row'=>'Main Plan',
+            'bw_limit_row'=>'Main Plan',
+            'dl'=>'512.00KB',
+            'ul'=>'512.00KB',
+            'data_consumed'=>'0.00B',
+            'time_limit'=>0,
+            'time_consumed'=>0,
             'access'=>1,
             'coa' => 1
         ];

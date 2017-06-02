@@ -241,7 +241,7 @@ class page_tests_009NightUnlimited extends page_Tester {
                 '2017-05-01 10:30:00'=>'2gb',
                 '2017-05-01 14:10:00'=>'1gb',
                 '2017-05-01 20:10:00'=>'4gb',
-                '2017-05-01 22:10:00'=>'5gb',
+                '2017-05-01 23:10:00'=>'5gb',
             ]);
         return $this->result($r);
     }
@@ -278,6 +278,8 @@ class page_tests_009NightUnlimited extends page_Tester {
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
             'data_consumed'=>'0.00B',
+            'time_limit'=>0,
+            'time_consumed'=>0,
             'access'=>1,
             'coa'=>0
         ];

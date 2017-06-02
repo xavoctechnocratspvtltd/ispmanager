@@ -295,7 +295,7 @@ class page_tests_007SundayHighSpeed extends page_Tester {
                 '2017-01-02 08:10:00'=>'10gb',
                 '2017-01-03 08:10:00'=>'20gb',
                 '2017-01-10 08:10:00'=>'30gb',
-                '2017-01-15 08:15:00'=>'40gb',
+                // '2017-01-15 08:15:00'=>'40gb',
                 // '2017-02-01 01:00:00'=>'authentication',
             ]);
         return $this->result($r);
@@ -307,11 +307,11 @@ class page_tests_007SundayHighSpeed extends page_Tester {
             'bw_limit_row'=>'Main Plan',
             'dl'=>'512.00KB',
             'ul'=>'512.00KB',
-            'data_consumed'=>'0.00B',
+            'data_consumed'=>'60.00GB',
             'time_limit'=>0,
             'time_consumed'=>0,
             'access'=>1,
-            'coa' => 1
+            'coa' => 0
         ];
     }
     

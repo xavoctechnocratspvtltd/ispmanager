@@ -301,7 +301,7 @@ class page_tests_008JioPlan extends page_Tester {
             'time_limit'=>0,
             'time_consumed'=>0,
             'access'=>0,
-            'coa'=>1
+            'coa'=>0
         ];
     }
 

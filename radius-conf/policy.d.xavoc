@@ -1,12 +1,17 @@
 xavocauth {
-	xavocauthphp
+	#xavocauthphp ## No more php calling
+	update control { 
+    	Tmp-String-0 := "%{sql:select checkAuthentication(null,'%{User-Name}')}"
+   	} 
 }
 
 xavocacct {
-	xavocacctphp
+	#xavocacctphp
 	# check some vars in control and 
 	# send coa accordingly if needed
-	
+	update control { 
+    	Tmp-String-0 := "%{sql:select updateAccountingData(dl_data,ul_data,now,'%{User-Name}',session_time_consumed)}"
+   	}
 	if(&control:Tmp-Integer-0 == 1){
 		update coa {
 	        User-Name = "%{User-Name}"

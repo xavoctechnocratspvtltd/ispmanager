@@ -1,17 +1,168 @@
 /*
-MySQL Backup
-Source Server Version: 5.5.5
-Source Database: ispmanager
-Date: 6/1/2017 18:15:47
+ Navicat Premium Backup
+
+ Source Server         : localhost
+ Source Server Type    : MariaDB
+ Source Server Version : 100118
+ Source Host           : localhost
+ Source Database       : ispmanager
+
+ Target Server Type    : MariaDB
+ Target Server Version : 100118
+ File Encoding         : utf-8
+
+ Date: 06/02/2017 09:42:08 AM
 */
 
-SET FOREIGN_KEY_CHECKS=0;
+SET NAMES utf8;
+SET FOREIGN_KEY_CHECKS = 0;
 
 -- ----------------------------
---  Procedure definition for `checkAuthentication`
+--  Procedure structure for `getApplicableRow`
+-- ----------------------------
+DROP PROCEDURE IF EXISTS `getApplicableRow`;
+delimiter ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getApplicableRow`(username varchar (255),now datetime, with_data_limit boolean,less_then_this_id integer)
+BEGIN
+
+SET @now = now;
+SET @day = LOWER(DATE_FORMAT(@now,"%a"));
+SET @date = CONCAT("d",DATE_FORMAT(@now,"%d"));
+SET @current_time = TIME(@now);
+SET @today = DATE(@now);
+SET @username = username;
+
+SELECT 
+	isp_user_plan_and_topup.id id,
+	data_limit + carry_data AS net_data_limit,
+	user.last_dl_limit last_dl_limit,
+	user.last_ul_limit last_ul_limit,
+	user.last_accounting_dl_ratio,
+	user.last_accounting_ul_ratio,
+	isp_user_plan_and_topup.download_data_consumed,
+	isp_user_plan_and_topup.upload_data_consumed,
+	isp_user_plan_and_topup.download_limit,
+	isp_user_plan_and_topup.upload_limit,
+	isp_user_plan_and_topup.fup_download_limit,
+	isp_user_plan_and_topup.fup_upload_limit,
+	isp_user_plan_and_topup.accounting_download_ratio,
+	isp_user_plan_and_topup.accounting_upload_ratio,
+	isp_user_plan_and_topup.burst_dl_limit,
+	isp_user_plan_and_topup.burst_ul_limit,
+	isp_user_plan_and_topup.burst_threshold_dl_limit,
+	isp_user_plan_and_topup.burst_threshold_ul_limit,
+	isp_user_plan_and_topup.burst_dl_time,
+	isp_user_plan_and_topup.burst_ul_time,
+	isp_user_plan_and_topup.priority,
+	isp_user_plan_and_topup.time_limit,
+	isp_user_plan_and_topup.time_consumed,
+	`treat_fup_as_dl_for_last_limit_row`,
+	IFNULL( (select radacct.acctinputoctets from radacct where radacct.username = @username and acctstoptime is null) , 0 ) SessionInputOctets ,
+	IFNULL( (select radacct.acctoutputoctets  from radacct where radacct.username = @username and acctstoptime is null), 0 ) SessionOutputOctets ,
+	IFNULL( (select radacct.acctsessiontime  from radacct where username = @username and acctstoptime is null), 0 ) SessionTime
+	into @t_applicable_row_id, @t_net_data_limit, @t_last_dl_limit, @t_last_ul_limit, @t_last_accounting_dl_ratio, @t_last_accounting_ul_ratio,@t_download_data_consumed, @t_upload_data_consumed, @t_download_limit, @t_upload_limit, @t_fup_download_limit, @t_fup_upload_limit, @t_accounting_download_ratio, @t_accounting_upload_ratio, @t_burst_dl_limit, @t_burst_ul_limit, @t_burst_threshold_dl_limit, @t_burst_threshold_ul_limit, @t_burst_dl_time, @t_burst_ul_time, @t_priority, @t_time_limit, @t_time_consumed, @t_treat_fup_as_dl_for_last_limit_row,@t_SessionInputOctate, @t_SessionOutputOctate, @t_SessionTime
+FROM
+	isp_user_plan_and_topup 
+JOIN
+	isp_user user on isp_user_plan_and_topup.user_id=user.customer_id
+WHERE
+						(
+							(
+								(
+									CAST(@current_time AS time) BETWEEN `start_time` AND `end_time` 
+									OR 
+									(
+										NOT CAST(@current_time AS time) BETWEEN `end_time` AND `start_time` 
+										AND `start_time` > `end_time`
+									)
+								) 
+								AND
+								(is_expired=0 or is_expired is null)
+							)
+							OR
+							(
+								`start_time` is null
+							)
+							OR (`start_time`='00:00:00' and `end_time`='00:00:00')
+						)
+						AND
+						(
+							@now >= start_date
+							AND
+							@now <= end_date
+						)
+						AND
+							(is_expired=0 or is_expired is null)
+
+						AND
+						`user_id`= (SELECT customer_id from isp_user where radius_username = @username)
+						AND (
+							(IF('sun'=@day,1,0)=1 AND sun = 1) OR
+							(IF('mon'=@day,1,0)=1 AND mon = 1) OR
+							(IF('tue'=@day,1,0)=1 AND tue = 1) OR
+							(IF('wed'=@day,1,0)=1 AND wed = 1) OR
+							(IF('thu'=@day,1,0)=1 AND thu = 1) OR
+							(IF('fri'=@day,1,0)=1 AND fri = 1) OR
+							(IF('sat'=@day,1,0)=1 AND sat = 1)
+						)
+						AND (
+							(IF('d01'=@date,1,0)=1 AND d01 = 1) OR
+							(IF('d02'=@date,1,0)=1 AND d02 = 1) OR 
+							(IF('d03'=@date,1,0)=1 AND d03 = 1) OR 
+							(IF('d04'=@date,1,0)=1 AND d04 = 1) OR 
+							(IF('d05'=@date,1,0)=1 AND d05 = 1) OR 
+							(IF('d06'=@date,1,0)=1 AND d06 = 1) OR 
+							(IF('d07'=@date,1,0)=1 AND d07 = 1) OR 
+							(IF('d08'=@date,1,0)=1 AND d08 = 1) OR 
+							(IF('d09'=@date,1,0)=1 AND d09 = 1) OR 
+							(IF('d10'=@date,1,0)=1 AND d10 = 1) OR 
+							(IF('d11'=@date,1,0)=1 AND d11 = 1) OR 
+							(IF('d12'=@date,1,0)=1 AND d12 = 1) OR 
+							(IF('d13'=@date,1,0)=1 AND d13 = 1) OR 
+							(IF('d14'=@date,1,0)=1 AND d14 = 1) OR 
+							(IF('d15'=@date,1,0)=1 AND d15 = 1) OR 
+							(IF('d16'=@date,1,0)=1 AND d16 = 1) OR 
+							(IF('d17'=@date,1,0)=1 AND d17 = 1) OR 
+							(IF('d18'=@date,1,0)=1 AND d18 = 1) OR 
+							(IF('d19'=@date,1,0)=1 AND d19 = 1) OR 
+							(IF('d20'=@date,1,0)=1 AND d20 = 1) OR 
+							(IF('d21'=@date,1,0)=1 AND d21 = 1) OR 
+							(IF('d22'=@date,1,0)=1 AND d22 = 1) OR 
+							(IF('d23'=@date,1,0)=1 AND d23 = 1) OR 
+							(IF('d24'=@date,1,0)=1 AND d24 = 1) OR 
+							(IF('d25'=@date,1,0)=1 AND d25 = 1) OR 
+							(IF('d26'=@date,1,0)=1 AND d26 = 1) OR
+							(IF('d27'=@date,1,0)=1 AND d27 = 1) OR 
+							(IF('d28'=@date,1,0)=1 AND d28 = 1) OR 
+							(IF('d29'=@date,1,0)=1 AND d29 = 1) OR 
+							(IF('d30'=@date,1,0)=1 AND d30 = 1) OR 
+							(IF('d31'=@date,1,0)=1 AND d31 = 1) 
+
+						)
+						AND(
+							with_data_limit = false OR 
+							(
+								data_limit is not null AND data_limit >0
+							)
+						)
+						AND(
+							less_then_this_id is null OR
+							(
+								isp_user_plan_and_topup.id < less_then_this_id
+							)
+						)
+						order by is_topup desc, isp_user_plan_and_topup.id desc
+						limit 1;
+
+END
+ ;;
+delimiter ;
+
+-- ----------------------------
+--  Function structure for `checkAuthentication`
 -- ----------------------------
 DROP FUNCTION IF EXISTS `checkAuthentication`;
-DELIMITER ;;
+delimiter ;;
 CREATE DEFINER=`root`@`localhost` FUNCTION `checkAuthentication`(now datetime, username varchar(255)) RETURNS text CHARSET utf8
 P:BEGIN
 
@@ -217,6 +368,7 @@ IF @fup is NULL THEN
 
 END IF;
 
+
 SET @speed_change =false;
 SET @accounting_change = false;
 
@@ -232,7 +384,8 @@ IF @user_last_accounting_dl_ratio != @bw_accounting_download_ratio OR @user_last
 	UPDATE isp_user SET last_accounting_dl_ratio = @bw_accounting_download_ratio, last_accounting_ul_ratio = @bw_accounting_upload_ratio WHERE radius_username = username;
 END IF;
 
-IF (@dl_limit is null AND @ul_limit is null) OR ( (@data_time_consumed + @user_SessionTime)  > @data_time_limit AND $data_time_limit > 0)  THEN
+
+IF (@dl_limit is null AND @ul_limit is null) OR ( (@data_time_consumed + @user_SessionTime)  > @data_time_limit AND @data_time_limit > 0)  THEN
 	SET @access = false;
 END IF;
 
@@ -242,186 +395,38 @@ IF @data_applicable_row_id is not null THEN
 	UPDATE isp_user_plan_and_topup set is_effective=1 where id=@data_applicable_row_id;
 END IF;
 
-RETURN CONCAT(@access,',', @coa,',', @dl_limit,',', @ul_limit,',',@burst_dl_limit,',',@burst_ul_limit,',',@burst_threshold_dl_limit,',',@burst_threshold_ul_limit,',',@burst_dl_time,',',@burst_ul_time,',',@priority);
+
+RETURN CONCAT_WS(@access,',', @coa,',', @dl_limit,',', @ul_limit,',',@burst_dl_limit,',',@burst_ul_limit,',',@burst_threshold_dl_limit,',',@burst_threshold_ul_limit,',',@burst_dl_time,',',@burst_ul_time,',',@priority);
 
 END
-;;
-DELIMITER ;
+ ;;
+delimiter ;
 
 -- ----------------------------
---  Procedure definition for `getApplicableRow`
+--  Function structure for `updateAccountingData`
 -- ----------------------------
-DROP PROCEDURE IF EXISTS `getApplicableRow`;
-DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `getApplicableRow`(username varchar (255),now datetime, with_data_limit boolean,less_then_this_id integer)
+DROP FUNCTION IF EXISTS `updateAccountingData`;
+delimiter ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `updateAccountingData`(dl_data bigint, ul_data bigint, now datetime, username varchar(255), session_time_consumed bigint) RETURNS text CHARSET utf8
 BEGIN
 
-SET @now = now;
-SET @day = LOWER(DATE_FORMAT(@now,"%a"));
-SET @date = CONCAT("d",DATE_FORMAT(@now,"%d"));
-SET @current_time = TIME(@now);
-SET @today = DATE(@now);
-SET @username = username;
+	SELECT last_accounting_dl_ratio, last_accounting_ul_ratio into @last_accounting_dl_ratio, @last_accounting_ul_ratio FROM isp_user WHERE radius_username = username;
 
-SELECT 
-	isp_user_plan_and_topup.id id,
-	data_limit + carry_data AS net_data_limit,
-	user.last_dl_limit last_dl_limit,
-	user.last_ul_limit last_ul_limit,
-	user.last_accounting_dl_ratio,
-	user.last_accounting_ul_ratio,
-	isp_user_plan_and_topup.download_data_consumed,
-	isp_user_plan_and_topup.upload_data_consumed,
-	isp_user_plan_and_topup.download_limit,
-	isp_user_plan_and_topup.upload_limit,
-	isp_user_plan_and_topup.fup_download_limit,
-	isp_user_plan_and_topup.fup_upload_limit,
-	isp_user_plan_and_topup.accounting_download_ratio,
-	isp_user_plan_and_topup.accounting_upload_ratio,
-	isp_user_plan_and_topup.burst_dl_limit,
-	isp_user_plan_and_topup.burst_ul_limit,
-	isp_user_plan_and_topup.burst_threshold_dl_limit,
-	isp_user_plan_and_topup.burst_threshold_ul_limit,
-	isp_user_plan_and_topup.burst_dl_time,
-	isp_user_plan_and_topup.burst_ul_time,
-	isp_user_plan_and_topup.priority,
-	isp_user_plan_and_topup.time_limit,
-	isp_user_plan_and_topup.time_consumed,
-	`treat_fup_as_dl_for_last_limit_row`,
-	IFNULL( (select radacct.acctinputoctets from radacct where radacct.username = @username and acctstoptime is null) , 0 ) SessionInputOctets ,
-	IFNULL( (select radacct.acctoutputoctets  from radacct where radacct.username = @username and acctstoptime is null), 0 ) SessionOutputOctets ,
-	IFNULL( (select radacct.acctsessiontime  from radacct where username = @username and acctstoptime is null), 0 ) SessionTime
-	into @t_applicable_row_id, @t_net_data_limit, @t_last_dl_limit, @t_last_ul_limit, @t_last_accounting_dl_ratio, @t_last_accounting_ul_ratio,@t_download_data_consumed, @t_upload_data_consumed, @t_download_limit, @t_upload_limit, @t_fup_download_limit, @t_fup_upload_limit, @t_accounting_download_ratio, @t_accounting_upload_ratio, @t_burst_dl_limit, @t_burst_ul_limit, @t_burst_threshold_dl_limit, @t_burst_threshold_ul_limit, @t_burst_dl_time, @t_burst_ul_time, @t_priority, @t_time_limit, @t_time_consumed, @t_treat_fup_as_dl_for_last_limit_row,@t_SessionInputOctate, @t_SessionOutputOctate, @t_SessionTime
-FROM
-	isp_user_plan_and_topup 
-JOIN
-	isp_user user on isp_user_plan_and_topup.user_id=user.customer_id
-WHERE
-						(
-							(
-								(
-									CAST(@current_time AS time) BETWEEN `start_time` AND `end_time` 
-									OR 
-									(
-										NOT CAST(@current_time AS time) BETWEEN `end_time` AND `start_time` 
-										AND `start_time` > `end_time`
-									)
-								) 
-								AND
-								(is_expired=0 or is_expired is null)
-							)
-							OR
-							(
-								`start_time` is null
-							)
-							OR (`start_time`='00:00:00' and `end_time`='00:00:00')
-						)
-						AND
-						(
-							@now >= start_date
-							AND
-							@now <= end_date
-						)
-						AND
-							(is_expired=0 or is_expired is null)
+	UPDATE 
+		isp_user_plan_and_topup 
+	SET 
+		download_data_consumed = IFNULL(download_data_consumed,0) + ((dl_data*@last_accounting_dl_ratio) /100) ,
+		upload_data_consumed = IFNULL(upload_data_consumed,0) + ((ul_data*@last_accounting_ul_ratio) /100),
+		time_consumed = IFNULL(time_consumed,0) + session_time_consumed
+	WHERE 
+		is_effective = 1 AND user_id = (SELECT customer_id from isp_user where radius_username = username)
+	;
 
-						AND
-						`user_id`= (SELECT customer_id from isp_user where radius_username = @username)
-						AND (
-							(IF('sun'=@day,1,0)=1 AND sun = 1) OR
-							(IF('mon'=@day,1,0)=1 AND mon = 1) OR
-							(IF('tue'=@day,1,0)=1 AND tue = 1) OR
-							(IF('wed'=@day,1,0)=1 AND wed = 1) OR
-							(IF('thu'=@day,1,0)=1 AND thu = 1) OR
-							(IF('fri'=@day,1,0)=1 AND fri = 1) OR
-							(IF('sat'=@day,1,0)=1 AND sat = 1)
-						)
-						AND (
-							(IF('d01'=@date,1,0)=1 AND d01 = 1) OR
-							(IF('d02'=@date,1,0)=1 AND d02 = 1) OR 
-							(IF('d03'=@date,1,0)=1 AND d03 = 1) OR 
-							(IF('d04'=@date,1,0)=1 AND d04 = 1) OR 
-							(IF('d05'=@date,1,0)=1 AND d05 = 1) OR 
-							(IF('d06'=@date,1,0)=1 AND d06 = 1) OR 
-							(IF('d07'=@date,1,0)=1 AND d07 = 1) OR 
-							(IF('d08'=@date,1,0)=1 AND d08 = 1) OR 
-							(IF('d09'=@date,1,0)=1 AND d09 = 1) OR 
-							(IF('d10'=@date,1,0)=1 AND d10 = 1) OR 
-							(IF('d11'=@date,1,0)=1 AND d11 = 1) OR 
-							(IF('d12'=@date,1,0)=1 AND d12 = 1) OR 
-							(IF('d13'=@date,1,0)=1 AND d13 = 1) OR 
-							(IF('d14'=@date,1,0)=1 AND d14 = 1) OR 
-							(IF('d15'=@date,1,0)=1 AND d15 = 1) OR 
-							(IF('d16'=@date,1,0)=1 AND d16 = 1) OR 
-							(IF('d17'=@date,1,0)=1 AND d17 = 1) OR 
-							(IF('d18'=@date,1,0)=1 AND d18 = 1) OR 
-							(IF('d19'=@date,1,0)=1 AND d19 = 1) OR 
-							(IF('d20'=@date,1,0)=1 AND d20 = 1) OR 
-							(IF('d21'=@date,1,0)=1 AND d21 = 1) OR 
-							(IF('d22'=@date,1,0)=1 AND d22 = 1) OR 
-							(IF('d23'=@date,1,0)=1 AND d23 = 1) OR 
-							(IF('d24'=@date,1,0)=1 AND d24 = 1) OR 
-							(IF('d25'=@date,1,0)=1 AND d25 = 1) OR 
-							(IF('d26'=@date,1,0)=1 AND d26 = 1) OR
-							(IF('d27'=@date,1,0)=1 AND d27 = 1) OR 
-							(IF('d28'=@date,1,0)=1 AND d28 = 1) OR 
-							(IF('d29'=@date,1,0)=1 AND d29 = 1) OR 
-							(IF('d30'=@date,1,0)=1 AND d30 = 1) OR 
-							(IF('d31'=@date,1,0)=1 AND d31 = 1) 
-
-						)
-						AND(
-							with_data_limit = false OR 
-							(
-								data_limit is not null AND data_limit >0
-							)
-						)
-						AND(
-							less_then_this_id is null OR
-							(
-								isp_user_plan_and_topup.id < less_then_this_id
-							)
-						)
-						order by is_topup desc, isp_user_plan_and_topup.id desc
-						limit 1;
-SELECT @t_applicable_row_id, @t_net_data_limit, @t_last_dl_limit, @t_last_ul_limit, @t_last_accounting_dl_ratio, @t_last_accounting_ul_ratio,@t_download_data_consumed, @t_upload_data_consumed, @t_download_limit, @t_upload_limit, @t_fup_download_limit, @t_fup_upload_limit, @t_accounting_download_ratio, @t_accounting_upload_ratio, @t_burst_dl_limit, @t_burst_ul_limit, @t_burst_threshold_dl_limit, @t_burst_threshold_ul_limit, @t_burst_dl_time, @t_burst_ul_time, @t_priority, @t_time_limit, @t_time_consumed, @t_treat_fup_as_dl_for_last_limit_row,@t_SessionInputOctate, @t_SessionOutputOctate, @t_SessionTime;
-END
-;;
-DELIMITER ;
-
--- ----------------------------
---  Procedure definition for `updateAccoundingData`
--- ----------------------------
-DROP PROCEDURE IF EXISTS `updateAccoundingData`;
-DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `updateAccoundingData`(dl_data bigint, ul_data bigint, now datetime, username varchar(255), session_time_consumed bigint)
-    COMMENT 'function updateAccountingData($dl_data,$ul_data,$now,$day,$username, $user_data){\n\n		testDebug(''User'',''in accounting'',$user_data);\n		\n		$consumed_dl_data = ($dl_data*$user_data[''last_accounting_dl_ratio'']) /100;\n		$consumed_ul_data = ($ul_data*$user_data[''last_accounting_ul_ratio''])/100;\n		// update data query\n		$update_query = "\n			UPDATE \n				isp_user_plan_and_topup \n			SET \n				download_data_consumed = IFNULL(download_data_consumed,0) + ". ($consumed_dl_data) . ",\n				upload_data_consumed = IFNULL(upload_data_consumed,0) + ".($consumed_ul_data) . "\n			WHERE \n					is_effective = 1 AND user_id = (SELECT customer_id from isp_user where radius_username = ''$username'')\n				";\n		runQuery($update_query);\n		testDebug(''Updating Accounting Data'',[''dl''=>byte2human($consumed_dl_data), ''ul''=>byte2human($consumed_ul_data)],$update_query);\n	}'
-BEGIN
-
-	SET @q= CONCAT("SELECT last_accounting_dl_ratio, last_accounting_ul_ratio into @last_accounting_dl_ratio, @last_accounting_ul_ratio FROM isp_user WHERE radius_username = '", username,"'");
-
-	PREPARE stmt1 FROM @q;
-	EXECUTE stmt1;
-	DEALLOCATE PREPARE stmt1;
-
-	SET @update_query = CONCAT("
-			UPDATE 
-				isp_user_plan_and_topup 
-			SET 
-				download_data_consumed = IFNULL(download_data_consumed,0) + ", ((dl_data*@last_accounting_dl_ratio) /100) , ",
-				upload_data_consumed = IFNULL(upload_data_consumed,0) + ", ((ul_data*@last_accounting_ul_ratio) /100) , ",
-				time_consumed = IFNULL(time_consumed,0) + ",(session_time_consumed) , "
-WHERE 
-					is_effective = 1 AND user_id = (SELECT customer_id from isp_user where radius_username = '",username,"')"
-				);
-	PREPARE stmt2 FROM @update_query;
-	EXECUTE stmt2;
-	DEALLOCATE PREPARE stmt2;
+	select checkAuthentication(now, username) into @temp;
+	RETURN @temp;
 
 END
-;;
-DELIMITER ;
+ ;;
+delimiter ;
 
--- ----------------------------
---  Records 
--- ----------------------------
+SET FOREIGN_KEY_CHECKS = 1;

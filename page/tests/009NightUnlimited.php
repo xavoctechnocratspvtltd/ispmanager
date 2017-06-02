@@ -41,6 +41,7 @@ class page_tests_009NightUnlimited extends page_Tester {
                 'plan'=>'Night Unlimited',
                 'remark'=>'Main Plan',
                 'data_limit'=>'100.00GB',
+                'time_limit'=>0,
                 'download_limit'=>'2.00MB',
                 'upload_limit'=>'2.00MB',
                 'fup_download_limit'=>'512.00KB',
@@ -56,6 +57,8 @@ class page_tests_009NightUnlimited extends page_Tester {
                 'is_expired'=>0,
                 'is_recurring'=>1,
                 'reset_date'=>'2017-06-01 00:00:00',
+                // 'data_reset_value'=>1,
+                // 'data_reset_mode'=>'months',
                 'sun'=>1,
                 'mon'=>1,
                 'tue'=>1,
@@ -101,6 +104,7 @@ class page_tests_009NightUnlimited extends page_Tester {
                 'plan'=>'Night Unlimited',
                 'remark'=>'Night Unlimited',
                 'data_limit'=>null,
+                'time_limit'=>0,
                 'download_limit'=>"",
                 'upload_limit'=>"",
                 'fup_download_limit'=>null,
@@ -175,6 +179,8 @@ class page_tests_009NightUnlimited extends page_Tester {
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
             'data_consumed'=>'0.00B',
+            'time_limit'=>0,
+            'time_consumed'=>0,
             'access'=>1,
             'coa' => 1
         ];
@@ -195,6 +201,8 @@ class page_tests_009NightUnlimited extends page_Tester {
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
             'data_consumed'=>'0.00B',
+            'time_limit'=>0,
+            'time_consumed'=>0,
             'access'=>1,
             'coa' => 1
         ];
@@ -218,8 +226,10 @@ class page_tests_009NightUnlimited extends page_Tester {
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
             'data_consumed'=>'5.00GB',
+            'time_limit'=>0,
+            'time_consumed'=>0,
             'access'=>1,
-            'coa'=>false
+            'coa'=>0
         ];
     }
 
@@ -243,6 +253,8 @@ class page_tests_009NightUnlimited extends page_Tester {
             'dl'=>'2.00MB',
             'ul'=>'2.00MB',
             'data_consumed'=>'14.00GB',
+            'time_limit'=>0,
+            'time_consumed'=>0,
             'access'=>1,
             'coa'=> 1
         ];

@@ -28,37 +28,39 @@ xavocacct {
 	#xavocacctphp
 	# check some vars in control and 
 	# send coa accordingly if needed
-	update control { 
-    	Tmp-String-0 := "%{sql:select updateAccountingData(%{Acct-Input-Octets},%{Acct-Output-Octets},null,'%{User-Name}',%{Acct-Session-Time})}"
-   	}
+	if("%{Acct-Status-Type}" == 'Interim-Update'){
+		update control { 
+	    	Tmp-String-0 := "%{sql:select updateAccountingData(%{Acct-Input-Octets},%{Acct-Output-Octets},null,'%{User-Name}',%{Acct-Session-Time})}"
+	   	}
 
-   	if ( &control:Tmp-String-0 =~ /(.*),(.*),(.*),(.*)/ ) {
-		if("%{1}" != 0) {
-			update disconnect {
-				User-Name = "%{User-Name}"
-		        Acct-Session-Id = "%{Acct-Session-Id}"
-		        NAS-IP-Address = "%{NAS-IP-Address}"
-		        Framed-IP-Address = "%{Framed-IP-Address}"
-			}
-		} 
-	}
+	   	if ( &control:Tmp-String-0 =~ /(.*),(.*),(.*),(.*)/ ) {
+			if("%{1}" != 0) {
+				update disconnect {
+					User-Name = "%{User-Name}"
+			        Acct-Session-Id = "%{Acct-Session-Id}"
+			        NAS-IP-Address = "%{NAS-IP-Address}"
+			        Framed-IP-Address = "%{Framed-IP-Address}"
+				}
+			} 
+		}
 
-	if("%{2}" == 1){
-		if("%{4}" !=0){
-			update coa {
-		        User-Name = "%{User-Name}"
-		        Acct-Session-Id = "%{Acct-Session-Id}"
-		        NAS-IP-Address = "%{NAS-IP-Address}"
-		        Framed-IP-Address = "%{Framed-IP-Address}"
-				Mikrotik-Rate-Limit = "%{4}"
-			}
-		}else{
-			update coa {
-		        User-Name = "%{User-Name}"
-		        Acct-Session-Id = "%{Acct-Session-Id}"
-		        NAS-IP-Address = "%{NAS-IP-Address}"
-		        Framed-IP-Address = "%{Framed-IP-Address}"
-				Mikrotik-Rate-Limit = "%{3}"
+		if("%{2}" == 1){
+			if("%{4}" !=0){
+				update coa {
+			        User-Name = "%{User-Name}"
+			        Acct-Session-Id = "%{Acct-Session-Id}"
+			        NAS-IP-Address = "%{NAS-IP-Address}"
+			        Framed-IP-Address = "%{Framed-IP-Address}"
+					Mikrotik-Rate-Limit = "%{4}"
+				}
+			}else{
+				update coa {
+			        User-Name = "%{User-Name}"
+			        Acct-Session-Id = "%{Acct-Session-Id}"
+			        NAS-IP-Address = "%{NAS-IP-Address}"
+			        Framed-IP-Address = "%{Framed-IP-Address}"
+					Mikrotik-Rate-Limit = "%{3}"
+				}
 			}
 		}
 	}

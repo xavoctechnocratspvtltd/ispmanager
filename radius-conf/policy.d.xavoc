@@ -10,6 +10,16 @@ xavocauth {
 				Reply-Message = "Not Authorised to Access"
 			}
 			reject
+		}else{
+			if("%{4}" !=0){
+				update reply {
+					Mikrotik-Rate-Limit = "%{4}"
+				}
+			}else{
+				update reply {
+					Mikrotik-Rate-Limit = "%{3}"
+				}
+			}
 		}
 	} 
 }
@@ -34,12 +44,22 @@ xavocacct {
 	}
 
 	if("%{2}" == 1){
-		update coa {
-	        User-Name = "%{User-Name}"
-	        Acct-Session-Id = "%{Acct-Session-Id}"
-	        NAS-IP-Address = "%{NAS-IP-Address}"
-	        Framed-IP-Address = "%{Framed-IP-Address}"
-	        Mikrotik-Rate-Limit = "%{control:Tmp-String-0}"
+		if("%{4}" !=0){
+			update coa {
+		        User-Name = "%{User-Name}"
+		        Acct-Session-Id = "%{Acct-Session-Id}"
+		        NAS-IP-Address = "%{NAS-IP-Address}"
+		        Framed-IP-Address = "%{Framed-IP-Address}"
+				Mikrotik-Rate-Limit = "%{4}"
+			}
+		}else{
+			update coa {
+		        User-Name = "%{User-Name}"
+		        Acct-Session-Id = "%{Acct-Session-Id}"
+		        NAS-IP-Address = "%{NAS-IP-Address}"
+		        Framed-IP-Address = "%{Framed-IP-Address}"
+				Mikrotik-Rate-Limit = "%{3}"
+			}
 		}
 	}
 	

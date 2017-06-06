@@ -11,7 +11,7 @@
  Target Server Version : 100118
  File Encoding         : utf-8
 
- Date: 06/02/2017 09:42:08 AM
+ Date: 06/06/2017 09:15:13 AM
 */
 
 SET NAMES utf8;
@@ -395,8 +395,13 @@ IF @data_applicable_row_id is not null THEN
 	UPDATE isp_user_plan_and_topup set is_effective=1 where id=@data_applicable_row_id;
 END IF;
 
+SET @burst_string =false;
 
-RETURN CONCAT_WS(@access,',', @coa,',', @dl_limit,',', @ul_limit,',',@burst_dl_limit,',',@burst_ul_limit,',',@burst_threshold_dl_limit,',',@burst_threshold_ul_limit,',',@burst_dl_time,',',@burst_ul_time,',',@priority);
+IF @burst_dl_limit is not null or @burst_dl_limit != "" THEN
+	SET @burst_string= CONCAT(@burst_ul_limit,'/',@burst_threshold_dl_limit,' ',@burst_threshold_ul_limit,'/',@burst_dl_time,' ',@burst_ul_time,' ',@priority);
+END IF;
+
+RETURN CONCAT(@access,',', @coa,',', @ul_limit,'/', @dl_limit,',',@burst_string);
 
 END
  ;;
@@ -409,6 +414,10 @@ DROP FUNCTION IF EXISTS `updateAccountingData`;
 delimiter ;;
 CREATE DEFINER=`root`@`localhost` FUNCTION `updateAccountingData`(dl_data bigint, ul_data bigint, now datetime, username varchar(255), session_time_consumed bigint) RETURNS text CHARSET utf8
 BEGIN
+
+	IF(now is NULL) THEN 
+		SET now = now();
+	END IF;
 
 	SELECT last_accounting_dl_ratio, last_accounting_ul_ratio into @last_accounting_dl_ratio, @last_accounting_ul_ratio FROM isp_user WHERE radius_username = username;
 

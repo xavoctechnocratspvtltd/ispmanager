@@ -1,8 +1,17 @@
 xavocauth {
 	#xavocauthphp ## No more php calling
 	update control { 
-    	Tmp-String-0 := "%{sql:select checkAuthentication(null,'%{User-Name}')}"
+    	Tmp-String-0 := "%{sql:select checkAuthentication(null,'%{User-Name}')}"	
    	} 
+
+	if ( &control:Tmp-String-0 =~ /(.*),(.*),(.*),(.*)/ ) {
+		if("%{1}" != 1) {
+			update reply {
+				Reply-Message = "Not Authorised to Access"
+			}
+			reject
+		}
+	} 
 }
 
 xavocacct {
@@ -10,9 +19,21 @@ xavocacct {
 	# check some vars in control and 
 	# send coa accordingly if needed
 	update control { 
-    	Tmp-String-0 := "%{sql:select updateAccountingData(dl_data,ul_data,now,'%{User-Name}',session_time_consumed)}"
+    	Tmp-String-0 := "%{sql:select updateAccountingData(%{Acct-Input-Octets},%{Acct-Output-Octets},null,'%{User-Name}',%{Acct-Session-Time})}"
    	}
-	if(&control:Tmp-Integer-0 == 1){
+
+   	if ( &control:Tmp-String-0 =~ /(.*),(.*),(.*),(.*)/ ) {
+		if("%{1}" != 0) {
+			update disconnect {
+				User-Name = "%{User-Name}"
+		        Acct-Session-Id = "%{Acct-Session-Id}"
+		        NAS-IP-Address = "%{NAS-IP-Address}"
+		        Framed-IP-Address = "%{Framed-IP-Address}"
+			}
+		} 
+	}
+
+	if("%{2}" == 1){
 		update coa {
 	        User-Name = "%{User-Name}"
 	        Acct-Session-Id = "%{Acct-Session-Id}"
@@ -21,12 +42,5 @@ xavocacct {
 	        Mikrotik-Rate-Limit = "%{control:Tmp-String-0}"
 		}
 	}
-	if(&control:Tmp-Integer-0 == 2){
-        update disconnect {
-			User-Name = "%{User-Name}"
-	        Acct-Session-Id = "%{Acct-Session-Id}"
-	        NAS-IP-Address = "%{NAS-IP-Address}"
-	        Framed-IP-Address = "%{Framed-IP-Address}"
-		}
-	}
+	
 }

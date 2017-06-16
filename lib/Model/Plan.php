@@ -155,7 +155,7 @@ class Model_Plan extends \xepan\commerce\Model_Item{
 
 				foreach ($condition_data as $field => $value) {
 					$field = strtolower(trim($field));
-					if(in_array($field, ['data_limit','download_limit','upload_limit','fup_download_limit','fup_upload_limit']))
+					if(in_array($field, ['data_limit','download_limit','upload_limit','fup_download_limit','fup_upload_limit','burst_dl_limit','burst_ul_limit','burst_threshold_dl_limit','burst_threshold_ul_limit']))
 						$value = $this->app->human2byte($value);
 					$condition[$field] = $value;
 				}

@@ -93,7 +93,11 @@ class Model_Condition extends \xepan\base\Model_Table{
 					'download_limit',
 					'upload_limit',
 					'fup_download_limit',
-					'fup_upload_limit'
+					'fup_upload_limit',
+					'burst_dl_limit',
+					'burst_ul_limit',
+					'burst_threshold_dl_limit',
+					'burst_threshold_ul_limit'
 				]);
 		// $this->add('dynamic_model/Controller_AutoCreator');
 	}

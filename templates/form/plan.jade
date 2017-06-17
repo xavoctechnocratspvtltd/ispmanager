@@ -17,11 +17,23 @@ div
 			label Tax:
 			{$tax_id}
 		.col-md-3.atk-form-field.atk-form-row
+			{$is_auto_renew}
+		.col-md-3.atk-form-field.atk-form-row
+			{$available_in_user_control_panel}
+	.row
+		.col-md-3.atk-form-field.atk-form-row
 			label Plan Validity Value
 			{$plan_validity_value}
 		.col-md-3.atk-form-field.atk-form-row
 			label Plan Validity Unit
 			{$qty_unit_id}
+		.col-md-3.atk-form-field.atk-form-row
+			label Renewable Value:
+			{$renewable_value}
+		.col-md-3.atk-form-field.atk-form-row
+			label Renewable Unit:
+			{$renewable_unit}
+
 	.row
 		.col-md-12
 			label Description:

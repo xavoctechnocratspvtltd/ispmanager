@@ -69,7 +69,7 @@
 					'item_price'=>$m->refSQL('item_id')->fieldQuery('sale_price'),
 					'last_sale_price'=>$m->getElement('price')
 				]);
-		});
+		})->caption('recurring price');
 
 		$this->addCondition('is_recurring',true);
 		$this->addCondition([['recurring_qsp_detail_id',0],['recurring_qsp_detail_id',null]]);

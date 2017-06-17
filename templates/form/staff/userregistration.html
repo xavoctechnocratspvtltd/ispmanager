@@ -1,0 +1,107 @@
+
+<div id="{$_name}" class="container">
+  <div id="{$_name}" style="{$style}" class="container {$class}">
+    <div class="well">
+      <label class="h4">User Plans</label>
+      <div id="{$_name}" class="container">
+        <div class="row">
+          <div class="col-md-6 atk-form-field atk-form-row">
+            <label>Plan:</label>
+          </div>
+          <div class="col-md-6 atk-form-field atk-form-row">
+            <label>User Name:</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 atk-form-field atk-form-row">{$radius_username}</div>
+          <div class="col-md-6 atk-form-field atk-form-row">{$plan}{$plan_id}</div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 atk-form-field atk-form-row">
+            <label>Password:</label>
+          </div>
+          <div class="col-md-6 atk-form-field atk-form-row">
+            <label>Simultaneous Use:</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 atk-form-field atk-form-row">{$radius_password}</div>
+          <div class="col-md-6 atk-form-field atk-form-row">{$simultaneous_use}</div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 atk-form-field atk-form-row">
+            <label>Grace period in days:</label>
+          </div>
+          <div class="col-md-6 atk-form-field atk-form-row">
+            <label>Mac Address:</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 atk-form-field atk-form-row">{$grace_period_in_days}</div>
+          <div class="col-md-6 atk-form-field atk-form-row">{$mac_address}</div>
+        </div>
+        <div class="row">
+          <div class="col-md-12 atk-form-field atk-form-row">
+            <label>Custom RADIUS Attributes: </label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 atk-form-field atk-form-row">{$custom_radius_attributes}</div>
+        </div>
+      </div>
+    </div>
+    <div class="well">
+      <label class="h4">Basic Info</label>
+      <div id="{$_name}" class="container">
+        <div class="row">
+          <div class="col-md-6 atk-form-field atk-form-row">
+            <label>First Name:</label>
+          </div>
+          <div class="col-md-6 atk-form-field atk-form-row">
+            <label>Last Name:</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 atk-form-field atk-form-row">{$first_name}</div>
+          <div class="col-md-6 atk-form-field atk-form-row">{$last_name}</div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 atk-form-field atk-form-row">
+            <label>Country:</label>
+          </div>
+          <div class="col-md-6 atk-form-field atk-form-row">
+            <label>State:</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 atk-form-field atk-form-row">{$country_id}</div>
+          <div class="col-md-6 atk-form-field atk-form-row">{$state_id}</div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 atk-form-field atk-form-row">
+            <label>City:</label>
+          </div>
+          <div class="col-md-6 atk-form-field atk-form-row">
+            <label>Pin Code:</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 atk-form-field atk-form-row">{$city}</div>
+          <div class="col-md-6 atk-form-field atk-form-row">{$pin_code}</div>
+        </div>
+        <div class="row">
+          <div class="col-md-12 atk-form-field atk-form-row">
+            <label>Address:</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 atk-form-field atk-form-row">
+            {$address}
+            {$form_buttons}
+            {$Content}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

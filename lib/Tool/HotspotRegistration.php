@@ -14,6 +14,7 @@ class Tool_HotspotRegistration extends \xepan\cms\View_Tool{
 
 		$form = $this->add('Form',null,null,['form/empty']);
 		$form->setLayout(['form/hotspot-registration']);
+		
 		$form->addField('Number','mobile_no','Mobile No')->validate('required');
 		$form->addField('Number','otp','OTP');
 

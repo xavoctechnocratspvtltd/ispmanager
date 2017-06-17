@@ -27,7 +27,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 		$user_j = $this->join('isp_user.customer_id');
 
-		$user_j->hasOne('xavoc\ispmanager\Plan','plan_id');
+		$user_j->hasOne('xavoc\ispmanager\Plan','plan_id')->display(['form'=>'autocomplete/Basic']);
 
 		$user_j->addField('radius_username')->caption('Username');
 		$user_j->addField('radius_password')->caption('Password');

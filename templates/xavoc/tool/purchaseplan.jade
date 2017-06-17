@@ -1,0 +1,33 @@
+div(id='{$_name}' class="{$class} row" style="{$style}")
+  {$heading}
+  h3.text-center Plan
+  hr
+  {rows}{row}
+  .col-md-3.col-sm-12.col-lg-3.col-xs-12
+    .thumbnail
+      {image_wrapper}
+      div.img-wrapper(style="height:150px;")
+        img(src='{$plan_img}', alt='{$alt} we are uploading images ...' style="width:100%;max-heigth:150px;")
+      {/}
+      .caption
+        h3 {$name}
+        div.kit-description{$description}
+        .row
+          .col-md-12.col-sm-12.col-lg-12.col-xs-12
+            p.price
+              i.fa.fa-rupee &nbsp;
+              |{$sale_price}
+        div
+          {purchase_btn_wrapper}
+          .xepan-isp-plan-purchase-button(data-xplanid="{$id}" data-name="{$name}"){$purchase_btn}
+          {/}
+  {/}{/}
+  {not_found}
+  div.full-width.alert.alert-warning(role="alert")
+    strong.glyphicon.glyphicon-warning-sign &nbsp;Warning!
+      span &nbsp;{$not_found_message}
+  {/}
+  {paginator_wrapper}
+  .ds-kit-paginator(style='float:none; clear:both;text-align:center;')
+    {$Paginator}
+  {/}

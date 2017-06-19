@@ -79,5 +79,26 @@ class page_configuration extends \xepan\base\Page {
 			$form->update();
 			$form->js(null,$form->js()->reload())->univ()->successMessage('Saved')->execute();
 		}
+
+		//OTP SMS Expired Config
+		$otp_m = $this->add('xepan\base\Model_ConfigJsonModel',
+			[
+				'fields'=>[
+							'expired_time'=>'Number',
+						],
+					'config_key'=>'ISPMANAGER_OTP_EXPIRED',
+					'application'=>'ispmanager'
+			]);
+		$otp_m->add('xepan\hr\Controller_ACL');
+		$otp_m->tryLoadAny();
+
+		$otp_tab = $tab->addTab('OTP Expired Time');
+		$form = $otp_tab->add('Form');
+		$form->setModel($otp_m);
+		$form->addSubmit('Save');
+		if($form->isSubmitted()){
+			$form->update();
+			$form->js(null,$form->js()->reload())->univ()->successMessage('Saved')->execute();
+		}
 	}
 }

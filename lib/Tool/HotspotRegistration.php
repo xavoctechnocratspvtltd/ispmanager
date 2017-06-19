@@ -29,6 +29,7 @@ class Tool_HotspotRegistration extends \xepan\cms\View_Tool{
 				$user['last_name'] = "User";
 				$user['status']="InActive";
 				$user['is_verified']=0;
+				$user['otp_send_time']=$this->app->now;
 				$user['radius_username'] = $registration_form['mobile_no'];
 				$user['radius_password'] = rand(999,999999);
 				$user->save();
@@ -44,7 +45,7 @@ class Tool_HotspotRegistration extends \xepan\cms\View_Tool{
 				$sms_model->tryLoadAny();
 				
 				// send SMS
-				// if($this->app->getConfig('send_sms',false)){
+				if($this->app->getConfig('send_sms',false)){
 					$message = $sms_model['otp_msg_content'];
 					$temp = $this->add('GiTemplate');
 					$temp->loadTemplateFromString($message);
@@ -56,7 +57,7 @@ class Tool_HotspotRegistration extends \xepan\cms\View_Tool{
 					// $this->add('xepan\communication\Controller_Sms')->sendMessage($registration_form['mobile_no'],$msg->getHtml());
 
 
-				// }
+				}
 				$registration_form->js(null,
 										$registration_form->js()
 												->univ()
@@ -88,6 +89,25 @@ class Tool_HotspotRegistration extends \xepan\cms\View_Tool{
 
 				if($verify_form['otp']!=$user['radius_password'])
 					$verify_form->displayError('otp','OTP did not match');
+
+				//OTP SMS Expired Config
+				$otp_m = $this->add('xepan\base\Model_ConfigJsonModel',
+					[
+						'fields'=>[
+									'expired_time'=>'Number',
+								],
+							'config_key'=>'ISPMANAGER_OTP_EXPIRED',
+							'application'=>'ispmanager'
+					]);
+				$otp_m->tryLoadAny();
+
+				$date = date("Y-m-d h:i:s", strtotime("+".$otp_m['expired_time'] ."minutes",strtotime($user['otp_send_time'])));
+				$current_date = $this->app->now;
+				// echo $date. "<br/>";
+				// echo $current_date;
+				if ($date < $current_date) {
+					$verify_form->displayError('otp',"This OTP IS Expired");   
+				}
 
 				$defalut_plan_model = $this->add('xepan\base\Model_ConfigJsonModel',
 					[

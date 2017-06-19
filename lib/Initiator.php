@@ -28,6 +28,14 @@ class Initiator extends \Controller_Addon {
         return $this;
     }
 
+    function setup_pre_frontend(){
+        $this->routePages('xavoc_dm');
+        $this->addLocation(array('template'=>'templates','js'=>'templates/js','css'=>'templates/css'))
+        ->setBaseURL('./shared/apps/xavoc/mlm/');
+
+        return $this;
+    }
+
     function addAppFunctions(){
         
         $this->app->addMethod('byte2human',function($app,$bytes, $decimals = 2){

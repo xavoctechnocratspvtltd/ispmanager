@@ -189,81 +189,81 @@ class Model_Plan extends \xepan\commerce\Model_Item{
 		
 		try{
 
-			//Load Default TNC
-			$tnc = $this->add('xepan\commerce\Model_TNC')->addCondition('is_default_for_sale_order',true)->setLimit(1)->tryLoadAny();
-			$tnc_id = $tnc->loaded()?$tnc['id']:0;
-			$tnc_text = $tnc['content']?$tnc['content']:"not defined";
+			// //Load Default TNC
+			// $tnc = $this->add('xepan\commerce\Model_TNC')->addCondition('is_default_for_sale_order',true)->setLimit(1)->tryLoadAny();
+			// $tnc_id = $tnc->loaded()?$tnc['id']:0;
+			// $tnc_text = $tnc['content']?$tnc['content']:"not defined";
 
-			$country_id = $customer['billing_country_id']?:$customer['country_id']?:0;
-			$state_id = $customer['billing_state_id']?:$customer['state_id']?:0;
-			$city = $customer['billing_city']?:$customer['city']?:"not defined";
-			$address = $customer['billing_address']?:$customer['address']?:"not defined";
-			$pincode = $customer['billing_pincode']?:$customer['pin_code']?:"not defined";
+			// $country_id = $customer['billing_country_id']?:$customer['country_id']?:0;
+			// $state_id = $customer['billing_state_id']?:$customer['state_id']?:0;
+			// $city = $customer['billing_city']?:$customer['city']?:"not defined";
+			// $address = $customer['billing_address']?:$customer['address']?:"not defined";
+			// $pincode = $customer['billing_pincode']?:$customer['pin_code']?:"not defined";
 
-			$master_detail = [
-							'contact_id' => $customer->id,
-							'currency_id' => $customer['currency_id']?$customer['currency_id']:$this->app->epan->default_currency->get('id'),
-							'nominal_id' => 0,
-							'billing_country_id'=> $country_id,
-							'billing_state_id'=> $state_id,
-							'billing_name'=> $customer['name'],
-							'billing_address'=> $address,
-							'billing_city'=> $city,
-							'billing_pincode'=> $pincode,
-							'shipping_country_id'=> $country_id,
-							'shipping_state_id'=> $state_id,
-							'shipping_name'=> $customer['name'],
-							'shipping_address'=> $address,
-							'shipping_city'=> $city,
-							'shipping_pincode'=> $pincode,
-							'is_shipping_inclusive_tax'=> 0,
-							'is_express_shipping'=> 0,
-							'narration'=> null,
-							'round_amount'=> 0,
-							'discount_amount'=> 0,
-							'exchange_rate' => $this->app->epan->default_currency['value'],
-							'tnc_id'=>$tnc_id,
-							'tnc_text'=> $tnc_text,
-							'status' => "OnlineUnpaid"
-						];
+			// $master_detail = [
+			// 				'contact_id' => $customer->id,
+			// 				'currency_id' => $customer['currency_id']?$customer['currency_id']:$this->app->epan->default_currency->get('id'),
+			// 				'nominal_id' => 0,
+			// 				'billing_country_id'=> $country_id,
+			// 				'billing_state_id'=> $state_id,
+			// 				'billing_name'=> $customer['name'],
+			// 				'billing_address'=> $address,
+			// 				'billing_city'=> $city,
+			// 				'billing_pincode'=> $pincode,
+			// 				'shipping_country_id'=> $country_id,
+			// 				'shipping_state_id'=> $state_id,
+			// 				'shipping_name'=> $customer['name'],
+			// 				'shipping_address'=> $address,
+			// 				'shipping_city'=> $city,
+			// 				'shipping_pincode'=> $pincode,
+			// 				'is_shipping_inclusive_tax'=> 0,
+			// 				'is_express_shipping'=> 0,
+			// 				'narration'=> null,
+			// 				'round_amount'=> 0,
+			// 				'discount_amount'=> 0,
+			// 				'exchange_rate' => $this->app->epan->default_currency['value'],
+			// 				'tnc_id'=>$tnc_id,
+			// 				'tnc_text'=> $tnc_text,
+			// 				'status' => "OnlineUnpaid"
+			// 			];
 
-			$detail_data = [];
-			$taxation = $plan_model->applicableTaxation();
-			if($taxation instanceof \xepan\commerce\Model_Taxation){
-				$taxation_id = $taxation->id;
-				$tax_percentage = $taxation['percentage'];
-			}else{
-				$taxation_id = 0;
-				$tax_percentage = 0;
-			}
-
-
-			$sale_price = $plan_model['sale_price'];
-			
-			// update plan pro data basis
-			// if($updating_plan){
+			// $detail_data = [];
+			// $taxation = $plan_model->applicableTaxation();
+			// if($taxation instanceof \xepan\commerce\Model_Taxation){
+			// 	$taxation_id = $taxation->id;
+			// 	$tax_percentage = $taxation['percentage'];
+			// }else{
+			// 	$taxation_id = 0;
+			// 	$tax_percentage = 0;
 			// }
 
-			$qty_unit_id = $plan_model['qty_unit_id'];
-			$item = [
-				'item_id'=>$plan_model->id,
-				'price'=>$sale_price,
-				'quantity' => 1,
-				'taxation_id' => $taxation_id,
-				'tax_percentage' => $tax_percentage,
-				'narration'=>null,
-				'extra_info'=>"{}",
-				'shipping_charge'=>0,
-				'shipping_duration'=>0,
-				'express_shipping_charge'=>0,
-				'express_shipping_duration'=>null,
-				'qty_unit_id'=>$qty_unit_id,
-				'discount'=>0
-			];
 
-			$detail_data[] = $item;
+			// $sale_price = $plan_model['sale_price'];
+			
+			// // update plan pro data basis
+			// // if($updating_plan){
+			// // }
 
-			$qsp = $this->add('xepan\commerce\Model_QSP_Master')->createQSP($master_detail,$detail_data,'SalesOrder');
+			// $qty_unit_id = $plan_model['qty_unit_id'];
+			// $item = [
+			// 	'item_id'=>$plan_model->id,
+			// 	'price'=>$sale_price,
+			// 	'quantity' => 1,
+			// 	'taxation_id' => $taxation_id,
+			// 	'tax_percentage' => $tax_percentage,
+			// 	'narration'=>null,
+			// 	'extra_info'=>"{}",
+			// 	'shipping_charge'=>0,
+			// 	'shipping_duration'=>0,
+			// 	'express_shipping_charge'=>0,
+			// 	'express_shipping_duration'=>null,
+			// 	'qty_unit_id'=>$qty_unit_id,
+			// 	'discount'=>0
+			// ];
+
+			// $detail_data[] = $item;
+
+			$qsp = $customer->createQSP(null,[],'SalesOrder',$plan_id);
 			$result = ['status'=>'success','message'=>'redirect to payment gateway please wait ...','order_id'=>$qsp['master_detail']['id']];
 
 		}catch(\Exception $e){

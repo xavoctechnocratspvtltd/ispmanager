@@ -24,7 +24,7 @@ class Initiator extends \Controller_Addon {
 
         $user = $this->add('xavoc\ispmanager\Model_User');
         // $this->app->addHook('beforeQSPSave',[$user,'updateQSPBeforeSave']);
-
+        $this->app->addHook('invoice_paid',[$user,'invoicePaid']);
         return $this;
     }
 
@@ -65,6 +65,9 @@ class Initiator extends \Controller_Addon {
         $this->app->exportFrontEndTool('xavoc\ispmanager\Tool_PurchaseTopUp','ISPMANAGER');
         $this->app->exportFrontEndTool('xavoc\ispmanager\Tool_StaffPanel','ISPMANAGER');
 
+        $user = $this->add('xavoc\ispmanager\Model_User');
+        $this->app->addHook('invoice_paid',[$user,'invoicePaid']);
+        
         return $this;
     }
 

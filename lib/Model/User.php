@@ -39,7 +39,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$user_j->addField('is_invoice_date_first_to_first')->type('boolean')->defaultValue(false);
 		$user_j->addField('include_pro_data_basis')->setValueList(['none'=>'None','invoice_only'=>'Invoice Only','data_only'=>'Data Only','invoice_and_data_both'=>'Invoice and Data Both'])->defaultValue('none');
 		$user_j->addField('mac_address');
-		$user_j->addField('is_verified')->type('boolean');
+		$user_j->addField('otp_verified')->type('boolean');
 		$user_j->addField('otp_send_time')->type('datetime');
 
 		$user_j->addField('last_dl_limit');

@@ -28,7 +28,7 @@ class Tool_HotspotRegistration extends \xepan\cms\View_Tool{
 				$user['first_name'] = "Guest";
 				$user['last_name'] = "User";
 				$user['status']="InActive";
-				$user['is_verified']=0;
+				$user['otp_verified']=0;
 				$user['otp_send_time']=$this->app->now;
 				$user['radius_username'] = $registration_form['mobile_no'];
 				$user['radius_password'] = rand(999,999999);
@@ -120,7 +120,7 @@ class Tool_HotspotRegistration extends \xepan\cms\View_Tool{
 				$defalut_plan_model->tryLoadAny();
 				
 				$user['status']="Active";
-				$user['is_verified']=1;
+				$user['otp_verified']=1;
 				$user['plan_id']=$defalut_plan_model['default_hotspot_plan'];
 				$user->save();
 				$this->app->stickyForget('secret_opt_pass_code');

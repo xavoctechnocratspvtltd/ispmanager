@@ -29,6 +29,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 		$user_j->hasOne('xavoc\ispmanager\Plan','plan_id')->display(['form'=>'autocomplete/Basic']);
 
+		$user_j->addField('customer_id'); // added field why not before 
 		$user_j->addField('radius_username')->caption('Username');
 		$user_j->addField('radius_password')->caption('Password');
 		$user_j->addField('simultaneous_use')->type('Number');
@@ -115,19 +116,25 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$this->setPlan($this['plan_id']);
 	}
 
-	function createInvoice($m,$detail_data=[]){
+	function createInvoice($m,$detail_data){
+		return $this->createQSP($m,$detail_data,'SalesInvoice');
+	}
+
+	function createQSP($m,$detail_data=[],$qsp_type="SalesInvoice",$plan_id=null){
 		if(is_array($m)) $detail_data = $m;
 
 		if(!$this->loaded()) throw new \Exception("model radius user must loaded");
 		$this->reload();
 
-		if(!$this['plan_id'] AND !$this['create_invoice'] ) return;
+		if(!$this['plan_id'] AND !$this['create_invoice'] AND $qsp_type != "SalesOrder") return;
 
 		$qsp_master = $this->add('xepan\commerce\Model_QSP_Master');
 		$master_data = [];
 		$created_at = $this['created_at']?:$this->app->now;
+		if($qsp_type == "SalesOrder")
+			$created_at = $this->app->now;
 
-		$master_data['qsp_no'] = $this->add('xepan\commerce\Model_SalesInvoice')->newNumber();
+		$master_data['qsp_no'] = $this->add('xepan\commerce\Model_'.$qsp_type)->newNumber();
 		$master_data['contact_id'] = $this->id;
 		$master_data['currency_id'] = $this->app->epan->default_currency->get('id');
 		$master_data['billing_country_id'] = $this['billing_country_id'];
@@ -155,7 +162,10 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		
 		if(!count($detail_data)){
 			$detail_data = [];
-			$plan_model = $this->add('xavoc\ispmanager\Model_Plan')->load($this['plan_id']);
+			if($plan_id > 0)
+				$plan_model = $this->add('xavoc\ispmanager\Model_Plan')->load($plan_id);
+			else
+				$plan_model = $this->add('xavoc\ispmanager\Model_Plan')->load($this['plan_id']);
 			$item = [
 						'item_id'=>$plan_model->id,
 						'price'=>$plan_model['sale_price'],
@@ -208,7 +218,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			echo "</pre>";
 		}
 		
-		return $qsp_master->createQSP($master_data,$detail_data,"SalesInvoice");
+		return $qsp_master->createQSP($master_data,$detail_data,$qsp_type);
 	}
 
 	function getProDataAmount(){
@@ -896,9 +906,8 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$radcheck_model->addCondition('attribute',"Cleartext-Password");
 		$radcheck_model->addCondition('op', ":=");
 		$radcheck_model->tryLoadAny();
-		$radcheck_model['value'] = $this['radius_password'];
-		$radcheck_model->save();
-		
+		$radcheck_model['value'] = $this['radius_password']?:1234;
+		$radcheck_model->saveAndUnload();
 	}
 
 	function page_CurrentConditions($page){
@@ -1026,4 +1035,23 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$this['user_id'] = $user->id;
 		$this->save();
 	}
+
+	// online invoice paid check / then associated plan with it
+	function invoicePaid($app,$invoice_model){
+		
+		$customer = $this->add('xavoc\ispmanager\Model_User');
+		$customer->loadLoggedIn();
+		if(!$customer->loaded()) throw new \Exception("customer not found");
+
+		// // $user->addCondition('customer_id',$customer->id)->tryLoadAny();
+		// // throw new \Exception($user->id);
+		
+		$user = $this->add('xavoc\ispmanager\Model_User');
+		$user->loadBy('radius_username',$customer['radius_username']);
+
+		$sale_order = $invoice_model->saleOrder();
+		$items = $sale_order->orderItems()->tryLoadAny();
+		$user->setPlan($items['item_id']);
+	}
+
 }

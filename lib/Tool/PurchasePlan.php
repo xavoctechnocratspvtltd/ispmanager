@@ -51,7 +51,7 @@ class Tool_PurchasePlan extends \xepan\cms\View_Tool{
 				$url = $this->app->url($checkout_page,['order_id'=>$result['order_id'],'step'=>'payment','pay_now'=>true]);
 				$js_event = [
 					$js->univ()->redirect($url)
-				]; 
+				];
 				return $js->univ(null,$js_event)->successMessage($result['message']);
 			}else{
 				return $js->univ()->errorMessage($result['message']);
@@ -59,9 +59,29 @@ class Tool_PurchasePlan extends \xepan\cms\View_Tool{
 		});		
 	}
 
-	function placeOrder($plan_id){		
+	function placeOrder($plan_id){
+		$customer = $this->add('xavoc\ispmanager\Model_User');
+		$customer->loadLoggedIn();
+		
+		$result = ['status'=>'error','message'=>'some thing went wrong'];
+
 		$plan_model = $this->add('xavoc\ispmanager\Model_Plan');
-		return $plan_model->placeOrder($plan_id);
+		$plan_model->tryLoad($plan_id);
+		if(!$plan_model->loaded())
+			throw new \Exception("Plan not found", 1);
+		
+		// return to login page
+		if(!$customer->loaded()){
+			return ['status'=>'error','message'=>'unknow customer'];
+		}
+		
+		try{
+			$qsp = $customer->createQSP(null,[],'SalesOrder',$plan_id);
+			$result = ['status'=>'success','message'=>'redirect to payment gateway please wait ...','order_id'=>$qsp['master_detail']['id']];
+		}catch(\Exception $e){
+			$result = ['status'=>'error','message'=>$e->getMessage()];
+		}
+		return $result;
 	}
 
 	function addToolCondition_row_show_purchase_btn($value,$l){

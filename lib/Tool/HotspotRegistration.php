@@ -22,16 +22,26 @@ class Tool_HotspotRegistration extends \xepan\cms\View_Tool{
 			// $form->addField('Number','otp','OTP');
 
 			$registration_form->addSubmit("Registration")->addClass('btn btn-success btn-lg text-center btn-block');
-			$user = $this->add('xavoc\ispmanager\Model_User');
 
 			if($registration_form->isSubmitted()){
-				$user['first_name'] = "Guest";
-				$user['last_name'] = "User";
-				$user['status']="InActive";
-				$user['otp_verified']=0;
-				$user['otp_send_time']=$this->app->now;
-				$user['radius_username'] = $registration_form['mobile_no'];
-				$user['radius_password'] = rand(999,999999);
+				$user = $this->add('xavoc\ispmanager\Model_User');
+				$user->addCondition('radius_username',$registration_form['mobile_no']);
+				$user->tryLoadAny();
+				if($user->loaded()){
+					$user['otp_send_time']=$this->app->now;
+					$user['radius_password'] = rand(999,999999);
+					$user['status']="InActive";
+					$user['otp_verified']=0;
+					
+				}else{
+					$user['first_name'] = "Guest";
+					$user['last_name'] = "User";
+					$user['status']="InActive";
+					$user['otp_verified']=0;
+					$user['otp_send_time']=$this->app->now;
+					$user['radius_username'] = $registration_form['mobile_no'];
+					$user['radius_password'] = rand(999,999999);
+				}
 				$user->save();
 				
 				$sms_model = $this->add('xepan\base\Model_ConfigJsonModel',
@@ -54,7 +64,7 @@ class Tool_HotspotRegistration extends \xepan\cms\View_Tool{
 					// throw new \Exception($msg->getHtml(), 1);
 					
 					if(!$sms_model['otp_msg_content']) throw new \Exception("Please update OTP SMS Content");
-					// $this->add('xepan\communication\Controller_Sms')->sendMessage($registration_form['mobile_no'],$msg->getHtml());
+					$this->add('xepan\communication\Controller_Sms')->sendMessage($registration_form['mobile_no'],$msg->getHtml());
 
 
 				}
@@ -100,12 +110,11 @@ class Tool_HotspotRegistration extends \xepan\cms\View_Tool{
 							'application'=>'ispmanager'
 					]);
 				$otp_m->tryLoadAny();
-
 				$date = date("Y-m-d h:i:s", strtotime("+".$otp_m['expired_time'] ."minutes",strtotime($user['otp_send_time'])));
 				$current_date = $this->app->now;
 				// echo $date. "<br/>";
 				// echo $current_date;
-				if ($date < $current_date) {
+				if ($date > $current_date) {
 					$verify_form->displayError('otp',"This OTP IS Expired");   
 				}
 

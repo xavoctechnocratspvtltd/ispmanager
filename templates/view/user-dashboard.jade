@@ -1,4 +1,5 @@
 div(id="{$_name}" style="{$style} width:100%" class="{$class}")
+{menubar}
 .container(style="width:100%")
 	div(id="{$_name}" class="{$class} ds-staff-navbar" style="{$style}")
 	nav.navbar
@@ -17,7 +18,13 @@ div(id="{$_name}" style="{$style} width:100%" class="{$class}")
 					li(data-page='user_{$key}' class="{$active_menu}")
 						a(href='user_{$key}') {$name}
 					{/}{/}
+				//- ul.nav.navbar-nav
+				//- 	li
+				//- 		h5|Welcome {$username}
 				ul.nav.navbar-nav.navbar-right
+					li
+						a.btn.btn-primary.btn-sm(href="?page=plan" style="padding:2px;margin: 17px")
+							|Change Plan
 					li
 						a(href="#" style="padding:10px; box-shadow:inset 0px 0px 1px 2px #ccc;border-radius:50%;" title="{$user_name}")
 							img(src="{$user_dp}" style="max-height:60px;max-width:40px;height:40px;" class="ds-dp")
@@ -26,16 +33,26 @@ div(id="{$_name}" style="{$style} width:100%" class="{$class}")
 							div.btn.btn-danger()
 								i.glyphicon.glyphicon-off
 								|&nbsp;Logout
+	//- {$Content}							
+{/menubar}
 .container(style="width:100%")
 	h2.text-center
-		|Welcome {$username}
+		|Welcome: {$username}
 	.xepan-push
 	.row
 		.col-md-12.col-lg-12.col-sm-12.col-xs.12
-			h4.text-center|Your Plan : {plan} Default Plan {/}
-		.col-md-6.col-lg-6.col-sm-12.col-xs.12
+			h4.text-center|Current Plan: {plan} Default Plan {/}
+		.col-md-3.col-lg-3.col-sm-12.col-xs.12
 			.text-center
 				|Total Consume Data : {consume_data}512.MB{/}
-		.col-md-6.col-lg-6.col-sm-12.col-xs.12
+		.col-md-3.col-lg-3.col-sm-12.col-xs.12
+			.text-center
 				|Total Available Data {available_data}512.MB{/}
+		.col-md-3.col-lg-3.col-sm-12.col-xs.12
+			.text-center
+				|Due Amount: {due_amount}00/00/00{/}
+		.col-md-3.col-lg-3.col-sm-12.col-xs.12
+			.text-center
+				|Next Invoice Date: {next_due_date}00/00/00{/}
+	.xepan-push-large
 	{$Content}			

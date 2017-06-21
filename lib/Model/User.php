@@ -116,7 +116,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$this->setPlan($this['plan_id']);
 	}
 
-	function createInvoice($m,$detail_data){
+	function createInvoice($m,$detail_data=null){
 		return $this->createQSP($m,$detail_data,'SalesInvoice');
 	}
 
@@ -1014,9 +1014,11 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	function updateWebsiteUser(){
 
 		$username = str_replace(" ", "",$this['radius_username']);
-		if(!filter_var($username, FILTER_VALIDATE_EMAIL)){
-			$username .= "@isp-fake.com";
-		}
+		if($this->app->getConfig('username_is_email',true)){
+			if(!filter_var($username, FILTER_VALIDATE_EMAIL)){
+				$username .= "@isp-fake.com";
+			}
+		}	
 
 		$user = $this->add('xepan\base\Model_User');
 		$user->addCondition('scope','WebsiteUser');

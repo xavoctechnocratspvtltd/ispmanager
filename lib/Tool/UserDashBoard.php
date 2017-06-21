@@ -16,6 +16,8 @@ class Tool_UserDashBoard extends \xepan\cms\View_Tool{
 		parent::init();
 		
 		if(!$this->app->auth->isLoggedIn()){
+			throw new \Exception("Error Processing Request", 1);
+			
 			$this->app->redirect($this->app->url($this->options['login_url']));
 			return;
 		}
@@ -38,7 +40,36 @@ class Tool_UserDashBoard extends \xepan\cms\View_Tool{
 				");
 		}
 
+		$user = $this->app->auth->model;
 
-		$this->add('View')->set('Welcome '. $this->app->auth->model['username']);
+		$menu = [
+				['key'=>'dashboard','name'=>'Dashboard'],
+				['key'=>'registration', 'name'=>'Registration'],
+				['key'=>'setting','name'=>'Settings'],
+			];
+
+		$this->complete_lister = $cl = $this->add('CompleteLister',null,'menubar',['view/user-dashboard','menubar']);
+		$cl->setSource($menu);
+		$page = $this->app->page;
+		$cl->addHook('formatRow',function($g)use($page,$user){
+			if($g->model['key'] == $page)
+				$g->current_row_html['active_menu'] = "active";
+			else
+				$g->current_row_html['active_menu'] = "deactive";
+
+		});
+
+		$cl->template->trySet('username', $user['username']);
+		$cl->template->trySet('user_name',$user['name']);
+		$cl->template->trySet('user_dp',($user['image']?:"shared/apps/xavoc/ispmanager/templates/img/profile.png"));
+
+
+		// $this->add('View')->set('Welcome '. $this->app->auth->model['username']);
+		$this->template->set('username',$user['username']);
+
+	}
+
+	function defaultTemplate(){
+		return ['view/user-dashboard'];
 	}
 }

@@ -7,7 +7,9 @@ namespace xavoc\ispmanager;
 * 
 */
 class Tool_HotspotRegistration extends \xepan\cms\View_Tool{
-	public $options = [];
+	public $options = [
+					'after_login_url'=>"user_dashboard",
+	];
 
 	function init(){
 		parent::init();
@@ -71,7 +73,7 @@ class Tool_HotspotRegistration extends \xepan\cms\View_Tool{
 				$registration_form->js(null,
 										$registration_form->js()
 												->univ()
-													->successMessage('Send OTP')
+													->successMessage('Send OTP '.$user['radius_password'])
 									)->reload(
 										[
 											'mobile_no'=>$user['radius_username'],
@@ -113,8 +115,8 @@ class Tool_HotspotRegistration extends \xepan\cms\View_Tool{
 				$date = date("Y-m-d h:i:s", strtotime("+".$otp_m['expired_time'] ."minutes",strtotime($user['otp_send_time'])));
 				$current_date = $this->app->now;
 				// echo $date. "<br/>";
-				// echo $current_date;
-				if ($date > $current_date) {
+				// echo $current_date . "<br/>";
+				if ($date < $current_date) {
 					$verify_form->displayError('otp',"This OTP IS Expired");   
 				}
 
@@ -128,13 +130,17 @@ class Tool_HotspotRegistration extends \xepan\cms\View_Tool{
 					]);
 				$defalut_plan_model->tryLoadAny();
 				
+
 				$user['status']="Active";
 				$user['otp_verified']=1;
 				$user['plan_id']=$defalut_plan_model['default_hotspot_plan'];
 				$user->save();
+				$auth=$this->app->auth;
+				$auth->login($verify_form['mobile_no']);
+				
 				$this->app->stickyForget('secret_opt_pass_code');
 				$this->app->stickyForget('mobile_no');
-				return $verify_form->js(null,$verify_form->js()->univ()->successMessage('Mobile Number is Registered'))->redirect($this->app->url())->execute();
+				return $verify_form->js(null,$verify_form->js()->univ()->successMessage('Mobile Number is Registered'))->redirect($this->app->url($this->options['after_login_url']))->execute();
 			}
 
 

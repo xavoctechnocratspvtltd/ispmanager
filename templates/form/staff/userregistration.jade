@@ -1,6 +1,122 @@
 .container(id="{$_name}")
 	.container(id="{$_name}" class="{$class}" style="{$style}")
 			div.well
+				label.h4 For Individuals(radio)
+				.container(id="{$_name}")
+					.row
+						.col-md-6.atk-form-field.atk-form-row
+							label First Name:
+						.col-md-6.atk-form-field.atk-form-row
+							label Last Name:
+					.row
+						.col-md-6.atk-form-field.atk-form-row
+							{$first_name}
+						.col-md-6.atk-form-field.atk-form-row
+							{$last_name}
+					.row
+						.col-md-6.atk-form-field.atk-form-row
+							label Date Of Birth:
+						.col-md-6.atk-form-field.atk-form-row
+							label Address:
+					.row
+						.col-md-6.atk-form-field.atk-form-row
+							{$dob}
+						.col-md-6.atk-form-field.atk-form-row
+							{$address}
+
+			div.well
+				label.h4 For Non-Individuals(radio)
+				.container(id="{$_name}")
+					.row
+						.col-md-12.atk-form-field.atk-form-row
+							label Name Of Organization:
+					.row
+						.col-md-12.atk-form-field.atk-form-row
+							{$organization}
+					.row
+						.col-md-6.atk-form-field.atk-form-row
+							label Status Of Organisation(checkboxes):
+						.col-md-6.atk-form-field.atk-form-row
+							label PAN Number:
+					.row
+						.col-md-6.atk-form-field.atk-form-row
+							{$}
+						.col-md-6.atk-form-field.atk-form-row
+							{$pan_number}
+					.row
+						.h5 Customer Contact Details
+							.container(id="{$_name}")
+								.col-md-6.atk-form-field.atk-form-row
+									.row
+										.col-md-12.atk-form-field.atk-form-row
+											label General:
+									.row
+										.col-md-12.atk-form-field.atk-form-row
+											{$general_contact}{$general_email}
+									.row
+										.col-md-12.atk-form-field.atk-form-row
+											label Technical:
+									.row
+										.col-md-12.atk-form-field.atk-form-row
+											{$technical_contact}{$technical_email}
+									.row
+										.col-md-12.atk-form-field.atk-form-row
+											label Finance:
+									.row
+										.col-md-12.atk-form-field.atk-form-row
+											{$finance_contact}{$finance_email}
+								.col-md-6.atk-form-field.atk-form-row
+									.row
+										.col-md-12.atk-form-field.atk-form-row
+											label Customer Category:
+											{$}
+					.row
+						.h5 Service Installation Address
+							.container(id="{$_name}")
+								.row
+									.col-md-6.atk-form-field.atk-form-row
+										label Address:
+									.col-md-6.atk-form-field.atk-form-row
+										label State:
+								.row
+									.col-md-6.atk-form-field.atk-form-row
+										{$shipping_address}
+									.col-md-6.atk-form-field.atk-form-row
+										{$state_id}
+								.row
+									.col-md-6.atk-form-field.atk-form-row
+										label City:
+									.col-md-6.atk-form-field.atk-form-row
+										label Pin Code:
+								.row
+									.col-md-6.atk-form-field.atk-form-row
+										{$shipping_city}
+									.col-md-6.atk-form-field.atk-form-row
+										{$shipping_pincode}
+					.row
+						.h5 Billing Address
+							.container(id="{$_name}")
+								.row
+									.col-md-6.atk-form-field.atk-form-row
+										label Address:
+									.col-md-6.atk-form-field.atk-form-row
+										label State:
+								.row
+									.col-md-6.atk-form-field.atk-form-row
+										{$billing_address}
+									.col-md-6.atk-form-field.atk-form-row
+										{$state_id}
+								.row
+									.col-md-6.atk-form-field.atk-form-row
+										label City:
+									.col-md-6.atk-form-field.atk-form-row
+										label Pin Code:
+								.row
+									.col-md-6.atk-form-field.atk-form-row
+										{$billing_city}
+									.col-md-6.atk-form-field.atk-form-row
+										{$billing_pincode}
+			div.well
 				label.h4 User Plans
 				.container(id="{$_name}")
 					.row
@@ -39,44 +155,5 @@
 					.row
 						.col-md-6.atk-form-field.atk-form-row
 							{$custom_radius_attributes}
-			div.well
-				label.h4 Basic Info
-				.container(id="{$_name}")
-					.row
-						.col-md-6.atk-form-field.atk-form-row
-							label First Name:
-						.col-md-6.atk-form-field.atk-form-row
-							label Last Name:
-					.row
-						.col-md-6.atk-form-field.atk-form-row
-							{$first_name}
-						.col-md-6.atk-form-field.atk-form-row
-							{$last_name}
-					.row
-						.col-md-6.atk-form-field.atk-form-row
-							label Country:
-						.col-md-6.atk-form-field.atk-form-row
-							label State:
-					.row
-						.col-md-6.atk-form-field.atk-form-row
-							{$country_id}
-						.col-md-6.atk-form-field.atk-form-row
-							{$state_id}
-					.row
-						.col-md-6.atk-form-field.atk-form-row
-							label City:
-						.col-md-6.atk-form-field.atk-form-row
-							label Pin Code:
-					.row
-						.col-md-6.atk-form-field.atk-form-row
-							{$city}
-						.col-md-6.atk-form-field.atk-form-row
-							{$pin_code}
-					.row
-						.col-md-12.atk-form-field.atk-form-row
-							label Address:
-					.row
-						.col-md-6.atk-form-field.atk-form-row
-							{$address}
 							{$form_buttons}
 							{$Content}

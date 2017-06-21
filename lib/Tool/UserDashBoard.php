@@ -9,7 +9,8 @@ namespace xavoc\ispmanager;
 class Tool_UserDashBoard extends \xepan\cms\View_Tool{
 	public $options = [
 		'login_url'=>'hotspotlogin',
-		'nas_ip'=>'192.168.100.1'
+		'nas_ip'=>'192.168.100.1',
+		'plan_url'=>'plan'
 	];
 
 	function init(){
@@ -60,6 +61,7 @@ class Tool_UserDashBoard extends \xepan\cms\View_Tool{
 		});
 
 		$cl->template->trySet('username', $user['username']);
+		$cl->template->trySet('url', $this->options['plan_url']);
 		$cl->template->trySet('user_name',$user['name']);
 		$cl->template->trySet('user_dp',($user['image']?:"shared/apps/xavoc/ispmanager/templates/img/profile.png"));
 

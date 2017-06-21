@@ -73,49 +73,155 @@
 					.row
 						.h5 Service Installation Address
 							.container(id="{$_name}")
-								.row
-									.col-md-6.atk-form-field.atk-form-row
-										label Address:
-									.col-md-6.atk-form-field.atk-form-row
-										label State:
-								.row
-									.col-md-6.atk-form-field.atk-form-row
-										{$shipping_address}
-									.col-md-6.atk-form-field.atk-form-row
-										{$state_id}
-								.row
-									.col-md-6.atk-form-field.atk-form-row
-										label City:
-									.col-md-6.atk-form-field.atk-form-row
-										label Pin Code:
-								.row
-									.col-md-6.atk-form-field.atk-form-row
-										{$shipping_city}
-									.col-md-6.atk-form-field.atk-form-row
-										{$shipping_pincode}
+								.col-md-12.atk-form-field.atk-form-row
+									.row
+										.col-md-6.atk-form-field.atk-form-row
+											label Address:
+										.col-md-6.atk-form-field.atk-form-row
+											label State:
+									.row
+										.col-md-6.atk-form-field.atk-form-row
+											{$shipping_address}
+										.col-md-6.atk-form-field.atk-form-row
+											{$state_id}
+									.row
+										.col-md-6.atk-form-field.atk-form-row
+											label City:
+										.col-md-6.atk-form-field.atk-form-row
+											label Pin Code:
+									.row
+										.col-md-6.atk-form-field.atk-form-row
+											{$shipping_city}
+										.col-md-6.atk-form-field.atk-form-row
+											{$shipping_pincode}
 					.row
 						.h5 Billing Address
 							.container(id="{$_name}")
-								.row
-									.col-md-6.atk-form-field.atk-form-row
-										label Address:
-									.col-md-6.atk-form-field.atk-form-row
-										label State:
-								.row
-									.col-md-6.atk-form-field.atk-form-row
-										{$billing_address}
-									.col-md-6.atk-form-field.atk-form-row
-										{$state_id}
-								.row
-									.col-md-6.atk-form-field.atk-form-row
-										label City:
-									.col-md-6.atk-form-field.atk-form-row
-										label Pin Code:
-								.row
-									.col-md-6.atk-form-field.atk-form-row
-										{$billing_city}
-									.col-md-6.atk-form-field.atk-form-row
-										{$billing_pincode}
+								.col-md-12.atk-form-field.atk-form-row
+									.row
+										.col-md-6.atk-form-field.atk-form-row
+											label Address:
+										.col-md-6.atk-form-field.atk-form-row
+											label State:
+									.row
+										.col-md-6.atk-form-field.atk-form-row
+											{$billing_address}
+										.col-md-6.atk-form-field.atk-form-row
+											{$state_id}
+									.row
+										.col-md-6.atk-form-field.atk-form-row
+											label City:
+										.col-md-6.atk-form-field.atk-form-row
+											label Pin Code:
+									.row
+										.col-md-6.atk-form-field.atk-form-row
+											{$billing_city}
+										.col-md-6.atk-form-field.atk-form-row
+											{$billing_pincode}
+					.row
+						.col-md-6.atk-form-field.atk-form-row
+							label Number of connections(no. box):
+						.col-md-6.atk-form-field.atk-form-row
+							label Rate Plan Code:
+					.row
+						.col-md-6.atk-form-field.atk-form-row
+							{$}
+						.col-md-6.atk-form-field.atk-form-row
+							{$}
+					.row
+						.col-md-6.atk-form-field.atk-form-row
+							label Internet Port Speed:
+						.col-md-3.atk-form-field.atk-form-row
+							label Kbps(radio btn):
+						.col-md-3.atk-form-field.atk-form-row
+							label Mbps(radio btn):
+					.row
+						.col-md-6.atk-form-field.atk-form-row
+							{$}
+						.col-md-3.atk-form-field.atk-form-row
+							{$}
+						.col-md-3.atk-form-field.atk-form-row
+							{$}
+					.row
+						label Types of Access:
+							.container(id="{$_name}")
+								.col-md-12.atk-form-field.atk-form-row
+									.row
+										.col-md-6.atk-form-field.atk-form-row
+											label Dedicated(radio btn)
+											{$}
+										.col-md-6.atk-form-field.atk-form-row
+											label Shared(radio btn)
+											{$}
+					.row
+						label Details of CPE:
+							.container(id="{$_name}")
+								.col-md-12.atk-form-field.atk-form-row
+									.row
+										.col-md-6.atk-form-field.atk-form-row
+											label Make:
+										.col-md-6.atk-form-field.atk-form-row
+											label Mode:
+									.row
+										.col-md-6.atk-form-field.atk-form-row
+											{$}
+										.col-md-6.atk-form-field.atk-form-row
+											{$}
+					.row
+						label Static IP Required:
+							.container(id="{$_name}")
+								.col-md-12.atk-form-field.atk-form-row
+									.row
+										.col-md-6.atk-form-field.atk-form-row
+											label Yes:
+											{$}
+										.col-md-6.atk-form-field.atk-form-row
+											label No:
+											{$}
+					.row
+						.h5 Payment Details
+							.container(id="{$_name}")
+								.col-md-12.atk-form-field.atk-form-row
+									.row
+										.col-md-6.atk-form-field.atk-form-row
+											label Serial No:
+										.col-md-6.atk-form-field.atk-form-row
+											label Instrument Type:
+									.row
+										.col-md-6.atk-form-field.atk-form-row
+											{$}
+										.col-md-6.atk-form-field.atk-form-row
+											{$}
+									.row
+										.col-md-6.atk-form-field.atk-form-row
+											label Cheque/DD No:
+										.col-md-6.atk-form-field.atk-form-row
+											label Bank Name:
+									.row
+										.col-md-6.atk-form-field.atk-form-row
+											{$}
+										.col-md-6.atk-form-field.atk-form-row
+											{$}
+									.row
+										.col-md-6.atk-form-field.atk-form-row
+											label Branch:
+										.col-md-6.atk-form-field.atk-form-row
+											label City:
+									.row
+										.col-md-6.atk-form-field.atk-form-row
+											{$}
+										.col-md-6.atk-form-field.atk-form-row
+											{$}
+									.row
+										.col-md-6.atk-form-field.atk-form-row
+											label Amount:
+										.col-md-6.atk-form-field.atk-form-row
+											label Date:
+									.row
+										.col-md-6.atk-form-field.atk-form-row
+											{$}
+										.col-md-6.atk-form-field.atk-form-row
+											{$}
 			div.well
 				label.h4 User Plans
 				.container(id="{$_name}")
@@ -155,5 +261,50 @@
 					.row
 						.col-md-6.atk-form-field.atk-form-row
 							{$custom_radius_attributes}
-							{$form_buttons}
-							{$Content}
+
+			div.well
+				label.h4 Office Use Only 
+				.container(id="{$_name}")
+					.row
+						.col-md-6.atk-form-field.atk-form-row
+							label Customer Contact/PO No:
+						.col-md-6.atk-form-field.atk-form-row
+							label Date:
+					.row
+						.col-md-6.atk-form-field.atk-form-row
+							{$}
+						.col-md-6.atk-form-field.atk-form-row
+							{$}
+					.row
+						.col-md-6.atk-form-field.atk-form-row
+							label Proposal/Quotation No:
+						.col-md-6.atk-form-field.atk-form-row
+							label Date:
+					.row
+						.col-md-6.atk-form-field.atk-form-row
+							{$}
+						.col-md-6.atk-form-field.atk-form-row
+							{$}
+					.row
+						.col-md-12.atk-form-field.atk-form-row
+							label Name of Business Development Manager/Business Development Executive:
+					.row
+						.col-md-12.atk-form-field.atk-form-row
+							{$}
+					.row
+						.col-md-6.atk-form-field.atk-form-row
+							label Name of Reseller/Channel/DSA:
+						.col-md-6.atk-form-field.atk-form-row
+							label City: 
+					.row
+						.col-md-6.atk-form-field.atk-form-row
+							{$}
+						.col-md-6.atk-form-field.atk-form-row
+							{$}
+					.row
+						.col-md-12.atk-form-field.atk-form-row
+							label Name of Business Development Manager/Business Development Executive/Reseller/Channel/DSA:
+					.row
+						.col-md-12.atk-form-field.atk-form-row
+							{$}
+				{$Content}

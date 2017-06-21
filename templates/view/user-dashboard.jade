@@ -1,0 +1,41 @@
+div(id="{$_name}" style="{$style} width:100%" class="{$class}")
+.container(style="width:100%")
+	div(id="{$_name}" class="{$class} ds-staff-navbar" style="{$style}")
+	nav.navbar
+		.container-fluid
+			.navbar-header
+				button.navbar-toggle.collapsed(type='button', data-toggle='collapse', data-target='#bs-example-navbar-collapse-1', aria-expanded='false')
+					span.sr-only Toggle navigation
+					span.icon-bar
+					span.icon-bar
+					span.icon-bar
+				a.navbar-brand(href='dashboard')
+					img(src='shared/apps/xavoc/ispmanager/templates/img/logo.png')
+			#bs-example-navbar-collapse-1.collapse.navbar-collapse
+				ul.nav.navbar-nav
+					{rows}{row}
+					li(data-page='user_{$key}' class="{$active_menu}")
+						a(href='user_{$key}') {$name}
+					{/}{/}
+				ul.nav.navbar-nav.navbar-right
+					li
+						a(href="#" style="padding:10px; box-shadow:inset 0px 0px 1px 2px #ccc;border-radius:50%;" title="{$user_name}")
+							img(src="{$user_dp}" style="max-height:60px;max-width:40px;height:40px;" class="ds-dp")
+					li
+						a(style="padding:10px;" href="logout")
+							div.btn.btn-danger()
+								i.glyphicon.glyphicon-off
+								|&nbsp;Logout
+.container(style="width:100%")
+	h2.text-center
+		|Welcome {$username}
+	.xepan-push
+	.row
+		.col-md-12.col-lg-12.col-sm-12.col-xs.12
+			h4.text-center|Your Plan : {plan} Default Plan {/}
+		.col-md-6.col-lg-6.col-sm-12.col-xs.12
+			.text-center
+				|Total Consume Data : {consume_data}512.MB{/}
+		.col-md-6.col-lg-6.col-sm-12.col-xs.12
+				|Total Available Data {available_data}512.MB{/}
+	{$Content}			

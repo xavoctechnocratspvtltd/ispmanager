@@ -17,8 +17,6 @@ class Tool_User_DashBoard extends \xepan\cms\View_Tool{
 		parent::init();
 		
 		if(!$this->app->auth->isLoggedIn()){
-			throw new \Exception("Error Processing Request", 1);
-			
 			$this->app->redirect($this->app->url($this->options['login_url']));
 			return;
 		}

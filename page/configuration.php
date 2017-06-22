@@ -95,6 +95,7 @@ class page_configuration extends \xepan\base\Page {
 		$otp_tab = $tab->addTab('OTP Expired Time');
 		$form = $otp_tab->add('Form');
 		$form->setModel($otp_m);
+		$form->getElement('expired_time')->setFieldHint('Specify Time In Minutes, Example.( 15 )');
 		$form->addSubmit('Save');
 		if($form->isSubmitted()){
 			$form->update();

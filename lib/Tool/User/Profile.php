@@ -21,9 +21,9 @@ class Tool_User_Profile extends \xepan\cms\View_Tool{
 		$form->setLayout(['form/user-profile']);
 		$form->setModel($user,['first_name','last_name','country_id','state_id','city','address','pin_code']);
 		$form->addField('dob');
-		$form->addField('email_id');
+		$form->addField('email');
 		$form->addField('contact');
-		$form->addSubmit("Update",null,'form_buttons');
+		$form->addSubmit("Update")->addClass('btn btn-primary');
 
 		if($form->isSubmitted()){
 			$form->update();

@@ -1,69 +1,93 @@
 
 <div id="{$_name}" style="{$style}" class="container {$class}">
-  <div class="well">
-    <label class="h4">Personal Info
-      <div id="{$_name}" class="container">
-        <div class="row">
-          <div class="col-md-6 atk-form-field atk-form-row">
-            <label>First Name:</label>
-          </div>
-          <div class="col-md-6 atk-form-field atk-form-row">
-            <label>Last Name:</label>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-6 atk-form-field atk-form-row">{$first_name}</div>
-          <div class="col-md-6 atk-form-field atk-form-row">{$last_name}</div>
-        </div>
-        <div class="row">
-          <div class="col-md-6 atk-form-field atk-form-row">
-            <label>Date Of Birth:</label>
-          </div>
-          <div class="col-md-6 atk-form-field atk-form-row">
-            <label>Address:</label>
+  <h1>Edit Profile</h1>
+  <hr/>
+  <div class="row">
+    <!-- left column-->
+    <div class="col-md-3">
+      <div class="text-center"><img src="//placehold.it/100" alt="avatar" class="avatar img-circle"/>
+        <h6>Upload a different photo...</h6>
+        <input type="file" class="form-control"/>
+      </div>
+    </div>
+    <!-- edit form column-->
+    <div class="col-md-9 personal-info">
+      <h3>Personal info</h3>
+      <form role="form" class="form-horizontal">
+        <div class="form-group form-control1">
+          <label class="col-lg-3 control-label">First name:</label>
+          <div class="col-lg-8">
+            <div class="atk-form-field atk-form-row">{$first_name}</div>
           </div>
         </div>
-        <div class="row">
-          <div class="col-md-6 atk-form-field atk-form-row">{$dob}</div>
-          <div class="col-md-6 atk-form-field atk-form-row">{$address}</div>
-        </div>
-        <div class="row">
-          <div class="col-md-6 atk-form-field atk-form-row">
-            <label>Contact No:</label>
-          </div>
-          <div class="col-md-6 atk-form-field atk-form-row">
-            <label>Email ID:</label>
+        <div class="form-group form-control1">
+          <label class="col-lg-3 control-label">Last name:</label>
+          <div class="col-lg-8">
+            <div class="atk-form-field atk-form-row">{$last_name}</div>
           </div>
         </div>
-        <div class="row">
-          <div class="col-md-6 atk-form-field atk-form-row">{$contact}</div>
-          <div class="col-md-6 atk-form-field atk-form-row">{$email_id}</div>
-        </div>
-        <div class="row">
-          <div class="col-md-6 atk-form-field atk-form-row">
-            <label>Country:</label>
-          </div>
-          <div class="col-md-6 atk-form-field atk-form-row">
-            <label>State:</label>
+        <div class="form-group form-control1">
+          <label class="col-lg-3 control-label">Date of Birth:</label>
+          <div class="col-lg-8">
+            <div class="atk-form-field atk-form-row">{$dob}</div>
           </div>
         </div>
-        <div class="row">
-          <div class="col-md-6 atk-form-field atk-form-row">{$country_id}</div>
-          <div class="col-md-6 atk-form-field atk-form-row">{$state_id}</div>
-        </div>
-        <div class="row">
-          <div class="col-md-6 atk-form-field atk-form-row">
-            <label>City:</label>
-          </div>
-          <div class="col-md-6 atk-form-field atk-form-row">
-            <label>Pin Code:</label>
+        <div class="form-group form-control1">
+          <label class="col-lg-3 control-label">Email:</label>
+          <div class="col-lg-8">
+            <div class="atk-form-field atk-form-row">{$email}</div>
           </div>
         </div>
-        <div class="row">
-          <div class="col-md-6 atk-form-field atk-form-row">{$city}</div>
-          <div class="col-md-6 atk-form-field atk-form-row">{$pin_code}</div>
+        <div class="form-group form-control1">
+          <label class="col-md-3 control-label">Contact No:</label>
+          <div class="col-lg-8 form-control1">
+            <div class="atk-form-field atk-form-row">{$contact}</div>
+          </div>
         </div>
-      </div>{$Content}
-    </label>
+        <div class="form-group form-control1">
+          <label class="col-md-3 control-label">Country:</label>
+          <div class="col-lg-8">
+            <div class="atk-form-field atk-form-row">							{$country_id}</div>
+          </div>
+        </div>
+        <div class="form-group form-control1">
+          <label class="col-md-3 control-label">State:</label>
+          <div class="col-lg-8">
+            <div class="atk-form-field atk-form-row">{$state_id}</div>
+          </div>
+        </div>
+        <div class="form-group form-control1">
+          <label class="col-md-3 control-label">City:</label>
+          <div class="col-lg-8">
+            <div class="atk-form-field atk-form-row">{$city}</div>
+          </div>
+        </div>
+        <div class="form-group form-control1">
+          <label class="col-md-3 control-label">Pin Code:</label>
+          <div class="col-lg-8">
+            <div class="atk-form-field atk-form-row">{$pin_code}</div>
+          </div>
+        </div>
+        <div class="form-group form-control1">
+          <label class="col-md-3 control-label">Address:</label>
+          <div class="col-lg-8">
+            <div class="atk-form-field atk-form-row">{$address}									</div>
+          </div>
+        </div>
+        <div class="form-group form-control1">
+          <label class="col-md-3 control-label"></label>
+          <div class="col-md-8">{$FormButtons}
+          </div>
+        </div>
+      </form>
+    </div>{$Content}
   </div>
 </div>
+<hr/>
+<style>
+  .form-control1 input,.form-control1 textarea,.form-control1 select {
+  	padding: 4px 12px;
+  	width: 100%;
+  	margin:4px 0;
+  }
+</style>

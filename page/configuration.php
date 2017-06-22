@@ -45,6 +45,7 @@ class page_configuration extends \xepan\base\Page {
 		$sms_tab = $tab->addTab('SMS Content');
 		$form = $sms_tab->add('Form');
 		$form->setModel($sms_model);
+		$form->getElement('otp_msg_content')->setFieldHint('{$otp_number} spot specify in msg content to send  random OTP');
 		$form->addSubmit('Save');
 		if($form->isSubmitted()){
 			$form->update();

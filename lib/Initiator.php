@@ -68,11 +68,12 @@ class Initiator extends \Controller_Addon {
         
         $this->app->exportFrontEndTool('xavoc\ispmanager\Tool_HotspotLogin','ISPMANAGER');
         $this->app->exportFrontEndTool('xavoc\ispmanager\Tool_HotspotRegistration','ISPMANAGER');
-        $this->app->exportFrontEndTool('xavoc\ispmanager\Tool_UserDashBoard','ISPMANAGER');
         $this->app->exportFrontEndTool('xavoc\ispmanager\Tool_PurchasePlan','ISPMANAGER');
         $this->app->exportFrontEndTool('xavoc\ispmanager\Tool_PurchaseTopUp','ISPMANAGER');
         $this->app->exportFrontEndTool('xavoc\ispmanager\Tool_StaffPanel','ISPMANAGER');
         $this->app->exportFrontEndTool('xavoc\ispmanager\Tool_StaffMenuBar','ISPMANAGER');
+        $this->app->exportFrontEndTool('xavoc\ispmanager\Tool_User_MenuBar','ISPMANAGER');
+        $this->app->exportFrontEndTool('xavoc\ispmanager\Tool_User_DashBoard','ISPMANAGER');
 
         $user = $this->add('xavoc\ispmanager\Model_User');
         $this->app->addHook('invoice_paid',[$user,'invoicePaid']);

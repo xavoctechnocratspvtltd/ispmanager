@@ -74,6 +74,7 @@ class Initiator extends \Controller_Addon {
         $this->app->exportFrontEndTool('xavoc\ispmanager\Tool_StaffMenuBar','ISPMANAGER');
         $this->app->exportFrontEndTool('xavoc\ispmanager\Tool_User_MenuBar','ISPMANAGER');
         $this->app->exportFrontEndTool('xavoc\ispmanager\Tool_User_DashBoard','ISPMANAGER');
+        $this->app->exportFrontEndTool('xavoc\ispmanager\Tool_User_Profile','ISPMANAGER');
 
         $user = $this->add('xavoc\ispmanager\Model_User');
         $this->app->addHook('invoice_paid',[$user,'invoicePaid']);

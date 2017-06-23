@@ -8,7 +8,7 @@ namespace xavoc\ispmanager;
 */
 class Tool_HotspotLogin extends \xepan\cms\View_Tool{
 	public $options = [
-						'after_login_url'=>'hotspotdashboard',
+						'after_login_url'=>'user_dashboard',
 						'registration_url'=>'',
 						'button_label'=>'Submit'
 	];

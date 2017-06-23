@@ -92,7 +92,6 @@ class Tool_HotspotRegistration extends \xepan\cms\View_Tool{
 			$verify_form->addSubmit("Verify OTP")->addClass('btn btn-success btn-lg text-center btn-block');
 			
 			if($verify_form->isSubmitted()){
-
 				$user=$this->add('xavoc\ispmanager\Model_User');	
 				$user->addCondition('radius_username',$verify_form['mobile_no']);
 				$user->tryLoadAny();
@@ -101,6 +100,7 @@ class Tool_HotspotRegistration extends \xepan\cms\View_Tool{
 
 				if($verify_form['otp']!=$user['radius_password'])
 					$verify_form->displayError('otp','OTP did not match');
+
 
 				//OTP SMS Expired Config
 				$otp_m = $this->add('xepan\base\Model_ConfigJsonModel',
@@ -137,6 +137,7 @@ class Tool_HotspotRegistration extends \xepan\cms\View_Tool{
 				$user->save();
 				$auth=$this->app->auth;
 				$auth->login($verify_form['mobile_no']);
+				
 				
 				$this->app->stickyForget('secret_opt_pass_code');
 				$this->app->stickyForget('mobile_no');

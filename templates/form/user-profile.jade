@@ -1,0 +1,80 @@
+.container(id="{$_name}" class="{$class}" style="{$style}")
+	h1 Edit Profile
+	hr
+	.row
+		// left column
+		.col-md-3
+			.text-center
+				img.avatar.img-circle(src='//placehold.it/100', alt='avatar')
+				h6 Upload a different photo...
+				input.form-control(type='file')
+		// edit form column
+		.col-md-9.personal-info
+			h3 Personal info
+			form.form-horizontal(role='form')
+				.form-group.form-control1
+					label.col-lg-3.control-label First name:
+					.col-lg-8
+						.atk-form-field.atk-form-row
+							{$first_name}
+						//- input(value='Jane', type='text')
+				.form-group.form-control1
+					label.col-lg-3.control-label Last name:
+					.col-lg-8
+						.atk-form-field.atk-form-row
+							{$last_name}
+				.form-group.form-control1
+					label.col-lg-3.control-label Date of Birth:
+					.col-lg-8
+						.atk-form-field.atk-form-row
+							{$dob}
+				.form-group.form-control1
+					label.col-lg-3.control-label Email:
+					.col-lg-8
+						.atk-form-field.atk-form-row
+							{$email}
+				.form-group.form-control1
+					label.col-md-3.control-label Contact No:
+					.col-lg-8.form-control1
+						.atk-form-field.atk-form-row
+							{$contact}
+				.form-group.form-control1
+					label.col-md-3.control-label Country:
+					.col-lg-8
+						.atk-form-field.atk-form-row							{$country_id}
+				.form-group.form-control1
+					label.col-md-3.control-label State:
+					.col-lg-8
+						.atk-form-field.atk-form-row
+							{$state_id}
+				.form-group.form-control1
+					label.col-md-3.control-label City:
+					.col-lg-8
+						.atk-form-field.atk-form-row
+							{$city}
+				.form-group.form-control1
+					label.col-md-3.control-label Pin Code:
+					.col-lg-8
+						.atk-form-field.atk-form-row
+							{$pin_code}
+				.form-group.form-control1
+					label.col-md-3.control-label Address:
+					.col-lg-8
+						.atk-form-field.atk-form-row
+							{$address}									
+				.form-group.form-control1
+					label.col-md-3.control-label
+					.col-md-8
+						{$FormButtons}
+						//- .btn.btn-primary|Save Changes
+						//- span
+						//- .btn.btn-default|Cancel
+		{$Content}
+hr
+
+style.
+	.form-control1 input,.form-control1 textarea,.form-control1 select {
+		padding: 4px 12px;
+		width: 100%;
+		margin:4px 0;
+	}

@@ -13,7 +13,7 @@ class Tool_StaffMenuBar extends \xepan\cms\View_Tool{
 
 		$menu = [
 				['key'=>'dashboard','name'=>'Dashboard'],
-				['key'=>'useregistration', 'name'=>'Registration'],
+				['key'=>'user_registration', 'name'=>'Registration'],
 				['key'=>'setting','name'=>'Settings'],
 			];
 

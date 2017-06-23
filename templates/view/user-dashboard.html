@@ -1,0 +1,24 @@
+
+<div id="{$_name}" style="{$style} width:100%" class="{$class}"></div>
+<div style="width:100%" class="container">
+  <h2 class="text-center">Welcome: {$username}</h2>
+  <div class="xepan-push"></div>
+  <div class="row">
+    <div class="col-md-12 col-lg-12 col-sm-12 col-xs 12">
+      <h4 class="text-center">Current Plan: {plan} Default Plan {/}</h4>
+    </div>
+    <div class="col-md-3 col-lg-3 col-sm-12 col-xs 12">
+      <div class="text-center">Total Consume Data : {consume_data}512.MB{/}</div>
+    </div>
+    <div class="col-md-3 col-lg-3 col-sm-12 col-xs 12">
+      <div class="text-center">Total Available Data {available_data}512.MB{/}</div>
+    </div>
+    <div class="col-md-3 col-lg-3 col-sm-12 col-xs 12">
+      <div class="text-center">Due Amount: {due_amount}00/00/00{/}</div>
+    </div>
+    <div class="col-md-3 col-lg-3 col-sm-12 col-xs 12">
+      <div class="text-center">Next Invoice Date: {next_due_date}00/00/00{/}</div>
+    </div>
+  </div>
+  <div class="xepan-push-large"></div>{$Content}			
+</div>

@@ -6,10 +6,11 @@ namespace xavoc\ispmanager;
 /**
 * 
 */
-class Tool_UserDashBoard extends \xepan\cms\View_Tool{
+class Tool_User_DashBoard extends \xepan\cms\View_Tool{
 	public $options = [
 		'login_url'=>'hotspotlogin',
-		'nas_ip'=>'192.168.100.1'
+		'nas_ip'=>'192.168.100.1',
+		
 	];
 
 	function init(){
@@ -38,7 +39,17 @@ class Tool_UserDashBoard extends \xepan\cms\View_Tool{
 				");
 		}
 
+		$user = $this->app->auth->model;
 
-		$this->add('View')->set('Welcome '. $this->app->auth->model['username']);
+
+
+
+		// $this->add('View')->set('Welcome '. $this->app->auth->model['username']);
+		$this->template->set('username',$user['username']);
+
+	}
+
+	function defaultTemplate(){
+		return ['view/user-dashboard'];
 	}
 }

@@ -2,6 +2,299 @@
 <div id="{$_name}" class="container">
   <div id="{$_name}" style="{$style}" class="container {$class}">
     <div class="well">
+      <label class="h4">For Individuals(radio)</label>
+      <div id="{$_name}" class="container">
+        <div class="row">
+          <div class="col-md-6 atk-form-field atk-form-row">
+            <label>First Name:</label>
+          </div>
+          <div class="col-md-6 atk-form-field atk-form-row">
+            <label>Last Name:</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 atk-form-field atk-form-row">{$first_name}</div>
+          <div class="col-md-6 atk-form-field atk-form-row">{$last_name}</div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 atk-form-field atk-form-row">
+            <label>Date Of Birth:</label>
+          </div>
+          <div class="col-md-6 atk-form-field atk-form-row">
+            <label>Address:</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 atk-form-field atk-form-row">{$dob}</div>
+          <div class="col-md-6 atk-form-field atk-form-row">{$address}</div>
+        </div>
+      </div>
+    </div>
+    <div class="well">
+      <label class="h4">For Non-Individuals(radio)</label>
+      <div id="{$_name}" class="container">
+        <div class="row">
+          <div class="col-md-12 atk-form-field atk-form-row">
+            <label>Name Of Organization:</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12 atk-form-field atk-form-row">{$organization}</div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 atk-form-field atk-form-row">
+            <label>Status Of Organisation(checkboxes):</label>
+          </div>
+          <div class="col-md-6 atk-form-field atk-form-row">
+            <label>PAN Number:</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 atk-form-field atk-form-row">{$}</div>
+          <div class="col-md-6 atk-form-field atk-form-row">{$pan_number}</div>
+        </div>
+        <div class="row">
+          <div class="h5">Customer Contact Details
+            <div id="{$_name}" class="container">
+              <div class="col-md-6 atk-form-field atk-form-row">
+                <div class="row">
+                  <div class="col-md-12 atk-form-field atk-form-row">
+                    <label>General:</label>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-12 atk-form-field atk-form-row">{$general_contact}{$general_email}</div>
+                </div>
+                <div class="row">
+                  <div class="col-md-12 atk-form-field atk-form-row">
+                    <label>Technical:</label>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-12 atk-form-field atk-form-row">{$technical_contact}{$technical_email}</div>
+                </div>
+                <div class="row">
+                  <div class="col-md-12 atk-form-field atk-form-row">
+                    <label>Finance:</label>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-12 atk-form-field atk-form-row">{$finance_contact}{$finance_email}</div>
+                </div>
+              </div>
+              <div class="col-md-6 atk-form-field atk-form-row">
+                <div class="row">
+                  <div class="col-md-12 atk-form-field atk-form-row">
+                    <label>Customer Category:</label>{$}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="h5">Service Installation Address
+            <div id="{$_name}" class="container">
+              <div class="col-md-12 atk-form-field atk-form-row">
+                <div class="row">
+                  <div class="col-md-6 atk-form-field atk-form-row">
+                    <label>Address:</label>
+                  </div>
+                  <div class="col-md-6 atk-form-field atk-form-row">
+                    <label>State:</label>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6 atk-form-field atk-form-row">{$shipping_address}</div>
+                  <div class="col-md-6 atk-form-field atk-form-row">{$state_id}</div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6 atk-form-field atk-form-row">
+                    <label>City:</label>
+                  </div>
+                  <div class="col-md-6 atk-form-field atk-form-row">
+                    <label>Pin Code:</label>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6 atk-form-field atk-form-row">{$shipping_city}</div>
+                  <div class="col-md-6 atk-form-field atk-form-row">{$shipping_pincode}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="h5">Billing Address
+            <div id="{$_name}" class="container">
+              <div class="col-md-12 atk-form-field atk-form-row">
+                <div class="row">
+                  <div class="col-md-6 atk-form-field atk-form-row">
+                    <label>Address:</label>
+                  </div>
+                  <div class="col-md-6 atk-form-field atk-form-row">
+                    <label>State:</label>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6 atk-form-field atk-form-row">{$billing_address}</div>
+                  <div class="col-md-6 atk-form-field atk-form-row">{$state_id}</div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6 atk-form-field atk-form-row">
+                    <label>City:</label>
+                  </div>
+                  <div class="col-md-6 atk-form-field atk-form-row">
+                    <label>Pin Code:</label>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6 atk-form-field atk-form-row">{$billing_city}</div>
+                  <div class="col-md-6 atk-form-field atk-form-row">{$billing_pincode}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 atk-form-field atk-form-row">
+            <label>Number of connections(no. box):</label>
+          </div>
+          <div class="col-md-6 atk-form-field atk-form-row">
+            <label>Rate Plan Code:</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 atk-form-field atk-form-row">{$}</div>
+          <div class="col-md-6 atk-form-field atk-form-row">{$}</div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 atk-form-field atk-form-row">
+            <label>Internet Port Speed:</label>
+          </div>
+          <div class="col-md-3 atk-form-field atk-form-row">
+            <label>Kbps(radio btn):</label>
+          </div>
+          <div class="col-md-3 atk-form-field atk-form-row">
+            <label>Mbps(radio btn):</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 atk-form-field atk-form-row">{$}</div>
+          <div class="col-md-3 atk-form-field atk-form-row">{$}</div>
+          <div class="col-md-3 atk-form-field atk-form-row">{$}</div>
+        </div>
+        <div class="row">
+          <label>Types of Access:
+            <div id="{$_name}" class="container">
+              <div class="col-md-12 atk-form-field atk-form-row">
+                <div class="row">
+                  <div class="col-md-6 atk-form-field atk-form-row">
+                    <label>Dedicated(radio btn)</label>{$}
+                  </div>
+                  <div class="col-md-6 atk-form-field atk-form-row">
+                    <label>Shared(radio btn)</label>{$}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </label>
+        </div>
+        <div class="row">
+          <label>Details of CPE:
+            <div id="{$_name}" class="container">
+              <div class="col-md-12 atk-form-field atk-form-row">
+                <div class="row">
+                  <div class="col-md-6 atk-form-field atk-form-row">
+                    <label>Make:</label>
+                  </div>
+                  <div class="col-md-6 atk-form-field atk-form-row">
+                    <label>Mode:</label>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6 atk-form-field atk-form-row">{$}</div>
+                  <div class="col-md-6 atk-form-field atk-form-row">{$}</div>
+                </div>
+              </div>
+            </div>
+          </label>
+        </div>
+        <div class="row">
+          <label>Static IP Required:
+            <div id="{$_name}" class="container">
+              <div class="col-md-12 atk-form-field atk-form-row">
+                <div class="row">
+                  <div class="col-md-6 atk-form-field atk-form-row">
+                    <label>Yes:</label>{$}
+                  </div>
+                  <div class="col-md-6 atk-form-field atk-form-row">
+                    <label>No:</label>{$}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </label>
+        </div>
+        <div class="row">
+          <div class="h5">Payment Details
+            <div id="{$_name}" class="container">
+              <div class="col-md-12 atk-form-field atk-form-row">
+                <div class="row">
+                  <div class="col-md-6 atk-form-field atk-form-row">
+                    <label>Serial No:</label>
+                  </div>
+                  <div class="col-md-6 atk-form-field atk-form-row">
+                    <label>Instrument Type:</label>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6 atk-form-field atk-form-row">{$}</div>
+                  <div class="col-md-6 atk-form-field atk-form-row">{$}</div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6 atk-form-field atk-form-row">
+                    <label>Cheque/DD No:</label>
+                  </div>
+                  <div class="col-md-6 atk-form-field atk-form-row">
+                    <label>Bank Name:</label>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6 atk-form-field atk-form-row">{$}</div>
+                  <div class="col-md-6 atk-form-field atk-form-row">{$}</div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6 atk-form-field atk-form-row">
+                    <label>Branch:</label>
+                  </div>
+                  <div class="col-md-6 atk-form-field atk-form-row">
+                    <label>City:</label>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6 atk-form-field atk-form-row">{$}</div>
+                  <div class="col-md-6 atk-form-field atk-form-row">{$}</div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6 atk-form-field atk-form-row">
+                    <label>Amount:</label>
+                  </div>
+                  <div class="col-md-6 atk-form-field atk-form-row">
+                    <label>Date:</label>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6 atk-form-field atk-form-row">{$}</div>
+                  <div class="col-md-6 atk-form-field atk-form-row">{$}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="well">
       <label class="h4">User Plans</label>
       <div id="{$_name}" class="container">
         <div class="row">
@@ -51,57 +344,61 @@
       </div>
     </div>
     <div class="well">
-      <label class="h4">Basic Info</label>
+      <label class="h4">Office Use Only </label>
       <div id="{$_name}" class="container">
         <div class="row">
           <div class="col-md-6 atk-form-field atk-form-row">
-            <label>First Name:</label>
+            <label>Customer Contact/PO No:</label>
           </div>
           <div class="col-md-6 atk-form-field atk-form-row">
-            <label>Last Name:</label>
+            <label>Date:</label>
           </div>
         </div>
         <div class="row">
-          <div class="col-md-6 atk-form-field atk-form-row">{$first_name}</div>
-          <div class="col-md-6 atk-form-field atk-form-row">{$last_name}</div>
+          <div class="col-md-6 atk-form-field atk-form-row">{$}</div>
+          <div class="col-md-6 atk-form-field atk-form-row">{$}</div>
         </div>
         <div class="row">
           <div class="col-md-6 atk-form-field atk-form-row">
-            <label>Country:</label>
+            <label>Proposal/Quotation No:</label>
           </div>
           <div class="col-md-6 atk-form-field atk-form-row">
-            <label>State:</label>
+            <label>Date:</label>
           </div>
         </div>
         <div class="row">
-          <div class="col-md-6 atk-form-field atk-form-row">{$country_id}</div>
-          <div class="col-md-6 atk-form-field atk-form-row">{$state_id}</div>
-        </div>
-        <div class="row">
-          <div class="col-md-6 atk-form-field atk-form-row">
-            <label>City:</label>
-          </div>
-          <div class="col-md-6 atk-form-field atk-form-row">
-            <label>Pin Code:</label>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-6 atk-form-field atk-form-row">{$city}</div>
-          <div class="col-md-6 atk-form-field atk-form-row">{$pin_code}</div>
+          <div class="col-md-6 atk-form-field atk-form-row">{$}</div>
+          <div class="col-md-6 atk-form-field atk-form-row">{$}</div>
         </div>
         <div class="row">
           <div class="col-md-12 atk-form-field atk-form-row">
-            <label>Address:</label>
+            <label>Name of Business Development Manager/Business Development Executive:</label>
           </div>
         </div>
         <div class="row">
+          <div class="col-md-12 atk-form-field atk-form-row">{$}</div>
+        </div>
+        <div class="row">
           <div class="col-md-6 atk-form-field atk-form-row">
-            {$address}
-            {$form_buttons}
-            {$Content}
+            <label>Name of Reseller/Channel/DSA:</label>
+          </div>
+          <div class="col-md-6 atk-form-field atk-form-row">
+            <label>City: </label>
           </div>
         </div>
-      </div>
+        <div class="row">
+          <div class="col-md-6 atk-form-field atk-form-row">{$}</div>
+          <div class="col-md-6 atk-form-field atk-form-row">{$}</div>
+        </div>
+        <div class="row">
+          <div class="col-md-12 atk-form-field atk-form-row">
+            <label>Name of Business Development Manager/Business Development Executive/Reseller/Channel/DSA:</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12 atk-form-field atk-form-row">{$}</div>
+        </div>
+      </div>{$Content}
     </div>
   </div>
 </div>

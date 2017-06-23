@@ -1,4 +1,4 @@
-div(id="{$_name}" class="{$class} ds-staff-navbar" style="{$style}")
+div(id="{$_name}" class="{$class} ds-user-navbar" style="{$style}")
 	nav.navbar
 		.container-fluid
 			.navbar-header
@@ -12,13 +12,19 @@ div(id="{$_name}" class="{$class} ds-staff-navbar" style="{$style}")
 			#bs-example-navbar-collapse-1.collapse.navbar-collapse
 				ul.nav.navbar-nav
 					{rows}{row}
-					li(data-page='{$key}' class="{$active_menu}")
-						a(href='{$key}') {$name}
+					li(data-page='user_{$key}' class="{$active_menu}")
+						a(href='user_{$key}') {$name}
 					{/}{/}
+				//- ul.nav.navbar-nav
+				//- 	li
+				//- 		h5|Welcome {$username}
 				ul.nav.navbar-nav.navbar-right
 					li
-						a(href="#" style="padding:10px; box-shadow:inset 0px 0px 1px 2px #ccc;border-radius:50%;" title="{$staff_name}")
-							img(src="{$staff_dp}" style="max-height:60px;max-width:40px;height:40px;" class="ds-dp")
+						a.btn.btn-primary.btn-sm(href="?page={$url}" style="padding:2px;margin: 17px")
+							|Change Plan
+					li
+						a(href="#" style="padding:10px; box-shadow:inset 0px 0px 1px 2px #ccc;border-radius:50%;" title="{$user_name}")
+							img(src="{$user_dp}" style="max-height:60px;max-width:40px;height:40px;" class="ds-dp")
 					li
 						a(style="padding:10px;" href="logout")
 							div.btn.btn-danger()

@@ -3,13 +3,16 @@
 	hr
 	.row
 		// left column
-		.col-md-3
-			.text-center
-				img.avatar.img-circle(src='//placehold.it/100', alt='avatar')
-				h6 Upload a different photo...
-				input.form-control(type='file')
-		// edit form column
-		.col-md-9.personal-info
+		{logo_wrapper}
+		.text-center
+			{$dp}
+			{$image_id}
+			{$FormButtons}
+			//- h6 Upload a different photo...
+			//- input.form-control(type='file')
+		{/logo_wrapper}
+		{detail_wrapper}
+		.personal-info
 			h3 Personal info
 			form.form-horizontal(role='form')
 				.form-group.form-control1
@@ -41,7 +44,8 @@
 				.form-group.form-control1
 					label.col-md-3.control-label Country:
 					.col-lg-8
-						.atk-form-field.atk-form-row							{$country_id}
+						.atk-form-field.atk-form-row
+							{$country_id}
 				.form-group.form-control1
 					label.col-md-3.control-label State:
 					.col-lg-8
@@ -70,6 +74,7 @@
 						//- span
 						//- .btn.btn-default|Cancel
 		{$Content}
+		{/detail_wrapper}
 hr
 
 style.

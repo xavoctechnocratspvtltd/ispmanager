@@ -13,19 +13,52 @@ class page_configuration extends \xepan\base\Page {
 
 		$tab = $this->add('Tabs');
 		$location = $tab->addTab('Location');
-		$l_tab = $location->add('Tabs');
-		$c_tab  = $l_tab->addTab('Country');
-		$s_tab = $l_tab->addTab('State');
-		$city_tab = $l_tab->addTab('City');
+		// $l_tab = $location->add('Tabs');
+		// $c_tab  = $l_tab->addTab('Country');
+		// $s_tab = $l_tab->addTab('State');
+		// $city_tab = $l_tab->addTab('City');
 
-		$crud = $c_tab->add('xepan\hr\CRUD');
-		$crud->setModel('xavoc\ispmanager\Country');
 
-		$crud = $s_tab->add('xepan\hr\CRUD');
-		$crud->setModel('xavoc\ispmanager\State');
+		// $crud = $c_tab->add('xepan\hr\CRUD');
+		// $crud->setModel('xepan\base\Country');
 
-		$crud = $city_tab->add('xepan\hr\CRUD');
-		$crud->setModel('xavoc\ispmanager\City');
+		// $crud = $s_tab->add('xepan\hr\CRUD');
+		// $crud->setModel('xepan\base\State');
+
+		// $crud = $city_tab->add('xepan\hr\CRUD');
+		// $crud->setModel('xavoc\ispmanager\City');
+
+
+		// Default Country And State 
+		$c_s_m = $this->add('xepan\base\Model_ConfigJsonModel',
+			[
+				'fields'=>[
+							'country'=>'DropDown',
+							'state'=>'DropDown',
+						],
+					'config_key'=>'DEFAULT_ISPMANAGER_COUNTRY_STATE_ID',
+					'application'=>'ispmanager'
+			]);
+		$c_s_m->add('xepan\hr\Controller_ACL');
+		$c_s_m->tryLoadAny();
+
+		// $csm_tab = $location->addTab('SMS Content');
+		$form = $location->add('Form');
+		$form->setModel($c_s_m);
+		$country_field = $form->getElement('country');
+		$country_field->setModel('xepan\base\Country');
+		$state_field = $form->getElement('state');
+		$state_field->setModel('xepan\base\State');
+		$form->addSubmit('Save');
+		
+		if($this->app->stickyGET('country_id'))
+			$state_field->getModel()->addCondition('country_id',$_GET['country_id'])->setOrder('name','asc');
+		$country_field->js('change',$form->js()->atk4_form('reloadField','state',[$this->app->url(),'country_id'=>$country_field->js()->val()]));
+
+		if($form->isSubmitted()){
+			$form->update();
+			$form->js(null,$form->js()->reload())->univ()->successMessage('Saved')->execute();
+		}
 
 
 

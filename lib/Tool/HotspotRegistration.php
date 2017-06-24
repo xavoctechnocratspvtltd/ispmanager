@@ -26,24 +26,33 @@ class Tool_HotspotRegistration extends \xepan\cms\View_Tool{
 			$registration_form->addSubmit("Registration")->addClass('btn btn-success btn-lg text-center btn-block');
 
 			if($registration_form->isSubmitted()){
+				
+				$c_s_m = $this->add('xepan\base\Model_ConfigJsonModel',
+					[
+						'fields'=>[
+									'country'=>'DropDown',
+									'state'=>'DropDown',
+								],
+							'config_key'=>'DEFAULT_ISPMANAGER_COUNTRY_STATE_ID',
+							'application'=>'ispmanager'
+					]);
+				$c_s_m->tryLoadAny();
+
 				$user = $this->add('xavoc\ispmanager\Model_User');
 				$user->addCondition('radius_username',$registration_form['mobile_no']);
 				$user->tryLoadAny();
-				if($user->loaded()){
-					$user['otp_send_time']=$this->app->now;
-					$user['radius_password'] = rand(999,999999);
-					$user['status']="InActive";
-					$user['otp_verified']=0;
-					
-				}else{
+				if(!$user->loaded()){
 					$user['first_name'] = "Guest";
 					$user['last_name'] = "User";
-					$user['status']="InActive";
-					$user['otp_verified']=0;
-					$user['otp_send_time']=$this->app->now;
 					$user['radius_username'] = $registration_form['mobile_no'];
-					$user['radius_password'] = rand(999,999999);
 				}
+				
+				$user['otp_send_time']=$this->app->now;
+				$user['radius_password'] = rand(999,999999);
+				$user['status']="InActive";
+				$user['otp_verified']=0;
+				$user['country_id']=$c_s_m['country'];
+				$user['state_id']=$c_s_m['state'];
 				$user->save();
 				
 				$sms_model = $this->add('xepan\base\Model_ConfigJsonModel',

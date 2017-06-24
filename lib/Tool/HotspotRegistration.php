@@ -77,12 +77,16 @@ class Tool_HotspotRegistration extends \xepan\cms\View_Tool{
 					if(!$sms_model['otp_msg_content']) throw new \Exception("Please update OTP SMS Content");
 					$this->add('xepan\communication\Controller_Sms')->sendMessage($registration_form['mobile_no'],$msg->getHtml());
 
-
+					$otp = "";
+				}else{
+					$otp = $user['radius_password'];
 				}
+
+
 				$registration_form->js(null,
 										$registration_form->js()
 												->univ()
-													->successMessage('Send OTP '.$user['radius_password'])
+													->successMessage('Send OTP '.$otp)
 									)->reload(
 										[
 											'mobile_no'=>$user['radius_username'],

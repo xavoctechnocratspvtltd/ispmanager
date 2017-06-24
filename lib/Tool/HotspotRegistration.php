@@ -125,8 +125,10 @@ class Tool_HotspotRegistration extends \xepan\cms\View_Tool{
 							'application'=>'ispmanager'
 					]);
 				$otp_m->tryLoadAny();
-				$date = date("Y-m-d h:i:s", strtotime("+".$otp_m['expired_time'] ."minutes",strtotime($user['otp_send_time'])));
+
+				$date = date("Y-m-d H:i:s", strtotime("+".$otp_m['expired_time'] ."minutes",strtotime($user['otp_send_time'])));
 				$current_date = $this->app->now;
+				// echo $user['otp_send_time']. "<br/>";
 				// echo $date. "<br/>";
 				// echo $current_date . "<br/>";
 				if ($date < $current_date) {

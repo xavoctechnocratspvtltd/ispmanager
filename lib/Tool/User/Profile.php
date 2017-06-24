@@ -35,13 +35,30 @@ class Tool_User_Profile extends \xepan\cms\View_Tool{
 		$pass_tab = $tabs->addTab('Change Password');
 		$account_tab = $tabs->addTab('My Account');
 
-		$form = $profile_tab->add('Form',null,null,['form/empty']);
-		$form->setLayout(['form/user-profile']);
+		$c = $profile_tab->add('Columns')->addClass('row');
+		$logo_c = $c->addColumn(4)->addClass('col-md-3');
+		$detail_c = $c->addColumn(4)->addClass('col-md-9');
+
+		$dp_form= $logo_c->add('Form',null,null,['form/empty']);
+		$dp_form->setLayout(['form/user-profile','logo_wrapper']);
+		$dp_form->layout->add('View',null,'dp')->setElement('img')->setAttr(['src'=>$user['image'],'width'=>'100','height'=>'100'])->addClass(' avatar img-circle');		
+		$dp_form->setModel($user,['image_id']);
+		$dp_form->addSubmit('Update Profile');
+		$img_field = $dp_form->getElement('image_id');	
+		if($dp_form->isSubmitted()){
+			$dp_form->update();
+			$dp_form->js(null,$dp_form->js()->univ()->successMessage('Profile Updated'))->reload()->execute();
+		}
+
+		$form = $detail_c->add('Form',null,null,['form/empty']);
+		$form->setLayout(['form/user-profile','detail_wrapper']);
 		$form->addField('DatePicker','dob')->set($user['dob']);
+		$form->setModel($user,['first_name','last_name','country_id','state_id','city','address','pin_code','dob','emails_str','contacts_str']);
 		$form->addField('email')->set($user['email']);
-		$form->setModel($user,['image_id','image','first_name','last_name','country_id','state_id','city','address','pin_code','dob','emails_str','contacts_str']);
 		$form->addField('contact')->set($user['contacts_str']);
+
 		$form->addSubmit("Update")->addClass('btn btn-primary');
+		
 
 		if($form->isSubmitted()){
 			$form->update();

@@ -32,15 +32,15 @@ class Tool_User_DashBoard extends \xepan\cms\View_Tool{
 			return;
 		}
 		else{
-			$this->add('View')->setHTML("
-					<form name='redirect' action='http://".$this->options['nas_ip']."/login'>
-						<input type='hidden' name='username' value='".$user['radius_username']."' />
-						<input type='hidden' name='password' value='".$user['radius_password']."' />
-					</form>
-					<script>
-						document.redirect.submit();
-					</script>
-				");
+			// $this->add('View')->setHTML("
+			// 		<form name='redirect' action='http://".$this->options['nas_ip']."/login'>
+			// 			<input type='hidden' name='username' value='".$user['radius_username']."' />
+			// 			<input type='hidden' name='password' value='".$user['radius_password']."' />
+			// 		</form>
+			// 		<script>
+			// 			document.redirect.submit();
+			// 		</script>
+			// 	");
 		}
 
 		// echo "string". $user['plan_id'];

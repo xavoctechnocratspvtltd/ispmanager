@@ -5,9 +5,10 @@
 		// left column
 		.col-md-3
 			.text-center
-				img.avatar.img-circle(src='//placehold.it/100', alt='avatar')
+				img.avatar.img-circle(src='{$image}', alt='avatar')
+				{$image_id}
 				h6 Upload a different photo...
-				input.form-control(type='file')
+				//- input.form-control(type='file')
 		// edit form column
 		.col-md-9.personal-info
 			h3 Personal info

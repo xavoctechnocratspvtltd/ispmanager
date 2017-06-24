@@ -27,17 +27,18 @@ class Tool_User_DashBoard extends \xepan\cms\View_Tool{
 		if($_GET['error']){
 			$this->add('View')->set($_GET['error']);
 			return;
-		}else{
-			$this->add('View')->setHTML("
-					<form name='redirect' action='http://".$this->options['nas_ip']."/login'>
-						<input type='hidden' name='username' value='".$user['radius_username']."' />
-						<input type='hidden' name='password' value='".$user['radius_password']."' />
-					</form>
-					<script>
-						document.redirect.submit();
-					</script>
-				");
 		}
+		// else{
+		// 	$this->add('View')->setHTML("
+		// 			<form name='redirect' action='http://".$this->options['nas_ip']."/login'>
+		// 				<input type='hidden' name='username' value='".$user['radius_username']."' />
+		// 				<input type='hidden' name='password' value='".$user['radius_password']."' />
+		// 			</form>
+		// 			<script>
+		// 				document.redirect.submit();
+		// 			</script>
+		// 		");
+		// }
 
 		$user = $this->app->auth->model;
 

@@ -23,29 +23,32 @@ class Tool_User_DashBoard extends \xepan\cms\View_Tool{
 
 		$user = $this->add('xavoc\ispmanager\Model_User');
 		$user->loadLoggedIn();
+		$plan = $this->add('xavoc\ispmanager\Model_Plan')
+			->addCondition('id',$user['plan_id'])
+			->tryLoadAny();
 
 		if($_GET['error']){
 			$this->add('View')->set($_GET['error']);
 			return;
 		}
-		// else{
-		// 	$this->add('View')->setHTML("
-		// 			<form name='redirect' action='http://".$this->options['nas_ip']."/login'>
-		// 				<input type='hidden' name='username' value='".$user['radius_username']."' />
-		// 				<input type='hidden' name='password' value='".$user['radius_password']."' />
-		// 			</form>
-		// 			<script>
-		// 				document.redirect.submit();
-		// 			</script>
-		// 		");
-		// }
+		else{
+			$this->add('View')->setHTML("
+					<form name='redirect' action='http://".$this->options['nas_ip']."/login'>
+						<input type='hidden' name='username' value='".$user['radius_username']."' />
+						<input type='hidden' name='password' value='".$user['radius_password']."' />
+					</form>
+					<script>
+						document.redirect.submit();
+					</script>
+				");
+		}
 
+		// echo "string". $user['plan_id'];
 		$user = $this->app->auth->model;
 
 
 
-
-		// $this->add('View')->set('Welcome '. $this->app->auth->model['username']);
+		$this->template->set('plan',$plan['name']);
 		$this->template->set('username',$user['username']);
 
 	}

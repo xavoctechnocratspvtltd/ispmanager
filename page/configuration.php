@@ -99,10 +99,10 @@ class page_configuration extends \xepan\base\Page {
 		$defalut_plan_model->tryLoadAny();
 
 		$plan_m = $this->add('xavoc\ispmanager\Model_Plan');
-		if($defalut_plan_model->loaded()){
-			$plan_m->addCondition('id',$defalut_plan_model['default_hotspot_plan']);
-			$plan_m->tryLoadAny();		
-		}
+		// if($defalut_plan_model->loaded()){
+		// 	// $plan_m->addCondition('id',$defalut_plan_model['default_hotspot_plan']);
+		// 	// $plan_m->tryLoadAny();		
+		// }
 		$form = $plan_tab->add('Form');
 		$form->setModel($defalut_plan_model);
 

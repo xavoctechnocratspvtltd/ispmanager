@@ -59,7 +59,7 @@ SELECT
 	`treat_fup_as_dl_for_last_limit_row`,
 	IFNULL( (select radacct.acctinputoctets from radacct where radacct.username = @username and acctstoptime is null) , 0 ) SessionInputOctets ,
 	IFNULL( (select radacct.acctoutputoctets  from radacct where radacct.username = @username and acctstoptime is null), 0 ) SessionOutputOctets ,
-	IFNULL( (select radacct.acctsessiontime  from radacct where username = @username and acctstoptime is null), 0 ) SessionTime
+	IFNULL( (select radacct.acctsessiontime  from radacct where radacct.username = @username and acctstoptime is null), 0 ) SessionTime
 	into @t_applicable_row_id, @t_net_data_limit, @t_last_dl_limit, @t_last_ul_limit, @t_last_accounting_dl_ratio, @t_last_accounting_ul_ratio,@t_download_data_consumed, @t_upload_data_consumed, @t_download_limit, @t_upload_limit, @t_fup_download_limit, @t_fup_upload_limit, @t_accounting_download_ratio, @t_accounting_upload_ratio, @t_burst_dl_limit, @t_burst_ul_limit, @t_burst_threshold_dl_limit, @t_burst_threshold_ul_limit, @t_burst_dl_time, @t_burst_ul_time, @t_priority, @t_time_limit, @t_time_consumed, @t_treat_fup_as_dl_for_last_limit_row,@t_SessionInputOctate, @t_SessionOutputOctate, @t_SessionTime
 FROM
 	isp_user_plan_and_topup 

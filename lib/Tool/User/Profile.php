@@ -46,7 +46,7 @@ class Tool_User_Profile extends \xepan\cms\View_Tool{
 
 		if($change_pass_form->isSubmitted()){
 			if( $change_pass_form['new_password'] != $change_pass_form['retype_password'])
-				$change_pass_form->displayError('new_password','new Password must match');
+				$change_pass_form->displayError('new_password','Password must match');
 			
 			if(!$this->api->auth->verifyCredentials($base_user['username'],$change_pass_form['old_password']))
 				$change_pass_form->displayError('old_password','Password not match');

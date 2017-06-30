@@ -26,24 +26,33 @@ class Tool_HotspotRegistration extends \xepan\cms\View_Tool{
 			$registration_form->addSubmit("Registration")->addClass('btn btn-success btn-lg text-center btn-block');
 
 			if($registration_form->isSubmitted()){
+				
+				$c_s_m = $this->add('xepan\base\Model_ConfigJsonModel',
+					[
+						'fields'=>[
+									'country'=>'DropDown',
+									'state'=>'DropDown',
+								],
+							'config_key'=>'DEFAULT_ISPMANAGER_COUNTRY_STATE_ID',
+							'application'=>'ispmanager'
+					]);
+				$c_s_m->tryLoadAny();
+
 				$user = $this->add('xavoc\ispmanager\Model_User');
 				$user->addCondition('radius_username',$registration_form['mobile_no']);
 				$user->tryLoadAny();
-				if($user->loaded()){
-					$user['otp_send_time']=$this->app->now;
-					$user['radius_password'] = rand(999,999999);
-					$user['status']="InActive";
-					$user['otp_verified']=0;
-					
-				}else{
+				if(!$user->loaded()){
 					$user['first_name'] = "Guest";
 					$user['last_name'] = "User";
-					$user['status']="InActive";
-					$user['otp_verified']=0;
-					$user['otp_send_time']=$this->app->now;
 					$user['radius_username'] = $registration_form['mobile_no'];
-					$user['radius_password'] = rand(999,999999);
 				}
+				
+				$user['otp_send_time']=$this->app->now;
+				$user['radius_password'] = rand(999,999999);
+				$user['status']="InActive";
+				$user['otp_verified']=0;
+				$user['country_id']=$c_s_m['country'];
+				$user['state_id']=$c_s_m['state'];
 				$user->save();
 				
 				$sms_model = $this->add('xepan\base\Model_ConfigJsonModel',
@@ -68,12 +77,16 @@ class Tool_HotspotRegistration extends \xepan\cms\View_Tool{
 					if(!$sms_model['otp_msg_content']) throw new \Exception("Please update OTP SMS Content");
 					$this->add('xepan\communication\Controller_Sms')->sendMessage($registration_form['mobile_no'],$msg->getHtml());
 
-
+					$otp = "";
+				}else{
+					$otp = $user['radius_password'];
 				}
+
+
 				$registration_form->js(null,
 										$registration_form->js()
 												->univ()
-													->successMessage('Send OTP '.$user['radius_password'])
+													->successMessage('Send OTP '.$otp)
 									)->reload(
 										[
 											'mobile_no'=>$user['radius_username'],
@@ -112,8 +125,10 @@ class Tool_HotspotRegistration extends \xepan\cms\View_Tool{
 							'application'=>'ispmanager'
 					]);
 				$otp_m->tryLoadAny();
-				$date = date("Y-m-d h:i:s", strtotime("+".$otp_m['expired_time'] ."minutes",strtotime($user['otp_send_time'])));
+
+				$date = date("Y-m-d H:i:s", strtotime("+".$otp_m['expired_time'] ."minutes",strtotime($user['otp_send_time'])));
 				$current_date = $this->app->now;
+				// echo $user['otp_send_time']. "<br/>";
 				// echo $date. "<br/>";
 				// echo $current_date . "<br/>";
 				if ($date < $current_date) {

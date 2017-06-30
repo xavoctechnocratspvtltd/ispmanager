@@ -13,23 +13,82 @@ class Tool_User_Profile extends \xepan\cms\View_Tool{
 		parent::init();
 
 		$user = $this->add('xavoc\ispmanager\Model_User');
-		$user->loadLoggedIn();
+		
+		$user->addExpression('email')->set(function($m,$q){
+			$x = $m->add('xepan\base\Model_Contact_Email');
+			return $x->addCondition('contact_id',$q->getField('id'))
+						->addCondition('is_active',true)
+						->addCondition('is_valid',true)
+						->setLimit(1)
+						->fieldQuery('value');
+		});
+		$user->addExpression('dob')->set(function($m,$q){
+			return $m->add('xepan\base\Model_Contact_Event')
+								->addCondition('contact_id',$m->getField('customer_id'))
+								->addCondition('head','DOB')
+								->fieldQuery('value');
+		});
 
+		$user->loadLoggedIn();
 		$tabs = $this->add('Tabs');
 		$profile_tab = $tabs->addTab('Profile');
 		$pass_tab = $tabs->addTab('Change Password');
 		$account_tab = $tabs->addTab('My Account');
 
-		$form = $profile_tab->add('Form',null,null,['form/empty']);
-		$form->setLayout(['form/user-profile']);
-		$form->setModel($user,['first_name','last_name','country_id','state_id','city','address','pin_code']);
-		$form->addField('dob');
-		$form->addField('email');
-		$form->addField('contact');
+		$c = $profile_tab->add('Columns')->addClass('row');
+		$logo_c = $c->addColumn(4)->addClass('col-md-3');
+		$detail_c = $c->addColumn(4)->addClass('col-md-9');
+
+		$dp_form= $logo_c->add('Form',null,null,['form/empty']);
+		$dp_form->setLayout(['form/user-profile','logo_wrapper']);
+		$dp_form->layout->add('View',null,'dp')->setElement('img')->setAttr(['src'=>$user['image'],'width'=>'100','height'=>'100'])->addClass(' avatar img-circle');		
+		$dp_form->setModel($user,['image_id']);
+		$dp_form->addSubmit('Update Profile');
+		$img_field = $dp_form->getElement('image_id');	
+		if($dp_form->isSubmitted()){
+			$dp_form->update();
+			$dp_form->js(null,$dp_form->js()->univ()->successMessage('Profile Updated'))->reload()->execute();
+		}
+
+		$form = $detail_c->add('Form',null,null,['form/empty']);
+		$form->setLayout(['form/user-profile','detail_wrapper']);
+		$form->addField('DatePicker','dob')->set($user['dob']);
+		$form->setModel($user,['first_name','last_name','country_id','state_id','city','address','pin_code','dob','emails_str','contacts_str']);
+		$form->addField('email')->set($user['email']);
+		$form->addField('contact')->set($user['contacts_str']);
+
 		$form->addSubmit("Update")->addClass('btn btn-primary');
+		
 
 		if($form->isSubmitted()){
 			$form->update();
+			$this->add('xepan\base\Model_Contact_Email')
+					->addCondition('contact_id',$user->id)
+					->addCondition('head','Official')
+					->addCondition('value',$form['email'])
+					->addCondition('is_active',true)
+					->addCondition('is_valid',1)
+					->tryLoadAny()
+					->save();
+
+			// $user->addEmail($form['email']);
+			$this->add('xepan\base\Model_Contact_Phone')
+					->addCondition('contact_id',$user->id)
+					->addCondition('head','Official')
+					->addCondition('value',$form['contact'])
+					->addCondition('is_active',true)
+					->addCondition('is_valid',1)
+					->tryLoadAny()
+					->save();
+			// $user->addPhone($form['contact']);
+			$this->add('xepan\base\Model_Contact_Event')
+					->addCondition('contact_id',$user->id)
+					->addCondition('head',"DOB")
+					->addCondition('value',$form['dob'])
+					->tryLoadAny()
+					->save();
+
+
 			$form->js(null,$form->js()->reload())->univ()->successMessage('Profile Updated')->execute();
 		}
 

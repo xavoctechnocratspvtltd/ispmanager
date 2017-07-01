@@ -34,7 +34,7 @@ xavocacct {
 	   	}
 
 	   	if ( &control:Tmp-String-0 =~ /(.*),(.*),(.*),(.*)/ ) {
-			if("%{1}" != 0) {
+			if("%{1}" == 0) {
 				update disconnect {
 					User-Name = "%{User-Name}"
 			        Acct-Session-Id = "%{Acct-Session-Id}"

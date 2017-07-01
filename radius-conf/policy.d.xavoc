@@ -28,7 +28,7 @@ xavocacct {
 	#xavocacctphp
 	# check some vars in control and 
 	# send coa accordingly if needed
-	if("%{Acct-Status-Type}" == 'Interim-Update'){
+	if(&Acct-Status-Type == Interim-Update){
 		update control { 
 	    	Tmp-String-0 := "%{sql:select updateAccountingData(%{Acct-Input-Octets},%{Acct-Output-Octets},null,'%{User-Name}',%{Acct-Session-Time})}"
 	   	}
@@ -64,5 +64,11 @@ xavocacct {
 			}
 		}
 	}
+
+	if(&Acct-Status-Type == Start || &Acct-Status-Type == Stop){
+		update control { 
+	    	Tmp-String-0 := "%{sql:select sessionClose('%{User-Name}')}"
+	   	}
+	}	
 	
 }

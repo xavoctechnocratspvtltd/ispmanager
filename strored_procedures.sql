@@ -419,7 +419,7 @@ BEGIN
 		SET now = now();
 	END IF;
 
-	SELECT last_accounting_dl_ratio, last_accounting_ul_ratio into @last_accounting_dl_ratio, @last_accounting_ul_ratio FROM isp_user WHERE radius_username = username;
+	SELECT IFNULL(last_accounting_dl_ratio,100), IFNULL(last_accounting_ul_ratio,100) into @last_accounting_dl_ratio, @last_accounting_ul_ratio FROM isp_user WHERE radius_username = username;
 
 	UPDATE 
 		isp_user_plan_and_topup 

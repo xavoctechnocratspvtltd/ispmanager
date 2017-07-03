@@ -9,7 +9,7 @@ namespace xavoc\ispmanager;
 class Tool_User_DashBoard extends \xepan\cms\View_Tool{
 	public $options = [
 		'login_url'=>'hotspotlogin',
-		'nas_ip'=>'103.89.255.86',
+		// 'nas_ip'=>'103.89.255.86', // using link-login from MT
 		
 	];
 
@@ -31,9 +31,9 @@ class Tool_User_DashBoard extends \xepan\cms\View_Tool{
 			$this->add('View')->set($_GET['error']);
 			return;
 		}
-		else{
+		elseif($ll=$_GET['link-login']){
 			$this->add('View')->setHTML("
-					<form name='redirect' action='http://".$this->options['nas_ip']."/login'>
+					<form name='redirect' action='$ll'>
 						<input type='hidden' name='username' value='".$user['radius_username']."' />
 						<input type='hidden' name='password' value='".$user['radius_password']."' />
 					</form>

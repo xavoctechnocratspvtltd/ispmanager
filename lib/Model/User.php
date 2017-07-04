@@ -43,10 +43,10 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$user_j->addField('otp_verified')->type('boolean');
 		$user_j->addField('otp_send_time')->type('datetime');
 
-		$user_j->addField('last_dl_limit');
-		$user_j->addField('last_ul_limit');
-		$user_j->addField('last_accounting_dl_ratio');
-		$user_j->addField('last_accounting_ul_ratio');
+		$user_j->addField('last_dl_limit')->defaultValue(0);
+		$user_j->addField('last_ul_limit')->defaultValue(0);
+		$user_j->addField('last_accounting_dl_ratio')->defaultValue(100);
+		$user_j->addField('last_accounting_ul_ratio')->defaultValue(100);
 
 		$user_j->hasMany('xavoc\ispmanager\UserPlanAndTopup','user_id');
 		// $user_j->hasMany('xavoc\ispmanager\TopUp','user_id',null,'topups');

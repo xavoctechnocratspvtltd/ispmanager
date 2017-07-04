@@ -12,6 +12,7 @@ class Initiator extends \Controller_Addon {
         ->setBaseURL('../shared/apps/xavoc/ispmanager/');
 
         $m = $this->app->top_menu->addMenu('ISP MANAGER');
+        $m->addItem(['Leads','icon'=>'fa fa-users'],'xavoc_ispmanager_lead');
         $m->addItem(['Users','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_user');
         $m->addItem(['Plans','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_plan');
         $m->addItem(['Topups','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_topup');

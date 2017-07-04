@@ -117,6 +117,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	}
 
 	function createInvoice($m,$detail_data=null){
+		if(!$this->plan_dirty OR !$this['plan_id']) return;
 		return $this->createQSP($m,$detail_data,'SalesInvoice');
 	}
 

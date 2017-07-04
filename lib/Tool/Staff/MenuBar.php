@@ -2,7 +2,7 @@
 
 namespace xavoc\ispmanager;
 
-class Tool_StaffMenuBar extends \xepan\cms\View_Tool{ 
+class Tool_Staff_MenuBar extends \xepan\cms\View_Tool{ 
 	public $options = ['login_page'=>'login'];
 
 	function init(){
@@ -12,9 +12,9 @@ class Tool_StaffMenuBar extends \xepan\cms\View_Tool{
 		$staff = $this->app->auth->model;
 
 		$menu = [
-				['key'=>'dashboard','name'=>'Dashboard'],
-				['key'=>'user_registration', 'name'=>'Registration'],
-				['key'=>'setting','name'=>'Settings'],
+				['key'=>'staff_dashboard','name'=>'Dashboard'],
+				['key'=>'staff_registration', 'name'=>'Customer Registration'],
+				['key'=>'staff_setting','name'=>'Settings'],
 			];
 
 		$this->complete_lister = $cl = $this->add('CompleteLister',null,null,['view/staffmenubar']);

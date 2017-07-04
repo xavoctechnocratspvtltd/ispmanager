@@ -11,7 +11,7 @@
  Target Server Version : 100118
  File Encoding         : utf-8
 
- Date: 06/06/2017 09:15:13 AM
+ Date: 07/01/2017 13:16:57 PM
 */
 
 SET NAMES utf8;
@@ -25,6 +25,10 @@ delimiter ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getApplicableRow`(username varchar (255),now datetime, with_data_limit boolean,less_then_this_id integer)
 BEGIN
 
+if now is null THEN 
+	SET now = now();
+END IF;
+
 SET @now = now;
 SET @day = LOWER(DATE_FORMAT(@now,"%a"));
 SET @date = CONCAT("d",DATE_FORMAT(@now,"%d"));
@@ -32,13 +36,15 @@ SET @current_time = TIME(@now);
 SET @today = DATE(@now);
 SET @username = username;
 
+
 SELECT 
 	isp_user_plan_and_topup.id id,
+	isp_user_plan_and_topup.remark row_name,
 	data_limit + carry_data AS net_data_limit,
-	user.last_dl_limit last_dl_limit,
-	user.last_ul_limit last_ul_limit,
-	user.last_accounting_dl_ratio,
-	user.last_accounting_ul_ratio,
+	u.last_dl_limit last_dl_limit,
+	u.last_ul_limit last_ul_limit,
+	u.last_accounting_dl_ratio,
+	u.last_accounting_ul_ratio,
 	isp_user_plan_and_topup.download_data_consumed,
 	isp_user_plan_and_topup.upload_data_consumed,
 	isp_user_plan_and_topup.download_limit,
@@ -57,14 +63,14 @@ SELECT
 	isp_user_plan_and_topup.time_limit,
 	isp_user_plan_and_topup.time_consumed,
 	`treat_fup_as_dl_for_last_limit_row`,
-	IFNULL( (select radacct.acctinputoctets from radacct where radacct.username = @username and acctstoptime is null) , 0 ) SessionInputOctets ,
-	IFNULL( (select radacct.acctoutputoctets  from radacct where radacct.username = @username and acctstoptime is null), 0 ) SessionOutputOctets ,
-	IFNULL( (select radacct.acctsessiontime  from radacct where radacct.username = @username and acctstoptime is null), 0 ) SessionTime
-	into @t_applicable_row_id, @t_net_data_limit, @t_last_dl_limit, @t_last_ul_limit, @t_last_accounting_dl_ratio, @t_last_accounting_ul_ratio,@t_download_data_consumed, @t_upload_data_consumed, @t_download_limit, @t_upload_limit, @t_fup_download_limit, @t_fup_upload_limit, @t_accounting_download_ratio, @t_accounting_upload_ratio, @t_burst_dl_limit, @t_burst_ul_limit, @t_burst_threshold_dl_limit, @t_burst_threshold_ul_limit, @t_burst_dl_time, @t_burst_ul_time, @t_priority, @t_time_limit, @t_time_consumed, @t_treat_fup_as_dl_for_last_limit_row,@t_SessionInputOctate, @t_SessionOutputOctate, @t_SessionTime
+	IFNULL( isp_user_plan_and_topup.session_download_data_consumed , 0 ) SessionInputOctets ,
+	IFNULL( isp_user_plan_and_topup.session_upload_data_consumed, 0 ) SessionOutputOctets ,
+	IFNULL( isp_user_plan_and_topup.session_time_consumed, 0 ) SessionTime
+	into @t_applicable_row_id,@t_applicable_row_name, @t_net_data_limit, @t_last_dl_limit, @t_last_ul_limit, @t_last_accounting_dl_ratio, @t_last_accounting_ul_ratio,@t_download_data_consumed, @t_upload_data_consumed, @t_download_limit, @t_upload_limit, @t_fup_download_limit, @t_fup_upload_limit, @t_accounting_download_ratio, @t_accounting_upload_ratio, @t_burst_dl_limit, @t_burst_ul_limit, @t_burst_threshold_dl_limit, @t_burst_threshold_ul_limit, @t_burst_dl_time, @t_burst_ul_time, @t_priority, @t_time_limit, @t_time_consumed, @t_treat_fup_as_dl_for_last_limit_row,@t_SessionInputOctate, @t_SessionOutputOctate, @t_SessionTime
 FROM
 	isp_user_plan_and_topup 
 JOIN
-	isp_user user on isp_user_plan_and_topup.user_id=user.customer_id
+	isp_user u on isp_user_plan_and_topup.user_id=u.customer_id
 WHERE
 						(
 							(
@@ -154,6 +160,8 @@ WHERE
 						order by is_topup desc, isp_user_plan_and_topup.id desc
 						limit 1;
 
+#SELECT @t_applicable_row_id;
+
 END
  ;;
 delimiter ;
@@ -164,6 +172,7 @@ delimiter ;
 DROP FUNCTION IF EXISTS `checkAuthentication`;
 delimiter ;;
 CREATE DEFINER=`root`@`localhost` FUNCTION `checkAuthentication`(now datetime, username varchar(255)) RETURNS text CHARSET utf8
+    DETERMINISTIC
 P:BEGIN
 
 if now is null THEN 
@@ -183,6 +192,7 @@ SET @user_SessionOutputOctate = @t_SessionOutputOctate;
 SET @user_SessionTime = @t_SessionTime;
 
 SET @bw_applicable_row_id = @t_applicable_row_id;
+SET @bw_applicable_row_name = @t_applicable_row_name;
 
 SET @bw_download_limit = @t_download_limit;
 SET @bw_upload_limit = @t_upload_limit;
@@ -232,13 +242,15 @@ SET @access= true;
 
 IF @bw_applicable_row_id is null THEN
 	SET @access= false;
-	RETURN CONCAT(@access,',', 0,',', 0,',', 0);
+	RETURN CONCAT(@access,',', 0,',', '0/0',',', 0);
 	LEAVE P;
 END IF;
 
 IF @bw_net_data_limit is null THEN
 	CALL getApplicableRow(username,now,TRUE,null);
 	SET @data_applicable_row_id = @t_applicable_row_id;
+	SET @data_applicable_row_name = @t_applicable_row_name;
+
 	SET @data_net_data_limit = @t_net_data_limit;
 	SET @data_download_data_consumed = @t_download_data_consumed;
 	SET @data_upload_data_consumed= @t_upload_data_consumed;
@@ -266,6 +278,7 @@ IF ( (@data_download_data_consumed + @data_upload_data_consumed + @user_SessionI
 	IF @treat_fup_as_dl_for_last_limit_row THEN 
 		CALL getApplicableRow(username,now,false,@data_applicable_row_id);
 		SET @nxt_data_applicable_row_id = @t_applicable_row_id;
+		SET @data_applicable_row_name = @t_applicable_row_name;
 		SET @nxt_net_data_limit = @t_net_data_limit;
 		SET @nxt_download_data_consumed = @t_download_data_consumed;
 		SET @nxt_upload_data_consumed= @t_upload_data_consumed;
@@ -401,8 +414,31 @@ IF @burst_dl_limit is not null or @burst_dl_limit != "" THEN
 	SET @burst_string= CONCAT(@burst_ul_limit,'/',@burst_threshold_dl_limit,' ',@burst_threshold_ul_limit,'/',@burst_dl_time,' ',@burst_ul_time,' ',@priority);
 END IF;
 
-RETURN CONCAT(@access,',', @coa,',', @ul_limit,'/', @dl_limit,',',@burst_string);
+RETURN CONCAT(@access,',', @coa,',', IFNULL(@ul_limit,0),'/', IFNULL(@dl_limit,0),',',@burst_string);
 
+END
+ ;;
+delimiter ;
+
+-- ----------------------------
+--  Function structure for `sessionClose`
+-- ----------------------------
+DROP FUNCTION IF EXISTS `sessionClose`;
+delimiter ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `sessionClose`(username varchar(255)) RETURNS text CHARSET utf8mb4
+BEGIN
+	UPDATE 
+		isp_user_plan_and_topup 	
+	SET
+		download_data_consumed = IFNULL(download_data_consumed,0) + IFNULL(session_download_data_consumed,0),
+		upload_data_consumed = IFNULL(upload_data_consumed,0) + IFNULL(session_upload_data_consumed,0),
+		time_consumed = IFNULL(time_consumed,0) + IFNULL(session_time_consumed,0),
+		session_download_data_consumed=0,
+		session_upload_data_consumed=0,
+		session_time_consumed=0
+	WHERE
+		user_id = (SELECT customer_id from isp_user where radius_username = username);
+	RETURN "done";
 END
  ;;
 delimiter ;
@@ -412,21 +448,21 @@ delimiter ;
 -- ----------------------------
 DROP FUNCTION IF EXISTS `updateAccountingData`;
 delimiter ;;
-CREATE DEFINER=`root`@`localhost` FUNCTION `updateAccountingData`(dl_data bigint, ul_data bigint, now datetime, username varchar(255), session_time_consumed bigint) RETURNS text CHARSET utf8
+CREATE DEFINER=`root`@`localhost` FUNCTION `updateAccountingData`(dl_data bigint, ul_data bigint, now datetime, username varchar(255), session_time_consumed bigint) RETURNS text CHARSET utf8mb4
 BEGIN
 
 	IF(now is NULL) THEN 
 		SET now = now();
 	END IF;
 
-	SELECT last_accounting_dl_ratio, last_accounting_ul_ratio into @last_accounting_dl_ratio, @last_accounting_ul_ratio FROM isp_user WHERE radius_username = username;
+	SELECT IFNULL(last_accounting_dl_ratio,100), IFNULL(last_accounting_ul_ratio,100) into @last_accounting_dl_ratio, @last_accounting_ul_ratio FROM isp_user WHERE radius_username = username;
 
 	UPDATE 
 		isp_user_plan_and_topup 
 	SET 
-		download_data_consumed = IFNULL(download_data_consumed,0) + ((dl_data*@last_accounting_dl_ratio) /100) ,
-		upload_data_consumed = IFNULL(upload_data_consumed,0) + ((ul_data*@last_accounting_ul_ratio) /100),
-		time_consumed = IFNULL(time_consumed,0) + session_time_consumed
+		isp_user_plan_and_topup.session_download_data_consumed = ((dl_data*@last_accounting_dl_ratio) /100) ,
+		isp_user_plan_and_topup.session_upload_data_consumed = ((ul_data*@last_accounting_ul_ratio) /100),
+		isp_user_plan_and_topup.session_time_consumed = session_time_consumed
 	WHERE 
 		is_effective = 1 AND user_id = (SELECT customer_id from isp_user where radius_username = username)
 	;

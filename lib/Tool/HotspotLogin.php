@@ -25,6 +25,7 @@ class Tool_HotspotLogin extends \xepan\cms\View_Tool{
 		$form->setLayout(['form/hotspot-login']);
 		$form->addField('Line','username','Mobile No / Username')->validate('required');
 		$form->addField('password','password')->validate('required');
+		$form->addField('hidden','link_login')->set($_REQUEST['link-login']);
 
 		$form->addSubmit($this->options['button_label'])->addClass('btn btn-primary btn-lg text-center btn-block');
 
@@ -48,7 +49,7 @@ class Tool_HotspotLogin extends \xepan\cms\View_Tool{
 						->load($client['user_id']);
 
 			$this->app->auth->login($user);
-			$form->app->redirect($this->app->url($this->options['after_login_url']));
+			$form->app->redirect($this->app->url($this->options['after_login_url'],['link-login'=>$form['link_login']]));
 		}
 	}
 }

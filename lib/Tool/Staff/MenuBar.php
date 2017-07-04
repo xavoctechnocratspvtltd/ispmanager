@@ -2,7 +2,7 @@
 
 namespace xavoc\ispmanager;
 
-class Tool_StaffMenuBar extends \xepan\cms\View_Tool{ 
+class Tool_Staff_MenuBar extends \xepan\cms\View_Tool{ 
 	public $options = ['login_page'=>'login'];
 
 	function init(){

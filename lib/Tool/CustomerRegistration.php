@@ -9,6 +9,10 @@ class Tool_CustomerRegistration extends \xepan\cms\View_Tool{
 	public $options=[];
 	function init(){
 		parent::init();
+		if(!$this->app->auth->isLoggedIn()){
+			$this->app->redirect($this->app->url('staff_login'));
+			return;
+		}
 
 		$user_model = $this->add('xavoc\ispmanager\Model_User');
 

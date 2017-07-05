@@ -11,11 +11,11 @@ class Tool_Staff_MenuBar extends \xepan\cms\View_Tool{
 		// todo check staff is login or not
 		$staff = $this->app->auth->model;
 
-		$menu = [
-				['key'=>'staff_dashboard','name'=>'Dashboard'],
-				['key'=>'staff_registration', 'name'=>'Customer Registration'],
-				['key'=>'staff_setting','name'=>'Settings'],
-			];
+		// $menu = [
+		// 		['key'=>'staff_dashboard','name'=>'Dashboard'],
+		// 		['key'=>'staff_registration', 'name'=>'Customer Registration'],
+		// 		['key'=>'staff_setting','name'=>'Settings'],
+		// 	];
 		$page = $this->app->page."_active";
 
 

@@ -2288,7 +2288,7 @@ section {
 .dropdown-menu {
   transition: all 0.2s cubic-bezier(0.72, 1.2, 0.71, 0.72); }
 
-@font-face {
+/*@font-face {
   font-family: "Roboto";
   src: local(Roboto Thin), url("../font/roboto/Roboto-Thin.eot");
   src: url("../font/roboto/Roboto-Thin.eot?#iefix") format("embedded-opentype"), url("../font/roboto/Roboto-Thin.woff2") format("woff2"), url("../font/roboto/Roboto-Thin.woff") format("woff"), url("../font/roboto/Roboto-Thin.ttf") format("truetype");
@@ -2316,10 +2316,10 @@ section {
   font-family: "Roboto";
   src: url("../font/roboto/Roboto-Bold.eot");
   src: url("../font/roboto/Roboto-Bold.eot?#iefix") format("embedded-opentype"), url("../font/roboto/Roboto-Bold.woff2") format("woff2"), url("../font/roboto/Roboto-Bold.woff") format("woff"), url("../font/roboto/Roboto-Bold.ttf") format("truetype");
-  font-weight: 700; }
+  font-weight: 700; }*/
 
-body {
-  font-family: "Roboto", sans-serif; }
+/*body {
+  font-family: "Roboto", sans-serif; }*/
 
 h1,
 h2,

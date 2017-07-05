@@ -150,9 +150,12 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 				$shipping_pincode = $form['shipping_pincode'];
 			}
 			
-			try{
-				$this->app->db->beginTransaction();
+			// try{
+			// 	$this->app->db->beginTransaction();
 				// insert customer
+				$this['type'] = "Customer";
+				$this->save();
+
 				$cust_q = "INSERT into customer (contact_id, billing_country_id, billing_state_id, billing_city, billing_address, billing_pincode, shipping_country_id, shipping_state_id, shipping_city, shipping_address, shipping_pincode, same_as_billing_address ) VALUES (".$this->id.",".$form['billing_country'].",".$form['billing_state'].",'".$form['billing_city']."','".$form['billing_address']."','".$form['billing_pincode']."',".$shipping_country.",".$shipping_state.",'".$shipping_city."','".$shipping_address."','".$shipping_pincode."','".$form['shipping_address_same_as_billing_address']."')";
 				$this->app->db->dsql()->expr($cust_q)->execute();
 
@@ -161,20 +164,22 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 				$this->app->db->dsql()->expr($isp_user_q)->execute();
 
 				$user = $this->add('xavoc\ispmanager\Model_User');
-				$user->addCondition('customer_id',$this->id);
+				$user->addCondition('id',$this->id);
 				$user->tryLoadAny();
+				
+				if($user->loaded()){
+					$user['plan_id'] = $form['plan'];
+					$user['create_invoice'] = $form['create_invoice'];
+					$user['is_invoice_date_first_to_first'] = $form['is_invoice_date_first_to_first'];
+					$user['grace_period_in_days'] = $form['grace_period_in_days'];
+					$user->save();
+				}
 
-				$user['plan_id'] = $form['plan'];
-				$user['create_invoice'] = $form['create_invoice'];
-				$user['is_invoice_date_first_to_first'] = $form['is_invoice_date_first_to_first'];
-				$user['grace_period_in_days'] = $form['grace_period_in_days'];
-				$user->save();
-
-				$this->app->db->commit();
-			}catch(\Exception $e){
-				$this->app->db->rollback();
-				throw $e;
-			}
+				// $this->app->db->commit();
+			// }catch(\Exception $e){
+			// 	$this->app->db->rollback();
+			// 	throw $e;
+			// }
 
 			return $this->app->page_action_result = $this->app->js(true,$page->js()->univ()->closeDialog())->univ()->successMessage('user created successfully');
 		}

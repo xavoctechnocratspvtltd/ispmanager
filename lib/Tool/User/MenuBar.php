@@ -15,7 +15,10 @@ class Tool_User_MenuBar extends \xepan\cms\View_Tool{
 		parent::init();
 
 		// todo check staff is login or not
-		$user = $this->app->auth->model;
+		$user = $this->add('xavoc\ispmanager\Model_User');
+		$user->loadLoggedIn();
+
+		// $user = $this->app->auth->model;
 		$page = $this->app->page."_active";
 		// $menu = [
 		// 		['key'=>'dashboard','name'=>'Dashboard'],
@@ -34,7 +37,7 @@ class Tool_User_MenuBar extends \xepan\cms\View_Tool{
 		// $cl->template->trySet('url', $this->options['plan_url']);
 		// $cl->template->trySet('user_name',$user['name']);
 		// $cl->template->trySet('user_dp',($user['image']?:"shared/apps/xavoc/ispmanager/templates/img/profile.png"));
-
+		
 		$this->template->trySet('url', $this->options['plan_url']);
 		$this->template->trySet('user_name',$user['name']);
 		$this->template->trySet($page,'active-nav');

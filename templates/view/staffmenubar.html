@@ -19,8 +19,8 @@
             </ul>
           </li>
         </ul>
-        <ul style="margin-top:8px" class="navbar-nav ml-auto nav-flex-icons pull-right">
-          <li class="nav-item avatar dropdown"><a id="navbarDropdownMenuLink" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" class="nav-link dropdown-toggle waves-effect waves-light"><img src="{staff_dp}shared/apps/xavoc/ispmanager/templates/img/profile.png{/}" class="img-fluid img-circle z-depth-0"/></a>
+        <ul style="margin-top:5px" class="navbar-nav ml-auto nav-flex-icons pull-right">
+          <li class="nav-item avatar dropdown"><a id="navbarDropdownMenuLink" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" class="nav-link dropdown-toggle waves-effect waves-light"><img src="{staff_dp}shared/apps/xavoc/ispmanager/templates/img/profile.png{/}" class="img-fluid img-circle z-depth-2"/></a>
             <ul aria-labelledby="navbarDropdownMenuLink" data-dropdown-in="fadeIn" data-dropdown-out="fadeOut" class="dropdown-menu dropdown-warning dropdown-menu-right">
               <li class="{$staff_lead_active}"><a href="staff_lead" class="dropdown-item waves-effect waves-light"><i class="fa fa-users"></i><span class="text-right">My Lead </span></a></li>
               <li class="{$staff_setting_active}"><a href="staff_setting" class="dropdown-item waves-effect waves-light"><i class="fa fa-gear"></i><span>Setting</span></a></li>
@@ -33,77 +33,3 @@
   </nav>{$Content}
 </div>
 <!-- Navbar-->
-<style>
-  .navbar-toggle {
-    align-self: flex-start;
-    background: rgba(0, 0, 0, 0) none repeat scroll 0 0;
-    border: 1px solid transparent;
-    border-radius: 0.25rem;
-    font-size: 1.25rem;
-    line-height: 1;
-  } 
-  .navbar-toggle {
-    border-color: rgba(0, 0, 0, 0.1);
-  }
-  .icon-bar {
-    border: 1px solid #ddd;
-  }
-  .dropdown .dropdown-menu.dropdown-warning .dropdown-item:active, .dropdown .dropdown-menu.dropdown-warning .dropdown-item:hover {
-    background-color: #8bc34a;
-    box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-    border-radius:2px;
-  }
-  .dropdown-item span,.dropdown-item i{
-    padding:10px;
-  }
-  
-  .active-nav{
-    box-shadow:0 8px 17px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-  }
-  
-  .dropdown .dropdown-menu {
-      padding: 0.5rem;
-  }
-  .nav-link{
-    color:white;
-    font-weight:500;
-  }
-  .nav-link:hover{
-    color:white;
-  
-  }
-  .navbar-toggleable-md .navbar-collapse {
-      display: flex;
-      width: 100%;
-  }
-  .navbar .nav-item.avatar, .navbar .nav-item.avatar .dropdown-toggle {
-    padding: 0;
-  }
-  .navbar .nav-item.avatar .dropdown-toggle::after {
-      display: none;
-  }
-  .ml-auto, .mx-auto {
-      margin-left: auto;
-  }
-  .dropdown-toggle::after {
-      border-left: 0.3em solid transparent;
-      border-right: 0.3em solid transparent;
-      border-top: 0.3em solid;
-      content: "";
-      display: inline-block;
-      height: 0;
-      margin-left: 0.3em;
-      vertical-align: middle;
-      width: 0;
-  }
-  .navbar.navbar-dark .breadcrumb a:hover, .navbar.navbar-dark .navbar-nav .nav-item a:hover {
-      color: rgba(255, 255, 255, 0.75);
-  }
-  .nav > li > a:focus, .nav > li > a:hover {
-      background-color: rgba(255, 255, 255, 0.20);
-      text-decoration: none;
-  }
-  .navbar .nav-item.avatar .dropdown-toggle img {
-      height: 35px;
-  }
-</style>

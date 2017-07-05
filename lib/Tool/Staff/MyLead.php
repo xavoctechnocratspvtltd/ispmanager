@@ -10,10 +10,10 @@ class Tool_Staff_MyLead extends \xepan\cms\View_Tool{
 	function init(){
 		parent::init();
 		
-		// if(!$this->app->auth->isLoggedIn()){
-		// 	$this->app->redirect($this->app->url($this->options['login_url']));
-		// 	return;
-		// }
+		if(!$this->app->auth->isLoggedIn()){
+			$this->app->redirect($this->app->url('staff_login'));
+			return;
+		}
 
 		$staff = $this->add('xepan\base\Model_Contact');
 		$staff->loadLoggedIn();

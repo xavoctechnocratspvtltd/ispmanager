@@ -35,6 +35,7 @@ class Tool_User_MenuBar extends \xepan\cms\View_Tool{
 		// $cl->template->trySet('user_name',$user['name']);
 		// $cl->template->trySet('user_dp',($user['image']?:"shared/apps/xavoc/ispmanager/templates/img/profile.png"));
 
+		$this->template->trySet('url', $this->options['plan_url']);
 		$this->template->trySet('user_name',$user['name']);
 		$this->template->trySet($page,'active-nav');
 		$this->template->trySet('user_dp',($user['image']?:"shared/apps/xavoc/ispmanager/templates/img/profile.png"));

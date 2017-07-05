@@ -35,6 +35,16 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 		$this->app->stickyGET('b_country_id');
 		$this->app->stickyGET('s_country_id');
 
+		$isp_user = $page->add('xavoc\ispmanager\Model_User');
+		$isp_user->addCondition('customer_id',$this->id);
+		if($isp_user->count()->getOne()){
+			$page->add('View')
+				->addClass('alert alert-danger')
+				->set('isp user already exists')
+			;
+			return;
+		}
+
 		$plan = $page->add('xavoc\ispmanager\Model_Plan');
 		$plan->addCondition('status','Published');
 
@@ -106,6 +116,10 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 		$form->addField('shipping_city');
 		$form->addField('shipping_pincode');
 
+		$form->addField('checkbox','create_invoice');
+		$form->addField('checkbox','is_invoice_date_first_to_first');
+		$form->addField('Number','grace_period_in_days');
+
 		$form->addSubmit('create user')->addClass('btn btn-primary');
 		
 		if($form->isSubmitted()){
@@ -135,20 +149,32 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 				$shipping_address = $form['shipping_address'];
 				$shipping_pincode = $form['shipping_pincode'];
 			}
+			
+			try{
+				$this->app->db->beginTransaction();
+				// insert customer
+				$cust_q = "INSERT into customer (contact_id, billing_country_id, billing_state_id, billing_city, billing_address, billing_pincode, shipping_country_id, shipping_state_id, shipping_city, shipping_address, shipping_pincode, same_as_billing_address ) VALUES (".$this->id.",".$form['billing_country'].",".$form['billing_state'].",'".$form['billing_city']."','".$form['billing_address']."','".$form['billing_pincode']."',".$shipping_country.",".$shipping_state.",'".$shipping_city."','".$shipping_address."','".$shipping_pincode."','".$form['shipping_address_same_as_billing_address']."')";
+				$this->app->db->dsql()->expr($cust_q)->execute();
 
-			// insert customer
-			$cust_q = "INSERT into customer (contact_id, billing_country_id, billing_state_id, billing_city, billing_address, billing_pincode, shipping_country_id, shipping_state_id, shipping_city, shipping_address, shipping_pincode ) VALUES (".$this->id.",".$form['billing_country'].",".$form['billing_state'].",'".$form['billing_city']."','".$form['billing_address']."','".$form['billing_pincode']."',".$shipping_country.",".$shipping_state.",'".$shipping_city."','".$shipping_address."','".$shipping_pincode."')";			
-			$this->app->db->dsql()->expr($cust_q)->execute();
+				// insert user
+				$isp_user_q = "INSERT into isp_user (customer_id,radius_username, radius_password, first_name, last_name, contact_number, email_id, created_at) VALUES (".$this->id.",'".$form['radius_username']."','".$form['radius_password']."','".$form['first_name']."','".$form['last_name']."','".$form['mobile_no']."','".$form['email_id']."','".$this->app->now."')";
+				$this->app->db->dsql()->expr($isp_user_q)->execute();
 
-			// insert user
-			$isp_user_q = "INSERT into isp_user (customer_id,radius_username, radius_password, first_name, last_name, contact_number, email_id, created_at) VALUES (".$this->id.",'".$form['radius_username']."','".$form['radius_password']."','".$form['first_name']."','".$form['last_name']."','".$form['mobile_no']."','".$form['email_id']."','".$this->app->now."')";
-			$this->app->db->dsql()->expr($isp_user_q)->execute();
+				$user = $this->add('xavoc\ispmanager\Model_User');
+				$user->addCondition('customer_id',$this->id);
+				$user->tryLoadAny();
 
-			$user = $this->add('xavoc\ispmanager\Model_User');
-			$user->addCondition('customer_id',$this->id);
-			$user->tryLoadAny();
-			$user['plan_id'] = $form['plan_id'];
-			$user->save();
+				$user['plan_id'] = $form['plan'];
+				$user['create_invoice'] = $form['create_invoice'];
+				$user['is_invoice_date_first_to_first'] = $form['is_invoice_date_first_to_first'];
+				$user['grace_period_in_days'] = $form['grace_period_in_days'];
+				$user->save();
+
+				$this->app->db->commit();
+			}catch(\Exception $e){
+				$this->app->db->rollback();
+				throw $e;
+			}
 
 			return $this->app->page_action_result = $this->app->js(true,$page->js()->univ()->closeDialog())->univ()->successMessage('user created successfully');
 		}

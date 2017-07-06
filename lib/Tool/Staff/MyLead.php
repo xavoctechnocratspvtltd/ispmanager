@@ -17,24 +17,23 @@ class Tool_Staff_MyLead extends \xepan\cms\View_Tool{
 			return;
 		}
 
-		$staff = $this->add('xepan\base\Model_Contact');
-		$staff->loadLoggedIn();
+		// $staff = $this->add('xepan\base\Model_Contact');
+		// $staff->loadLoggedIn();
+		$staff = $this->app->employee;
 		
-
 		$lead = $this->add('xavoc\ispmanager\Model_Lead');
 		$lead->addCondition('assign_to_id',$staff->id);
+		
+ 
 		$crud = $this->add('xepan\hr\CRUD',['allow_add'=>false,'allow_edit'=>false,'allow_del'=>false],null,['grid/mylead']);
-		$crud->setModel($lead);
+		$crud->setModel($lead,['name','status','created_at','emails_str','contacts_str']);
 
 		$crud->grid->addHook('formatRow',function($g){
 			$g->current_row_html['created_date'] = date('d M, Y',strtotime($g->model['created_at'])); 
 		});
 
 		$crud->grid->addQuickSearch(['name','status','contacts_str','emails_str']);
-		// // $grid->addPaginator(10);
-		// $p = $grid->add('xepan\base\Paginator');
-
-		// $p->setRowsPerPage(10);
+		$crud->grid->addPaginator(10);
 
 	}
 }

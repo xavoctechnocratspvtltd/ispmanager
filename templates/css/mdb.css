@@ -7116,3 +7116,7 @@ body.scrollable {
 .modal-dialog.modal-notify.modal-danger .btn-outline-secondary-modal {
   border: 2px solid #ff4b4b;
   color: #ff4b4b !important; }
+
+.btn {
+  overflow-wrap: normal;
+}

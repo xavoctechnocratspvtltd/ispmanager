@@ -7,6 +7,8 @@ namespace xavoc\ispmanager;
 */
 class Tool_Staff_MyLead extends \xepan\cms\View_Tool{
 	public $options = [];
+	
+	
 	function init(){
 		parent::init();
 		
@@ -21,7 +23,7 @@ class Tool_Staff_MyLead extends \xepan\cms\View_Tool{
 
 		$lead = $this->add('xavoc\ispmanager\Model_Lead');
 		$lead->addCondition('assign_to_id',$staff->id);
-		$crud = $this->add('xepan\base\CRUD',['allow_add'=>false,'allow_edit'=>false,'allow_del'=>false],null,['grid/mylead']);
+		$crud = $this->add('xepan\hr\CRUD',['allow_add'=>false,'allow_edit'=>false,'allow_del'=>false],null,['grid/mylead']);
 		$crud->setModel($lead);
 
 		$crud->grid->addHook('formatRow',function($g){

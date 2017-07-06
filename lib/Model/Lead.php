@@ -9,6 +9,7 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 					'Active'=>['view','edit','delete','communication','assign','createUser','send','manage_score','deactivate'],
 					'InActive'=>['view','edit','delete','activate','communication','manage_score']
 					];
+	public $acl_type="ispmanager_Lead";				
 
 	function init(){
 		parent::init();

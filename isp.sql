@@ -11,7 +11,7 @@
  Target Server Version : 100118
  File Encoding         : utf-8
 
- Date: 05/07/2017 11:07:32 AM
+ Date: 07/01/2017 12:27:29 PM
 */
 
 SET NAMES utf8;
@@ -52,7 +52,7 @@ CREATE TABLE `isp_condition` (
   `priority` int(11) DEFAULT NULL,
   `accounting_download_ratio` int(11) DEFAULT NULL,
   `accounting_upload_ratio` int(11) DEFAULT NULL,
-  `is_data_carry_forward` varchar(255),
+  `is_data_carry_forward` varchar(255) DEFAULT NULL,
   `start_time` time DEFAULT NULL,
   `end_time` time DEFAULT NULL,
   `sun` tinyint(1) DEFAULT NULL,
@@ -99,7 +99,7 @@ CREATE TABLE `isp_condition` (
   `is_pro_data_affected` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_plan_id` (`plan_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `isp_country`
@@ -136,7 +136,7 @@ CREATE TABLE `isp_plan` (
   PRIMARY KEY (`id`),
   KEY `fk_created_by_id` (`created_by_id`),
   KEY `fk_updated_by_id` (`updated_by_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 --  Table structure for `isp_policy`
@@ -152,7 +152,7 @@ CREATE TABLE `isp_policy` (
   `reject` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_plan_id` (`plan_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 --  Table structure for `isp_state`
@@ -194,7 +194,7 @@ CREATE TABLE `isp_user` (
   `vat_id` varchar(255) DEFAULT NULL,
   `narration` text,
   `custom_radius_attributes` text,
-  `is_verified` tinyint(1) DEFAULT NULL,
+  `otp_verified` tinyint(1) DEFAULT NULL,
   `verified_by` varchar(255) DEFAULT NULL,
   `created_at` datetime DEFAULT NULL,
   `ip_address_mode_cm` varchar(255) DEFAULT NULL,
@@ -210,9 +210,10 @@ CREATE TABLE `isp_user` (
   `last_ul_limit` bigint(20) DEFAULT NULL,
   `last_accounting_dl_ratio` int(11) DEFAULT NULL,
   `last_accounting_ul_ratio` int(11) DEFAULT NULL,
+  `otp_send_time` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_plan_id` (`plan_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 --  Table structure for `isp_user_plan_and_topup`
@@ -251,8 +252,8 @@ CREATE TABLE `isp_user_plan_and_topup` (
   `time_consumed` bigint(20) DEFAULT NULL,
   `data_limit_row` varchar(255) DEFAULT NULL,
   `duplicated_from_record_id` int(11) DEFAULT NULL,
-  `is_data_carry_forward` varchar(255),
-  `carry_data` bigint(20) DEFAULT 0,
+  `is_data_carry_forward` varchar(255) DEFAULT NULL,
+  `carry_data` bigint(20) DEFAULT '0',
   `start_time` time DEFAULT NULL,
   `end_time` time DEFAULT NULL,
   `sun` tinyint(1) DEFAULT NULL,
@@ -301,7 +302,7 @@ CREATE TABLE `isp_user_plan_and_topup` (
   PRIMARY KEY (`id`),
   KEY `fk_user_id` (`user_id`),
   KEY `fk_plan_id` (`plan_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=137 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 --  Table structure for `isp_user_topup`

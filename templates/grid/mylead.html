@@ -1,0 +1,44 @@
+
+<div id="{$_name}" class="xepan-grid main-box clearfix atk-table atk-table-zebra atk-table-bordered {$class}">{Pannel}
+  <header class="main-box-header clearfix atk-actions  {$class} ">
+    <div style="100%" class="filter-block pull-right">
+      <div class="pull-right">{$grid_buttons} </div>
+      <div class="form-group xepan-filter-form pull-left">{$quick_search}</div><i class="fa fa-search search-icon"></i>
+    </div>
+  </header>{/Pannel}
+  <div class="main-box-body clearfix">
+    <table style="width:100%" class="table table-striped table-hover table-bordered">{header}
+      <thead>{cols}{col}
+        <th><a href="#"><span>Name</span></a></th>
+        <th><a href="#" class="asc"><span>Status</span></a></th>
+        <th><a href="#" class="asc"><span>Created Date		</span></a></th>
+        <th><a href="#" class="asc"><span>Email`s </span></a></th>
+        <th><a href="#" class="asc"><span>Contact </span></a></th>{/}{/}
+      </thead>{/}
+      {$subheader}
+      <tbody>{rows}{row}
+        <tr data-id="{$id}" class="{$odd_even}">{cols}
+          <td>{$name}</td>
+          <td>{$status}</td>
+          <td>{$created_date}		</td>
+          <td>{$emails_str}</td>
+          <td>{$contacts_str}	</td>
+          <td>{action}Action Here{/}</td>{/}
+        </tr>{/}{/}
+        {not_found}
+        <div class="row">
+          <div role="alert" class="col-md-12 text-center alert alert-warning"><span class="icon-attention fa fa-exclamation-triangle"> &nbsp;{$not_found_message}</span></div>
+        </div>{/}
+      </tbody>{totals}
+      <tfoot>
+        <tr class="totals">
+          {cols}{col}
+          <td {$tdparam}>
+          {$content}
+          </td>
+          {/}{/}
+        </tr>
+      </tfoot>{/}
+    </table>{$Paginator}
+  </div>
+</div>

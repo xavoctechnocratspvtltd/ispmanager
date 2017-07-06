@@ -12,6 +12,7 @@ class Initiator extends \Controller_Addon {
         ->setBaseURL('../shared/apps/xavoc/ispmanager/');
 
         $m = $this->app->top_menu->addMenu('ISP MANAGER');
+        $m->addItem(['Leads','icon'=>'fa fa-users'],'xavoc_ispmanager_lead');
         $m->addItem(['Users','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_user');
         $m->addItem(['Plans','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_plan');
         $m->addItem(['Topups','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_topup');
@@ -32,7 +33,7 @@ class Initiator extends \Controller_Addon {
         $this->routePages('xavoc_dm');
         $this->addLocation(array('template'=>'templates','js'=>'templates/js','css'=>'templates/css'))
         ->setBaseURL('./shared/apps/xavoc/mlm/');
-
+        
         return $this;
     }
 
@@ -70,11 +71,13 @@ class Initiator extends \Controller_Addon {
         $this->app->exportFrontEndTool('xavoc\ispmanager\Tool_HotspotRegistration','ISPMANAGER');
         $this->app->exportFrontEndTool('xavoc\ispmanager\Tool_PurchasePlan','ISPMANAGER');
         $this->app->exportFrontEndTool('xavoc\ispmanager\Tool_PurchaseTopUp','ISPMANAGER');
-        $this->app->exportFrontEndTool('xavoc\ispmanager\Tool_StaffPanel','ISPMANAGER');
-        $this->app->exportFrontEndTool('xavoc\ispmanager\Tool_StaffMenuBar','ISPMANAGER');
+        $this->app->exportFrontEndTool('xavoc\ispmanager\Tool_Staff_Panel','ISPMANAGER');
+        $this->app->exportFrontEndTool('xavoc\ispmanager\Tool_Staff_MenuBar','ISPMANAGER');
         $this->app->exportFrontEndTool('xavoc\ispmanager\Tool_User_MenuBar','ISPMANAGER');
         $this->app->exportFrontEndTool('xavoc\ispmanager\Tool_User_DashBoard','ISPMANAGER');
         $this->app->exportFrontEndTool('xavoc\ispmanager\Tool_User_Profile','ISPMANAGER');
+        $this->app->exportFrontEndTool('xavoc\ispmanager\Tool_CustomerRegistration','ISPMANAGER');
+        $this->app->exportFrontEndTool('xavoc\ispmanager\Tool_Staff_MyLead','ISPMANAGER');
 
         $user = $this->add('xavoc\ispmanager\Model_User');
         $this->app->addHook('invoice_paid',[$user,'invoicePaid']);

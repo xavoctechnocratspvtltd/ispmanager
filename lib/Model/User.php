@@ -43,10 +43,10 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$user_j->addField('otp_verified')->type('boolean');
 		$user_j->addField('otp_send_time')->type('datetime');
 
-		$user_j->addField('last_dl_limit');
-		$user_j->addField('last_ul_limit');
-		$user_j->addField('last_accounting_dl_ratio');
-		$user_j->addField('last_accounting_ul_ratio');
+		$user_j->addField('last_dl_limit')->defaultValue(0);
+		$user_j->addField('last_ul_limit')->defaultValue(0);
+		$user_j->addField('last_accounting_dl_ratio')->defaultValue(100);
+		$user_j->addField('last_accounting_ul_ratio')->defaultValue(100);
 
 		$user_j->hasMany('xavoc\ispmanager\UserPlanAndTopup','user_id');
 		// $user_j->hasMany('xavoc\ispmanager\TopUp','user_id',null,'topups');
@@ -117,6 +117,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	}
 
 	function createInvoice($m,$detail_data=null){
+		if(!$this->plan_dirty OR !$this['plan_id']) return;
 		return $this->createQSP($m,$detail_data,'SalesInvoice');
 	}
 
@@ -361,333 +362,31 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	function getAAADetails($now=null,$accounting_data=null,$accounting_time=0,$human_redable=false){
 		
 		if(!$now) $now = isset($this->app->ispnow)? $this->app->ispnow : $this->app->now;
-
-		// ===== DB.php =========
 		$username = $this['radius_username'];
 
-		$user_query = "SELECT * from isp_user where radius_username = '$username'";
-		$user_data = $this->app->db->dsql()->expr($user_query)->getHash();
-
-		// ===== DB.php =========
-
-		$day = strtolower(date("D", strtotime($now)));
-
-		$this->testDebug("====================",'');
-		if($accounting_data ===null){
-			$this->testDebug('Authentication on ', $now . " [ $day ]");
-			$final_row = $this->checkAuthentication($now,$day,$username,$user_data);
-			// echo "step 2";
-			// die();
-		}else{
+		if($accounting_data){
 			if(!is_array($accounting_data)){
 				$accounting_data=[$accounting_data,0];
 			}
-			$this->testDebug('Accounting on ', $now . " [ $day ]",$accounting_data);
+
 			$dl_data = $this->human2byte($accounting_data[0]);
 			$ul_data = $this->human2byte($accounting_data[1]);
-			$final_row = $this->updateAccountingData($dl_data,$ul_data,$now,$day,$username, $user_data,$accounting_time);
+
+			$result = $this->runQuery("SELECT updateAccountingData($dl_data,$ul_data,'$now','$username',$accounting_time)",true);
+		}else{
+			$result = $this->runQuery("SELECT checkAuthentication('$now','$username')",true);
 		}
 
-		if($human_redable){
-			$final_row['data_limit'] = $this->byte2human($final_row['data_limit']);
-			$final_row['net_data_limit'] = $this->byte2human($final_row['net_data_limit']);
-			$final_row['dl_limit'] = ($final_row['dl_limit'] !== null ) ? $this->byte2human($final_row['dl_limit']):null;
-			$final_row['ul_limit'] = ($final_row['ul_limit'] !== null ) ? $this->byte2human($final_row['ul_limit']):null;
-			$final_row['data_consumed'] = $this->byte2human($final_row['download_data_consumed'] + $final_row['upload_data_consumed']);
-		}
-
-		return ['access'=>$final_row['access'], 'result'=>$final_row];
+		$result_array= explode(",", $result);
+		$limit_array = explode("/", $result_array[2]);
+		if(!isset($limit_array[1])) $limit_array[1]=0;
+		return ['access'=>$result_array[0], 'coa'=>$result_array[1],'dl_limit'=>$limit_array[0],'ul_limit'=>$limit_array[1]];
 
 	}
 
 	function canAccess(){
 		return $this->getAAADetails()['access'];
 	}
-
-	// ===== DB.php Start =========
-	function getApplicableRow($username,$now,$with_data_limit=false,$less_then_this_id=null){
-		
-		$day = strtolower(date("D", strtotime($now)));
-		$date = 'd'.strtolower(date("d", strtotime($now)));
-		$current_time = date("H:i:s",strtotime($now));
-		$today = date('Y-m-d',strtotime($now));
-
-
-		// if start_time is not null then is me in between start-end time
-		// is me (day) checked
-		// is me (date) checked
-		// not expired
-		// order by topup, id desc
-		// limit 1
-		$less_then_id_condition = "";
-		if($less_then_this_id) $less_then_id_condition = "AND isp_user_plan_and_topup.id < ".$less_then_this_id;
-
-		$query = "
-					SELECT 
-						*,
-						isp_user_plan_and_topup.id id,
-						data_limit + carry_data AS net_data_limit,
-						user.last_dl_limit last_dl_limit,
-						user.last_ul_limit last_ul_limit,
-						IFNULL( (select radacct.acctinputoctets from radacct where username = '$username' and acctstoptime is null) , 0 ) SessionInputOctets ,
-						IFNULL( (select radacct.acctoutputoctets  from radacct where username = '$username' and acctstoptime is null), 0 ) SessionOutputOctets,
-						IFNULL( (select radacct.acctsessiontime  from radacct where username = '$username' and acctstoptime is null), 0 ) SessionTime
-					FROM
-						isp_user_plan_and_topup
-						JOIN
-						isp_user user on isp_user_plan_and_topup.user_id=user.customer_id
-					WHERE
-						(
-							(
-								(
-									CAST('$current_time' AS time) BETWEEN `start_time` AND `end_time` 
-									OR 
-									(
-										NOT CAST('$current_time' AS time) BETWEEN `end_time` AND `start_time` 
-										AND `start_time` > `end_time`
-									)
-								) 
-								AND
-								(is_expired=0 or is_expired is null)
-							)
-							OR
-							(
-								`start_time` is null
-							)
-							OR (`start_time`='00:00:00' and `end_time`='00:00:00')
-						)
-						AND
-						`$day`=1
-						AND
-						`$date` = 1
-						AND
-						(
-							'$now' >= start_date
-							AND
-							'$now' <= end_date
-						)
-						AND
-							(is_expired=0 or is_expired is null)
-
-						AND
-						`user_id`= (SELECT customer_id from isp_user where radius_username = '$username')
-						".
-						($with_data_limit? " AND data_limit is not null AND data_limit >0 ":'')
-						.
-						$less_then_id_condition.
-						"
-						order by is_topup desc, isp_user_plan_and_topup.id desc
-						limit 1
-						"
-						;
-
-		// echo "step 3 in applicable row ".$query;
-		$this->testDebug('Get Applicable Row ',$username,$query);
-		$x = $this->runQuery($query,true);
-		if(!count($x)) $x= null;
-		$this->testDebug('Querying for '.($with_data_limit?'Data Limit':'Bw Limit').' Row ',null,$query);
-		$this->testDebug('Found '.($with_data_limit?'Data Limit':'Bw Limit').' Row ',isset($x['remark'])?$x['remark']:'-',$x);
-		return $x;
-	}
-
-	function checkAuthentication($now,$day,$username, $user_data){
-
-		$this->testDebug('User',null,$user_data);
-		
-		$bw_applicable_row = $this->getApplicableRow($username,$now);
-		$coa = false;
-		if(!$bw_applicable_row) {
-			// exit in radius
-			return ['access' => 0];
-		}
-		
-
-		$data_limit_row = $bw_applicable_row;
-		if(!$bw_applicable_row['net_data_limit']){
-			$data_limit_row = $this->getApplicableRow($username, $now,$with_data_limit=true);
-		} 
-		
-		$if_fup='fup_';
-		if(($data_limit_row['download_data_consumed'] + $data_limit_row['upload_data_consumed'] + $data_limit_row['SessionInputOctets'] + $data_limit_row['SessionOutputOctets']) < $data_limit_row['net_data_limit']){
-			$if_fup='';
-		}else{
-			if($bw_applicable_row['treat_fup_as_dl_for_last_limit_row']){
-				$next_data_limit_row = $this->getApplicableRow($username, $now,null,$data_limit_row['id']);
-				
-				if( ($next_data_limit_row['download_data_consumed'] + $next_data_limit_row['upload_data_consumed'] + $next_data_limit_row['SessionInputOctets'] + $next_data_limit_row['SessionOutputOctets']) > $next_data_limit_row['net_data_limit'] ){
-					$data_limit_row['download_limit'] = $next_data_limit_row['fup_download_limit'];
-					$data_limit_row['upload_limit'] = $next_data_limit_row['fup_upload_limit'];
-					$data_limit_row['remark'] = $next_data_limit_row['remark'];
-
-				}else{
-					$data_limit_row['download_limit'] = $bw_applicable_row['fup_download_limit'];
-					$data_limit_row['upload_limit'] = $bw_applicable_row['fup_upload_limit'];
-					$data_limit_row['remark'] = $next_data_limit_row['remark'];
-				}
-			}
-		}
-
-		// Mark datalimitrow as effective
-		$this->runQuery("UPDATE isp_user_plan_and_topup set is_effective=0 where user_id= (SELECT customer_id from isp_user where radius_username = '$username')");
-		if($data_limit_row['id']){
-			$this->runQuery("UPDATE isp_user_plan_and_topup set is_effective=1 where id=".$data_limit_row['id']);
-			$this->testDebug('Setting effective row', $data_limit_row['remark'],$data_limit_row);
-		}
-
-		$dl_field = $if_fup.'download_limit';
-		$ul_field = $if_fup.'upload_limit';
-
-		// but from which row ??
-		// from applicable if values exists
-		$dl_limit = $bw_applicable_row[$dl_field];
-		$ul_limit = $bw_applicable_row[$ul_field];
-
-		if(($bw_applicable_row['time_consumed'] + $bw_applicable_row['SessionTime']) >= $bw_applicable_row['time_limit'] && $bw_applicable_row['time_limit'] > 0) $coa = true;
-
-		$dl_from_row = 'bw';
-		$ul_from_row = 'bw';
-		if($dl_limit === null){
-			$dl_limit = $data_limit_row[$dl_field];
-			$dl_from_row = "data";
-
-			if(($data_limit_row['time_consumed'] + $data_limit_row['SessionTime']) >= $data_limit_row['time_limit'] && $data_limit_row['time_limit'] > 0) $coa = true;
-		}
-
-		if($ul_limit === null){
-			$ul_limit = $data_limit_row[$ul_field];
-			$ul_from_row = "data";
-
-			if($data_limit_row['time_consumed'] >= $data_limit_row['time_limit'] && $bw_applicable_row['time_limit'] > 0) $coa = true;
-		} 
-
-
-		$burst_dl_limit = null;
-		$burst_threshold_dl_limit = null;
-		$burst_dl_time = null;
-		$burst_ul_limit = null;
-		$burst_threshold_ul_limit = null;
-		$burst_ul_time = null;
-		$priority = null;
-
-		// burst dl/ul if fup is not
-		if($if_fup != "fup_"){
-			// setting up burst applicable row
-			$burst_dl_row = $bw_applicable_row;
-			$burst_ul_row = $bw_applicable_row;
-
-			if($dl_from_row == "data") $burst_dl_row = $data_limit_row;
-			if($ul_from_row == "data") $burst_ul_row = $data_limit_row;
-
-			$burst_dl_limit = $burst_dl_row['burst_dl_limit'];
-			$burst_threshold_dl_limit = $burst_dl_row['burst_threshold_dl_limit'];
-			$burst_dl_time = $burst_dl_row['burst_dl_time'];
-
-			$burst_ul_limit = $burst_ul_row['burst_ul_limit'];
-			$burst_threshold_ul_limit = $burst_ul_row['burst_threshold_ul_limit'];
-			$burst_ul_time = $burst_ul_row['burst_ul_time'];	
-			
-			$priority = ($bw_applicable_row['priority'] > $data_limit_row['priority'])?$bw_applicable_row['priority']:$data_limit_row['priority'];
-		}
-		
-		// from data if not 
-		// if fup is null or 0 it is a reject authentication command
-		// if user dl, ul, accounting not equal to current dl ul then update
-		
-		$user_update_query = "UPDATE isp_user SET ";
-		$speed_value = null;
-		if($dl_limit !== $user_data['last_dl_limit'] || $ul_limit !== $user_data['last_ul_limit'] ){
-			$speed_value = "last_dl_limit = ".($dl_limit?:'null').",last_ul_limit = ".($ul_limit?:'null');
-			$user_update_query .= $speed_value;
-		}
-
-		$accounting_value = null;
-
-		if($user_data['last_accounting_dl_ratio'] != $bw_applicable_row['accounting_download_ratio'] || $user_data['last_accounting_ul_ratio'] != $bw_applicable_row['accounting_upload_ratio']){
-			$accounting_value = (($speed_value)?", ":" ")."last_accounting_dl_ratio = ".$bw_applicable_row['accounting_download_ratio'].",last_accounting_ul_ratio = ".$bw_applicable_row['accounting_upload_ratio'];
-			$user_update_query .= $accounting_value;
-		}
-		$user_update_query .= " WHERE radius_username = '$username';";
-
-
-		if($speed_value OR $accounting_value ){
-			$coa = true;
-			$this->testDebug('Updating User',null,$user_update_query);
-			$this->runQuery($user_update_query);
-		}
-
-		$final_row = $bw_applicable_row;
-		$final_row['dl_limit'] = $dl_limit;
-		$final_row['ul_limit'] = $ul_limit;
-		$final_row['data_limit'] = $data_limit_row['data_limit'];
-		$final_row['carry_data'] = $data_limit_row['carry_data'];
-		$final_row['net_data_limit'] = $data_limit_row['net_data_limit'];
-		$final_row['download_data_consumed'] = $data_limit_row['download_data_consumed'];
-		$final_row['upload_data_consumed'] = $data_limit_row['upload_data_consumed'];
-		$final_row['data_limit_row'] = $data_limit_row['remark'];
-		$final_row['bw_limit_row'] = $bw_applicable_row['remark'];
-		$final_row['burst_dl_limit'] = $burst_dl_limit;
-		$final_row['burst_threshold_dl_limit'] = $burst_threshold_dl_limit;
-		$final_row['burst_dl_time'] = $burst_dl_time;
-		$final_row['burst_ul_limit'] = $burst_ul_limit;
-		$final_row['burst_threshold_ul_limit'] = $burst_threshold_ul_limit;
-		$final_row['burst_ul_time'] = $burst_ul_time;
-		$final_row['priority'] = $priority;
-		
-		$final_row['coa'] = $coa?'1':'0';
-		$final_row['access'] = 1;
-		
-		$access= true;
-		$time_consumed = $data_limit_row['time_consumed'] + $data_limit_row['SessionTime'];
-		
-		if(($dl_limit === null && $ul_limit === null) OR ($time_consumed >= $data_limit_row['time_limit'] && $data_limit_row['time_limit'] > 0)){
-			// exit(1);
-			$final_row['access'] = 0;
-		} 
-		// 
-
-		return $final_row;
-
-	}
-
-	function updateAccountingData($dl_data,$ul_data,$now,$day,$username,$user_data,$time_consumed=0){
-
-		$this->testDebug('User','in accounting',$user_data);
-		
-		$consumed_dl_data = ($dl_data*$user_data['last_accounting_dl_ratio']) /100;
-		$consumed_ul_data = ($ul_data*$user_data['last_accounting_ul_ratio'])/100;
-		// update data query
-		$update_query = "
-			UPDATE 
-				isp_user_plan_and_topup 
-			SET 
-				download_data_consumed = IFNULL(download_data_consumed,0) + ". ($consumed_dl_data) . ",
-				upload_data_consumed = IFNULL(upload_data_consumed,0) + ".($consumed_ul_data) . ",
-				time_consumed = IFNULL(time_consumed,0) + ".($time_consumed) . "
-			WHERE 
-					is_effective = 1 AND user_id = (SELECT customer_id from isp_user where radius_username = '$username')
-				";
-		$this->runQuery($update_query);
-		$this->testDebug('Updating Accounting Data',['dl'=>$this->byte2human($consumed_dl_data), 'ul'=>$this->byte2human($consumed_ul_data),'time_consumed'=>$time_consumed],$update_query);
-		
-		$final_row = $this->checkAuthentication($now,$day, $username, $user_data);
-
-		if($final_row['access']==='1' || $final_row['access']===1){
-			if($final_row['coa'] === '1' || $final_row['coa'] === 1)
-				$final_row['Tmp-Integer-0'] = '1';
-			else
-				$final_row['Tmp-Integer-0'] = '0';		
-		}else{
-			$final_row['Tmp-Integer-0'] = '2';
-		}
-
-		if($final_row['Tmp-Integer-0']==='1'){
-			$final_row['Tmp-String-0'] = $final_row['ul_limit'].'/'.$final_row['dl_limit'];
-		}
-
-		return $final_row;
-	}
-
-	// ===== DB.php End =========
 
 	function runQuery($query, $gethash=false){
 		if($gethash){

@@ -33,7 +33,7 @@ class Initiator extends \Controller_Addon {
         $this->routePages('xavoc_dm');
         $this->addLocation(array('template'=>'templates','js'=>'templates/js','css'=>'templates/css'))
         ->setBaseURL('./shared/apps/xavoc/mlm/');
-
+        
         return $this;
     }
 

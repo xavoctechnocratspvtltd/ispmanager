@@ -33,7 +33,7 @@ class Tool_User_MenuBar extends \xepan\cms\View_Tool{
 		$this->template->trySet('user_dp',($user['image']?:"shared/apps/xavoc/ispmanager/templates/img/profile.png"));
 
 
-		$this->on('click','.ispmanager-user-logout-btn',function($js){
+		$this->on('click','.ispmanager-user-logout-btn',function($js)use($user){
 			if($ll = $this->app->recall('link-login')){
 				$ll = $this->app->memorize('link-login',str_replace('login', 'logout',$ll));	
 				$this->add('View')->setHTML("

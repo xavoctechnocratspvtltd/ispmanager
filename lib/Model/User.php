@@ -695,7 +695,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 					$cp->save();
 				}
 
-				if($record['EMAIL']){
+				if($record['EMAIL'] AND filter_var($record['EMAIL'],FILTER_VALIDATE_EMAIL)){
 					$ce = $this->add('xepan\base\Model_Contact_Email');
 					$ce['head'] = 'Official';
 					$ce['contact_id'] = $user->id;

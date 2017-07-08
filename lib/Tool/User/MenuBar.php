@@ -39,7 +39,7 @@ class Tool_User_MenuBar extends \xepan\cms\View_Tool{
 				$ll = str_replace("/login", "/logout", $ll);
 				$ret[]=$this->js(true)->univ()->newWindow($ll);
 			}
-			var_dump($ret);					
+			// var_dump($ret);					
 			$ret[]=$js->redirect($this->app->url('logout'));
 			return $ret;
 			

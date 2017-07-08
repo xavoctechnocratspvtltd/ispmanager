@@ -1,0 +1,71 @@
+.xepan-grid.main-box.clearfix.atk-table.atk-table-zebra.atk-table-bordered(id="{$_name}" class="{$class}")
+	{Pannel}
+	header.main-box-header.clearfix.atk-actions(class=" {$class} ")
+		div.filter-block.pull-right( style="100%")
+			.pull-right {$grid_buttons} 
+			.form-group.xepan-filter-form.pull-left
+				|{$quick_search}
+			i(class="fa fa-search search-icon")
+	{/Pannel}
+	.main-box-body.clearfix
+		table.table.table-striped.table-hover.table-bordered(style="width:100%")
+			{header}
+			thead
+				{cols}{col}
+				th
+					a(href='#')
+						span Name
+				th
+					a.asc(href='#')
+						span Status
+				th
+					a.asc(href='#')
+						span Created Date		
+				th
+					a.asc(href='#')
+						span Email`s 
+				th
+					a.asc(href='#')
+						span Contact 
+				//- th 
+				{/}{/}
+			{/}
+			{$subheader}
+
+			tbody
+				{rows}{row}
+				tr(class="{$odd_even}" data-id="{$id}")
+					{cols}
+					td
+						| {$name}
+					td
+						| {$status}
+					td
+						| {$created_date}		
+					td
+						| {$emails_str}
+					td
+						| {$contacts_str}	
+					td
+						| {action}Action Here{/}
+					//- td(style="width: 15%;")
+					//- 	{$edit}
+					//- 	{$delete}
+					{/}
+				{/}{/}
+				{not_found}
+				div.row
+					.col-md-12.text-center.alert.alert-warning(role="alert")
+						span.icon-attention.fa.fa-exclamation-triangle  &nbsp;{$not_found_message}
+				{/}
+
+			{totals}
+			tfoot
+				tr(class="totals")
+					{cols}{col}
+					<td {$tdparam}>
+					{$content}
+					</td>
+					{/}{/}
+			{/}
+		{$Paginator}

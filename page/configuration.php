@@ -135,5 +135,33 @@ class page_configuration extends \xepan\base\Page {
 			$form->update();
 			$form->js(null,$form->js()->reload())->univ()->successMessage('Saved')->execute();
 		}
+
+		// User SYSLog  Database Configuration
+		$db_m = $this->add('xepan\base\Model_ConfigJsonModel',
+			[
+				'fields'=>[
+							'host'=>'Line',
+							'database_name'=>'Line',
+							'database_username'=>'Line',
+							'database_password'=>'password',
+						],
+					'config_key'=>'ISPMANAGER_SYSLOG_DATABASE_CONFIG',
+					'application'=>'ispmanager'
+			]);
+		$db_m->add('xepan\hr\Controller_ACL');
+		$db_m->tryLoadAny();
+
+		$db_tab = $tab->addTab('SysLog DB Config');
+		$form = $db_tab->add('Form');
+		$form->setModel($db_m);
+		$form->getElement('host')->setFieldHint('Example.( localhost )');
+		$form->getElement('database_name')->setFieldHint('Example.( Syslog )');
+		$form->getElement('database_username')->setFieldHint('Example.( mysql username )');
+		$form->getElement('database_password')->setFieldHint('Example.( mysql password )');
+		$form->addSubmit('Save');
+		if($form->isSubmitted()){
+			$form->update();
+			$form->js(null,$form->js()->reload())->univ()->successMessage('Saved')->execute();
+		}
 	}
 }

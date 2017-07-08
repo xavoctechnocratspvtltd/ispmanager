@@ -33,7 +33,7 @@ class Initiator extends \Controller_Addon {
         $this->routePages('xavoc_dm');
         $this->addLocation(array('template'=>'templates','js'=>'templates/js','css'=>'templates/css'))
         ->setBaseURL('./shared/apps/xavoc/mlm/');
-
+        
         return $this;
     }
 
@@ -77,6 +77,7 @@ class Initiator extends \Controller_Addon {
         $this->app->exportFrontEndTool('xavoc\ispmanager\Tool_User_DashBoard','ISPMANAGER');
         $this->app->exportFrontEndTool('xavoc\ispmanager\Tool_User_Profile','ISPMANAGER');
         $this->app->exportFrontEndTool('xavoc\ispmanager\Tool_CustomerRegistration','ISPMANAGER');
+        $this->app->exportFrontEndTool('xavoc\ispmanager\Tool_Staff_MyLead','ISPMANAGER');
 
         $user = $this->add('xavoc\ispmanager\Model_User');
         $this->app->addHook('invoice_paid',[$user,'invoicePaid']);

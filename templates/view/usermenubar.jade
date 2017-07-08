@@ -1,5 +1,6 @@
-div(id="{$_name}" class="{$class} ds-user-navbar" style="{$style}")
-	nav.navbar
+div(id="{$_name}" class="{$class} isp-staff-navbar" style="{$style}")
+	link(href="shared/apps/xavoc/ispmanager/templates/css/mdb.css" rel="stylesheet")
+	nav.navbar.light-green
 		.container-fluid
 			.navbar-header
 				button.navbar-toggle.collapsed(type='button', data-toggle='collapse', data-target='#bs-example-navbar-collapse-1', aria-expanded='false')
@@ -7,30 +8,42 @@ div(id="{$_name}" class="{$class} ds-user-navbar" style="{$style}")
 					span.icon-bar
 					span.icon-bar
 					span.icon-bar
-				a.navbar-brand(href='?page=index')
+				a.navbar-brand(href='?page=index' style="color:white;font-weight:700")
 					span|ISP Manger
 					//- img(src='shared/apps/xavoc/ispmanager/templates/img/logo.png' alt="ISP Manager")
 			#bs-example-navbar-collapse-1.collapse.navbar-collapse
 				ul.nav.navbar-nav
-					{rows}{row}
-					li(data-page='user_{$key}' class="{$active_menu}")
-						a(href='user_{$key}') {$name}
-					{/}{/}
-				//- ul.nav.navbar-nav
-				//- 	li
-				//- 		h5|Welcome {$username}
+					li.nav-item(class='{$active_menu} {$user_dashboard_active}')
+						a.nav-link.waves-effect.waves-light(href="user_dashboard")
+							| Dashboard 
+					li.nav-item(class="{$user_setting_active}")
+						a.nav-link.waves-effect.waves-light(href="user_setting") Setting
+				ul.navbar-nav.ml-auto.nav-flex-icons.pull-right(style="margin-top:5px")
+					li.nav-item.avatar.dropdown
+						a#navbarDropdownMenuLink.nav-link.dropdown-toggle.waves-effect.waves-light(href='#', data-toggle='dropdown', aria-haspopup='true', aria-expanded='true')
+							img.img-fluid.img-circle.z-depth-2(src='{user_dp}shared/apps/xavoc/ispmanager/templates/img/profile.png{/}')
+						ul.dropdown-menu.dropdown-warning.dropdown-menu-right(aria-labelledby='navbarDropdownMenuLink', data-dropdown-in='fadeIn', data-dropdown-out='fadeOut')
+							li(class="{$user_setting_active}")
+								a.dropdown-item.waves-effect.waves-light(href='user_setting')
+									i.fa.fa-users
+									span.text-right|Setting 
+							li
+								.btn.btn-danger.ispmanager-user-logout-btn|Logout
+								//- a.dropdown-item.waves-effect.waves-light(href='?page=logout')
+								//- 	i.fa.fa-sign-out
+								//- 	span|Logout
 				ul.nav.navbar-nav.navbar-right
 					li
-						a.btn.btn-primary.btn-sm(href="?page={$url}" style="padding:2px;margin: 17px")
+						a.btn.btn-primary.btn-sm(href="?page={$url}" style="padding:2px;margin-top: 12px;margin-right: 24px")
 							|Change Plan
-					li
-						a(href="#" style="padding:10px; box-shadow:inset 0px 0px 1px 2px #ccc;border-radius:50%;" title="{$user_name}")
-							img(src="{$user_dp}" style="max-height:60px;max-width:40px;height:40px;" class="ds-dp")
-					li
-						a(style="padding:10px;" href="logout")
-							div.btn.btn-danger()
-								i.glyphicon.glyphicon-off
-								|&nbsp;Logout
+				//- 	li
+				//- 		a(href="#" style="padding:10px; box-shadow:inset 0px 0px 1px 2px #ccc;border-radius:50%;" title="{$user_name}")
+				//- 			img(src="{$user_dp}" style="max-height:60px;max-width:40px;height:40px;" class="ds-dp")
+				//- 	li
+				//- 		a(style="padding:10px;" href="logout")
+				//- 			div.btn.btn-danger()
+				//- 				i.glyphicon.glyphicon-off
+				//- 				|&nbsp;Logout
 	{$Content}
 
 style.

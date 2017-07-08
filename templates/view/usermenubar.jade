@@ -28,9 +28,10 @@ div(id="{$_name}" class="{$class} isp-staff-navbar" style="{$style}")
 									i.fa.fa-users
 									span.text-right|Setting 
 							li
-								a.dropdown-item.waves-effect.waves-light(href='?page=logout')
-									i.fa.fa-sign-out
-									span|Logout
+								.btn.btn-danger.ispmanager-user-logout-btn|Logout
+								//- a.dropdown-item.waves-effect.waves-light(href='?page=logout')
+								//- 	i.fa.fa-sign-out
+								//- 	span|Logout
 				ul.nav.navbar-nav.navbar-right
 					li
 						a.btn.btn-primary.btn-sm(href="?page={$url}" style="padding:2px;margin-top: 12px;margin-right: 24px")

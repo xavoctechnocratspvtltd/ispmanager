@@ -15,7 +15,9 @@
           <li class="nav-item avatar dropdown"><a id="navbarDropdownMenuLink" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" class="nav-link dropdown-toggle waves-effect waves-light"><img src="{user_dp}shared/apps/xavoc/ispmanager/templates/img/profile.png{/}" class="img-fluid img-circle z-depth-2"/></a>
             <ul aria-labelledby="navbarDropdownMenuLink" data-dropdown-in="fadeIn" data-dropdown-out="fadeOut" class="dropdown-menu dropdown-warning dropdown-menu-right">
               <li class="{$user_setting_active}"><a href="user_setting" class="dropdown-item waves-effect waves-light"><i class="fa fa-users"></i><span class="text-right">Setting </span></a></li>
-              <li><a href="?page=logout" class="dropdown-item waves-effect waves-light"><i class="fa fa-sign-out"></i><span>Logout</span></a></li>
+              <li>
+                <div class="btn btn-danger ispmanager-user-logout-btn">Logout</div>
+              </li>
             </ul>
           </li>
         </ul>

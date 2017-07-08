@@ -31,7 +31,9 @@ class Tool_User_DashBoard extends \xepan\cms\View_Tool{
 			$this->add('View')->set($_GET['error']);
 			return;
 		}
-		elseif($ll=$_GET['link-login']){
+		
+		if($ll=$_GET['link-login']){
+			$this->app->memorize('link-login',$ll);
 			$this->add('View')->setHTML("
 					<form name='redirect' action='$ll'>
 						<input type='hidden' name='username' value='".$user['radius_username']."' />

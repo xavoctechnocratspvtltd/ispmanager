@@ -62,9 +62,34 @@ class page_user extends \xepan\base\Page {
 		}
 
 		$form_delete = $col2->add('Form');
-		$form_delete->addSubmit('Delete All User')->addClass('btn btn-danger');
+		$form_delete->addSubmit('Delete All User Forcely')->addClass('btn btn-danger');
 		if($form_delete->isSubmitted()){
-			$this->add('xavoc\ispmanager\Model_User')->deleteAll();
+
+			$qsp_master = $this->add('xepan\commerce\Model_QSP_Master');
+			foreach ($qsp_master as $qsp) {
+				$qsp->delete();
+			}
+
+			$users = $this->add('xavoc\ispmanager\Model_User');
+			foreach ($users as $user) {
+				$user->delete();
+			}
+			
+			foreach ($this->add('xavoc\ispmanager\Model_Condition') as $cond) {
+				$cond->delete();
+			}
+
+			$this->add('xavoc\ispmanager\Model_RadCheck')->deleteAll();
+			$this->add('xavoc\ispmanager\Model_RadPostAuth')->deleteAll();
+
+			$user = $this->add('xepan\base\Model_User');
+			$user->addCondition('scope','WebsiteUser');
+			$user->deleteAll();
+			
+			$this->app->db->dsql()->expr('DELETE FROM radacct;')->execute();
+			$this->app->db->dsql()->expr('DELETE FROM radreply;')->execute();
+			$this->app->db->dsql()->expr('DELETE FROM radusergroup;')->execute();
+
 			$form_delete->js()->univ()->successMessage("User's Deleted Successfully")->execute();
 		}
 

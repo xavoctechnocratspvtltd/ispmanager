@@ -2,7 +2,7 @@
 
 namespace xavoc\ispmanager;
 
-class Model_User extends \xepan\commerce\Model_Customer{ 
+class Model_User extends \xepan\commerce\Model_Customer{
 	// public $table = "isp_user";
 	public $status = ['Active','InActive'];
 	public $actions = [
@@ -117,7 +117,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	}
 
 	function createInvoice($m,$detail_data=null){
-		if(!$this->plan_dirty OR !$this['plan_id']) return;
+		if(!$this->plan_dirty OR !$this['plan_id'] OR !$this['create_invoice']) return;
 		return $this->createQSP($m,$detail_data,'SalesInvoice');
 	}
 
@@ -632,7 +632,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		foreach ($this->add('xavoc\ispmanager\Model_Plan')->getRows() as $key => $plan) {
 			$plan_list[strtolower(trim($plan['name']))] = $plan['id'];
 		}
-
+		
 		// get all country list
 		$country_list = [];
 		foreach ($this->add('xepan\base\Model_Country') as $key => $country) {
@@ -646,6 +646,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		}
 
 		// echo "<pre>";
+		// print_r($plan_list);
 		// print_r($country_list);
 		// print_r($state_list);
 		// echo "</pre>";
@@ -673,7 +674,9 @@ class Model_User extends \xepan\commerce\Model_Customer{
 					$user[$field_name] = $value;
 				}
 				
-				$user['created_at'] = date('Y-m-d H:i:s',strtotime($record['INVOICE_DATE']))?:$this->app->now;
+				$user['created_at'] = date('Y-m-d H:i:s',strtotime($record['CREATED_AT']))?:$this->app->now;
+				// $user['created_at'] = date('Y-m-d H:i:s',strtotime($record['INVOICE_DATE']))?:$this->app->now;
+				
 				$user->save();
 
 				// data_Remark: eg.dl/up/remark, 1039/209/MainPlan,3089/Topupplan
@@ -724,7 +727,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$user->addCondition('username',$username);
 		$user->tryLoadAny();
 		if($user->loaded() && $user->id != $this['user_id'])
-			throw new \Exception("user name already user with other isp user");
+			throw new \Exception("user name already use with other isp user");
 		
 		// $user=$this->add('xepan\base\Model_User');
 		$this->add('BasicAuth')

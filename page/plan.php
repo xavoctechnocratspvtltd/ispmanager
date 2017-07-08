@@ -65,6 +65,8 @@ class page_plan extends \xepan\base\Page {
 		$form_delete->addSubmit('Delete All Plan Forcely')->addClass('btn btn-danger');
 		if($form_delete->isSubmitted()){
 	        
+	        $this->add('xepan\commerce\Model_QSP_Detail')->deleteAll();
+	        
 	        $plans = $this->add('xavoc\ispmanager\Model_Plan');
 	        foreach ($plans as $model) {
 	        	$model->delete();

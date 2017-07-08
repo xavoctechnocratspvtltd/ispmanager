@@ -34,22 +34,15 @@ class Tool_User_MenuBar extends \xepan\cms\View_Tool{
 
 
 		$this->on('click','.ispmanager-user-logout-btn',function($js)use($user){
+			$ret=[];
 			if($ll = $this->app->recall('link-login')){
-				$ll = $this->app->memorize('link-login',str_replace('login', 'logout',$ll));	
-				$this->add('View')->setHTML("
-					<form name='redirect' action='$ll'>
-						<input type='hidden' name='username' value='".$user['radius_username']."' />
-						<input type='hidden' name='password' value='".$user['radius_password']."' />
-					</form>
-					<script>
-						document.redirect.submit();
-					</script>
-				");
-				// echo "string".$this->app->recall('link-login');
-				// "http://xepan-radius.org/?page=user_dashboard&link-login=http%3A%2F%2Fisp.prompt-hotspot.com%2Flogin%3Fdst%3Dhttp%253A%252F%252Fwww.google.co.in%252F"
-					
+				$ll = str_replace("/login", "/logout", $ll);
+				$ret[]=$this->js(true)->univ()->newWindow($ll);
 			}
-			return $js->redirect($this->app->url('logout'));
+			var_dump($ret);					
+			$ret[]=$js->redirect($this->app->url('logout'));
+			return $ret;
+			
 
 		});
 	}

@@ -85,6 +85,10 @@ class page_user extends \xepan\base\Page {
 			$user = $this->add('xepan\base\Model_User');
 			$user->addCondition('scope','WebsiteUser');
 			$user->deleteAll();
+
+			$ci = $this->add('xepan\base\Model_Contact_Info');
+			$ci->addCondition('contact_type','Customer');
+			$ci->deleteAll();
 			
 			$this->app->db->dsql()->expr('DELETE FROM radacct;')->execute();
 			$this->app->db->dsql()->expr('DELETE FROM radreply;')->execute();

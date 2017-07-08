@@ -679,6 +679,31 @@ class Model_User extends \xepan\commerce\Model_Customer{
 				
 				$user->save();
 
+				// update email and phone number
+				if($record['MOBILE']){
+					$cp = $this->add('xepan\base\Model_Contact_Phone');
+					$cp['head'] = 'Official';
+					$cp['contact_id'] = $user->id;
+					$cp['value'] = $record['MOBILE'];
+					$cp->save();
+				}
+				if($record['PHONE']){
+					$cp = $this->add('xepan\base\Model_Contact_Phone');
+					$cp['head'] = 'Official';
+					$cp['contact_id'] = $user->id;
+					$cp['value'] = $record['PHONE'];
+					$cp->save();
+				}
+
+				if($record['EMAIL']){
+					$ce = $this->add('xepan\base\Model_Contact_Email');
+					$ce['head'] = 'Official';
+					$ce['contact_id'] = $user->id;
+					$ce['value'] = $record['EMAIL'];
+					$ce->save();
+				}
+
+
 				// data_Remark: eg.dl/up/remark, 1039/209/MainPlan,3089/Topupplan
 				if($record['DATA_CONSUMED']){
 					$condition_consumed_list = explode(",", $record['DATA_CONSUMED']);

@@ -88,6 +88,10 @@ class Model_Plan extends \xepan\commerce\Model_Item{
 			$unit_list[trim($unit['name'])] = $unit['id'];
 		}
 
+		// echo "<pre>";
+		// print_r($unit_list);
+		// echo "</pre>";
+		// die();
 		// get list of tax
 		$tax_list = [];
 		foreach ($this->add('xepan\commerce\Model_Taxation')->getRows() as $key => $tax) {
@@ -120,6 +124,7 @@ class Model_Plan extends \xepan\commerce\Model_Item{
 							switch ($field_name) {
 								case 'plan_validity_unit':
 									$field_name = "qty_unit_id";
+									$value = strtolower($value);
 									$value = isset($unit_list[trim($value)])?$unit_list[trim($value)]:0;
 									break;
 
@@ -134,7 +139,13 @@ class Model_Plan extends \xepan\commerce\Model_Item{
 							}
 						}
 
+
+						if($field_name == "original_price" OR $field_name == "sale_price"){
+							$value = str_replace(" ", "",$value);
+						}
+
 						$plan_model[$field_name] = $value;
+
 					}
 					$plan_model->save();
 					$plan_list[$plan_name] = $plan_model->id;
@@ -157,6 +168,16 @@ class Model_Plan extends \xepan\commerce\Model_Item{
 					$field = strtolower(trim($field));
 					if(in_array($field, ['data_limit','download_limit','upload_limit','fup_download_limit','fup_upload_limit','burst_dl_limit','burst_ul_limit','burst_threshold_dl_limit','burst_threshold_ul_limit']))
 						$value = $this->app->human2byte($value);
+					
+					if(in_array($field, ['download_limit','upload_limit','fup_download_limit','fup_upload_limit'])){
+						$value = str_replace(" ","",$value);
+						$value = str_replace("ps","",$value);
+					}
+
+					if($field == "data_reset_mode" && isset($reset_mode[$value])){
+						$value = $reset_mode[$value];
+					}
+
 					$condition[$field] = $value;
 				}
 				$condition->save();

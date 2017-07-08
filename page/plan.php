@@ -22,7 +22,7 @@ class page_plan extends \xepan\base\Page {
 		}
 		$crud->setModel($plan,['name','sku','description','sale_price','original_price','status','document_id','id','created_by','updated_by','created_at','updated_at','type','qty_unit_id','qty_unit','renewable_unit','renewable_value','tax_id','tax','plan_validity_value','is_auto_renew','available_in_user_control_panel'],['name','code','sale_price','validity']);
 		$crud->grid->removeColumn('attachment_icon');
-
+		$crud->grid->addQuickSearch(['name']);
 		// $crud->grid->addOrder()->move('qty_unit','after','plan_validity_value')->now();
 		
 		$grid = $crud->grid;
@@ -62,9 +62,21 @@ class page_plan extends \xepan\base\Page {
 		}
 
 		$form_delete = $col2->add('Form');
-		$form_delete->addSubmit('Delete All Plan')->addClass('btn btn-danger');
+		$form_delete->addSubmit('Delete All Plan Forcely')->addClass('btn btn-danger');
 		if($form_delete->isSubmitted()){
-			$this->add('xavoc\ispmanager\Model_Plan')->deleteAll();
+	        
+	        $plans = $this->add('xavoc\ispmanager\Model_Plan');
+	        foreach ($plans as $model) {
+	        	$model->delete();
+	        }
+			$this->add('xavoc\ispmanager\Model_Condition')->deleteAll();
+			$this->add('xavoc\ispmanager\Model_UserPlanAndTopup')->deleteAll();
+
+			// $users = $this->add('xavoc\ispmanager\Model_User')->addCondition('plan_id','>',0);
+			// $users->addHook('beforeDelete',function($m){
+			// 	throw new \Exception("Error Processing Request", 1);
+			// });
+
 			$form_delete->js()->univ()->successMessage("Plan's Deleted Successfully")->execute();
 		}
 

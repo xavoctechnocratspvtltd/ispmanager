@@ -20,11 +20,12 @@ class page_plan extends \xepan\base\Page {
 			$form = $crud->form;
 			$form->setLayout('form/plan');
 		}
-		$crud->setModel($plan,['name','sku','description','sale_price','original_price','status','document_id','id','created_by','updated_by','created_at','updated_at','type','qty_unit_id','qty_unit','renewable_unit','renewable_value','tax_id','tax','plan_validity_value','is_auto_renew','available_in_user_control_panel'],['name','code','sale_price','validity']);
+		$crud->setModel($plan,['name','sku','description','sale_price','original_price','status','document_id','id','created_by','updated_by','created_at','updated_at','type','qty_unit_id','qty_unit','renewable_unit','renewable_value','tax_id','tax','plan_validity_value','is_auto_renew','available_in_user_control_panel','is_renewable'],['name','code','sale_price','validity','is_renewable']);
 		$crud->grid->removeColumn('attachment_icon');
 		$crud->grid->addQuickSearch(['name']);
 		// $crud->grid->addOrder()->move('qty_unit','after','plan_validity_value')->now();
-		
+		$crud->grid->addPaginator($ipp=50);
+
 		$grid = $crud->grid;
 		$import_btn = $grid->addButton('Import CSV')->addClass('btn btn-primary');
 		$import_btn->setIcon('fa fa fa-arrow-up');

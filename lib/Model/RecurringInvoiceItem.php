@@ -16,7 +16,7 @@
 	function init(){
 		parent::init();
 
-		if(!$this->to_date) $this->to_date = $this->app->today;
+		// if(!$this->to_date) $this->to_date = $this->app->today;
 		if($this->from_date) $this->from_date = date("Y-m-d",strtotime($this->from_date));
 			
 		$this->addExpression('is_recurring')->set(function($m,$q){
@@ -73,7 +73,9 @@
 
 		$this->addCondition('is_recurring',true);
 		$this->addCondition([['recurring_qsp_detail_id',0],['recurring_qsp_detail_id',null]]);
-		$this->addCondition('invoice_recurring_date','<=',$this->to_date);
+		
+		if($this->to_date)
+			$this->addCondition('invoice_recurring_date','<=',$this->to_date);
 		if($this->from_date)
 			$this->addCondition('invoice_recurring_date','>=',$this->from_date);
 
@@ -94,7 +96,8 @@
 
 		$user = $this->add('xavoc\ispmanager\Model_User')->load($this['customer_id']);
 		$detail_data = [];
-
+		
+		$invoice_recurring_date = null;
 		foreach ($recu_items as $key => $recu_item) {
 			$item = [
 						'item_id'=>$recu_item['item_id'],
@@ -110,17 +113,19 @@
 						'recurring_from_qsp_detail_id'=>$recu_item['id']
 					];
 			array_push($detail_data, $item);
+
+			$invoice_recurring_date = $recu_item['invoice_recurring_date'];
 		}
 
 		$user->debug = false;
-		$return_data = $user->createInvoice($detail_data);
+		$return_data = $user->createInvoice($detail_data,null,true,$invoice_recurring_date);
 		
 		$page->add('View')->set("You have successfully created Invoice for this user, you can edit too ");
-		$form = $page->add('Form');
-		$form->addSubmit('Edit Invoice')->addClass('btn btn-primary');
-		if($form->isSubmitted()){
-			return $form->js()->univ()->location($this->api->url('xepan_commerce_quickqsp',['document_type'=>'SalesInvoice','action'=>'edit','document_id'=>$return_data['master_detail']['id']]));
-		}
+
+		$page->add("Button")->set('Edit Invoice')
+				->js("click")
+				->redirect($this->api->url('xepan_commerce_quickqsp', array("document_type" => 'SalesInvoice','action'=>'edit','document_id'=>$return_data['master_detail']['id'])));
+
 
 		$invoice_model = $this->add('xepan\commerce\Model_SalesInvoice')->load($return_data['master_detail']['id']);
 		$page->add('xepan\commerce\View_QSP',['qsp_model'=>$invoice_model]);

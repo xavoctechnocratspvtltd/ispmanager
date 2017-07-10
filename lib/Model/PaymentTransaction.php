@@ -42,7 +42,7 @@ class Model_PaymentTransaction extends \xepan\base\Model_Table{
 			if(!$this['cheque_date'])
 				throw $this->Exception("Cheque Date must be required",'ValidityCheck')->setField('cheque_date');
 			if(!$this['bank_detail'])
-				throw $this->Exception("Cheque Date must be required",'ValidityCheck')->setField('bank_detail');
+				throw $this->Exception(" Bank Details for Cheque must be required",'ValidityCheck')->setField('bank_detail');
 		}
 		if($this['payment_mode'] === 'DD'){
 			if(!$this['dd_no'])
@@ -50,7 +50,7 @@ class Model_PaymentTransaction extends \xepan\base\Model_Table{
 			if(!$this['dd_date'])
 				throw $this->Exception("DD Date must be required",'ValidityCheck')->setField('dd_date');
 			if(!$this['bank_detail'])
-				throw $this->Exception("Cheque Date must be required",'ValidityCheck')->setField('bank_detail');
+				throw $this->Exception("Bank Details for Demad Draft(DD) must be required",'ValidityCheck')->setField('bank_detail');
 		}
 	}
 }

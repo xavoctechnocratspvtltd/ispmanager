@@ -1,0 +1,68 @@
+form.form-horizontal
+	fieldset
+		legend Receive Payment 
+		.form-group
+			.row
+				.col-md-4
+					label|Customer:
+					{$customer_id}
+				.col-md-4
+					label Employee:
+					{$employee_id}
+				.col-md-4
+					label Invoice:
+					{$invoice_id}		
+					//- input
+		.form-group
+			.row
+				.col-md-6
+					label Created_at:
+					{$created_at}
+				.col-md-6
+					label Payment Mode:
+					{$payment_mode}
+		.form-group
+			.row
+				.col-md-6
+					label Cheque No:
+					{$cheque_no}
+				.col-md-6
+					label Cheque Date:
+					{$cheque_date}
+		.form-group
+			.row
+				.col-md-6
+					label DD No:
+					{$dd_no}
+				.col-md-6
+					label DD Date:
+					{$dd_date}
+		.form-group
+			.row
+				.col-md-12
+					label Amount:
+					{$amount}			
+		.form-group
+			.row
+				.col-md-12
+					label Bank Details:
+					{$bank_detail}												
+					//- input#piNewPassRepeat.form-control.input-md(name='NewPassRepeat', type='password', placeholder='', required='')
+		// Button (Double)
+		.form-group
+			.row
+				.col-md-8
+					//- button#bCancel.btn.btn-danger(name='Cancel') Cancel
+					//- button#bGodkend.btn.btn-success(name='Godkend') Save Changes
+					{$FormButtons}
+{$Content}
+
+style.
+	.control-label button, input, select, textarea {
+		padding: 4px 12px;
+		width: 100%;
+	}
+	textarea{
+	min-height:100px;
+	}
+	

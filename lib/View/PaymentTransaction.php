@@ -27,7 +27,9 @@ class View_PaymentTransaction extends \View{
 			$payment_model->addCondition('customer_id',$this->customer_id);
 		if($inv->loaded())
 			$payment_model->addCondition('invoice_id',$inv->id);
+		
 		$form = $this->add('Form');
+		$form->setLayout(['form/staff/received-payment']);
 		$form->setModel($payment_model);
 
 		$form->addSubmit('Pay Now')->addClass('btn btn-danger');

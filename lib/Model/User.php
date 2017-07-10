@@ -49,6 +49,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$user_j->addField('last_accounting_ul_ratio')->defaultValue(100);
 
 		$user_j->hasMany('xavoc\ispmanager\UserPlanAndTopup','user_id');
+		$user_j->hasMany('xepan\hr\Employee_Document','customer_id',null,'CustomerDocuments');
 		// $user_j->hasMany('xavoc\ispmanager\TopUp','user_id',null,'topups');
 
 		// $this->add('dynamic_model/Controller_AutoCreator');
@@ -796,4 +797,28 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$user->setPlan($items['item_id']);
 	}
 
+	function addAttachment($attach_id,$type=null){
+		if(!$attach_id) return;
+		$attach = $this->add('xepan\hr\Model_Employee_Document');
+		$attach['employee_document_id'] = $attach_id;
+		$attach['employee_id'] = $this->id;
+		$attach['type'] = $type;	
+		$attach->save();
+
+		return $attach;
+	}
+
+	function getAttachments($urls=true){
+		$attach_arry = array();
+		if($this->loaded()){
+			$attach_m = $this->add('xepan\hr\Model_Employee_Document');
+			$attach_m->addCondition('employee_id',$this->id);
+			foreach ($attach_m as $attach) {
+				$attach_arry[] = $urls?$attach['file']:$attach['id'];
+			}
+
+		}
+		
+		return $attach_arry;
+	}
 }

@@ -3,57 +3,49 @@ form.form-horizontal
 		legend Receive Payment 
 		.form-group
 			.row
-				.col-md-4
+				.col-md-4.atk-form-row.atk-form-field
 					label|Customer:
 					{$customer_id}
-				.col-md-4
+				.col-md-4.atk-form-row.atk-form-field
 					label Employee:
 					{$employee_id}
-				.col-md-4
+				.col-md-4.atk-form-row.atk-form-field
 					label Invoice:
 					{$invoice_id}		
 					//- input
 		.form-group
 			.row
-				.col-md-6
-					label Created_at:
-					{$created_at}
-				.col-md-6
+				.col-md-6.atk-form-row.atk-form-field
 					label Payment Mode:
 					{$payment_mode}
+				.col-md-6.atk-form-row.atk-form-field
+					label Amount:
+					{$amount}
 		.form-group
 			.row
-				.col-md-6
+				.col-md-6.atk-form-row.atk-form-field
 					label Cheque No:
 					{$cheque_no}
-				.col-md-6
+				.col-md-6.atk-form-row.atk-form-field
 					label Cheque Date:
 					{$cheque_date}
 		.form-group
 			.row
-				.col-md-6
+				.col-md-6.atk-form-row.atk-form-field
 					label DD No:
 					{$dd_no}
-				.col-md-6
+				.col-md-6.atk-form-row.atk-form-field
 					label DD Date:
 					{$dd_date}
+					
 		.form-group
 			.row
-				.col-md-12
-					label Amount:
-					{$amount}			
-		.form-group
-			.row
-				.col-md-12
+				.col-md-12.atk-form-row.atk-form-field
 					label Bank Details:
 					{$bank_detail}												
-					//- input#piNewPassRepeat.form-control.input-md(name='NewPassRepeat', type='password', placeholder='', required='')
-		// Button (Double)
 		.form-group
 			.row
 				.col-md-8
-					//- button#bCancel.btn.btn-danger(name='Cancel') Cancel
-					//- button#bGodkend.btn.btn-success(name='Godkend') Save Changes
 					{$FormButtons}
 {$Content}
 

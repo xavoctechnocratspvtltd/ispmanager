@@ -6,7 +6,7 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 	
 	public $status = ['Active','InActive'];
 	public $actions = [
-					'Active'=>['view','edit','delete','communication','assign','createUser','send','manage_score','deactivate'],
+					'Active'=>['view','edit','delete','communication','assign','createUser','send','manage_score','due_invoice','deactivate'],
 					'InActive'=>['view','edit','delete','activate','communication','manage_score']
 					];
 	public $acl_type="ispmanager_Lead";				
@@ -29,6 +29,22 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 			$this->save();
 			return $this->app->page_action_result = $this->app->js(true,$page->js()->univ()->closeDialog())->univ()->successMessage('Assigned');
 		}
+
+	}
+
+	function page_due_invoice($page){
+		$invoice = $page->add('xavoc\ispmanager\Model_Invoice');
+		$invoice->addCondition('contact_id',$this->id);
+		$invoice->addCondition('status',"<>",'Paid');
+
+		$g = $page->add('xepan\base\Grid',null,null,['grid/due-invoice']);
+		$g->setModel($invoice);
+		$pay_btn = $g->addColumn('Button','Pay_Now');
+
+		$g->addMethod('format_Pay_Now',function($g,$f){
+				$g->current_row_html['Pay_Now']= '<a href="javascript:void(0)" onclick="'.$g->js()->univ()->newWindow($this->app->url('staff_received-payment',['invoice_id'=>$g->model->id,'customer_id'=>$this->id])).'"><span class="btn btn-success">Pay Now</span></a>';
+		});
+		$g->addFormatter('Pay_Now','Pay_Now');
 
 	}
 

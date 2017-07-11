@@ -1,6 +1,6 @@
 .container(id="{$_name}" class="{$class}" style="{$style}")
 		.well
-			h4 For Individuals(radio)
+			h4 For Individuals
 			.row
 				.col-md-6.atk-form-field.atk-form-row
 					label First Name:
@@ -29,23 +29,17 @@
 			//- 		{$address}
 
 		.well
-			h4 For Non-Individuals(radio)
+			h4 For Non-Individuals
 			.row
-				.col-md-12.atk-form-field.atk-form-row
+				.col-md-4.atk-form-field.atk-form-row
 					label Name Of Organization:
-			.row
-				.col-md-12.atk-form-field.atk-form-row
 					{$organization}
-			.row
-				.col-md-6.atk-form-field.atk-form-row
-					label Status Of Organisation:
-				.col-md-6.atk-form-field.atk-form-row
+				.col-md-4.atk-form-field.atk-form-row
 					label PAN Number:
-			.row
-				.col-md-6.atk-form-field.atk-form-row
-					{$status_of_organization}
-				.col-md-6.atk-form-field.atk-form-row
 					{$pan_number}
+				.col-md-4.atk-form-field.atk-form-row
+					label Status Of Organisation:
+					{$status_of_organization}
 			//- h4 Customer Contact Details
 			.row
 				//- .col-md-6.atk-form-field.atk-form-row
@@ -112,10 +106,10 @@
 						.col-md-12.atk-form-field.atk-form-row
 							{$billing_pincode}
 							br
-						.col-md-12.atk-form-field.atk-form-row
-							.atk-cell.atk-form-label.atk-text-nowrap
-							.atk-form-row.atk-form-field.xepan-checkout-same-as-billing-address
-								.btn.btn-warning.btn-xs  Same as Billing Address	
+						//- .col-md-12.atk-form-field.atk-form-row
+						//- 	.atk-cell.atk-form-label.atk-text-nowrap
+							//- .atk-form-row.atk-form-field.xepan-checkout-same-as-billing-address
+							//- 	.btn.btn-warning.btn-xs  Same as Billing Address	
 								
 			//- br				
 			//- .row

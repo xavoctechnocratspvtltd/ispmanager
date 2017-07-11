@@ -14,34 +14,37 @@ class Tool_User_MenuBar extends \xepan\cms\View_Tool{
 	function init(){
 		parent::init();
 
-		// todo check staff is login or not
+		// todo check User is login or not
+
+
+		if(!$this->app->auth->isLoggedIn()){
+			$this->app->redirect($this->app->url('hostspot_login'));
+			return;
+		}
+
 		$user = $this->add('xavoc\ispmanager\Model_User');
 		$user->loadLoggedIn();
 
-		// $user = $this->app->auth->model;
 		$page = $this->app->page."_active";
-		// $menu = [
-		// 		['key'=>'dashboard','name'=>'Dashboard'],
-		// 		['key'=>'setting','name'=>'Settings'],
-		// 	];
-
-		// $this->complete_lister = $cl = $this->add('CompleteLister',null,null,['view/usermenubar']);
-		// $cl->setSource($menu);
-		// $page = $this->app->page;
-		// $cl->addHook('formatRow',function($g)use($page){
-		// 	if($g->model['key'] == $page)
-		// 		$g->current_row_html['active_menu'] = "active";
-		// 	else
-		// 		$g->current_row_html['active_menu'] = "deactive";
-		// });
-		// $cl->template->trySet('url', $this->options['plan_url']);
-		// $cl->template->trySet('user_name',$user['name']);
-		// $cl->template->trySet('user_dp',($user['image']?:"shared/apps/xavoc/ispmanager/templates/img/profile.png"));
 		
-		$this->template->trySet('url', $this->options['plan_url']);
+		$this->template->trySet('plan_url', $this->options['plan_url']);
 		$this->template->trySet('user_name',$user['name']);
 		$this->template->trySet($page,'active-nav');
 		$this->template->trySet('user_dp',($user['image']?:"shared/apps/xavoc/ispmanager/templates/img/profile.png"));
+
+
+		$this->on('click','.ispmanager-user-logout-btn',function($js)use($user){
+			$ret=[];
+			if($ll = $this->app->recall('link-login')){
+				$ll = str_replace("/login", "/logout", $ll);
+				$ret[]=$this->js(true)->univ()->newWindow($ll);
+			}
+			// var_dump($ret);					
+			$ret[]=$js->redirect($this->app->url('logout'));
+			return $ret;
+			
+
+		});
 	}
 
 	function defaultTemplate(){

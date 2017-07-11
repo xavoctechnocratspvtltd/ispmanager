@@ -20,11 +20,12 @@ class page_plan extends \xepan\base\Page {
 			$form = $crud->form;
 			$form->setLayout('form/plan');
 		}
-		$crud->setModel($plan,['name','sku','description','sale_price','original_price','status','document_id','id','created_by','updated_by','created_at','updated_at','type','qty_unit_id','qty_unit','renewable_unit','renewable_value','tax_id','tax','plan_validity_value','is_auto_renew','available_in_user_control_panel'],['name','code','sale_price','validity']);
+		$crud->setModel($plan,['name','sku','description','sale_price','original_price','status','document_id','id','created_by','updated_by','created_at','updated_at','type','qty_unit_id','qty_unit','renewable_unit','renewable_value','tax_id','tax','plan_validity_value','is_auto_renew','available_in_user_control_panel','is_renewable'],['name','code','sale_price','validity','is_renewable']);
 		$crud->grid->removeColumn('attachment_icon');
-
+		$crud->grid->addQuickSearch(['name']);
 		// $crud->grid->addOrder()->move('qty_unit','after','plan_validity_value')->now();
-		
+		$crud->grid->addPaginator($ipp=50);
+
 		$grid = $crud->grid;
 		$import_btn = $grid->addButton('Import CSV')->addClass('btn btn-primary');
 		$import_btn->setIcon('fa fa fa-arrow-up');
@@ -62,9 +63,23 @@ class page_plan extends \xepan\base\Page {
 		}
 
 		$form_delete = $col2->add('Form');
-		$form_delete->addSubmit('Delete All Plan')->addClass('btn btn-danger');
+		$form_delete->addSubmit('Delete All Plan Forcely')->addClass('btn btn-danger');
 		if($form_delete->isSubmitted()){
-			$this->add('xavoc\ispmanager\Model_Plan')->deleteAll();
+	        
+	        $this->add('xepan\commerce\Model_QSP_Detail')->deleteAll();
+	        
+	        $plans = $this->add('xavoc\ispmanager\Model_Plan');
+	        foreach ($plans as $model) {
+	        	$model->delete();
+	        }
+			$this->add('xavoc\ispmanager\Model_Condition')->deleteAll();
+			$this->add('xavoc\ispmanager\Model_UserPlanAndTopup')->deleteAll();
+
+			// $users = $this->add('xavoc\ispmanager\Model_User')->addCondition('plan_id','>',0);
+			// $users->addHook('beforeDelete',function($m){
+			// 	throw new \Exception("Error Processing Request", 1);
+			// });
+
 			$form_delete->js()->univ()->successMessage("Plan's Deleted Successfully")->execute();
 		}
 

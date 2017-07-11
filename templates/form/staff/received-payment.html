@@ -1,0 +1,70 @@
+
+<form class="form-horizontal">
+  <fieldset>
+    <legend>Receive Payment </legend>
+    <div class="form-group">
+      <div class="row">
+        <div class="col-md-4 atk-form-row atk-form-field">
+          <label>Customer:</label>{$customer_id}
+        </div>
+        <div class="col-md-4 atk-form-row atk-form-field">
+          <label>Employee:</label>{$employee_id}
+        </div>
+        <div class="col-md-4 atk-form-row atk-form-field">
+          <label>Invoice:</label>{$invoice_id}		
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="row">
+        <div class="col-md-6 atk-form-row atk-form-field">
+          <label>Payment Mode:</label>{$payment_mode}
+        </div>
+        <div class="col-md-6 atk-form-row atk-form-field">
+          <label>Amount:</label>{$amount}
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="row">
+        <div class="col-md-6 atk-form-row atk-form-field">
+          <label>Cheque No:</label>{$cheque_no}
+        </div>
+        <div class="col-md-6 atk-form-row atk-form-field">
+          <label>Cheque Date:</label>{$cheque_date}
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="row">
+        <div class="col-md-6 atk-form-row atk-form-field">
+          <label>DD No:</label>{$dd_no}
+        </div>
+        <div class="col-md-6 atk-form-row atk-form-field">
+          <label>DD Date:</label>{$dd_date}
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="row">
+        <div class="col-md-12 atk-form-row atk-form-field">
+          <label>Bank Details:</label>{$bank_detail}												
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="row">
+        <div class="col-md-8">{$FormButtons}</div>
+      </div>
+    </div>
+  </fieldset>
+</form>{$Content}
+<style>
+  .control-label button, input, select, textarea {
+  	padding: 4px 12px;
+  	width: 100%;
+  }
+  textarea{
+  min-height:100px;
+  }
+</style>

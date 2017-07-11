@@ -6,17 +6,22 @@ div(id="{$_name}" style="{$style} width:100%" class="{$class}")
 	.row
 		.col-md-12.col-lg-12.col-sm-12.col-xs.12
 			h4.text-center|Current Plan: {plan} NONE {/}
-		.col-md-3.col-lg-3.col-sm-12.col-xs.12
-			.text-center
-				|Total Consume Data : {consume_data}512.MB{/}
-		.col-md-3.col-lg-3.col-sm-12.col-xs.12
-			.text-center
-				|Total Available Data {available_data}512.MB{/}
-		.col-md-3.col-lg-3.col-sm-12.col-xs.12
-			.text-center
-				|Due Amount: {due_amount}00/00/00{/}
-		.col-md-3.col-lg-3.col-sm-12.col-xs.12
-			.text-center
-				|Next Invoice Date: {next_due_date}00/00/00{/}
+	hr
+	.row
+		.col-md-6.col-lg-6.col-sm-12.col-xs.12
+			.text-center.alert.alert-info
+				|Total Data Limit: {$total_data_limit}
+		.col-md-6.col-lg-6.col-sm-12.col-xs.12
+			.text-center.alert.alert-warning
+				|Total Consume Data : {consume_data}...{/}
+		//- .col-md-3.col-lg-3.col-sm-12.col-xs.12
+		//- 	.text-center
+		//- 		|Total Available Data {available_data}512.MB{/}
+		//- .col-md-3.col-lg-3.col-sm-12.col-xs.12
+		//- 	.text-center
+		//- 		|Due Amount: {due_amount}00/00/00{/}
+		//- .col-md-3.col-lg-3.col-sm-12.col-xs.12
+		//- 	.text-center
+		//- 		|Next Invoice Date: {next_due_date}00/00/00{/}
 	.xepan-push-large
 	{$Content}			

@@ -2,7 +2,7 @@
 
 namespace xavoc\ispmanager;
 
-class Model_User extends \xepan\commerce\Model_Customer{ 
+class Model_User extends \xepan\commerce\Model_Customer{
 	// public $table = "isp_user";
 	public $status = ['Active','InActive'];
 	public $actions = [
@@ -49,6 +49,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$user_j->addField('last_accounting_ul_ratio')->defaultValue(100);
 
 		$user_j->hasMany('xavoc\ispmanager\UserPlanAndTopup','user_id');
+		$user_j->hasMany('xepan\hr\Employee_Document','customer_id',null,'CustomerDocuments');
 		// $user_j->hasMany('xavoc\ispmanager\TopUp','user_id',null,'topups');
 
 		// $this->add('dynamic_model/Controller_AutoCreator');
@@ -116,12 +117,14 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$this->setPlan($this['plan_id']);
 	}
 
-	function createInvoice($m,$detail_data=null){
-		if(!$this->plan_dirty OR !$this['plan_id']) return;
-		return $this->createQSP($m,$detail_data,'SalesInvoice');
+	function createInvoice($m,$detail_data=null,$false_condition=false,$master_created_at=null){
+		if(!$false_condition)
+			if(!$this->plan_dirty OR !$this['plan_id'] OR !$this['create_invoice']) return;
+
+		return $this->createQSP($m,$detail_data,'SalesInvoice',null,$master_created_at);
 	}
 
-	function createQSP($m,$detail_data=[],$qsp_type="SalesInvoice",$plan_id=null){
+	function createQSP($m,$detail_data=[],$qsp_type="SalesInvoice",$plan_id=null,$master_created_at=null){
 		if(is_array($m)) $detail_data = $m;
 
 		if(!$this->loaded()) throw new \Exception("model radius user must loaded");
@@ -131,10 +134,16 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 		$qsp_master = $this->add('xepan\commerce\Model_QSP_Master');
 		$master_data = [];
-		$created_at = $this['created_at']?:$this->app->now;
-		if($qsp_type == "SalesOrder")
-			$created_at = $this->app->now;
 
+		if($master_created_at){
+			$created_at = $master_created_at;
+		}elseif($qsp_type == "SalesOrder") {
+			$created_at = $this->app->now;
+		}
+		else{
+			$created_at = $this['created_at']?:$this->app->now;
+		}
+		
 		$master_data['qsp_no'] = $this->add('xepan\commerce\Model_'.$qsp_type)->newNumber();
 		$master_data['contact_id'] = $this->id;
 		$master_data['currency_id'] = $this->app->epan->default_currency->get('id');
@@ -154,8 +163,13 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 		$master_data['is_shipping_inclusive_tax'] = 0;
 		$master_data['is_express_shipping'] = 0;
-		$master_data['created_at'] = $created_at;
-		$master_data['due_date'] = date("Y-m-d H:i:s", strtotime("+".$this['grace_period_in_days']." days",strtotime($created_at)));
+		$master_data['created_date'] = $created_at;
+		
+		$due_date = date("Y-m-d H:i:s", strtotime("+".$this['grace_period_in_days']." days",strtotime($created_at)));
+		if(strtotime($created_at) >  strtotime($due_date))
+			$due_date = $created_at;
+		
+		$master_data['due_date'] = $due_date;
 		$master_data['round_amount'] = 0;
 		$master_data['discount_amount'] = $this->getProDataAmount();
 		$master_data['exchange_rate'] = 1;
@@ -632,7 +646,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		foreach ($this->add('xavoc\ispmanager\Model_Plan')->getRows() as $key => $plan) {
 			$plan_list[strtolower(trim($plan['name']))] = $plan['id'];
 		}
-
+		
 		// get all country list
 		$country_list = [];
 		foreach ($this->add('xepan\base\Model_Country') as $key => $country) {
@@ -646,6 +660,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		}
 
 		// echo "<pre>";
+		// print_r($plan_list);
 		// print_r($country_list);
 		// print_r($state_list);
 		// echo "</pre>";
@@ -673,8 +688,35 @@ class Model_User extends \xepan\commerce\Model_Customer{
 					$user[$field_name] = $value;
 				}
 				
-				$user['created_at'] = date('Y-m-d H:i:s',strtotime($record['INVOICE_DATE']))?:$this->app->now;
+				$user['created_at'] = date('Y-m-d H:i:s',strtotime($record['CREATED_AT']))?:$this->app->now;
+				// $user['created_at'] = date('Y-m-d H:i:s',strtotime($record['INVOICE_DATE']))?:$this->app->now;
+				
 				$user->save();
+
+				// update email and phone number
+				if($record['MOBILE']){
+					$cp = $this->add('xepan\base\Model_Contact_Phone');
+					$cp['head'] = 'Official';
+					$cp['contact_id'] = $user->id;
+					$cp['value'] = $record['MOBILE'];
+					$cp->save();
+				}
+				if($record['PHONE']){
+					$cp = $this->add('xepan\base\Model_Contact_Phone');
+					$cp['head'] = 'Official';
+					$cp['contact_id'] = $user->id;
+					$cp['value'] = $record['PHONE'];
+					$cp->save();
+				}
+
+				if($record['EMAIL'] AND filter_var($record['EMAIL'],FILTER_VALIDATE_EMAIL)){
+					$ce = $this->add('xepan\base\Model_Contact_Email');
+					$ce['head'] = 'Official';
+					$ce['contact_id'] = $user->id;
+					$ce['value'] = $record['EMAIL'];
+					$ce->save();
+				}
+
 
 				// data_Remark: eg.dl/up/remark, 1039/209/MainPlan,3089/Topupplan
 				if($record['DATA_CONSUMED']){
@@ -724,7 +766,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$user->addCondition('username',$username);
 		$user->tryLoadAny();
 		if($user->loaded() && $user->id != $this['user_id'])
-			throw new \Exception("user name already user with other isp user");
+			throw new \Exception("user name already use with other isp user");
 		
 		// $user=$this->add('xepan\base\Model_User');
 		$this->add('BasicAuth')
@@ -753,6 +795,41 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$sale_order = $invoice_model->saleOrder();
 		$items = $sale_order->orderItems()->tryLoadAny();
 		$user->setPlan($items['item_id']);
+	}
+
+	function addAttachment($attach_id,$type=null){
+		if(!$attach_id) return;
+		$attach = $this->add('xepan\hr\Model_Employee_Document');
+		$attach['employee_document_id'] = $attach_id;
+		$attach['employee_id'] = $this->id;
+		$attach['type'] = $type;	
+		$attach->save();
+
+		return $attach;
+	}
+
+	function getAttachments($urls=true){
+		$attach_arry = array();
+		if($this->loaded()){
+			$attach_m = $this->add('xepan\hr\Model_Employee_Document');
+			$attach_m->addCondition('employee_id',$this->id);
+			foreach ($attach_m as $attach) {
+				$attach_arry[] = $urls?$attach['file']:$attach['id'];
+			}
+
+		}
+		
+		return $attach_arry;
+	}
+
+	function getCurrentCondition(){
+		if(!$this->loaded())  return ['status'=>'no record found'];
+
+		$upt = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup');
+		$upt->addCondition('plan_id',$this['plan_id']);
+		$upt->addCondition('user_id',$this->id);
+		$upt->addCondition('is_effective',true);
+		return $upt->getRows();
 	}
 
 }

@@ -1,0 +1,60 @@
+form.form-horizontal
+	fieldset
+		legend Receive Payment 
+		.form-group
+			.row
+				.col-md-4.atk-form-row.atk-form-field
+					label|Customer:
+					{$customer_id}
+				.col-md-4.atk-form-row.atk-form-field
+					label Employee:
+					{$employee_id}
+				.col-md-4.atk-form-row.atk-form-field
+					label Invoice:
+					{$invoice_id}		
+					//- input
+		.form-group
+			.row
+				.col-md-6.atk-form-row.atk-form-field
+					label Payment Mode:
+					{$payment_mode}
+				.col-md-6.atk-form-row.atk-form-field
+					label Amount:
+					{$amount}
+		.form-group
+			.row
+				.col-md-6.atk-form-row.atk-form-field
+					label Cheque No:
+					{$cheque_no}
+				.col-md-6.atk-form-row.atk-form-field
+					label Cheque Date:
+					{$cheque_date}
+		.form-group
+			.row
+				.col-md-6.atk-form-row.atk-form-field
+					label DD No:
+					{$dd_no}
+				.col-md-6.atk-form-row.atk-form-field
+					label DD Date:
+					{$dd_date}
+					
+		.form-group
+			.row
+				.col-md-12.atk-form-row.atk-form-field
+					label Bank Details:
+					{$bank_detail}												
+		.form-group
+			.row
+				.col-md-8
+					{$FormButtons}
+{$Content}
+
+style.
+	.control-label button, input, select, textarea {
+		padding: 4px 12px;
+		width: 100%;
+	}
+	textarea{
+	min-height:100px;
+	}
+	

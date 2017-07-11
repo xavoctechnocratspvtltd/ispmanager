@@ -17,6 +17,8 @@ class page_user extends \xepan\base\Page {
 		}
 		$crud->setModel($model,['net_data_limit','radius_username','radius_password','plan_id','simultaneous_use','grace_period_in_days','custom_radius_attributes','first_name','last_name','create_invoice','is_invoice_date_first_to_first','include_pro_data_basis','country_id','state_id','city','address','pin_code','qty_unit_id','mac_address'],['radius_username','plan','simultaneous_use','grace_period_in_days','first_name','last_name','net_data_limit','is_invoice_date_first_to_first','mac_address']);
 		$crud->grid->removeColumn('attachment_icon');
+		$crud->grid->addPaginator($ipp=50);
+		$crud->grid->addQuickSearch(['username','plan']);
 
 		if($crud->isEditing()){
 			$form = $crud->form;
@@ -62,9 +64,38 @@ class page_user extends \xepan\base\Page {
 		}
 
 		$form_delete = $col2->add('Form');
-		$form_delete->addSubmit('Delete All User')->addClass('btn btn-danger');
+		$form_delete->addSubmit('Delete All User Forcely')->addClass('btn btn-danger');
 		if($form_delete->isSubmitted()){
-			$this->add('xavoc\ispmanager\Model_User')->deleteAll();
+
+			$qsp_master = $this->add('xepan\commerce\Model_QSP_Master');
+			foreach ($qsp_master as $qsp) {
+				$qsp->delete();
+			}
+
+			$users = $this->add('xavoc\ispmanager\Model_User');
+			foreach ($users as $user) {
+				$user->delete();
+			}
+			
+			foreach ($this->add('xavoc\ispmanager\Model_Condition') as $cond) {
+				$cond->delete();
+			}
+
+			$this->add('xavoc\ispmanager\Model_RadCheck')->deleteAll();
+			$this->add('xavoc\ispmanager\Model_RadPostAuth')->deleteAll();
+
+			$user = $this->add('xepan\base\Model_User');
+			$user->addCondition('scope','WebsiteUser');
+			$user->deleteAll();
+
+			$ci = $this->add('xepan\base\Model_Contact_Info');
+			$ci->addCondition('contact_type','Customer');
+			$ci->deleteAll();
+			
+			$this->app->db->dsql()->expr('DELETE FROM radacct;')->execute();
+			$this->app->db->dsql()->expr('DELETE FROM radreply;')->execute();
+			$this->app->db->dsql()->expr('DELETE FROM radusergroup;')->execute();
+
 			$form_delete->js()->univ()->successMessage("User's Deleted Successfully")->execute();
 		}
 

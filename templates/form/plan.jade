@@ -16,9 +16,9 @@ div
 		.col-md-2.atk-form-field.atk-form-row
 			label Tax:
 			{$tax_id}
-		.col-md-3.atk-form-field.atk-form-row
+		.col-md-3.atk-form-field.atk-form-row(style="margin-top:20px;")
 			{$is_auto_renew}
-		.col-md-3.atk-form-field.atk-form-row
+		.col-md-3.atk-form-field.atk-form-row(style="margin-top:20px;")
 			{$available_in_user_control_panel}
 	.row
 		.col-md-3.atk-form-field.atk-form-row
@@ -27,10 +27,12 @@ div
 		.col-md-3.atk-form-field.atk-form-row
 			label Plan Validity Unit
 			{$qty_unit_id}
-		.col-md-3.atk-form-field.atk-form-row
+		.col-md-2.atk-form-field.atk-form-row(style="margin-top:20px;")
+			{$is_renewable}
+		.col-md-2.atk-form-field.atk-form-row
 			label Renewable Value:
 			{$renewable_value}
-		.col-md-3.atk-form-field.atk-form-row
+		.col-md-2.atk-form-field.atk-form-row
 			label Renewable Unit:
 			{$renewable_unit}
 

@@ -319,4 +319,47 @@ CREATE TABLE `isp_user_topup` (
   KEY `fk_topup_id` (`topup_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+
+/*
+Navicat MySQL Data Transfer
+
+Source Server         : localhost
+Source Server Version : 50505
+Source Host           : 127.0.0.1:3306
+Source Database       : prompt
+
+Target Server Type    : MYSQL
+Target Server Version : 50505
+File Encoding         : 65001
+
+Date: 2017-07-10 15:26:25
+*/
+
+SET FOREIGN_KEY_CHECKS=0;
+
+-- ----------------------------
+-- Table structure for `isp_payment_transactions`
+-- ----------------------------
+DROP TABLE IF EXISTS `isp_payment_transactions`;
+CREATE TABLE `isp_payment_transactions` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `customer_id` int(11) DEFAULT NULL,
+  `employee_id` int(11) DEFAULT NULL,
+  `invoice_id` int(11) DEFAULT NULL,
+  `created_at` date DEFAULT NULL,
+  `payment_mode` varchar(255) DEFAULT NULL,
+  `cheque_no` varchar(255) DEFAULT NULL,
+  `cheque_date` date DEFAULT NULL,
+  `dd_no` varchar(255) DEFAULT NULL,
+  `dd_date` date DEFAULT NULL,
+  `bank_detail` text,
+  `amount` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- ----------------------------
+-- Records of isp_payment_transactions
+-- ----------------------------
+
+
 SET FOREIGN_KEY_CHECKS = 1;

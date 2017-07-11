@@ -1,0 +1,53 @@
+
+<div id="{$_name}" class="xepan-grid main-box clearfix atk-table atk-table-zebra atk-table-bordered {$class}">{Pannel}
+  <header class="main-box-header clearfix atk-actions  {$class} ">
+    <div style="100%" class="filter-block">{$grid_buttons} 
+      <div class="form-group pull-right xepan-filter-form"><span class="form-control pull-left">{$quick_search}<i class="fa fa-search search-icon"></i></span></div>
+    </div>
+  </header>{/Pannel}
+  <div class="main-box-body clearfix table-responsive">
+    <table style="width:100%" class="table user-list table-hover footable toggle-circle-filled">{header}
+      <thead class="xepan-hover-hand">{cols}{col}
+        <th></th>
+        <th id="{$document_no_number_sortid}"><span>Invoice No. </span><span style="cursor:pointer; cursor: hand; max-width:600px;">{$document_no_number_sort}</span></th>
+        <th id="{$created_at_sortid}" data-hide="phone"><span>Created </span><span style="cursor:pointer; cursor: hand; max-width:600px;">{$created_at_sort}</span></th>
+        <th><span>Status</span></th>
+        <th><span>Amount</span></th>
+        <th><span>Pay Invoice</span></th>
+        <th> </th>{/}{/}
+      </thead>{/}
+      {$subheader}
+      <tbody>{rows}{row}
+        <tr data-id="{$id}" class="{$odd_even}">{cols}
+          <td>{$selected}</td>
+          <td>{avatar}<img src="img/samples/scarlet-159.png" alt=""/>{/}<a href="#" data-id="{$id}" data-salesinvoice-id="{$document_id}" class="user-link do-view-frame">{$document_no}</a><a href="#" data-id="{$id}" data-contact-id="{$contact_id}" class="do-view-customer-frame"><span class="user-subhead">{$organization_name}</span></a><span data-id="{$id}" data-salesorder-id="{$sales_order_id}" style="cursor:pointer; cursor: hand; max-width:600px;" class="user-subhead text-muted order-invoice-number"> {$ord_no}    </span></td>
+          <td>{$created_at}</td>
+          <td>{$status}</td>
+          <td>{$net_amount_self_currency}
+            <div class="user-subhead">{$net_amount_client_currency}</div>
+          </td>
+          <td>{$Pay_Now}</td>
+          <td>{$action}</td>
+          <td style="width: 15%;">
+            {$edit}
+            {$delete}
+            {$attachment_icon}
+          </td>{/}
+        </tr>{/}{/}
+        {not_found}
+        <div class="row">
+          <div role="alert" class="col-md-12 text-center alert alert-warning"><span class="icon-attention fa fa-exclamation-triangle"> &nbsp;{$not_found_message}</span></div>
+        </div>{/}
+      </tbody>{totals}
+      <tfoot>
+        <tr class="totals">
+          {cols}{col}
+          <td {$tdparam}>
+          {$content}
+          </td>
+          {/}{/}
+        </tr>
+      </tfoot>{/}
+    </table>{$Paginator}
+  </div>
+</div>

@@ -1,0 +1,81 @@
+.xepan-grid.main-box.clearfix.atk-table.atk-table-zebra.atk-table-bordered(id="{$_name}" class="{$class}")
+    {Pannel}
+    header.main-box-header.clearfix.atk-actions(class=" {$class} ")
+        div.filter-block( style="100%")
+            {$grid_buttons} 
+            .form-group.pull-right.xepan-filter-form
+                span(class="form-control pull-left")|{$quick_search}
+                    i(class="fa fa-search search-icon")
+    {/Pannel}
+    .main-box-body.clearfix.table-responsive
+        table.table.user-list.table-hover.footable.toggle-circle-filled(style="width:100%")
+            {header}
+            thead.xepan-hover-hand
+                {cols}{col}
+                th
+                th(id="{$document_no_number_sortid}")
+                    span Invoice No. 
+                    span(style= "cursor:pointer; cursor: hand; max-width:600px;"){$document_no_number_sort}
+                th(id="{$created_at_sortid}" data-hide="phone")
+                    span Created 
+                    span(style= "cursor:pointer; cursor: hand; max-width:600px;"){$created_at_sort}
+                th
+                    span Status
+                th
+                    span Amount
+                th
+                    span Pay Invoice
+                th  
+                {/}{/}
+            {/}
+            {$subheader}
+
+            tbody
+                {rows}{row}
+                tr(class="{$odd_even}" data-id="{$id}")
+                    {cols}
+                    td
+                        {$selected}
+                    td
+                        {avatar}
+                        img(src='img/samples/scarlet-159.png', alt='')
+                        {/}
+                        a.user-link.do-view-frame(href='#',data-id="{$id}" data-salesinvoice-id="{$document_id}")
+                            {$document_no}
+                        a.do-view-customer-frame(href='#',data-id="{$id}" data-contact-id="{$contact_id}")
+                            span.user-subhead{$organization_name}
+                        span.user-subhead.text-muted.order-invoice-number(data-id="{$id}" data-salesorder-id='{$sales_order_id}')(style= "cursor:pointer; cursor: hand; max-width:600px;")  {$ord_no}    
+                    td
+                        | {$created_at}
+                    td
+                        | {$status}
+                    td
+                        | {$net_amount_self_currency}
+                        div.user-subhead{$net_amount_client_currency}
+                    td
+                        | {$Pay_Now}
+                    td
+                        | {$action}
+                    td(style="width: 15%;")
+                        {$edit}
+                        {$delete}
+                        {$attachment_icon}
+                    
+                    {/}
+                {/}{/}
+                {not_found}
+                div.row
+                    .col-md-12.text-center.alert.alert-warning(role="alert")
+                        span.icon-attention.fa.fa-exclamation-triangle  &nbsp;{$not_found_message}
+                {/}
+
+            {totals}
+            tfoot
+                tr(class="totals")
+                    {cols}{col}
+                    <td {$tdparam}>
+                    {$content}
+                    </td>
+                    {/}{/}
+            {/}
+        {$Paginator}

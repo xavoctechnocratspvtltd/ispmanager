@@ -821,4 +821,15 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		
 		return $attach_arry;
 	}
+
+	function getCurrentCondition(){
+		if(!$this->loaded())  return ['status'=>'no record found'];
+
+		$upt = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup');
+		$upt->addCondition('plan_id',$this['plan_id']);
+		$upt->addCondition('user_id',$this->id);
+		$upt->addCondition('is_effective',true);
+		return $upt->getRows();
+	}
+
 }

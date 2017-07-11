@@ -36,8 +36,10 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 		$isp_user = $page->add('xavoc\ispmanager\Model_User');
 		$isp_user->addCondition('customer_id',$this->id);		
 		$isp_user->tryLoadAny();
-		if(!$isp_user->loaded())
-			$page->add('View')->set('User not Exist ( Please Create User First)');
+		if(!$isp_user->loaded()){
+			$page->add('View')->set('User not Exist ( Please Create User First)')->addClass('py-1 bg-success');
+			return ;
+		}
 
 		$plan = $page->add('xavoc\ispmanager\Model_Plan');
 		$plan->addCondition('status','Published');

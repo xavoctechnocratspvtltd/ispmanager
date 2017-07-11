@@ -6,7 +6,7 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 	
 	public $status = ['Active','InActive'];
 	public $actions = [
-					'Active'=>['view','edit','delete','communication','assign','createUser','send','manage_score','due_invoice','deactivate'],
+					'Active'=>['view','edit','delete','communication','assign','createUser','send','manage_score','due_invoice','change_plan','deactivate'],
 					'InActive'=>['view','edit','delete','activate','communication','manage_score']
 					];
 	public $acl_type="ispmanager_Lead";				
@@ -30,6 +30,35 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 			return $this->app->page_action_result = $this->app->js(true,$page->js()->univ()->closeDialog())->univ()->successMessage('Assigned');
 		}
 
+	}
+
+	function page_change_plan($page){
+		$isp_user = $page->add('xavoc\ispmanager\Model_User');
+		$isp_user->addCondition('customer_id',$this->id);		
+		$isp_user->tryLoadAny();
+		if(!$isp_user->loaded())
+			$page->add('View')->set('User not Exist ( Please Create User First)');
+
+		$plan = $page->add('xavoc\ispmanager\Model_Plan');
+		$plan->addCondition('status','Published');
+		// $plan->addCondition('id',$isp_user['plan_id']);
+
+		$form = $page->add('Form');
+		$form->setLayout('form/changeplan');
+		$plan_field = $form->addField('xepan\base\DropDown','plan');
+		$plan_field->setModel($plan);
+		$plan_field->set($isp_user['plan_id']);
+		$form->addField('Checkbox','create_invoice','');
+		$form->addSubmit('Change Plan')->addClass('btn btn-primary');
+
+		if($form->isSubmitted()){
+			$isp_user['plan_id'] = $form['plan'];
+			$isp_user['create_invoice'] = $form['create_invoice'];
+			$isp_user->save();
+
+			return $this->app->page_action_result = $this->app->js(true,$page->js()->univ()->closeDialog())->univ()->successMessage('Plan Chnaged Successfully');
+		}
+		
 	}
 
 	function page_due_invoice($page){

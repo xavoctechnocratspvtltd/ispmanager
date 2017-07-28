@@ -1,7 +1,7 @@
 
 <div id="{$_name}" style="{$style}" class="container {$class}">
   <div class="well">
-    <h4>For Individuals(radio)</h4>
+    <h4>For Individuals</h4>
     <div class="row">
       <div class="col-md-6 atk-form-field atk-form-row">
         <label>First Name:</label>
@@ -28,26 +28,17 @@
     </div>
   </div>
   <div class="well">
-    <h4>For Non-Individuals(radio)</h4>
+    <h4>For Non-Individuals</h4>
     <div class="row">
-      <div class="col-md-12 atk-form-field atk-form-row">
-        <label>Name Of Organization:</label>
+      <div class="col-md-4 atk-form-field atk-form-row">
+        <label>Name Of Organization:</label>{$organization}
       </div>
-    </div>
-    <div class="row">
-      <div class="col-md-12 atk-form-field atk-form-row">{$organization}</div>
-    </div>
-    <div class="row">
-      <div class="col-md-6 atk-form-field atk-form-row">
-        <label>Status Of Organisation:</label>
+      <div class="col-md-4 atk-form-field atk-form-row">
+        <label>PAN Number:</label>{$pan_number}
       </div>
-      <div class="col-md-6 atk-form-field atk-form-row">
-        <label>PAN Number:</label>
+      <div class="col-md-4 atk-form-field atk-form-row">
+        <label>Status Of Organisation:</label>{$status_of_organization}
       </div>
-    </div>
-    <div class="row">
-      <div class="col-md-6 atk-form-field atk-form-row">{$status_of_organization}</div>
-      <div class="col-md-6 atk-form-field atk-form-row">{$pan_number}</div>
     </div>
     <div class="row">
       <div class="col-md-12 atk-form-field atk-form-row">
@@ -97,12 +88,6 @@
             <label>Pin Code:</label>
           </div>
           <div class="col-md-12 atk-form-field atk-form-row">{$billing_pincode}<br/></div>
-          <div class="col-md-12 atk-form-field atk-form-row">
-            <div class="atk-cell atk-form-label atk-text-nowrap"></div>
-            <div class="atk-form-row atk-form-field xepan-checkout-same-as-billing-address">
-              <div class="btn btn-warning btn-xs"> Same as Billing Address	</div>
-            </div>
-          </div>
         </div>
       </div>
     </div>

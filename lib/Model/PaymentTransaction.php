@@ -16,7 +16,7 @@ class Model_PaymentTransaction extends \xepan\base\Model_Table{
 		$this->hasOne('xavoc\ispmanager\Invoice','invoice_id');
 		
 		$this->addField('created_at')->type('date')->defaultValue($this->app->today)->system(true);
-		$this->addField('payment_mode')->enum(['Cash','Cheque','DD']);
+		$this->addField('payment_mode')->enum(['Cash','Cheque','DD'])->display(['form'=>'xepan\base\DropDownNormal']);
 		$this->addField('cheque_no');
 		$this->addField('cheque_date')->type('date');
 		$this->addField('dd_no');

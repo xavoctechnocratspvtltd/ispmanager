@@ -23,6 +23,9 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 		$form = $page->add('Form');
 		$emp_field = $form->addField('xepan\base\DropDown','employee')->validate('required');
 		$emp_field->setModel($emp);
+		$emp_field->setEmptyText('Please Select');
+		$emp_field->set($this['assign_to_id']);
+		
 		$form->addSubmit('Assign')->addClass('btn btn-primary');
 		if($form->isSubmitted()){
 			$this['assign_to_id'] = $form['employee'];

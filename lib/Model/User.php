@@ -65,6 +65,10 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		// });
 		// $this->addExpression('consumed_limit');
 
+		$user_j->hasOne('xepan\hr\Employee','installation_assign_to_id');
+		$user_j->addField('installed_on')->type('date');
+		$user_j->addField('installed_narration')->type('text');
+
 		$this->addHook('beforeSave',$this);
 		$this->addHook('afterSave',[$this,'updateUserConditon']);
 		$this->addHook('afterSave',[$this,'createInvoice']);

@@ -6,34 +6,45 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 	
 	public $status = ['Active','InActive'];
 	public $actions = [
-					'Active'=>['view','edit','delete','communication','assign','createUser','send','manage_score','due_invoice','change_plan','deactivate'],
-					'InActive'=>['view','edit','delete','activate','communication','manage_score']
-					];
+					'Active'=>['view','edit','delete','assign','deactivate','communication'],
+					'Open'=>['view','edit','delete','create_user','communication'], //need analysi
+					'Won'=>['view','edit','delete','communication'],
+					'Lost'=>['view','edit','delete','open','communication'],
+					'InActive'=>['view','edit','delete','activate','communication']
+				];
 	public $acl_type="ispmanager_Lead";				
 
+	// 'createUser','send','manage_score','due_invoice','change_plan',
+	
 	function init(){
 		parent::init();
 		
+		// $this->addHook('beforeSave',$this);
 	}
 
-	function page_assign($page){
-		$emp = $page->add('xepan\hr\Model_Employee');
-		$emp->addCondition('id','<>',$this->id);
 
-		$form = $page->add('Form');
-		$emp_field = $form->addField('xepan\base\DropDown','employee')->validate('required');
-		$emp_field->setModel($emp);
-		$emp_field->setEmptyText('Please Select');
-		$emp_field->set($this['assign_to_id']);
-		
-		$form->addSubmit('Assign')->addClass('btn btn-primary');
-		if($form->isSubmitted()){
-			$this['assign_to_id'] = $form['employee'];
-			$this->save();
-			return $this->app->page_action_result = $this->app->js(true,$page->js()->univ()->closeDialog())->univ()->successMessage('Assigned');
-		}
+	function beforeSave(){
+		// if($this['status'] == "Active" AND $this['assign_to_id'] > 0){
+		// 	$this['status'] = "Open";
+		// }
+	}
+
+	function assign($assign_to_id){
+
+		$this['assign_to_id'] = $assign_to_id;
+		$this['status'] = "Open";
+		$this->save();
+
+		$employee = $this->add('xepan\hr\Model_Employee')->load($assign_to_id);
+		// send email and sms
+		$this->add('xavoc\ispmanager\Controller_Greet')->do($employee,'lead_assign',$this);
+		return $this;
+	}
+
+	function page_assign_for_installation($page){
 
 	}
+
 
 	function page_change_plan($page){
 		$isp_user = $page->add('xavoc\ispmanager\Model_User');

@@ -11,6 +11,9 @@ class Initiator extends \Controller_Addon {
         $this->addLocation(array('template'=>'templates','js'=>'templates/js','css'=>'templates/css'))
         ->setBaseURL('../shared/apps/xavoc/ispmanager/');
 
+        $m = $this->app->top_menu->addMenu('CAF');
+            $m->addItem(['Lead','icon'=>'fa fa-users'],'xavoc_ispmanager_lead');
+
         $m = $this->app->top_menu->addMenu('ISP MANAGER');
         $m->addItem(['Leads','icon'=>'fa fa-users'],'xavoc_ispmanager_lead');
         $m->addItem(['Users','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_user');
@@ -27,6 +30,14 @@ class Initiator extends \Controller_Addon {
         $user = $this->add('xavoc\ispmanager\Model_User');
         // $this->app->addHook('beforeQSPSave',[$user,'updateQSPBeforeSave']);
         $this->app->addHook('invoice_paid',[$user,'invoicePaid']);
+
+        $this->app->addHook('new_lead_added',function($app,$model){
+            
+            if($model['status'] == "Active" AND $model['assign_to_id'] > 0){
+                $lead = $this->add('xavoc\ispmanager\Model_Lead')->load($model['id']);
+                $lead->assign($model['assign_to_id']);
+            }
+        });
         return $this;
     }
 

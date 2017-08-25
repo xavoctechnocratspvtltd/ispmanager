@@ -7,7 +7,7 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 	public $status = ['Active','InActive'];
 	public $actions = [
 					'Active'=>['view','edit','delete','assign','deactivate','communication'],
-					'Open'=>['view','edit','delete','create_user','communication'], //need analysi
+					'Open'=>['view','edit','delete','create_user','lost','communication'], //need analysis
 					'Won'=>['view','edit','delete','communication'],
 					'Lost'=>['view','edit','delete','open','communication'],
 					'InActive'=>['view','edit','delete','activate','communication']
@@ -40,6 +40,51 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 		$this->add('xavoc\ispmanager\Controller_Greet')->do($employee,'lead_assign',$this);
 		return $this;
 	}
+
+	function page_lost($page){
+
+		$config = $this->add('xepan\base\Model_ConfigJsonModel',
+			[
+				'fields'=>[
+							'lead_lost_region'=>'text'
+						],
+					'config_key'=>'ISPMANAGER_MISC',
+					'application'=>'ispmanager'
+			]);
+		$config->add('xepan\hr\Controller_ACL');
+		$config->tryLoadAny();
+
+		$temp = explode(",", $config['lead_lost_region']);
+		$regions = [];
+		foreach ($temp as $key => $value) {
+			$regions[$value] = $value;
+		}
+
+		$form = $page->add('Form');
+		$region_field = $form->addField('xepan\base\DropDown','region')->validate('required');
+		$region_field->setValueList($regions);
+		$region_field->setEmptyText('Please Select');
+
+		$form->addField('text','narration');
+		$form->addSubmit('Save');
+		if($form->isSubmitted()){
+			$region = $form['region'];
+			if($form['narration'])
+				$region .= "::".$form['narration'];
+			
+			$this->lost($region);
+			return $this->app->page_action_result = $this->app->js(true,$page->js()->univ()->closeDialog())->univ()->errorMessage('Lead Lost');	
+		}
+	}
+
+	function lost($remark){
+		if(!$this->loaded()) throw new \Exception("lead model must loaded");
+
+		$this['remark'] = $remark;
+		$this['status'] = "Lost";
+		$this->save();
+	}
+
 
 	function page_assign_for_installation($page){
 

@@ -9,12 +9,20 @@ class Tool_Staff_MenuBar extends \xepan\cms\View_Tool{
 		parent::init();
 
 		// todo check staff is login or not
-		$staff = $this->app->auth->model;
+		$staff = $this->app->employee;
+		$lead = $this->add('xavoc\ispmanager\Model_Lead');
+		$lead->addCondition('assign_to_id',$staff->id);
+ 		$lead->addCondition('status','Open');
+ 		$lead_open = $lead->count()->getOne();
 
+ 		$lead_badge_html = " ";
+ 		if($lead_open)
+ 			$lead_badge_html = '<span class="badge">'.$lead_open.'</span>';
+		 	
 		$menu = [
 				['key'=>'staff_dashboard','name'=>'Dashboard'],
 				['key'=>'staff_registration', 'name'=>'Registration'],
-				['key'=>'staff_lead','name'=>'Leads'],
+				['key'=>'staff_lead','name'=>'Leads '.$lead_badge_html],
 				['key'=>'staff_setting','name'=>'Settings'],
 				['key'=>'?page=logout','name'=>'Logout']
 			];

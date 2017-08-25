@@ -12,11 +12,35 @@ class page_configuration extends \xepan\base\Page {
 
 
 		$tab = $this->add('Tabs');
-		$location = $tab->addTabURL('./location','Location');
-		$sms_tab = $tab->addTabURL('./content','Email/SMS Content');
-		$plan_tab = $tab->addTabURL('./hotspotplan','Default HotSpot Plan');
-		$otp_tab = $tab->addTabURL('./otpexpired','OTP Expired Time');
-		$db_tab = $tab->addTabURL('./syslogconfig','SysLog DB Config');		
+		$tab->addTabURL('./location','Location');
+		$tab->addTabURL('./content','Email/SMS Content');
+		$tab->addTabURL('./hotspotplan','Default HotSpot Plan');
+		$tab->addTabURL('./otpexpired','OTP Expired Time');
+		$tab->addTabURL('./syslogconfig','SysLog DB Config');
+		$tab->addTabURL('./misc','MISC');
+
+	}
+
+	function page_misc(){
+		$config = $this->add('xepan\base\Model_ConfigJsonModel',
+			[
+				'fields'=>[
+							'lead_lost_region'=>'text'
+						],
+					'config_key'=>'ISPMANAGER_MISC',
+					'application'=>'ispmanager'
+			]);
+		$config->add('xepan\hr\Controller_ACL');
+		$config->tryLoadAny();
+
+		$form = $this->add('Form');
+		$form->setModel($config);
+		$form->getElement('lead_lost_region')->setFieldHint("comma (,) seperated multiple values");
+		$form->addSubmit('Save');
+		if($form->isSubmitted()){
+			$form->save();
+			$form->js(null,$form->js()->reload())->univ()->successMessage('Saved Successfully')->execute();
+		}
 	}
 
 	function page_location(){

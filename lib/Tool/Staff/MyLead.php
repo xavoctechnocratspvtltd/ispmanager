@@ -23,8 +23,8 @@ class Tool_Staff_MyLead extends \xepan\cms\View_Tool{
 		
 		$lead = $this->add('xavoc\ispmanager\Model_Lead');
 		$lead->addCondition('assign_to_id',$staff->id);
-		
- 
+ 		$lead->addCondition('status','Open');
+
 		$crud = $this->add('xepan\hr\CRUD',['allow_add'=>false,'allow_edit'=>false,'allow_del'=>false],null,['grid/mylead']);
 		$crud->setModel($lead,['name','status','created_at','emails_str','contacts_str']);
 

@@ -76,8 +76,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$this->addHook('afterSave',[$this,'updateWebsiteUser']);
 
 		$this->is(
-				['radius_username|to_trim|unique']
-				['plan_id|to_trim|reuired']
+				['plan_id|to_trim|required']
 			);
 	}
 
@@ -91,7 +90,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$old_model->tryLoadAny();
 		if($old_model->loaded())
 			throw $this->Exception("(".$this['radius_username'].') radius user is already exist ','ValidityCheck')->setField('radius_username');
-
+		
 		if($this->isDirty('plan_id')){
 			$this->plan_dirty = $this->dirty['plan_id'];
 		}
@@ -757,6 +756,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	}
 
 	function updateWebsiteUser(){
+		if(!$this['radius_username']) return;
 
 		$username = str_replace(" ", "",$this['radius_username']);
 		if($this->app->getConfig('username_is_email',true)){

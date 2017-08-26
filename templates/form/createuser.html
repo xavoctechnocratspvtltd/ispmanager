@@ -1,89 +1,81 @@
 
 <div id="{$_name}" style="{$style}" class="{$class}">
-  <label class="h4">Plans & User Info</label>
-  <div class="well well-sm">
-    <div class="row">
-      <div class="col-md-4 col-lg-4 col-sm-12 col-xs-12 atk-form-field atk-form-row">
-        <label>Plan:</label>{$plan}
+  <h4>Plans & User Info
+    <div class="well well-sm">
+      <div style="width:100%;" class="row">
+        <div class="col-md-4 col-lg-4 col-sm-12 col-xs-12 atk-form-field atk-form-row">
+          <label>Plan:</label>{$plan}
+        </div>
+        <div class="col-md-4 col-lg-4 col-sm-12 col-xs-12 atk-form-field atk-form-row">
+          <label>First Name:</label>{$first_name}
+        </div>
+        <div class="col-md-4 col-lg-4 col-sm-12 col-xs-12 atk-form-field atk-form-row">
+          <label>Last Name:</label>{$last_name}
+        </div>
       </div>
-      <div class="col-md-4 col-lg-4 col-sm-12 col-xs-12 atk-form-field atk-form-row">
-        <label>Radius User Name:</label>{$radius_username}
-      </div>
-      <div class="col-md-4 col-lg-4 col-sm-12 col-xs-12 atk-form-field atk-form-row">
-        <label>Radius Password:</label>{$radius_password}
-      </div>
-    </div><br/>
-    <div class="row">
-      <div class="col-md-3 col-lg-3 col-sm-12 col-xs-12 atk-form-field atk-form-row">
-        <label>First Name:</label>{$first_name}
-      </div>
-      <div class="col-md-3 col-lg-3 col-sm-12 col-xs-12 atk-form-field atk-form-row">
-        <label>Last Name:</label>{$last_name}
-      </div>
-      <div class="col-md-3 col-lg-3 col-sm-12 col-xs-12 atk-form-field atk-form-row">
-        <label>Mobile No:</label>{$mobile_no}
-      </div>
-      <div class="col-md-3 col-lg-3 col-sm-12 col-xs-12 atk-form-field atk-form-row">
-        <label>Email id:</label>{$email_id}	
-      </div>
-    </div><br/>
-    <div class="row">
-      <div class="col-md-4 col-lg-4 col-sm-12 col-xs-12 atk-form-field atk-form-row">{$create_invoice}</div>
-      <div class="col-md-4 col-lg-4 col-sm-12 col-xs-12 atk-form-field atk-form-row">{$is_invoice_date_first_to_first}</div>
-      <div class="col-md-4 col-lg-4 col-sm-12 col-xs-12 atk-form-field atk-form-row">
-        <label>Grace Period in days</label>{$grace_period_in_days}
+      <div style="width:100%;" class="row">
+        <div class="col-md-6 col-lg-6 col-sm-12 col-xs-12 atk-form-field atk-form-row">
+          <label>Mobile No:</label>{$mobile_no}
+        </div>
+        <div class="col-md-6 col-lg-6 col-sm-12 col-xs-12 atk-form-field atk-form-row">
+          <label>Email id:</label>{$email_id}	
+        </div>
       </div>
     </div>
-  </div>
-  <h4>Billing Address</h4>
-  <div class="row well well-sm">
-    <div class="col-md-8 col-lg-8 col-sm-12 col-xs-12">
+  </h4>
+  <h4>Billing Address
+    <div class="well well-sm">
+      <div style="width:100%;" class="row">
+        <div class="col-md-8 col-lg-8 col-sm-12 col-xs-12">
+          <div class="row">
+            <div class="col-md-6 col-lg-6 col-sm-12 col-xs-12 atk-form-field atk-form-row">
+              <label>Country:</label>{$billing_country}
+            </div>
+            <div class="col-md-6 col-lg-6 col-sm-12 col-xs-12 atk-form-field atk-form-row">
+              <label>State:</label>
+              <div class="atk-form-field atk-form-row">{$billing_state}</div>
+            </div>
+            <div class="col-md-6 col-lg-6 col-sm-12 col-xs-12 atk-form-field atk-form-row">
+              <label>City:</label>{$billing_city}
+            </div>
+            <div class="col-md-6 col-lg-6 col-sm-12 col-xs-12 atk-form-field atk-form-row">
+              <label>Pin Code:</label>{$billing_pincode}
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-lg-4 col-sm-12 col-xs-12 atk-form-field atk-form-row">
+          <label>Address:</label>{$billing_address}
+        </div>
+      </div>
+    </div>
+  </h4>
+  <h4>Shipping Address
+    <div class="well well-sm">
+      <div style="width:100%;" class="row">
+        <div class="col-md-12 atk-form-field atk-form-row">{$shipping_address_same_as_billing_address}</div>
+      </div>
       <div class="row">
-        <div class="col-md-6 col-lg-6 col-sm-12 col-xs-12 atk-form-field atk-form-row">
-          <label>Country:</label>{$billing_country}
+        <div class="col-md-8 col-lg-8 col-sm-12 col-xs-12">
+          <div class="row">
+            <div class="col-md-6 col-lg-6 col-sm-12 col-xs-12 atk-form-field atk-form-row">
+              <label>Country:</label>{$shipping_country}
+            </div>
+            <div class="col-md-6 col-lg-6 col-sm-12 col-xs-12 atk-form-field atk-form-row">
+              <label>State:</label>
+              <div class="atk-form-field">{$shipping_state}</div>
+            </div>
+            <div class="col-md-6 col-lg-6 col-sm-12 col-xs-12 atk-form-field atk-form-row">
+              <label>City:</label>{$shipping_city}
+            </div>
+            <div class="col-md-6 col-lg-6 col-sm-12 col-xs-12 atk-form-field atk-form-row">
+              <label>Pin Code:</label>{$shipping_pincode}
+            </div>
+          </div>
         </div>
-        <div class="col-md-6 col-lg-6 col-sm-12 col-xs-12 atk-form-field atk-form-row">
-          <label>State:</label>
-          <div class="atk-form-field atk-form-row">{$billing_state}</div>
-        </div>
-        <div class="col-md-6 col-lg-6 col-sm-12 col-xs-12 atk-form-field atk-form-row">
-          <label>City:</label>{$billing_city}
-        </div>
-        <div class="col-md-6 col-lg-6 col-sm-12 col-xs-12 atk-form-field atk-form-row">
-          <label>Pin Code:</label>{$billing_pincode}
+        <div class="col-md-4 col-lg-4 col-sm-12 col-xs-12 atk-form-field atk-form-row">
+          <label>Address:</label>{$shipping_address}
         </div>
       </div>
     </div>
-    <div class="col-md-4 col-lg-4 col-sm-12 col-xs-12 atk-form-field atk-form-row">
-      <label>Address:</label>{$billing_address}
-    </div>
-  </div>
-  <h4>Shipping Address</h4>
-  <div class="well well-sm">
-    <div class="row">
-      <div class="col-md-12 atk-form-field atk-form-row">{$shipping_address_same_as_billing_address}</div>
-    </div>
-    <div class="row">
-      <div class="col-md-8 col-lg-8 col-sm-12 col-xs-12">
-        <div class="row">
-          <div class="col-md-6 col-lg-6 col-sm-12 col-xs-12 atk-form-field atk-form-row">
-            <label>Country:</label>{$shipping_country}
-          </div>
-          <div class="col-md-6 col-lg-6 col-sm-12 col-xs-12 atk-form-field atk-form-row">
-            <label>State:</label>
-            <div class="atk-form-field">{$shipping_state}</div>
-          </div>
-          <div class="col-md-6 col-lg-6 col-sm-12 col-xs-12 atk-form-field atk-form-row">
-            <label>City:</label>{$shipping_city}
-          </div>
-          <div class="col-md-6 col-lg-6 col-sm-12 col-xs-12 atk-form-field atk-form-row">
-            <label>Pin Code:</label>{$shipping_pincode}
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4 col-lg-4 col-sm-12 col-xs-12 atk-form-field atk-form-row">
-        <label>Address:</label>{$shipping_address}
-      </div>
-    </div>
-  </div>
-</div>{$Content}
+  </h4>{$Content}
+</div>

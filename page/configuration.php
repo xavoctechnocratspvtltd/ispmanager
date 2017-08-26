@@ -25,7 +25,8 @@ class page_configuration extends \xepan\base\Page {
 		$config = $this->add('xepan\base\Model_ConfigJsonModel',
 			[
 				'fields'=>[
-							'lead_lost_region'=>'text'
+							'lead_lost_region'=>'text',
+							'attachment_type'=>'text'
 						],
 					'config_key'=>'ISPMANAGER_MISC',
 					'application'=>'ispmanager'
@@ -36,6 +37,7 @@ class page_configuration extends \xepan\base\Page {
 		$form = $this->add('Form');
 		$form->setModel($config);
 		$form->getElement('lead_lost_region')->setFieldHint("comma (,) seperated multiple values");
+		$form->getElement('attachment_type')->setFieldHint("comma (,) seperated multiple values");
 		$form->addSubmit('Save');
 		if($form->isSubmitted()){
 			$form->save();

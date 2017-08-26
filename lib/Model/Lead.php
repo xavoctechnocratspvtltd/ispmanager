@@ -7,12 +7,13 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 	public $status = ['Active','InActive'];
 	public $actions = [
 					'Active'=>['view','edit','delete','assign','deactivate','communication'],
-					'Open'=>['view','edit','delete','create_user','lost','communication'], //need analysis
+					'Open'=>['view','edit','delete','close','lost','communication'], //need analysis
 					'Won'=>['view','edit','delete','communication'],
 					'Lost'=>['view','edit','delete','open','communication'],
 					'InActive'=>['view','edit','delete','activate','communication']
 				];
-	public $acl_type="ispmanager_Lead";				
+
+	public $acl_type="ispmanager_Lead";
 
 	// 'createUser','send','manage_score','due_invoice','change_plan',
 	
@@ -29,10 +30,12 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 		// }
 	}
 
-	function assign($assign_to_id){
+	function assign($assign_to_id,$remark=null){
 
 		$this['assign_to_id'] = $assign_to_id;
+		$this['remark'] .= " ".$remark;
 		$this['status'] = "Open";
+		$this['assign_at'] = $this->app->now;
 		$this->save();
 
 		$employee = $this->add('xepan\hr\Model_Employee')->load($assign_to_id);
@@ -80,7 +83,7 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 	function lost($remark){
 		if(!$this->loaded()) throw new \Exception("lead model must loaded");
 
-		$this['remark'] = $remark;
+		$this['remark'] = $this['remark']." ".$remark;
 		$this['status'] = "Lost";
 		$this->save();
 	}
@@ -138,7 +141,10 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 
 	}
 
-	function page_createUser($page){
+	function page_close($page){
+		
+		// echo "type= ".$this['type']." = id=".$this['id']."<br/>";
+
 		$this->app->stickyGET('b_country_id');
 		$this->app->stickyGET('s_country_id');
 
@@ -158,11 +164,10 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 		$form = $page->add('Form');
 		$form->setLayout('form/createuser');
 
-		$plan_field = $form->addField('xepan\base\DropDown','plan');
+		$plan_field = $form->addField('xepan\base\DropDown','plan')->validate('required');
 		$plan_field->setModel($plan);
+		$plan_field->setEmptyText('Please Select');
 		
-		$form->addField('radius_username')->validate('required');
-		$form->addField('radius_password')->validate('required');
 		$form->addField('mobile_no')->validate('required');
 		$form->addField('email_id')->validate('required');
 
@@ -223,14 +228,34 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 		$form->addField('shipping_city');
 		$form->addField('shipping_pincode');
 
-		$form->addField('checkbox','create_invoice');
-		$form->addField('checkbox','is_invoice_date_first_to_first');
-		$form->addField('Number','grace_period_in_days');
+		$config = $this->add('xepan\base\Model_ConfigJsonModel',
+			[
+				'fields'=>[
+							'attachment_type'=>'text'
+						],
+					'config_key'=>'ISPMANAGER_MISC',
+					'application'=>'ispmanager'
+			]);
+		$config->add('xepan\hr\Controller_ACL');
+		$config->tryLoadAny();
+
+		if($config['attachment_type']){
+			$attachment_type = explode(",", $config['attachment_type']);
+
+			foreach ($attachment_type as $key => $value) {
+				$field = $form->addField('xepan\base\Upload',$this->app->normalizeName($value),$value);
+				$field->setModel('xepan\filestore\Image');
+			}
+		}
+
+		// $form->addField('checkbox','create_invoice');
+		// $form->addField('checkbox','is_invoice_date_first_to_first');
+		// $form->addField('Number','grace_period_in_days');
 
 		$form->addSubmit('create user')->addClass('btn btn-primary');
 		
 		if($form->isSubmitted()){
-
+			
 			$isp_user = $page->add('xavoc\ispmanager\Model_User');
 			$isp_user->addCondition('customer_id',$this->id);
 			if($isp_user->count()->getOne()){
@@ -258,7 +283,7 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 			}
 			
 			// try{
-			// 	$this->app->db->beginTransaction();
+				// $this->app->db->beginTransaction();
 				// insert customer
 				$this['type'] = "Customer";
 				$this->save();
@@ -267,7 +292,7 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 				$this->app->db->dsql()->expr($cust_q)->execute();
 
 				// insert user
-				$isp_user_q = "INSERT into isp_user (customer_id,radius_username, radius_password, first_name, last_name, contact_number, email_id, created_at) VALUES (".$this->id.",'".$form['radius_username']."','".$form['radius_password']."','".$form['first_name']."','".$form['last_name']."','".$form['mobile_no']."','".$form['email_id']."','".$this->app->now."')";
+				$isp_user_q = "INSERT into isp_user (customer_id, first_name, last_name, contact_number, email_id, created_at) VALUES (".$this->id.",'".$form['first_name']."','".$form['last_name']."','".$form['mobile_no']."','".$form['email_id']."','".$this->app->now."')";
 				$this->app->db->dsql()->expr($isp_user_q)->execute();
 
 				$user = $this->add('xavoc\ispmanager\Model_User');
@@ -276,20 +301,42 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 				
 				if($user->loaded()){
 					$user['plan_id'] = $form['plan'];
-					$user['create_invoice'] = $form['create_invoice'];
-					$user['is_invoice_date_first_to_first'] = $form['is_invoice_date_first_to_first'];
-					$user['grace_period_in_days'] = $form['grace_period_in_days'];
+					$user['create_invoice'] = 0;
+					// $user['create_invoice'] = $form['create_invoice'];
+					// $user['is_invoice_date_first_to_first'] = $form['is_invoice_date_first_to_first'];
+					// $user['grace_period_in_days'] = $form['grace_period_in_days'];
 					$user->save();
+
+					// attachment entry
+					if(isset($attachment_type)){
+						foreach ($attachment_type as $key => $value) {
+							$attachment_name = $this->app->normalizeName($value);
+							if($form[$attachment_name]){
+								$attachment = $this->add('xavoc\ispmanager\Model_Attachment');
+								$attachment->addCondition('contact_id',$user->id);
+								$attachment->addCondition('title',$attachment_name);
+								$attachment->tryLoadAny();
+
+								$attachment['file_id'] = $form[$attachment_name];
+								$attachment->save();
+							}
+						}
+					}
 				}
 
-				// $this->app->db->commit();
+				$this->close();
+			// 	$this->app->db->commit();
 			// }catch(\Exception $e){
 			// 	$this->app->db->rollback();
 			// 	throw $e;
 			// }
-
 			return $this->app->page_action_result = $this->app->js(true,$page->js()->univ()->closeDialog())->univ()->successMessage('user created successfully');
 		}
 	}
 
+	function close(){
+		$this['status'] = "Won";
+		// $this->add('xavoc\ispmanager\Controller_Greet')->do($this,'lead_won');
+		$this->save();
+	}
 }

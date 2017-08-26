@@ -17,16 +17,16 @@
 						span Name
 				th
 					a.asc(href='#')
-						span Status
-				th
-					a.asc(href='#')
-						span Created Date		
+						span Assign Date
 				th
 					a.asc(href='#')
 						span Email`s 
 				th
 					a.asc(href='#')
 						span Contact 
+				th
+					a.asc(href='#')
+						span Remark
 				//- th 
 				{/}{/}
 			{/}
@@ -37,15 +37,15 @@
 				tr(class="{$odd_even}" data-id="{$id}")
 					{cols}
 					td
-						| {$name}
+						| {$name}<br/>{$organization}
 					td
-						| {$status}
-					td
-						| {$created_date}		
+						| {$assign_at}
 					td
 						| {$emails_str}
 					td
-						| {$contacts_str}	
+						| {$contacts_str}
+					td 
+						| {$remark}
 					td
 						| {action}Action Here{/}
 					//- td(style="width: 15%;")

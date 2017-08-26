@@ -13,6 +13,10 @@ class Initiator extends \Controller_Addon {
 
         $m = $this->app->top_menu->addMenu('CAF');
             $m->addItem(['Lead','icon'=>'fa fa-users'],'xavoc_ispmanager_lead');
+            $m->addItem(['Installation Due','icon'=>'fa fa-users'],'xavoc_ispmanager_lead_installation');
+            $m->addItem(['Installed','icon'=>'fa fa-users'],'xavoc_ispmanager_lead_installed');
+            $m->addItem(['Active Customer','icon'=>'fa fa-users'],'xavoc_ispmanager_lead_active');
+            $m->addItem(['All Lead','icon'=>'fa fa-users'],'xavoc_ispmanager_lead_all');
 
         $m = $this->app->top_menu->addMenu('ISP MANAGER');
         $m->addItem(['Leads','icon'=>'fa fa-users'],'xavoc_ispmanager_lead');

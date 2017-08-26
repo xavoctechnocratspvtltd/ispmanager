@@ -26,7 +26,12 @@ class Tool_Staff_MenuBar extends \xepan\cms\View_Tool{
 				['key'=>'staff_setting','name'=>'Settings'],
 				['key'=>'?page=logout','name'=>'Logout']
 			];
-		$submenu_list = [];
+		$submenu_list = [
+					'staff_lead'=>[
+								'index.php?page=staff_lead&action=open'=>'Open Lead',
+								'index.php?page=staff_lead&action=installation'=>'Installation Lead'
+							]
+				];
 
 		$page = $this->app->page;
 		// $page = $this->app->page."_active";

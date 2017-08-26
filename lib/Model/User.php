@@ -4,8 +4,11 @@ namespace xavoc\ispmanager;
 
 class Model_User extends \xepan\commerce\Model_Customer{
 	// public $table = "isp_user";
-	public $status = ['Active','InActive'];
+	public $status = ['Active','InActive','Installation','Installed','Won'];
 	public $actions = [
+				'Won'=>['view','edit','delete','assign_for_installation'],
+				'Installation'=>['view','edit','delete','installed'],
+				'Installed'=>['view','edit','delete','active'],
 				'Active'=>['view','edit','delete','AddTopups','CurrentConditions'],
 				'InActive'=>['view','edit','delete','active']
 				];
@@ -66,14 +69,15 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		// $this->addExpression('consumed_limit');
 
 		$user_j->hasOne('xepan\hr\Employee','installation_assign_to_id');
-		$user_j->addField('installed_on')->type('date');
+		$user_j->addField('installation_assign_at')->type('date');
+		$user_j->addField('installed_at')->type('date');
 		$user_j->addField('installed_narration')->type('text');
 
 		$this->addHook('beforeSave',$this);
-		$this->addHook('afterSave',[$this,'updateUserConditon']);
-		$this->addHook('afterSave',[$this,'createInvoice']);
-		$this->addHook('afterSave',[$this,'updateNASCredential']);
-		$this->addHook('afterSave',[$this,'updateWebsiteUser']);
+		// $this->addHook('afterSave',[$this,'updateUserConditon']);
+		// $this->addHook('afterSave',[$this,'createInvoice']);
+		// $this->addHook('afterSave',[$this,'updateNASCredential']);
+		// $this->addHook('afterSave',[$this,'updateWebsiteUser']);
 
 		$this->is(
 				['plan_id|to_trim|required']
@@ -835,5 +839,61 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$upt->addCondition('is_effective',true);
 		return $upt->getRows();
 	}
+
+
+	function page_assign_for_installation($page){
+		$form = $page->add('Form');
+		$form->setModel($this,['installation_assign_to_id','installed_narration']);
+		$form->addSubmit('Assign Now');
+		$form->getElement('installation_assign_to_id')->validate('required');
+		
+		if($form->isSubmitted()){
+			$this->assignForInstallation($form['installation_assign_to_id'],$form['installed_narration']);
+			return $this->app->page_action_result = $this->app->js(true,$page->js()->univ()->closeDialog())->univ()->successMessage('assign for installation');
+		}
+	}
+
+	function assignForInstallation($installation_assign_to_id,$installed_narration=null){
+		$this['installation_assign_to_id'] = $installation_assign_to_id;
+		$this['installed_narration'] = $installed_narration;
+		$this['installation_assign_at'] = $this->app->now;
+		$this['status'] = "Installation";
+		$this->save();
+	}
+	
+	function installed(){
+		$this['status'] = "Installed";
+		$this->save();
+	} 
+
+	function page_active($page){
+		$form = $page->add('Form');
+		$form->setModel($this,['plan_id','radius_username','radius_password','is_invoice_date_first_to_first','create_invoice','include_pro_data_basis']);
+		$form->addSubmit('Create User and Activate Plan');
+		if($form->isSubmitted()){
+			
+			$this['plan_id'] = $form['plan_id'];
+			$this['radius_username'] = $form['radius_username'];
+			$this['radius_password'] = $form['radius_password'];
+			$this['is_invoice_date_first_to_first'] = $form['is_invoice_date_first_to_first'];
+			$this['create_invoice'] = $form['create_invoice'];
+			$this['include_pro_data_basis'] = $form['include_pro_data_basis'];
+			$this->save();
+			$this->active();
+
+			return $this->app->page_action_result = $this->app->js(true,$page->js()->univ()->closeDialog())->univ()->successMessage('User Activated');
+		}
+
+	}
+
+	function active(){
+		$this->setPlan($this['plan_id']);
+		$this->createInvoice($this);
+		$this->updateNASCredential();
+		$this->updateWebsiteUser();
+		$this['status'] = 'Active';
+		$this->save();
+	}
+
 
 }

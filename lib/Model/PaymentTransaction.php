@@ -11,24 +11,30 @@ class Model_PaymentTransaction extends \xepan\base\Model_Table{
 	function init(){
 		parent::init();
 		
-		$this->hasOne('xavoc\ispmanager\User','customer_id');
+
+		$this->hasOne('xepan\base\Contact','contact_id');
 		$this->hasOne('xepan\hr\Employee','employee_id')->defaultValue($this->app->employee->id);
 		$this->hasOne('xavoc\ispmanager\Invoice','invoice_id');
+		$this->hasOne('xavoc\ispmanager\SalesOrder','order_id');
 		
-		$this->addField('created_at')->type('date')->defaultValue($this->app->today)->system(true);
+		$this->addField('created_at')->type('datetime')->defaultValue($this->app->now)->system(true);
 		$this->addField('payment_mode')->enum(['Cash','Cheque','DD'])->display(['form'=>'xepan\base\DropDownNormal']);
-		$this->addField('cheque_no');
-		$this->addField('cheque_date')->type('date');
-		$this->addField('dd_no');
+		$this->addField('cheque_no')->type('Number')->defaultValue(0);
+		$this->addField('cheque_date')->type('datetime');
+		$this->addField('dd_no')->type('Number')->defaultValue(0);
 		$this->addField('dd_date')->type('date');
 		$this->addField('bank_detail')->type('text');
 		$this->addField('amount')->defaultValue(0);
 
+		$this->addField('is_submitted_to_company')->type('boolean')->defaultValue(false);
+		$this->addField('submitted_at')->type('date')->system(true);
+		$this->addField('narration')->type('text');
+
 		$this->addHook('beforeSave',$this);
 
 		$this->is([
-				// 'epan_id|required',
-				'customer_id|to_trim|required',
+				'contact_id|to_trim|required',
+				'employee_id|to_trim|required',
 				'payment_mode|to_trim|required',
 				'amount|to_trim|required',
 			]);

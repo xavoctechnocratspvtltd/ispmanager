@@ -252,10 +252,76 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 		// $form->addField('checkbox','is_invoice_date_first_to_first');
 		// $form->addField('Number','grace_period_in_days');
 
+		$payment_mode_field = $form->addField('DropDown','payment_mode')->setValueList(['Cash'=>'Cash','Cheque'=>'Cheque','DD'=>'DD']);
+		$payment_mode_field->setEmptyText('select payment mode');
+
+		$form->addField('Number','cheque_no')->set(0);
+		$form->addField('DatePicker','cheque_date');
+		$form->addField('Number','dd_no')->set(0);
+		$form->addField('DatePicker','dd_date');
+		$form->addField('text','bank_detail');
+		$form->addField('number','amount')->set(0);
+		$form->addField('text','narration');
+
+		$payment_mode_field->js(true)->univ()->bindConditionalShow([
+				'Cash'=>['amount','narration'],
+				'Cheque'=>['cheque_no','cheque_date','bank_detail','amount','narration'],
+				'DD'=>['dd_no','dd_date','bank_detail','amount','narration'],
+			],'div.atk-form-row');
+
 		$form->addSubmit('create user')->addClass('btn btn-primary');
 		
 		if($form->isSubmitted()){
 			
+			$p_field_array = [
+						'Cash'=>['amount'],
+						'Cheque'=>['cheque_no','cheque_date','bank_detail','amount','narration'],
+						'DD'=>['dd_no','dd_date','bank_detail','amount','narration']
+				];
+
+			$payment_detail = [];
+			if($form['payment_mode'] == "Cash"){
+				if(!$form['amount']) $form->error('amount','must not be empty');
+
+				$payment_detail = [
+									'payment_mode'=>'Cash',
+									'amount'=>$form['amount'],
+									'narration'=>$form['narration']
+								];
+			}
+
+			if($form['payment_mode'] == "Cheque"){
+
+				if(!$form['cheque_no']) $form->error('cheque_no','must not be empty');
+				if(!$form['cheque_date']) $form->error('cheque_date','must not be empty');
+				if(!$form['bank_detail']) $form->error('bank_detail','must not be empty');
+				if(!$form['amount']) $form->error('amount','must not be empty');
+				
+				$payment_detail = [
+									'payment_mode'=>'Cheque',
+									'cheque_no'=>$form['cheque_no'],
+									'cheque_date'=>$form['cheque_date'],
+									'bank_detail'=>$form['bank_detail'],
+									'amount'=>$form['amount'],
+									'narration'=>$form['narration']
+								];
+			}
+
+			if($form['payment_mode'] == "DD"){
+				if(!$form['dd_no']) $form->error('dd_no','must not be empty');
+				if(!$form['dd_date']) $form->error('dd_date','must not be empty');
+				if(!$form['bank_detail']) $form->error('bank_detail','must not be empty');
+				if(!$form['amount']) $form->error('amount','must not be empty');
+
+				$payment_detail = [
+									'payment_mode'=>'DD',
+									'dd_no'=>$form['cheque_no'],
+									'dd_date'=>$form['cheque_date'],
+									'bank_detail'=>$form['bank_detail'],
+									'amount'=>$form['amount'],
+									'narration'=>$form['narration']
+							];
+			}
 			$isp_user = $page->add('xavoc\ispmanager\Model_User');
 			$isp_user->addCondition('customer_id',$this->id);
 			if($isp_user->count()->getOne()){
@@ -324,6 +390,7 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 					}
 				}
 
+				$this->updatePaymentTransaction($payment_detail);
 				$this->close();
 			// 	$this->app->db->commit();
 			// }catch(\Exception $e){
@@ -339,4 +406,19 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 		// $this->add('xavoc\ispmanager\Controller_Greet')->do($this,'lead_won');
 		$this->save();
 	}
+
+
+	function updatePaymentTransaction($detail_array){
+		if(!count($detail_array)) return;
+
+		$payment = $this->add('xavoc\ispmanager\Model_PaymentTransaction');
+		foreach ($detail_array as $field => $value) {
+			$payment[$field] = $value;
+		}
+		$payment['contact_id'] = $this->id;
+		$payment['employee_id'] = $this->app->employee->id;
+		$payment->save();
+		return $payment;
+	}
+
 }

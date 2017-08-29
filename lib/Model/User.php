@@ -7,7 +7,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	public $status = ['Active','InActive','Installation','Installed','Won'];
 	public $actions = [
 				'Won'=>['view','edit','delete','assign_for_installation'],
-				'Installation'=>['view','edit','delete','installed'],
+				'Installation'=>['view','edit','delete','payment_receive','installed'],
 				'Installed'=>['view','edit','delete','active'],
 				'Active'=>['view','edit','delete','AddTopups','CurrentConditions'],
 				'InActive'=>['view','edit','delete','active']
@@ -861,6 +861,96 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$this->save();
 	}
 	
+	function page_payment_receive($page){
+
+		$form = $page->add('Form');
+		$payment_mode_field = $form->addField('DropDown','payment_mode')->setValueList(['Cash'=>'Cash','Cheque'=>'Cheque','DD'=>'DD']);
+		$payment_mode_field->setEmptyText('select payment mode');
+		$form->addField('Number','cheque_no')->set(0);
+		$form->addField('DatePicker','cheque_date');
+		$form->addField('Number','dd_no')->set(0);
+		$form->addField('DatePicker','dd_date');
+		$form->addField('text','bank_detail');
+		$form->addField('number','amount')->set(0);
+		$form->addField('text','narration');
+
+		$payment_mode_field->js(true)->univ()->bindConditionalShow([
+				'Cash'=>['amount','narration'],
+				'Cheque'=>['cheque_no','cheque_date','bank_detail','amount','narration'],
+				'DD'=>['dd_no','dd_date','bank_detail','amount','narration'],
+			],'div.atk-form-row');
+
+		$form->addSubmit('Payment Receive');
+		if($form->isSubmitted()){
+
+			$p_field_array = [
+						'Cash'=>['amount'],
+						'Cheque'=>['cheque_no','cheque_date','bank_detail','amount','narration'],
+						'DD'=>['dd_no','dd_date','bank_detail','amount','narration']
+				];
+
+			$payment_detail = [];
+			if($form['payment_mode'] == "Cash"){
+				if(!$form['amount']) $form->error('amount','must not be empty');
+
+				$payment_detail = [
+									'payment_mode'=>'Cash',
+									'amount'=>$form['amount'],
+									'narration'=>$form['narration']
+								];
+			}
+
+			if($form['payment_mode'] == "Cheque"){
+
+				if(!$form['cheque_no']) $form->error('cheque_no','must not be empty');
+				if(!$form['cheque_date']) $form->error('cheque_date','must not be empty');
+				if(!$form['bank_detail']) $form->error('bank_detail','must not be empty');
+				if(!$form['amount']) $form->error('amount','must not be empty');
+				
+				$payment_detail = [
+									'payment_mode'=>'Cheque',
+									'cheque_no'=>$form['cheque_no'],
+									'cheque_date'=>$form['cheque_date'],
+									'bank_detail'=>$form['bank_detail'],
+									'amount'=>$form['amount'],
+									'narration'=>$form['narration']
+								];
+			}
+
+			if($form['payment_mode'] == "DD"){
+				if(!$form['dd_no']) $form->error('dd_no','must not be empty');
+				if(!$form['dd_date']) $form->error('dd_date','must not be empty');
+				if(!$form['bank_detail']) $form->error('bank_detail','must not be empty');
+				if(!$form['amount']) $form->error('amount','must not be empty');
+
+				$payment_detail = [
+									'payment_mode'=>'DD',
+									'dd_no'=>$form['dd_no'],
+									'dd_date'=>$form['dd_date'],
+									'bank_detail'=>$form['bank_detail'],
+									'amount'=>$form['amount'],
+									'narration'=>$form['narration']
+							];
+			}
+			
+			$this->payment_receive($payment_detail);
+			return $this->app->page_action_result = $this->app->js(true,$page->js()->univ()->closeDialog())->univ()->successMessage('Payment Received');
+		}
+	}
+
+	function payment_receive($detail_array){
+		if(!count($detail_array)) return;
+
+		$payment = $this->add('xavoc\ispmanager\Model_PaymentTransaction');
+		foreach ($detail_array as $field => $value) {
+			$payment[$field] = $value;
+		}
+		$payment['contact_id'] = $this->id;
+		$payment['employee_id'] = $this->app->employee->id;
+		$payment->save();
+		return $payment;
+	}
+
 	function installed(){
 		$this['status'] = "Installed";
 		$this->save();

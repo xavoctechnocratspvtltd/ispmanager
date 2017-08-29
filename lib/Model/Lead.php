@@ -315,8 +315,8 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 
 				$payment_detail = [
 									'payment_mode'=>'DD',
-									'dd_no'=>$form['cheque_no'],
-									'dd_date'=>$form['cheque_date'],
+									'dd_no'=>$form['dd_no'],
+									'dd_date'=>$form['dd_date'],
 									'bank_detail'=>$form['bank_detail'],
 									'amount'=>$form['amount'],
 									'narration'=>$form['narration']

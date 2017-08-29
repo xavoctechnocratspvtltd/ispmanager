@@ -41,22 +41,25 @@ class Model_PaymentTransaction extends \xepan\base\Model_Table{
 	}
 
 	function beforeSave(){
-		if($this['payment_mode'] === 'Cheque'){
 
+		if($this['payment_mode'] === 'Cheque'){
 			if(!$this['cheque_no'])
 				throw $this->Exception("Cheque no must be required",'ValidityCheck')->setField('cheque_no');
 			if(!$this['cheque_date'])
 				throw $this->Exception("Cheque Date must be required",'ValidityCheck')->setField('cheque_date');
 			if(!$this['bank_detail'])
 				throw $this->Exception(" Bank Details for Cheque must be required",'ValidityCheck')->setField('bank_detail');
-		}
-		if($this['payment_mode'] === 'DD'){
+		}elseif($this['payment_mode'] === 'DD'){
 			if(!$this['dd_no'])
 				throw $this->Exception("DD no must be required",'ValidityCheck')->setField('dd_no');
 			if(!$this['dd_date'])
 				throw $this->Exception("DD Date must be required",'ValidityCheck')->setField('dd_date');
 			if(!$this['bank_detail'])
 				throw $this->Exception("Bank Details for Demad Draft(DD) must be required",'ValidityCheck')->setField('bank_detail');
+		}elseif($this['payment_mode'] === "Cash"){
+			if(!$this['amount'])
+				throw $this->Exception("amount must be required",'ValidityCheck')->setField('amount');
 		}
+
 	}
 }

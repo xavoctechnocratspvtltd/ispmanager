@@ -10,19 +10,22 @@
     <table style="width:100%" class="table table-striped table-hover table-bordered">{header}
       <thead>{cols}{col}
         <th><a href="#"><span>Name</span></a></th>
-        <th><a href="#" class="asc"><span>Status</span></a></th>
-        <th><a href="#" class="asc"><span>Created Date		</span></a></th>
+        <th><a href="#" class="asc"><span>Assign Date</span></a></th>
         <th><a href="#" class="asc"><span>Email`s </span></a></th>
-        <th><a href="#" class="asc"><span>Contact </span></a></th>{/}{/}
+        <th><a href="#" class="asc"><span>Contact </span></a></th>
+        <th><a href="#" class="asc"><span>Remark</span></a></th>{/}{/}
       </thead>{/}
       {$subheader}
       <tbody>{rows}{row}
         <tr data-id="{$id}" class="{$odd_even}">{cols}
-          <td>{$name}</td>
-          <td>{$status}</td>
-          <td>{$created_date}		</td>
+          <td>{$name}<br/>{$organization}</td>
+          <td>{$assign_at}</td>
           <td>{$emails_str}</td>
-          <td>{$contacts_str}	</td>
+          <td>{$contacts_str}</td>
+          <td>
+             
+            {$remark}
+          </td>
           <td>{action}Action Here{/}</td>{/}
         </tr>{/}{/}
         {not_found}

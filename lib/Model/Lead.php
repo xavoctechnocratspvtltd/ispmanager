@@ -151,11 +151,12 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 		$isp_user = $page->add('xavoc\ispmanager\Model_User');
 		$isp_user->addCondition('customer_id',$this->id);
 		if($isp_user->count()->getOne()){
+			$isp_user->tryLoadAny();
 			$page->add('View')
 				->addClass('alert alert-danger')
-				->set('isp user already exists')
+				->set('isp user '.$isp_user['radius_username'].' already exists')
 			;
-			return;
+			// return;
 		}
 
 		$plan = $page->add('xavoc\ispmanager\Model_Plan');
@@ -211,7 +212,10 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 
 		// shipping address
 		$s_c_model = $this->add('xepan\base\Model_Country');
+		$s_c_model->addCondition('status','Active');
+		
 		$s_s_model = $this->add('xepan\base\Model_State');
+		$s_s_model->addCondition('status','Active');
 
 		$s_c_f = $form->addField('xepan\base\DropDown','shipping_country');
 		$s_c_f->setModel($s_c_model);
@@ -322,11 +326,11 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 									'narration'=>$form['narration']
 							];
 			}
-			$isp_user = $page->add('xavoc\ispmanager\Model_User');
-			$isp_user->addCondition('customer_id',$this->id);
-			if($isp_user->count()->getOne()){
-				$form->js()->univ()->errorMessage('user already exists')->execute();
-			}
+			// $isp_user = $page->add('xavoc\ispmanager\Model_User');
+			// $isp_user->addCondition('customer_id',$this->id);
+			// if($isp_user->count()->getOne()){
+			// 	$form->js()->univ()->errorMessage('user already exists')->execute();
+			// }
 
 			$shipping_country = $form['billing_country'];
 			$shipping_state = $form['billing_state'];
@@ -360,7 +364,7 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 				// insert user
 				$isp_user_q = "INSERT into isp_user (customer_id, first_name, last_name, contact_number, email_id, created_at) VALUES (".$this->id.",'".$form['first_name']."','".$form['last_name']."','".$form['mobile_no']."','".$form['email_id']."','".$this->app->now."')";
 				$this->app->db->dsql()->expr($isp_user_q)->execute();
-
+				
 				$user = $this->add('xavoc\ispmanager\Model_User');
 				$user->addCondition('id',$this->id);
 				$user->tryLoadAny();

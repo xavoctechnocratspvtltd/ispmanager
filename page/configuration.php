@@ -126,18 +126,31 @@ class page_configuration extends \xepan\base\Page {
 							'lead_assign_sms_content'=>'Text',
 							'lead_assign_email_subject'=>'Line',
 							'lead_assign_email_content'=>'xepan\base\RichText',
+							'installation_lead_assign_sms_content'=>'Text',
+							'installation_lead_assign_email_subject'=>'Line',
+							'installation_lead_assign_email_content'=>'xepan\base\RichText',
 						],
 					'config_key'=>'ISPMANAGER_EMAIL_SMS_CONTENT',
 					'application'=>'ispmanager'
 			]);
 		$content_model->tryLoadAny();
-		$assign_tab = $tab->addTab('Lead Assign');
-		$form = $assign_tab->add('Form');
+		$s_assign_tab = $tab->addTab('Sale Lead Assign');
+		$i_assign_tab = $tab->addTab('Installation Lead Assign');
+
+		$form = $s_assign_tab->add('Form');
 		$form->setModel($content_model,['lead_assign_sms_content','lead_assign_email_subject','lead_assign_email_content']);
 		$form->addSubmit('save')->addClass('btn btn-primary');
 		if($form->isSubmitted()){
 			$form->save();
 			$form->js(null,$form->js()->reload())->univ()->successMessage("lead assign content updated")->execute();
+		}
+
+		$form = $i_assign_tab->add('Form');
+		$form->setModel($content_model,['installation_lead_assign_sms_content','installation_lead_assign_email_subject','installation_lead_assign_email_content']);
+		$form->addSubmit('save')->addClass('btn btn-primary');
+		if($form->isSubmitted()){
+			$form->save();
+			$form->js(null,$form->js()->reload())->univ()->successMessage("Installation lead assign content updated")->execute();
 		}
 
 	}

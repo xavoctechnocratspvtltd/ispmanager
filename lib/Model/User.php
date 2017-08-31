@@ -87,13 +87,15 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	function beforeSave(){
 
 		// check unique radius_username 
-		$old_model = $this->add('xavoc\ispmanager\Model_User');
-		$old_model->addCondition('radius_username',$this['radius_username']);
-		if($this->loaded())
-			$old_model->addCondition('id','<>',$this['id']);
-		$old_model->tryLoadAny();
-		if($old_model->loaded())
-			throw $this->Exception("(".$this['radius_username'].') radius user is already exist ','ValidityCheck')->setField('radius_username');
+		if($this['radius_username']){
+			$old_model = $this->add('xavoc\ispmanager\Model_User');
+			$old_model->addCondition('radius_username',$this['radius_username']);
+			if($this->loaded())
+				$old_model->addCondition('id','<>',$this['id']);
+			$old_model->tryLoadAny();
+			if($old_model->loaded())
+				throw $this->Exception("(".$this['radius_username'].') radius user is already exist ','ValidityCheck')->setField('radius_username');
+		}
 		
 		if($this->isDirty('plan_id')){
 			$this->plan_dirty = $this->dirty['plan_id'];

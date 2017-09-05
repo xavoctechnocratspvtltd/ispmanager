@@ -10,6 +10,7 @@ class Tool_Staff_MenuBar extends \xepan\cms\View_Tool{
 
 		// todo check staff is login or not
 		$staff = $this->app->employee;
+
 		$lead = $this->add('xavoc\ispmanager\Model_Lead');
 		$lead->addCondition('assign_to_id',$staff->id);
  		$lead->addCondition('status','Open');
@@ -18,18 +19,27 @@ class Tool_Staff_MenuBar extends \xepan\cms\View_Tool{
  		$lead_badge_html = " ";
  		if($lead_open)
  			$lead_badge_html = '<span class="badge">'.$lead_open.'</span>';
-		 	
+
+		$inst_lead = $this->add('xavoc\ispmanager\Model_User');
+		$inst_lead->addCondition('installation_assign_to_id',$staff->id);
+ 		$inst_lead->addCondition('status','Installation');
+ 		$inst_lead_count = $inst_lead->count()->getOne();
+
+ 		$inst_lead_badge_html = "";
+ 		if($inst_lead_count)
+ 			$inst_lead_badge_html = '<span class="badge">'.$inst_lead_count.'</span>';
+
 		$menu = [
 				['key'=>'staff_dashboard','name'=>'Dashboard'],
 				['key'=>'staff_registration', 'name'=>'Registration'],
-				['key'=>'staff_lead','name'=>'Leads '.$lead_badge_html],
+				['key'=>'staff_lead','name'=>'Leads '.'<span>'.($lead_open+$inst_lead_count).'</span>'],
 				['key'=>'staff_setting','name'=>'Settings'],
 				['key'=>'?page=logout','name'=>'Logout']
 			];
 		$submenu_list = [
 					'staff_lead'=>[
-								'index.php?page=staff_lead&action=open'=>'Open Lead',
-								'index.php?page=staff_lead&action=installation'=>'Installation Lead'
+								'index.php?page=staff_lead&action=open'=>'Open Lead '.$lead_badge_html,
+								'index.php?page=staff_lead&action=installation'=>'Installation Lead '.$inst_lead_badge_html
 							]
 				];
 

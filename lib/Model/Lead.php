@@ -45,7 +45,9 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 		
 		$this->app->employee
 		        ->addActivity("Lead '".$this['code']."' assign to '".$employee['name']."'",null, $this['assign_to_id'] /*Related Contact ID*/,null,null,null)
-		        ->notifyTo([$this['created_by_id']],"Lead : '" . $this['code'] ."' Assign to '".$employee['name']." by ".$this->app->employee['name']."'");
+		        ->notifyWhoCan('close,lost','Open')
+		        ->notifyTo([$this['created_by_id']],"Lead : '" . $this['code'] ."' Assign to '".$employee['name']." by ".$this->app->employee['name']."'")
+		        ;
 		return $this;
 	}
 
@@ -224,8 +226,8 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 		$plan_field->setModel($plan);
 		$plan_field->setEmptyText('Please Select');
 		
-		$form->addField('mobile_no')->validate('required');
-		$form->addField('email_id')->validate('required');
+		$form->addField('mobile_no')->validate('required')->set($this->getPhones()[0]);
+		$form->addField('email_id')->validate('required')->set($this->getEmails()[0]);
 
 		$form->addField('first_name')->set($this['first_name']);
 		$form->addField('last_name')->set($this['last_name']);
@@ -461,9 +463,17 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 	}
 
 	function close(){
+
 		$this['status'] = "Won";
-		// $this->add('xavoc\ispmanager\Controller_Greet')->do($this,'lead_won');
 		$this->save();
+		
+		$this->app->employee
+        	->addActivity("Lead '".$this['code']."' Closed by '".$this->app->employee['name']."'",null, $this['id'] /*Related Contact ID*/,null,null,null)
+			->notifyWhoCan('view,edit,assign_for_installation','Won');
+        	// ->notifyTo([$this['created_by_id']],"Lead : '" . $this['code'] ."' Closed by '".$this->app->employee['name']);
+
+        return $this;
+		// $this->add('xavoc\ispmanager\Controller_Greet')->do($this,'lead_won');
 	}
 
 

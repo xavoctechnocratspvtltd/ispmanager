@@ -7,7 +7,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	public $status = ['Active','InActive','Installation','Installed','Won'];
 	public $actions = [
 				'Won'=>['view','edit','delete','assign_for_installation'],
-				'Installation'=>['view','edit','delete','payment_receive','installed'],
+				'Installation'=>['view','edit','delete','installed','payment_receive'],
 				'Installed'=>['view','edit','delete','active'],
 				'Active'=>['view','edit','delete','AddTopups','CurrentConditions'],
 				'InActive'=>['view','edit','delete','active']
@@ -861,6 +861,16 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$this['installation_assign_at'] = $this->app->now;
 		$this['status'] = "Installation";
 		$this->save();
+
+		$employee = $this->add('xavoc\ispmanager\Model_Employee');
+		$employee->load($this['installation_assign_to_id']);
+
+		$this->app->employee
+				->addActivity("Lead '".$this['code']."' assign to employee '".$employee['name']." for installation"."'",null, $this['installation_assign_to_id'] /*Related Contact ID*/,null,null,null)
+				->notifyWhoCan('installed','Installation')
+				->notifyTo([$this['installation_assign_to_id'],$this['created_by_id']],"Lead '" . $this['code'] ."' Assign to Employee '".$employee['name']." for installation '")
+				;
+		return $this;
 	}
 	
 	function page_payment_receive($page){
@@ -956,6 +966,16 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	function installed(){
 		$this['status'] = "Installed";
 		$this->save();
+		
+		$employee = $this->add('xavoc\ispmanager\Model_Employee');
+		$employee->load($this['installation_assign_to_id']);
+
+		$msg = "Installation Complete at lead '".$this['code']."' by '".$employee['name'];
+		$this->app->employee
+				->addActivity($msg,null, $this['installation_assign_to_id'] /*Related Contact ID*/,null,null,null)
+				->notifyWhoCan('active','Installed')
+				;
+		return $this;
 	} 
 
 	function page_active($page){

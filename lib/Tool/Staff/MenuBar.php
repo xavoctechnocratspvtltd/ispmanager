@@ -59,7 +59,7 @@ class Tool_Staff_MenuBar extends \xepan\cms\View_Tool{
 				$submenu_html .= '</ul>';
 				$submenu_class = "dropdown";
 
-				$g->current_row_html['list'] = '<a href="#" class="nav-link waves-effect waves-light dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">'.$g->model['name'].' <span class="caret"></span></a>';
+				$g->current_row_html['list'] = '<a href="#" class="nav-link waves-effect waves-light dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">'.$g->model['name'].' </a>';
 			}else{
 				$g->current_row_html['list'] = '<a class="nav-link waves-effect waves-light" href="'.$g->model['key'].'">'.$g->model['name'].'</a>';
 			}

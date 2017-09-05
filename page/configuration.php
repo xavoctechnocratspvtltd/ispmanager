@@ -18,7 +18,8 @@ class page_configuration extends \xepan\base\Page {
 		$tab->addTabURL('./otpexpired','OTP Expired Time');
 		$tab->addTabURL('./syslogconfig','SysLog DB Config');
 		$tab->addTabURL('./misc','MISC');
-
+		$tab->addTabURL('xepan_marketing_leadsource','Lead source');
+		
 	}
 
 	function page_misc(){

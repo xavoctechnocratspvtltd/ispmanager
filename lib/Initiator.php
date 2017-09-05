@@ -19,6 +19,7 @@ class Initiator extends \Controller_Addon {
             $m->addItem(['All Lead','icon'=>'fa fa-users'],'xavoc_ispmanager_lead_all');
 
         $m = $this->app->top_menu->addMenu('ISP MANAGER');
+        $m->addItem(['Lead Category','icon'=>'fa fa-check-square-o'],'xepan_marketing_marketingcategory');
         $m->addItem(['Leads','icon'=>'fa fa-users'],'xavoc_ispmanager_lead');
         $m->addItem(['Users','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_user');
         $m->addItem(['Plans','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_plan');

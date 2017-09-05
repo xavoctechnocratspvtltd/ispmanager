@@ -38,6 +38,61 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 		$this['assign_at'] = $this->app->now;
 		$this->save();
 
+		$employee = $this->add('xavoc\ispmanager\Model_Employee')
+					->load($assign_to_id);
+		// send email and sms
+		$this->add('xavoc\ispmanager\Controller_Greet')->do($employee,'lead_assign',$this);
+		
+		$this->app->employee
+		        ->addActivity("Lead '".$this['code']."' assign to '".$employee['name']."'",null, $this['assign_to_id'] /*Related Contact ID*/,null,null,null)
+		        ->notifyTo([$this['created_by_id']],"Lead : '" . $this['code'] ."' Assign to '".$employee['name']." by ".$this->app->employee['name']."'");
+		return $this;
+	}
+
+	function page_open($page){
+
+		$dept_id = $this->app->stickyGET('dept_id');
+		$emp = $page->add('xepan\hr\Model_Employee');
+		$emp->addCondition('id','<>',$this->app->employee->id);
+		
+		$form = $page->add('Form');
+		$dept = $page->add('xepan\hr\Model_Department');
+		$dept->addCondition('status','Active');
+
+		$dept_field = $form->addField('xepan\base\DropDown','department');
+		$dept_field->setModel($dept);
+		$dept_field->setEmptyText('Please Select Department');
+
+		$emp_field = $form->addField('xepan\base\DropDown','employee')->validate('required');
+		$emp_field->setModel($emp);
+		$emp_field->setEmptyText('Please Select');
+
+		$form->addField('text','remark');
+
+		if($this['assign_to_id'])
+			$emp_field->set($this['assign_to_id']);
+
+		if($dept_id){
+			$emp_field->getModel()->addCondition('department_id',$dept_id);
+		}
+
+		$dept_field->js('change',$form->js()->atk4_form('reloadField','employee',[$this->app->url(),'dept_id'=>$dept_field->js()->val()]));
+		// $dept_field->js('change',$emp_field->js()->reload(null,null,[$this->app->url(null,['cut_object'=>$emp_field->name]),'dept_id'=>$dept_field->js()->val()]));
+
+		$form->addSubmit('Re-open & Assign')->addClass('btn btn-primary');
+		if($form->isSubmitted()){
+			$this->open($form['employee'],$form['remark']);
+			return $this->app->page_action_result = $this->app->js(true,$page->js()->univ()->closeDialog())->univ()->successMessage('Assigned');
+		}
+	}
+
+	function open($assign_to_id,$remark=null){
+		$this['assign_to_id'] = $assign_to_id;
+		$this['remark'] .= " ".$remark;
+		$this['status'] = "Open";
+		$this['assign_at'] = $this->app->now;
+		$this->save();
+
 		$employee = $this->add('xepan\hr\Model_Employee')->load($assign_to_id);
 		// send email and sms
 		$this->add('xavoc\ispmanager\Controller_Greet')->do($employee,'lead_assign',$this);

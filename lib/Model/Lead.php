@@ -38,10 +38,10 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 		$this['assign_at'] = $this->app->now;
 		$this->save();
 
-		// $employee = $this->add('xavoc\ispmanager\Model_Employee')
-		// 			->load($assign_to_id);
-		// // send email and sms
-		// $this->add('xavoc\ispmanager\Controller_Greet')->do($employee,'lead_assign',$this);
+		$employee = $this->add('xavoc\ispmanager\Model_Employee')
+					->load($assign_to_id);
+		// send email and sms
+		$this->add('xavoc\ispmanager\Controller_Greet')->do($employee,'lead_assign',$this);
 		
 		// $this->app->employee
 		//         ->addActivity("Lead '".$this['code']."' assign to '".$employee['name']."'",null, $this['assign_to_id'] /*Related Contact ID*/,null,null,null)

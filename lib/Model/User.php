@@ -948,9 +948,9 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$this['status'] = "Installation";
 		$this->save();
 
-		// $employee = $this->add('xavoc\ispmanager\Model_Employee');
-		// $employee->load($this['installation_assign_to_id']);
-		
+		$employee = $this->add('xavoc\ispmanager\Model_Employee');
+		$employee->load($this['installation_assign_to_id']);
+
 		// $this->app->employee
 		// 		->addActivity("Lead '".$this['code']."' assign to employee '".$employee['name']." for installation"."'",null, $this['installation_assign_to_id'] /*Related Contact ID*/,null,null,null)
 		// 		->notifyWhoCan('installed','Installation')
@@ -1072,6 +1072,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$form->setModel($this,['plan_id','radius_username','radius_password','is_invoice_date_first_to_first','create_invoice','include_pro_data_basis']);
 		$form->addSubmit('Create User and Activate Plan');
 		if($form->isSubmitted()){
+			
 			$this['plan_id'] = $form['plan_id'];
 			$this['radius_username'] = $form['radius_username'];
 			$this['radius_password'] = $form['radius_password'];
@@ -1080,6 +1081,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			$this['include_pro_data_basis'] = $form['include_pro_data_basis'];
 			$this->save();
 			$this->active();
+
 			return $this->app->page_action_result = $this->app->js(true,$page->js()->univ()->closeDialog())->univ()->successMessage('User Activated');
 		}
 
@@ -1087,11 +1089,13 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 	function active(){
 		$this->setPlan($this['plan_id']);
+		$this['status'] = 'Active';
+		$this->save();
+
+		$this->updateUserConditon();
 		$this->createInvoice($this);
 		$this->updateNASCredential();
 		$this->updateWebsiteUser();
-		$this['status'] = 'Active';
-		$this->save();
 	}
 
 

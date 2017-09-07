@@ -118,6 +118,14 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		if(!$this['is_invoice_date_first_to_first']){
 			$this['include_pro_data_basis'] = 'none';
 		}
+
+
+		if($this['last_ul_limit'] == null OR $this['last_ul_limit'] == 0 OR !is_numeric($this['last_ul_limit']))
+			$this['last_ul_limit'] = 0;
+
+		if($this['last_dl_limit'] == null OR $this['last_dl_limit'] == 0 OR !is_numeric($this['last_dl_limit']))
+			$this['last_dl_limit'] = 0;
+
 	}
 
 	function updateUserConditon(){

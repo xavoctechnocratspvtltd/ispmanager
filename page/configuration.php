@@ -127,9 +127,35 @@ class page_configuration extends \xepan\base\Page {
 							'lead_assign_sms_content'=>'Text',
 							'lead_assign_email_subject'=>'Line',
 							'lead_assign_email_content'=>'xepan\base\RichText',
+
 							'installation_lead_assign_sms_content'=>'Text',
 							'installation_lead_assign_email_subject'=>'Line',
 							'installation_lead_assign_email_content'=>'xepan\base\RichText',
+
+							'new_account_sms_content'=>'Text',
+							'new_account_email_subject'=>'Line',
+							'new_account_email_content'=>'xepan\base\RichText',
+
+							'invoice_paid_sms_content'=>'Text',
+							'invoice_paid_email_subject'=>'Line',
+							'invoice_paid_email_content'=>'xepan\base\RichText',
+
+							'renewal_alert_sms_content'=>'Text',
+							'renewal_alert_email_subject'=>'Line',
+							'renewal_alert_email_content'=>'xepan\base\RichText',
+
+							'account_reactivation_sms_content'=>'Text',
+							'account_reactivation_email_subject'=>'Line',
+							'account_reactivation_email_content'=>'xepan\base\RichText',
+							
+							'account_reactivation_sms_content'=>'Text',
+							'account_reactivation_email_subject'=>'Line',
+							'account_reactivation_email_content'=>'xepan\base\RichText',
+
+							'plan_changed_sms_content'=>'Text',
+							'plan_changed_email_subject'=>'Line',
+							'plan_changed_email_content'=>'xepan\base\RichText',
+
 						],
 					'config_key'=>'ISPMANAGER_EMAIL_SMS_CONTENT',
 					'application'=>'ispmanager'
@@ -137,6 +163,11 @@ class page_configuration extends \xepan\base\Page {
 		$content_model->tryLoadAny();
 		$s_assign_tab = $tab->addTab('Sale Lead Assign');
 		$i_assign_tab = $tab->addTab('Installation Lead Assign');
+		$new_account_tab = $tab->addTab('New Account');
+		$invoice_paid_tab = $tab->addTab('Invoice Paid');
+		$renewal_alert_tab = $tab->addTab('Renewal Alert');
+		$account_reactivation_tab = $tab->addTab('Account Reactivation');
+		$plan_changed_tab = $tab->addTab('Plan Changed');
 
 		$form = $s_assign_tab->add('Form');
 		$form->setModel($content_model,['lead_assign_sms_content','lead_assign_email_subject','lead_assign_email_content']);
@@ -146,12 +177,59 @@ class page_configuration extends \xepan\base\Page {
 			$form->js(null,$form->js()->reload())->univ()->successMessage("lead assign content updated")->execute();
 		}
 
+		// installation lead
 		$form = $i_assign_tab->add('Form');
 		$form->setModel($content_model,['installation_lead_assign_sms_content','installation_lead_assign_email_subject','installation_lead_assign_email_content']);
 		$form->addSubmit('save')->addClass('btn btn-primary');
 		if($form->isSubmitted()){
 			$form->save();
 			$form->js(null,$form->js()->reload())->univ()->successMessage("Installation lead assign content updated")->execute();
+		}
+
+		// new account
+		$form = $new_account_tab->add('Form');
+		$form->setModel($content_model,['new_account_sms_content','new_account_email_subject','new_account_email_content']);
+		$form->addSubmit('save')->addClass('btn btn-primary');
+		if($form->isSubmitted()){
+			$form->save();
+			$form->js(null,$form->js()->reload())->univ()->successMessage("New Account content updated")->execute();
+		}
+
+		// Invoice Paid
+		$form = $invoice_paid_tab->add('Form');
+		$form->setModel($content_model,['invoice_paid_sms_content','invoice_paid_email_subject','invoice_paid_email_content']);
+		$form->addSubmit('save')->addClass('btn btn-primary');
+		if($form->isSubmitted()){
+			$form->save();
+			$form->js(null,$form->js()->reload())->univ()->successMessage("invoice paid content updated")->execute();
+		}
+
+		// Renewal Alert
+		$form = $renewal_alert_tab->add('Form');
+		$form->setModel($content_model,['renewal_alert_sms_content','renewal_alert_email_subject','renewal_alert_email_content']);
+		$form->addSubmit('save')->addClass('btn btn-primary');
+		if($form->isSubmitted()){
+			$form->save();
+			$form->js(null,$form->js()->reload())->univ()->successMessage("renewal alert content updated")->execute();
+		}
+
+
+		//Account Reactivatio 
+		$form = $account_reactivation_tab->add('Form');
+		$form->setModel($content_model,['account_reactivation_sms_content','account_reactivation_email_subject','account_reactivation_email_content']);
+		$form->addSubmit('save')->addClass('btn btn-primary');
+		if($form->isSubmitted()){
+			$form->save();
+			$form->js(null,$form->js()->reload())->univ()->successMessage("account reactivation content updated")->execute();
+		}
+
+		//Account Reactivatio 
+		$form = $plan_changed_tab->add('Form');
+		$form->setModel($content_model,['plan_changed_sms_content','plan_changed_email_subject','plan_changed_email_content']);
+		$form->addSubmit('save')->addClass('btn btn-primary');
+		if($form->isSubmitted()){
+			$form->save();
+			$form->js(null,$form->js()->reload())->univ()->successMessage("Plan Changed content updated")->execute();
 		}
 
 	}

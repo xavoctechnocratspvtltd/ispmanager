@@ -1074,25 +1074,24 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 	function page_active($page){
 
-		// $form = $page->add('xavoc\ispmanager\Form_CAF');
-		
-		$form = $page->add('Form');
-		$form->setModel($this,['plan_id','radius_username','radius_password','is_invoice_date_first_to_first','create_invoice','include_pro_data_basis']);
-		$form->addSubmit('Create User and Activate Plan');
-		if($form->isSubmitted()){
-			
-			$this['plan_id'] = $form['plan_id'];
-			$this['radius_username'] = $form['radius_username'];
-			$this['radius_password'] = $form['radius_password'];
-			$this['is_invoice_date_first_to_first'] = $form['is_invoice_date_first_to_first'];
-			$this['create_invoice'] = $form['create_invoice'];
-			$this['include_pro_data_basis'] = $form['include_pro_data_basis'];
-			$this->save();
+		$mandatory_field = [
+						'radius_username'=>'required',
+						'radius_password'=>'required',
+						'plan_id'=>'required',
+						];
+		$form = $page->add('xavoc\ispmanager\Form_CAF',['model'=>$this,'mandatory_field'=>$mandatory_field]);
+
+		if(!$this['radius_username'])
+			$form->getElement('radius_username')->set($this['code']);
+		// $form = $page->add('Form');
+		// $form->setModel($this,['plan_id','radius_username','radius_password','is_invoice_date_first_to_first','create_invoice','include_pro_data_basis']);
+		// $form->addSubmit('Create User and Activate Plan');
+		// if($form->isSubmitted()){
+		$form->addHook('CAF_AfterSave',function($form)use($page){
 			$this->active();
-
 			return $this->app->page_action_result = $this->app->js(true,$page->js()->univ()->closeDialog())->univ()->successMessage('User Activated');
-		}
-
+		});
+		$form->process();
 	}
 
 	function active(){

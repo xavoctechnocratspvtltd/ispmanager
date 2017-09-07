@@ -4,8 +4,11 @@ namespace xavoc\ispmanager;
 
 class Model_User extends \xepan\commerce\Model_Customer{
 	// public $table = "isp_user";
-	public $status = ['Active','InActive'];
+	public $status = ['Active','InActive','Installation','Installed','Won'];
 	public $actions = [
+				'Won'=>['view','edit','delete','assign_for_installation'],
+				'Installation'=>['view','edit','delete','installed','payment_receive'],
+				'Installed'=>['view','edit','delete','active'],
 				'Active'=>['view','edit','delete','AddTopups','CurrentConditions'],
 				'InActive'=>['view','edit','delete','active']
 				];
@@ -65,29 +68,35 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		// });
 		// $this->addExpression('consumed_limit');
 
+		$user_j->hasOne('xepan\hr\Employee','installation_assign_to_id');
+		$user_j->addField('installation_assign_at')->type('date');
+		$user_j->addField('installed_at')->type('date');
+		$user_j->addField('installed_narration')->type('text');
+
 		$this->addHook('beforeSave',$this);
-		$this->addHook('afterSave',[$this,'updateUserConditon']);
-		$this->addHook('afterSave',[$this,'createInvoice']);
-		$this->addHook('afterSave',[$this,'updateNASCredential']);
-		$this->addHook('afterSave',[$this,'updateWebsiteUser']);
+		// $this->addHook('afterSave',[$this,'updateUserConditon']);
+		// $this->addHook('afterSave',[$this,'createInvoice']);
+		// $this->addHook('afterSave',[$this,'updateNASCredential']);
+		// $this->addHook('afterSave',[$this,'updateWebsiteUser']);
 
 		$this->is(
-				['radius_username|to_trim|unique']
-				['plan_id|to_trim|reuired']
+				['plan_id|to_trim|required']
 			);
 	}
 
 	function beforeSave(){
 
 		// check unique radius_username 
-		$old_model = $this->add('xavoc\ispmanager\Model_User');
-		$old_model->addCondition('radius_username',$this['radius_username']);
-		if($this->loaded())
-			$old_model->addCondition('id','<>',$this['id']);
-		$old_model->tryLoadAny();
-		if($old_model->loaded())
-			throw $this->Exception("(".$this['radius_username'].') radius user is already exist ','ValidityCheck')->setField('radius_username');
-
+		if($this['radius_username']){
+			$old_model = $this->add('xavoc\ispmanager\Model_User');
+			$old_model->addCondition('radius_username',$this['radius_username']);
+			if($this->loaded())
+				$old_model->addCondition('id','<>',$this['id']);
+			$old_model->tryLoadAny();
+			if($old_model->loaded())
+				throw $this->Exception("(".$this['radius_username'].') radius user is already exist ','ValidityCheck')->setField('radius_username');
+		}
+		
 		if($this->isDirty('plan_id')){
 			$this->plan_dirty = $this->dirty['plan_id'];
 		}
@@ -625,6 +634,92 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 	function page_CurrentConditions($page){
 		$crud = $page->add('xepan\hr\CRUD');
+
+		if($crud->isEditing()){
+			$form = $crud->form;
+			$form->add('xepan\base\Controller_FLC')
+				->addContentSpot()
+				// ->makePanelsCoppalsible()
+				->layout([
+						'plan_id'=>'About Plan~c1~3',
+						'condition_id'=>'c11~3',
+						'remark'=>'c12~3',
+						'is_topup'=>'c13~3',
+						'data_limit'=>'c2~6',
+						'carry_data'=>'c21~6',
+						'download_limit'=>'DL/UL Limit~c1~3~in KBps',
+						'upload_limit'=>'c11~3~in KBps',
+						'fup_download_limit'=>'c12~3~in KBps',
+						'fup_upload_limit'=>'c13~3~in KBps',
+						'accounting_download_ratio'=>'c2~6~Ratio in %',
+						'accounting_upload_ratio'=>'c21~6~Ratio in %',
+						'start_date'=>'Dates~c1~3',
+						'end_date'=>'c11~3',
+						'expire_date'=>'c12~3',
+						'is_expired'=>'c13~3',
+						'is_recurring'=>'c2~3',
+						'is_effective'=>'c21~3',
+						'download_data_consumed'=>'Data Consumed~c1~6~in MB',
+						'upload_data_consumed'=>'c2~6~in MB',
+						'time_limit'=>'Time Limit~c1~3',
+						'data_limit_row'=>'c11~3',
+						'duplicated_from_record_id'=>'c12~3',
+						'is_data_carry_forward'=>'c13~3',
+						'start_time'=>'Time~c1~6',
+						'end_time'=>'c2~6',
+						'reset_date'=>'Reset Box~c1~3',
+						'data_reset_value'=>'c2~3',
+						'data_reset_mode'=>'c3~6',
+						'sun'=>'Week~c1~1',
+						'mon'=>'c2~1',
+						'tue'=>'c3~1',
+						'wed'=>'c4~1',
+						'thu'=>'c5~1',
+						'fri'=>'c6~1',
+						'sat'=>'c7~1',
+						'd01'=>'Days~c1~1',
+						'd02'=>'c2~1',
+						'd03'=>'c3~1',
+						'd04'=>'c4~1',
+						'd05'=>'c5~1',
+						'd06'=>'c6~1',
+						'd07'=>'c7~1',
+						'd08'=>'c8~1',
+						'd09'=>'c9~1',
+						'd10'=>'c10~1',
+						'd11'=>'c11~1',
+						'd12'=>'c12~1',
+						'd13'=>'c13~1',
+						'd14'=>'c14~1',
+						'd15'=>'c15~1',
+						'd16'=>'c16~1',
+						'd17'=>'c17~1',
+						'd18'=>'c18~1',
+						'd19'=>'c19~1',
+						'd20'=>'c20~1',
+						'd21'=>'c21~1',
+						'd22'=>'c22~1',
+						'd23'=>'c23~1',
+						'd24'=>'c24~1',
+						'd25'=>'c25~1',
+						'd26'=>'c26~1',
+						'd27'=>'c27~1',
+						'd28'=>'c28~1',
+						'd29'=>'c29~1',
+						'd30'=>'c30~1',
+						'd31'=>'c31~1',
+						'treat_fup_as_dl_for_last_limit_row'=>'MISC~c1~6',
+						'is_pro_data_affected'=>'c2~6',
+						'burst_dl_limit'=>'Burst~c1~3~limit per second',
+						'burst_ul_limit'=>'c11~3~limit per second',
+						'burst_threshold_dl_limit'=>'c12~3~limit per second',
+						'burst_threshold_ul_limit'=>'c13~3~limit per second',
+						'burst_dl_time'=>'c2~3~time in second',
+						'burst_ul_time'=>'c21~3~time in second',
+						'priority'=>'c22~6',
+				]);
+						
+		}
 		$model = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup');
 		$model->addCondition('user_id',$this->id);
 		$crud->setModel($model);
@@ -753,6 +848,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	}
 
 	function updateWebsiteUser(){
+		if(!$this['radius_username']) return;
 
 		$username = str_replace(" ", "",$this['radius_username']);
 		if($this->app->getConfig('username_is_email',true)){
@@ -831,5 +927,176 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$upt->addCondition('is_effective',true);
 		return $upt->getRows();
 	}
+
+
+	function page_assign_for_installation($page){
+		$form = $page->add('Form');
+		$form->setModel($this,['installation_assign_to_id','installed_narration']);
+		$form->addSubmit('Assign Now');
+		$form->getElement('installation_assign_to_id')->validate('required');
+		
+		if($form->isSubmitted()){
+			$this->assignForInstallation($form['installation_assign_to_id'],$form['installed_narration']);
+			return $this->app->page_action_result = $this->app->js(true,$page->js()->univ()->closeDialog())->univ()->successMessage('assign for installation');
+		}
+	}
+
+	function assignForInstallation($installation_assign_to_id,$installed_narration=null){
+		$this['installation_assign_to_id'] = $installation_assign_to_id;
+		$this['installed_narration'] = $installed_narration;
+		$this['installation_assign_at'] = $this->app->now;
+		$this['status'] = "Installation";
+		$this->save();
+
+		$employee = $this->add('xavoc\ispmanager\Model_Employee');
+		$employee->load($this['installation_assign_to_id']);
+
+		// $this->app->employee
+		// 		->addActivity("Lead '".$this['code']."' assign to employee '".$employee['name']." for installation"."'",null, $this['installation_assign_to_id'] /*Related Contact ID*/,null,null,null)
+		// 		->notifyWhoCan('installed','Installation')
+		// 		->notifyTo([$this['installation_assign_to_id'],$this['created_by_id']],"Lead '" . $this['code'] ."' Assign to Employee '".$employee['name']." for installation '")
+		// 		;
+		return $this;
+	}
+	
+	function page_payment_receive($page){
+
+		$form = $page->add('Form');
+		$payment_mode_field = $form->addField('DropDown','payment_mode')->setValueList(['Cash'=>'Cash','Cheque'=>'Cheque','DD'=>'DD']);
+		$payment_mode_field->setEmptyText('select payment mode');
+		$form->addField('Number','cheque_no')->set(0);
+		$form->addField('DatePicker','cheque_date');
+		$form->addField('Number','dd_no')->set(0);
+		$form->addField('DatePicker','dd_date');
+		$form->addField('text','bank_detail');
+		$form->addField('number','amount')->set(0);
+		$form->addField('text','narration');
+
+		$payment_mode_field->js(true)->univ()->bindConditionalShow([
+				'Cash'=>['amount','narration'],
+				'Cheque'=>['cheque_no','cheque_date','bank_detail','amount','narration'],
+				'DD'=>['dd_no','dd_date','bank_detail','amount','narration'],
+			],'div.atk-form-row');
+
+		$form->addSubmit('Payment Receive');
+		if($form->isSubmitted()){
+
+			$p_field_array = [
+						'Cash'=>['amount'],
+						'Cheque'=>['cheque_no','cheque_date','bank_detail','amount','narration'],
+						'DD'=>['dd_no','dd_date','bank_detail','amount','narration']
+				];
+
+			$payment_detail = [];
+			if($form['payment_mode'] == "Cash"){
+				if(!$form['amount']) $form->error('amount','must not be empty');
+
+				$payment_detail = [
+									'payment_mode'=>'Cash',
+									'amount'=>$form['amount'],
+									'narration'=>$form['narration']
+								];
+			}
+
+			if($form['payment_mode'] == "Cheque"){
+
+				if(!$form['cheque_no']) $form->error('cheque_no','must not be empty');
+				if(!$form['cheque_date']) $form->error('cheque_date','must not be empty');
+				if(!$form['bank_detail']) $form->error('bank_detail','must not be empty');
+				if(!$form['amount']) $form->error('amount','must not be empty');
+				
+				$payment_detail = [
+									'payment_mode'=>'Cheque',
+									'cheque_no'=>$form['cheque_no'],
+									'cheque_date'=>$form['cheque_date'],
+									'bank_detail'=>$form['bank_detail'],
+									'amount'=>$form['amount'],
+									'narration'=>$form['narration']
+								];
+			}
+
+			if($form['payment_mode'] == "DD"){
+				if(!$form['dd_no']) $form->error('dd_no','must not be empty');
+				if(!$form['dd_date']) $form->error('dd_date','must not be empty');
+				if(!$form['bank_detail']) $form->error('bank_detail','must not be empty');
+				if(!$form['amount']) $form->error('amount','must not be empty');
+
+				$payment_detail = [
+									'payment_mode'=>'DD',
+									'dd_no'=>$form['dd_no'],
+									'dd_date'=>$form['dd_date'],
+									'bank_detail'=>$form['bank_detail'],
+									'amount'=>$form['amount'],
+									'narration'=>$form['narration']
+							];
+			}
+			
+			$this->payment_receive($payment_detail);
+			return $this->app->page_action_result = $this->app->js(true,$page->js()->univ()->closeDialog())->univ()->successMessage('Payment Received');
+		}
+	}
+
+	function payment_receive($detail_array){
+		if(!count($detail_array)) return;
+
+		$payment = $this->add('xavoc\ispmanager\Model_PaymentTransaction');
+		foreach ($detail_array as $field => $value) {
+			$payment[$field] = $value;
+		}
+		$payment['contact_id'] = $this->id;
+		$payment['employee_id'] = $this->app->employee->id;
+		$payment->save();
+		return $payment;
+	}
+
+	function installed(){
+		$this['status'] = "Installed";
+		$this->save();
+		
+		$employee = $this->add('xavoc\ispmanager\Model_Employee');
+		$employee->load($this['installation_assign_to_id']);
+
+		$msg = "Installation Complete at lead '".$this['code']."' by '".$employee['name'];
+		$this->app->employee
+				->addActivity($msg,null, $this['installation_assign_to_id'] /*Related Contact ID*/,null,null,null)
+				->notifyWhoCan('active','Installed')
+				;
+		return $this;
+	} 
+
+	function page_active($page){
+
+		// $form = $page->add('xavoc\ispmanager\Form_CAF');
+		
+		$form = $page->add('Form');
+		$form->setModel($this,['plan_id','radius_username','radius_password','is_invoice_date_first_to_first','create_invoice','include_pro_data_basis']);
+		$form->addSubmit('Create User and Activate Plan');
+		if($form->isSubmitted()){
+			
+			$this['plan_id'] = $form['plan_id'];
+			$this['radius_username'] = $form['radius_username'];
+			$this['radius_password'] = $form['radius_password'];
+			$this['is_invoice_date_first_to_first'] = $form['is_invoice_date_first_to_first'];
+			$this['create_invoice'] = $form['create_invoice'];
+			$this['include_pro_data_basis'] = $form['include_pro_data_basis'];
+			$this->save();
+			$this->active();
+
+			return $this->app->page_action_result = $this->app->js(true,$page->js()->univ()->closeDialog())->univ()->successMessage('User Activated');
+		}
+
+	}
+
+	function active(){
+		$this->setPlan($this['plan_id']);
+		$this['status'] = 'Active';
+		$this->save();
+
+		$this->updateUserConditon();
+		$this->createInvoice($this);
+		$this->updateNASCredential();
+		$this->updateWebsiteUser();
+	}
+
 
 }

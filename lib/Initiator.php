@@ -11,7 +11,15 @@ class Initiator extends \Controller_Addon {
         $this->addLocation(array('template'=>'templates','js'=>'templates/js','css'=>'templates/css'))
         ->setBaseURL('../shared/apps/xavoc/ispmanager/');
 
+        $m = $this->app->top_menu->addMenu('CAF');
+            $m->addItem(['Lead','icon'=>'fa fa-users'],'xavoc_ispmanager_lead');
+            $m->addItem(['Installation Due','icon'=>'fa fa-users'],'xavoc_ispmanager_lead_installation');
+            $m->addItem(['Installed','icon'=>'fa fa-users'],'xavoc_ispmanager_lead_installed');
+            $m->addItem(['Active Customer','icon'=>'fa fa-users'],'xavoc_ispmanager_lead_active');
+            $m->addItem(['All Lead','icon'=>'fa fa-users'],'xavoc_ispmanager_lead_all');
+
         $m = $this->app->top_menu->addMenu('ISP MANAGER');
+        $m->addItem(['Lead Category','icon'=>'fa fa-check-square-o'],'xepan_marketing_marketingcategory');
         $m->addItem(['Leads','icon'=>'fa fa-users'],'xavoc_ispmanager_lead');
         $m->addItem(['Users','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_user');
         $m->addItem(['Plans','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_plan');
@@ -28,6 +36,14 @@ class Initiator extends \Controller_Addon {
         $user = $this->add('xavoc\ispmanager\Model_User');
         // $this->app->addHook('beforeQSPSave',[$user,'updateQSPBeforeSave']);
         $this->app->addHook('invoice_paid',[$user,'invoicePaid']);
+
+        $this->app->addHook('new_lead_added',function($app,$model){
+            
+            if($model['status'] == "Active" AND $model['assign_to_id'] > 0){
+                $lead = $this->add('xavoc\ispmanager\Model_Lead')->load($model['id']);
+                $lead->assign($model['assign_to_id']);
+            }
+        });
         return $this;
     }
 

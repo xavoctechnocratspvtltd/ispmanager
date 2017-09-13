@@ -11,8 +11,10 @@ class page_log extends \xepan\base\Page{
 		parent::init();
 
 		$this->app->stickyGET('username');
-		$from_date = $this->app->stickyGET('from_date')?:$this->app->now;
-		$to_date = $this->app->stickyGET('to_date')?:$this->app->now;
+		$from_date = $this->app->stickyGET('from_date')?:$this->app->today;
+		$to_date = $this->app->stickyGET('to_date')?:$this->app->today;
+
+		$skip_page = $this->app->stickyGET('pagintor');
 
 		/*Mysql Credetial Configuration*/
 		$db_m = $this->add('xepan\base\Model_ConfigJsonModel',
@@ -68,11 +70,18 @@ class page_log extends \xepan\base\Page{
 		$f->addSubmit('Get Detail')->addClass('btn btn-primary');
 
 		$grid_view = $this->add('View');
-		
+
+		if(($skip_page - 1) >= 0)
+			$previous_btn = $grid_view->add('Button')->set('previous')->js('click',$grid_view->js()->reload(['pagintor'=>($skip_page-1)]));
+		// next btn
+		$next_btn = $grid_view->add('Button')->set('next')->js('click',$grid_view->js()->reload(['pagintor'=>($skip_page+1)]));
+		// previous btn
+
+
 		$query = "SELECT * FROM SystemEvents Where Message LIKE '%->%'";
 		if($_GET['username']){
 			$filter_user = $this->add('xavoc\ispmanager\Model_User')->load($_GET['username']);
-			$query .= " OR Message LIKE '%-".$filter_user['radius_username']."%'";
+			$query .= " AND Message LIKE '%-".$filter_user['radius_username'].">%'";
 		}
 
 		if($from_date)
@@ -85,12 +94,17 @@ class page_log extends \xepan\base\Page{
 		// else
 		// 	$query .= " Where ReceivedAt < '".$this->app->nextDate($to_date)."'";
 
-		$query .= " Limit 50;";
-		
+		if($skip_page)
+			$query .= " order by id desc Limit 50,".($skip_page * 50).";";
+		else
+			$query .= " order by id desc Limit 50;";
+
+		// echo $query;
 		/*Access SysLog DB*/
 		$new_db = $this->add('DB');
 		$new_db->connect($dsn);
 		$x = $new_db->dsql()->expr($query);//->get();
+		
 		$grid = $grid_view->add('Grid');
 		// $grid->add('View',null,'grid_buttons')->set($filter_user['radius_username']);
 		$grid->addColumn('username');
@@ -127,8 +141,9 @@ class page_log extends \xepan\base\Page{
 			$g->current_row_html['username'] = $username[2];
 		});
 
+
 		if($f->isSubmitted()){
-			$f->js(null,$grid_view->js()->reload(['username'=>$f['username'],'from_date'=>$f['from_date'],'to_date'=>$f['to_date']]))->reload(['username'=>$f['username'],'from_date'=>$f['from_date'],'to_date'=>$f['to_date']])->execute();
+			$f->js(null,$grid_view->js(null,$grid_view->js()->univ()->successMessage($query))->reload(['username'=>$f['username'],'from_date'=>$f['from_date'],'to_date'=>$f['to_date']]))->reload(['username'=>$f['username'],'from_date'=>$f['from_date'],'to_date'=>$f['to_date']])->execute();
 		}
 
 

@@ -1099,7 +1099,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$this['status'] = 'Active';
 		$this->save();
 
-		$this->updateUserConditon();
+		// $this->updateUserConditon();
 		$this->createInvoice($this);
 		$this->updateNASCredential();
 		$this->updateWebsiteUser();

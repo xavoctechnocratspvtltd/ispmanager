@@ -143,7 +143,7 @@ class page_log extends \xepan\base\Page{
 
 
 		if($f->isSubmitted()){
-			$f->js(null,$grid_view->js(null,$grid_view->js()->univ()->successMessage($query))->reload(['username'=>$f['username'],'from_date'=>$f['from_date'],'to_date'=>$f['to_date']]))->reload(['username'=>$f['username'],'from_date'=>$f['from_date'],'to_date'=>$f['to_date']])->execute();
+			$f->js(null,$grid_view->js(null)->reload(['username'=>$f['username'],'from_date'=>$f['from_date'],'to_date'=>$f['to_date']]))->reload(['username'=>$f['username'],'from_date'=>$f['from_date'],'to_date'=>$f['to_date']])->execute();
 		}
 
 

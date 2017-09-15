@@ -72,7 +72,6 @@ class Tool_HotspotRegistration extends \xepan\cms\View_Tool{
 					$temp->loadTemplateFromString($message);
 					$msg=$this->add('View',null,null,$temp);
 					$msg->template->trySetHTML('otp_number',$user['radius_password']);
-					// throw new \Exception($msg->getHtml(), 1);
 					
 					if(!$sms_model['otp_msg_content']) throw new \Exception("Please update OTP SMS Content");
 					$this->add('xepan\communication\Controller_Sms')->sendMessage($registration_form['mobile_no'],$msg->getHtml());
@@ -150,7 +149,9 @@ class Tool_HotspotRegistration extends \xepan\cms\View_Tool{
 				$user['otp_verified']=1;
 				$user['plan_id']=$defalut_plan_model['default_hotspot_plan'];
 				$user->save();
-				$auth=$this->app->auth;
+				$user->active();
+
+				$auth = $this->app->auth;
 				$auth->login($verify_form['mobile_no']);
 				
 				

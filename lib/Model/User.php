@@ -79,9 +79,9 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		// $this->addHook('afterSave',[$this,'updateNASCredential']);
 		// $this->addHook('afterSave',[$this,'updateWebsiteUser']);
 
-		$this->is(
-				['plan_id|to_trim|required']
-			);
+		// $this->is(
+		// 		['plan_id|to_trim|required']
+		// 	);
 	}
 
 	function beforeSave(){

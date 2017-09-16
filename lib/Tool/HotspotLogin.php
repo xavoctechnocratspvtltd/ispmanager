@@ -23,6 +23,8 @@ class Tool_HotspotLogin extends \xepan\cms\View_Tool{
 
 		if($_GET['logout']){
 			$this->app->auth->logout();
+			$this->app->forget('isLoggedIn');
+			
 			$ll = $this->app->recall('link-login');
 			$ll = str_replace("/login", "/logout", $ll);
 			$this->add('View')->setHTML("

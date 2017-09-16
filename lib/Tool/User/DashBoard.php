@@ -34,7 +34,7 @@ class Tool_User_DashBoard extends \xepan\cms\View_Tool{
 		
 		if($ll=$_GET['link-login'] OR $ll = $this->app->recall('link-login') ){
 			$this->app->memorize('link-login',$ll);
-			if(!$this->app->auth->isLoggedIn()){
+			if($this->app->recall('isLoggedIn',false)){
 				$this->add('View')->setHTML("
 						<form name='redirect' action='$ll'>
 							<input type='hidden' name='username' value='".$user['radius_username']."' />
@@ -44,6 +44,7 @@ class Tool_User_DashBoard extends \xepan\cms\View_Tool{
 							document.redirect.submit();
 						</script>
 					");
+				$this->app->memorize('isLoggedIn',true);
 			}
 		}
 

@@ -48,7 +48,7 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 
 		$this->addField('reset_date')->type('datetime');
 		$this->addField('data_reset_value')->type('number');
-		$this->addField('data_reset_mode')->enum(['hour','day','month','year']);
+		$this->addField('data_reset_mode')->enum(['hours','days','months','years']);
 		
 		$this->addField('sun')->type('boolean')->defaultValue(false);
 		$this->addField('mon')->type('boolean')->defaultValue(false);

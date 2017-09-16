@@ -19,8 +19,10 @@ class page_client extends \xepan\base\Page {
 				$config .= $model->getConfig();
 			}
 
-			$form = $page->add('Form');
-			$form->addField('text','config')->set($config);
+			$page->add('View')
+				->setElement('textarea')
+				->setAttr('rows',20)
+				->set($config);
 		});
 
 		$crud = $this->add('xepan\hr\CRUD');

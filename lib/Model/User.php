@@ -51,7 +51,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$user_j->addField('last_accounting_dl_ratio')->defaultValue(100);
 		$user_j->addField('last_accounting_ul_ratio')->defaultValue(100);
 
-		$user_j->hasMany('xavoc\ispmanager\UserPlanAndTopup','user_id');
+		$user_j->hasMany('xavoc\ispmanager\UserPlanAndTopup','user_id',null,'PlanConditions');
 		$user_j->hasMany('xepan\hr\Employee_Document','customer_id',null,'CustomerDocuments');
 		// $user_j->hasMany('xavoc\ispmanager\TopUp','user_id',null,'topups');
 
@@ -79,9 +79,29 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		// $this->addHook('afterSave',[$this,'updateNASCredential']);
 		// $this->addHook('afterSave',[$this,'updateWebsiteUser']);
 
+		$this->addHook('beforeDelete',$this);
 		// $this->is(
 		// 		['plan_id|to_trim|required']
 		// 	);
+	}
+
+	function beforeDelete(){
+
+		try{
+			$this->app->db->beginTransaction();
+
+			$this->ref('PlanConditions')->deleteAll();
+			$radcheck_model = $this->add('xavoc\ispmanager\Model_RadCheck');
+			$radcheck_model->addCondition('username',$this['radius_username']);
+			$radcheck_model->each(function($m){
+				$m->delete();
+			});
+
+			$this->app->db->commit();
+		}catch(\Exception $e){
+			$this->app->db->rollback();
+		}
+
 	}
 
 	function beforeSave(){

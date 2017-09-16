@@ -130,7 +130,7 @@ class Tool_HotspotRegistration extends \xepan\cms\View_Tool{
 				// echo $user['otp_send_time']. "<br/>";
 				// echo $date. "<br/>";
 				// echo $current_date . "<br/>";
-				if ($date < $current_date) {
+				if (strtotime($date) < strtotime($current_date)) {
 					$verify_form->displayError('otp',"This OTP IS Expired");   
 				}
 
@@ -150,9 +150,15 @@ class Tool_HotspotRegistration extends \xepan\cms\View_Tool{
 				$user['plan_id']=$defalut_plan_model['default_hotspot_plan'];
 				$user->save();
 				$user->active();
-
+				
+				$username = $verify_form['mobile_no'];
+				if($this->app->getConfig('username_is_email',true)){
+					if(!filter_var($username, FILTER_VALIDATE_EMAIL)){
+						$username .= "@isp-fake.com";
+					}
+				}
 				$auth = $this->app->auth;
-				$auth->login($verify_form['mobile_no']);
+				$auth->login($username);
 				
 				
 				$this->app->stickyForget('secret_opt_pass_code');

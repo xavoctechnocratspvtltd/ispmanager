@@ -21,11 +21,15 @@ class Tool_HotspotLogin extends \xepan\cms\View_Tool{
 			return;
 		}
 
+		if($_REQUEST['link-login']){
+			$this->app->memorize('link-login',$_REQUEST['link-login']);
+		}
+
 		$form = $this->add('Form',null,null,['form/empty']);
 		$form->setLayout(['form/hotspot-login']);
 		$form->addField('Line','username','Mobile No / Username')->validate('required');
 		$form->addField('password','password')->validate('required');
-		$form->addField('hidden','link_login')->set($_REQUEST['link-login']);
+		$form->addField('hidden','link_login')->set($this->app->recall('link-login',$_REQUEST['link-login']));
 
 		$form->addSubmit($this->options['button_label'])->addClass('btn btn-primary btn-lg text-center btn-block');
 

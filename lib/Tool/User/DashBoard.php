@@ -32,7 +32,7 @@ class Tool_User_DashBoard extends \xepan\cms\View_Tool{
 			return;
 		}
 		
-		if($ll=$_GET['link-login']){
+		if($ll=$_GET['link-login'] OR $ll = $this->app->recall('link-login')){
 			$this->app->memorize('link-login',$ll);
 			$this->add('View')->setHTML("
 					<form name='redirect' action='$ll'>

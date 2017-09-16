@@ -18,7 +18,7 @@ class Tool_User_MenuBar extends \xepan\cms\View_Tool{
 
 
 		if(!$this->app->auth->isLoggedIn()){
-			$this->app->redirect($this->app->url('hostspot_login'));
+			$this->app->redirect($this->app->url('/'));
 			return;
 		}
 

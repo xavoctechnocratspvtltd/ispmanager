@@ -55,30 +55,32 @@ class page_test extends \xepan\base\Page {
 		// }
 		
 
-		$form = $this->add('Form');
-		$form->addSubmit('Send Lead Assign Message');
-		if($form->isSubmitted()){
-			$lead = $this->add('xavoc\ispmanager\Model_Lead');
-			$lead->addCondition('assign_to_id','<>','null');
-			$lead->setOrder('id','desc');
-			$lead->tryLoadAny();
+		// $form = $this->add('Form');
+		// $form->addSubmit('Send Lead Assign Message');
+		// if($form->isSubmitted()){
+		// 	$lead = $this->add('xavoc\ispmanager\Model_Lead');
+		// 	$lead->addCondition('assign_to_id','<>','null');
+		// 	$lead->setOrder('id','desc');
+		// 	$lead->tryLoadAny();
 
-			$employee = $this->add('xepan\hr\Model_Employee');
-			$employee->addExpression('mobile_number')->set(function($m,$q){
-				$x = $m->add('xepan\base\Model_Contact_Phone');
-				return $x->addCondition('contact_id',$q->getField('id'))
-						->addCondition('is_active',true)
-						->addCondition('is_valid',true)
-						->setLimit(1)
-						->fieldQuery('value');
-			});
+		// 	$employee = $this->add('xepan\hr\Model_Employee');
+		// 	$employee->addExpression('mobile_number')->set(function($m,$q){
+		// 		$x = $m->add('xepan\base\Model_Contact_Phone');
+		// 		return $x->addCondition('contact_id',$q->getField('id'))
+		// 				->addCondition('is_active',true)
+		// 				->addCondition('is_valid',true)
+		// 				->setLimit(1)
+		// 				->fieldQuery('value');
+		// 	});
 
-			$employee->load($lead['assign_to_id']);
-			// send email and sms
-			$this->add('xavoc\ispmanager\Controller_Greet')->do($employee,'lead_assign',$lead);
+		// 	$employee->load($lead['assign_to_id']);
+		// 	// send email and sms
+		// 	$this->add('xavoc\ispmanager\Controller_Greet')->do($employee,'lead_assign',$lead);
 			
-			$form->js()->univ()->successMessage('saved')->execute();
-		}
+		// 	$form->js()->univ()->successMessage('saved')->execute();
+		// }
+
+		$this->add('xavoc\ispmanager\Controller_ResetUserPlanAndTopup')->run();
 
 	}
 }

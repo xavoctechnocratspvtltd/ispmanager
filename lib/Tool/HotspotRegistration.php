@@ -85,7 +85,7 @@ class Tool_HotspotRegistration extends \xepan\cms\View_Tool{
 				$registration_form->js(null,
 										$registration_form->js()
 												->univ()
-													->successMessage('Send OTP '.$otp)
+													->successMessage('Password send on your mobile number '.$otp)
 									)->reload(
 										[
 											'mobile_no'=>$user['radius_username'],

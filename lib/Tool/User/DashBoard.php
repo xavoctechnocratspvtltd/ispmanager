@@ -32,17 +32,19 @@ class Tool_User_DashBoard extends \xepan\cms\View_Tool{
 			return;
 		}
 		
-		if($ll=$_GET['link-login'] OR $ll = $this->app->recall('link-login')){
+		if($ll=$_GET['link-login'] OR $ll = $this->app->recall('link-login') ){
 			$this->app->memorize('link-login',$ll);
-			$this->add('View')->setHTML("
-					<form name='redirect' action='$ll'>
-						<input type='hidden' name='username' value='".$user['radius_username']."' />
-						<input type='hidden' name='password' value='".$user['radius_password']."' />
-					</form>
-					<script>
-						document.redirect.submit();
-					</script>
-				");
+			if(!$this->app->auth->isLoggedIn()){
+				$this->add('View')->setHTML("
+						<form name='redirect' action='$ll'>
+							<input type='hidden' name='username' value='".$user['radius_username']."' />
+							<input type='hidden' name='password' value='".$user['radius_password']."' />
+						</form>
+						<script>
+							document.redirect.submit();
+						</script>
+					");
+			}
 		}
 
 		// echo "string". $user['plan_id'];

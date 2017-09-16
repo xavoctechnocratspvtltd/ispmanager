@@ -42,8 +42,8 @@ class Tool_HotspotRegistration extends \xepan\cms\View_Tool{
 				$user->addCondition('radius_username',$registration_form['mobile_no']);
 				$user->tryLoadAny();
 				if(!$user->loaded()){
-					$user['first_name'] = "Guest";
-					$user['last_name'] = "User";
+					$user['first_name'] = $registration_form['mobile_no'];
+					$user['last_name'] = " (Guest user)";
 					$user['radius_username'] = $registration_form['mobile_no'];
 				}
 				

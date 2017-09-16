@@ -33,18 +33,18 @@ class Tool_User_MenuBar extends \xepan\cms\View_Tool{
 		$this->template->trySet('user_dp',($user['image']?:"shared/apps/xavoc/ispmanager/templates/img/profile.png"));
 
 
-		$this->on('click','.ispmanager-user-logout-btn',function($js)use($user){
-			$ret=[];
-			if($ll = $this->app->recall('link-login')){
-				$ll = str_replace("/login", "/logout", $ll);
-				$ret[]=$this->js(true)->univ()->newWindow($ll);
-			}
-			// var_dump($ret);					
-			$ret[]=$js->redirect($this->app->url('logout'));
-			return $ret;
+		// $this->on('click','.ispmanager-user-logout-btn',function($js)use($user){
+		// 	$ret=[];
+		// 	if($ll = $this->app->recall('link-login')){
+		// 		$ll = str_replace("/login", "/logout", $ll);
+		// 		$ret[]=$this->js(true)->univ()->newWindow($ll);
+		// 	}
+		// 	// var_dump($ret);
+		// 	$ret[]=$js->redirect($this->app->url('logout'));
+		// 	return $ret;
 			
 
-		});
+		// });
 	}
 
 	function defaultTemplate(){

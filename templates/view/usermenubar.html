@@ -10,15 +10,7 @@
         <ul class="nav navbar-nav">
           <li class="nav-item {$active_menu} {$user_dashboard_active}"><a href="user_dashboard" class="nav-link waves-effect waves-light">Dashboard </a></li>
           <li class="nav-item {$user_setting_active}"><a href="user_setting" class="nav-link waves-effect waves-light">Setting</a></li>
-        </ul>
-        <ul style="margin-top:5px" class="navbar-nav ml-auto nav-flex-icons pull-right">
-          <li class="nav-item avatar dropdown"><a id="navbarDropdownMenuLink" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" class="nav-link dropdown-toggle waves-effect waves-light"><img src="{user_dp}shared/apps/xavoc/ispmanager/templates/img/profile.png{/}" class="img-fluid img-circle z-depth-2"/></a>
-            <ul aria-labelledby="navbarDropdownMenuLink" data-dropdown-in="fadeIn" data-dropdown-out="fadeOut" class="dropdown-menu dropdown-warning dropdown-menu-right">
-              <li class="{$user_setting_active}"><a href="user_setting" class="dropdown-item waves-effect waves-light"><i class="fa fa-users"></i><span class="text-right">Setting </span></a></li>
-              <li><a href="index.php?logout=true" class="btn btn-danger ispmanager-user-logout-btn">Logout</a>
-              </li>
-            </ul>
-          </li>
+          <li style="background-color:#cc0000;" class="nav-item bg bg-danger"><a href="index.php?logout=true" class="nav-link waves-effect waves-light ispmanager-user-logout-btn">Logout</a></li>
         </ul>
       </div>
     </div>

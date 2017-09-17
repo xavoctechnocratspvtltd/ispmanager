@@ -19,7 +19,7 @@ class Tool_HotspotRegistration extends \xepan\cms\View_Tool{
 		if(!$otp_number){
 			$registration_form = $this->add('Form',null,null,['form/empty']);
 			$registration_form->setLayout(['form/hotspot-registration']);
-			$registration_form->layout->add('View',null,'form_title')->set('Hotspot Register');
+			$registration_form->layout->add('View',null,'form_title')->set('Hotspot Sign Up');
 			$registration_form->addField('Number','mobile_no','Mobile No')->validate('required');
 			// $form->addField('Number','otp','OTP');
 
@@ -97,7 +97,7 @@ class Tool_HotspotRegistration extends \xepan\cms\View_Tool{
 
 			$verify_form = $this->add('Form',null,null,['form/empty']);
 			$verify_form->setLayout(['form/hotspot-registration']);
-			$verify_form->layout->add('View',null,'form_title')->set('Hotspot Verify');
+			$verify_form->layout->add('View',null,'form_title')->set('Hotspot Verification');
 			$verify_form->addField('Number','mobile_no','Mobile No')->validate('required')->set($mobile_no);
 			$verify_form->addField('Number','otp','OTP')->validate('required');//->set($otp_number);
 
@@ -108,7 +108,7 @@ class Tool_HotspotRegistration extends \xepan\cms\View_Tool{
 				$user->addCondition('radius_username',$verify_form['mobile_no']);
 				$user->tryLoadAny();
 				if(!$user->loaded())
-					$verify_form->displayError('mobile_no','This M-Number is not registered');
+					$verify_form->displayError('mobile_no','mobile number is not registered');
 
 				if($verify_form['otp']!=$user['radius_password'])
 					$verify_form->displayError('otp','OTP did not match');
@@ -131,7 +131,7 @@ class Tool_HotspotRegistration extends \xepan\cms\View_Tool{
 				// echo $date. "<br/>";
 				// echo $current_date . "<br/>";
 				if (strtotime($date) < strtotime($current_date)) {
-					$verify_form->displayError('otp',"This OTP IS Expired");   
+					$verify_form->displayError('otp',"This OTP/Password IS Expired");   
 				}
 
 				$defalut_plan_model = $this->add('xepan\base\Model_ConfigJsonModel',
@@ -163,7 +163,7 @@ class Tool_HotspotRegistration extends \xepan\cms\View_Tool{
 				
 				$this->app->stickyForget('secret_opt_pass_code');
 				$this->app->stickyForget('mobile_no');
-				return $verify_form->js(null,$verify_form->js()->univ()->successMessage('Mobile Number is Registered'))->redirect($this->app->url($this->options['after_login_url']))->execute();
+				return $verify_form->js(null,$verify_form->js()->univ()->successMessage('your account is verified successfully'))->redirect($this->app->url($this->options['after_login_url']))->execute();
 			}
 
 

@@ -99,9 +99,9 @@ class Tool_HotspotRegistration extends \xepan\cms\View_Tool{
 			$verify_form->setLayout(['form/hotspot-registration']);
 			$verify_form->layout->add('View',null,'form_title')->set('Hotspot Verification');
 			$verify_form->addField('Number','mobile_no','Mobile No')->validate('required')->set($mobile_no);
-			$verify_form->addField('Number','otp','OTP')->validate('required');//->set($otp_number);
+			$verify_form->addField('Number','otp','OTP/Password')->validate('required');//->set($otp_number);
 
-			$verify_form->addSubmit("Verify OTP")->addClass('btn btn-success btn-lg text-center btn-block');
+			$verify_form->addSubmit("Verify Password")->addClass('btn btn-success btn-lg text-center btn-block');
 			
 			if($verify_form->isSubmitted()){
 				$user=$this->add('xavoc\ispmanager\Model_User');	

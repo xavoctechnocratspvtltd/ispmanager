@@ -9,6 +9,9 @@ class Tool_CustomerRegistration extends \xepan\cms\View_Tool{
 	public $options=[];
 	function init(){
 		parent::init();
+
+		if($this->owner instanceof \AbstractController) return;
+		
 		if(!$this->app->auth->isLoggedIn()){
 			$this->app->redirect($this->app->url('staff_login'));
 			return;

@@ -16,6 +16,8 @@ class Tool_HotspotLogin extends \xepan\cms\View_Tool{
 	function init(){
 		parent::init();
 
+		if($this->owner instanceof \AbstractController) return;
+		
 		if($this->app->auth->isLoggedIn() && $_POST['error']){
 			$this->app->redirect($this->app->url($this->options['after_login_url'],['error'=>$_POST['error']]));
 			return;

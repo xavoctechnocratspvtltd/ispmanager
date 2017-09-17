@@ -16,7 +16,8 @@ class Tool_CurrentPlan extends \xepan\cms\View_Tool{
 
 	function init(){
 		parent::init();
-
+		if($this->owner instanceof \AbstractController) return;
+		
 		$this->add('View')->setHTML(" 
 			<h3>Current Plan</h3>
 			<p>Data Limit: 50GB</p>

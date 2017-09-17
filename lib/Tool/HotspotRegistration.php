@@ -13,6 +13,9 @@ class Tool_HotspotRegistration extends \xepan\cms\View_Tool{
 
 	function init(){
 		parent::init();
+
+		if($this->owner instanceof \AbstractController) return;
+		
 		$otp_number = $this->app->stickyGET('secret_opt_pass_code');
 		$mobile_no = $this->app->stickyGET('mobile_no');
 

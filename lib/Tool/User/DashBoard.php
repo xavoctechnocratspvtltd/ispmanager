@@ -16,6 +16,8 @@ class Tool_User_DashBoard extends \xepan\cms\View_Tool{
 	function init(){
 		parent::init();
 		
+		if($this->owner instanceof \AbstractController) return;
+		
 		if(!$this->app->auth->isLoggedIn()){
 			$this->app->redirect($this->app->url($this->options['login_url']));
 			return;

@@ -10,6 +10,8 @@ class Tool_Login extends \xepan\cms\View_Tool{
 	function init(){
 		parent::init();
 
+		if($this->owner instanceof \AbstractController) return;
+		
 		$f = $this->add('Form');
 
 		$f->addField('username')->validate('required')->setAttr('placeHolder','enter your mobile number');

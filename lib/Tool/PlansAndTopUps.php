@@ -12,6 +12,7 @@ class Tool_PlansAndTopUps extends \xepan\cms\View_Tool{
 	function init(){
 		parent::init();
 
+		if($this->owner instanceof \AbstractController) return;
 		$this->add('View')->setHTML(" 
 			<h3>Available Plans</h3>
 			<p>Data Limit: 100GB</p>

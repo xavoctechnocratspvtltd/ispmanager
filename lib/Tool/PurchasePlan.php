@@ -20,7 +20,9 @@ class Tool_PurchasePlan extends \xepan\cms\View_Tool{
 
 	function init(){
 		parent::init();
-				
+		
+		if($this->owner instanceof \AbstractController) return;
+		
 		$layout_template = 'purchaseplan';
 		if($this->options['layout_template']) $layout_template = $this->options['layout_template'];
 

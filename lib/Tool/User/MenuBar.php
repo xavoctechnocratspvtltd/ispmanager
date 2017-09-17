@@ -15,7 +15,7 @@ class Tool_User_MenuBar extends \xepan\cms\View_Tool{
 		parent::init();
 
 		// todo check User is login or not
-
+		if($this->owner instanceof \AbstractController) return;
 
 		if(!$this->app->auth->isLoggedIn()){
 			$this->app->redirect($this->app->url('/'));

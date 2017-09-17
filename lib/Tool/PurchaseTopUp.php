@@ -17,6 +17,8 @@ class Tool_PurchaseTopUp extends \xepan\cms\View_Tool{
 	function init(){
 		parent::init();
 
+		if($this->owner instanceof \AbstractController) return;
+		
 		$this->add('View_Error')->setHTML('I am Purchase TopUp Tool');
 	}
 }		

@@ -12,6 +12,8 @@ class Tool_User_Profile extends \xepan\cms\View_Tool{
 	function init(){
 		parent::init();
 
+		if($this->owner instanceof \AbstractController) return;
+		
 		$user = $this->add('xavoc\ispmanager\Model_User');
 		
 		$user->addExpression('email')->set(function($m,$q){

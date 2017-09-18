@@ -77,7 +77,6 @@
 			$model = $m->add('xavoc\ispmanager\Model_User')
 				->addCondition('id',$m->getElement('customer_id'))
 				;
-
 			return $q->expr('IFNULL([0],0)',[$model->fieldQuery('radius_username')]);
 		});
 
@@ -95,15 +94,19 @@
 		if($this->customer_id){
 			$this->addCondition('customer_id',$this->customer_id);
 		}
-
+		
 		$this->addExpression('status')->set('"All"');
 		$this->setOrder('customer_id');
 	}
 
 	function page_create_invoice($page){
-
-		$recu_items = $this->add('xavoc\ispmanager\Model_RecurringInvoiceItem',['customer_id'=>$this['customer_id']]);
-
+		if(!$this['customer_id']){
+			$page->add('View_Error')->set('customer not found');
+			return;
+		}
+		
+		$recu_items = $this->add('xavoc\ispmanager\Model_RecurringInvoiceItem',['customer_id'=>$this['customer_id'],'from_date'=>$_GET['from_date'],'to_date'=>$_GET['to_date'],'table_alias'=>'itemssssss']);
+				
 		$user = $this->add('xavoc\ispmanager\Model_User')->load($this['customer_id']);
 		$detail_data = [];
 		

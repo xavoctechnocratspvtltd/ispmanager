@@ -907,7 +907,9 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	function invoicePaid($app,$invoice_model){
 		
 		$customer = $this->add('xavoc\ispmanager\Model_User');
-		$customer->loadLoggedIn();
+		$customer->addCondition('id',$invoice_model['contact_id']);
+		$customer->tryLoadAny();
+
 		if(!$customer->loaded()) throw new \Exception("customer not found");
 
 		// // $user->addCondition('customer_id',$customer->id)->tryLoadAny();
@@ -916,9 +918,9 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$user = $this->add('xavoc\ispmanager\Model_User');
 		$user->loadBy('radius_username',$customer['radius_username']);
 
-		$sale_order = $invoice_model->saleOrder();
-		$items = $sale_order->orderItems()->tryLoadAny();
-		$user->setPlan($items['item_id']);
+		$items = $invoice_model->Items()->tryLoadAny();
+		if($items->loaded())
+			$user->setPlan($items['item_id']);
 	}
 
 	function addAttachment($attach_id,$type=null){

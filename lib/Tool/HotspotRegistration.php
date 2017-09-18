@@ -44,12 +44,16 @@ class Tool_HotspotRegistration extends \xepan\cms\View_Tool{
 				$user = $this->add('xavoc\ispmanager\Model_User');
 				$user->addCondition('radius_username',$registration_form['mobile_no']);
 				$user->tryLoadAny();
-				if(!$user->loaded()){
-					$user['first_name'] = $registration_form['mobile_no'];
-					$user['last_name'] = " (Guest user)";
-					$user['radius_username'] = $registration_form['mobile_no'];
+				if($user->loaded()){
+					$registration_form->error('mobile_no','user is already register');
 				}
 				
+				throw new \Exception("Error Processing Request", 1);
+				
+				$user['first_name'] = $registration_form['mobile_no'];
+				$user['last_name'] = " (Guest user)";
+				$user['radius_username'] = $registration_form['mobile_no'];
+
 				$user['otp_send_time']=$this->app->now;
 				$user['radius_password'] = rand(999,999999);
 				$user['status']="InActive";

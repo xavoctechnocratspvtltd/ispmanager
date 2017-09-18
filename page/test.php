@@ -80,7 +80,9 @@ class page_test extends \xepan\base\Page {
 		// 	$form->js()->univ()->successMessage('saved')->execute();
 		// }
 
-		$this->add('xavoc\ispmanager\Controller_ResetUserPlanAndTopup')->run();
+		if($_GET['reset']){
+			$this->add('xavoc\ispmanager\Controller_ResetUserPlanAndTopup')->run();
+		}
 
 	}
 }

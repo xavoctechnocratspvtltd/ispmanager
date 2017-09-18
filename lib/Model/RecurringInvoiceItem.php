@@ -16,6 +16,7 @@
 	function init(){
 		parent::init();
 
+		$this->getElement('item_id')->caption('Plan');
 		// if(!$this->to_date) $this->to_date = $this->app->today;
 		if($this->from_date) $this->from_date = date("Y-m-d",strtotime($this->from_date));
 			
@@ -70,6 +71,15 @@
 					'last_sale_price'=>$m->getElement('price')
 				]);
 		})->caption('recurring price');
+
+
+		$this->addExpression('radius_username')->set(function($m,$q){
+			$model = $m->add('xavoc\ispmanager\Model_User')
+				->addCondition('id',$m->getElement('customer_id'))
+				;
+
+			return $q->expr('IFNULL([0],0)',[$model->fieldQuery('radius_username')]);
+		});
 
 		$this->addCondition('is_recurring',true);
 		$this->addCondition([['recurring_qsp_detail_id',0],['recurring_qsp_detail_id',null]]);
@@ -130,6 +140,5 @@
 		$invoice_model = $this->add('xepan\commerce\Model_SalesInvoice')->load($return_data['master_detail']['id']);
 		$page->add('xepan\commerce\View_QSP',['qsp_model'=>$invoice_model]);
 
-		// $this->app->page_action_result = 
 	}
 }

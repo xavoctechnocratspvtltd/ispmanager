@@ -39,7 +39,7 @@ class Tool_User_DashBoard extends \xepan\cms\View_Tool{
 		// 	$this->app->memorize('link-login',$ll);
 
 			if(!$this->app->recall('isLoggedIn',false)){
-				$ll = $this->options['hotspot_base_url'];
+				$ll = $this->options['hotspot_base_url']."/login";
 
 				$this->add('View')->setHTML("
 						<form name='redirect' action='$ll'>

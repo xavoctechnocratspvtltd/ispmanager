@@ -11,7 +11,7 @@ class Tool_HotspotLogin extends \xepan\cms\View_Tool{
 						'after_login_url'=>'user_dashboard',
 						'registration_url'=>'',
 						'button_label'=>'Log in',
-						'hotspot_base_url'=>'http://isp.promptinfracom.com'
+						'hotspot_base_url'=>'http://isp.prompthotspot.com'
 	];
 
 	function init(){

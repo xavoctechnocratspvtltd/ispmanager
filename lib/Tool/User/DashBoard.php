@@ -9,7 +9,7 @@ namespace xavoc\ispmanager;
 class Tool_User_DashBoard extends \xepan\cms\View_Tool{
 	public $options = [
 		'login_url'=>'hotspotlogin',
-		'hotspot_base_url'=>'http://isp.promptinfracom.com'
+		'hotspot_base_url'=>'http://isp.prompthotspot.com'
 		// 'nas_ip'=>'103.89.255.86', // using link-login from MT
 		
 	];

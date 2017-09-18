@@ -9,6 +9,7 @@ namespace xavoc\ispmanager;
 class Tool_User_DashBoard extends \xepan\cms\View_Tool{
 	public $options = [
 		'login_url'=>'hotspotlogin',
+		'hotspot_base_url'=>'http://isp.promptinfracom.com'
 		// 'nas_ip'=>'103.89.255.86', // using link-login from MT
 		
 	];
@@ -34,10 +35,12 @@ class Tool_User_DashBoard extends \xepan\cms\View_Tool{
 			return;
 		}
 		
-		if($ll=$_GET['link-login'] OR $ll = $this->app->recall('link-login') ){
-			$this->app->memorize('link-login',$ll);
+		// if($ll=$_GET['link-login'] OR $ll = $this->app->recall('link-login') ){
+		// 	$this->app->memorize('link-login',$ll);
 
 			if(!$this->app->recall('isLoggedIn',false)){
+				$ll = $this->options['hotspot_base_url'];
+
 				$this->add('View')->setHTML("
 						<form name='redirect' action='$ll'>
 							<input type='hidden' name='username' value='".$user['radius_username']."' />
@@ -49,7 +52,7 @@ class Tool_User_DashBoard extends \xepan\cms\View_Tool{
 					");
 				$this->app->memorize('isLoggedIn',true);
 			}
-		}
+		// }
 
 		// echo "string". $user['plan_id'];
 		// $user = $this->app->auth->model;
@@ -65,10 +68,10 @@ class Tool_User_DashBoard extends \xepan\cms\View_Tool{
 		$total_data_limit = 0;
 		$total_data_consumed = 0;
 		foreach ($list as $key => $condition) {
-			$up_t_consumed += $condition['upload_data_consumed'] + $condition['session_upload_data_consumed'];
-			$dw_t_consumed += $condition['download_data_consumed'] + $condition['session_download_data_consumed'];
-			$total_data_consumed += $condition['data_consumed'];
-			$total_data_limit += $condition['data_limit'];
+			$up_t_consumed += $condition['upload_data_consumed']?:0 + $condition['session_upload_data_consumed']?:0;
+			$dw_t_consumed += $condition['download_data_consumed']?:0 + $condition['session_download_data_consumed']?:0;
+			$total_data_consumed += $condition['data_consumed']?:0;
+			$total_data_limit += $condition['data_limit']?:0;
 		}
 
 		$this->template->trySet('consume_data',$user->byte2human($total_data_consumed));

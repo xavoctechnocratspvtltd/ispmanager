@@ -10,7 +10,8 @@ class Tool_HotspotLogin extends \xepan\cms\View_Tool{
 	public $options = [
 						'after_login_url'=>'user_dashboard',
 						'registration_url'=>'',
-						'button_label'=>'Log in'
+						'button_label'=>'Log in',
+						'hotspot_base_url'=>'http://isp.promptinfracom.com'
 	];
 
 	function init(){
@@ -27,8 +28,7 @@ class Tool_HotspotLogin extends \xepan\cms\View_Tool{
 			$this->app->auth->logout();
 			$this->app->forget('isLoggedIn');
 			
-			$ll = $this->app->recall('link-login');
-			$ll = str_replace("/login", "/logout", $ll);
+			$ll = $this->options['hotspot_base_url']."/logout";
 			$this->add('View')->setHTML("
 					<form name='redirect' action='$ll'>
 					</form>
@@ -38,15 +38,15 @@ class Tool_HotspotLogin extends \xepan\cms\View_Tool{
 				");
 		}
 
-		if($_REQUEST['link-login']){
-			$this->app->memorize('link-login',$_REQUEST['link-login']);
-		}
+		// if($_REQUEST['link-login']){
+		// 	$this->app->memorize('link-login',$_REQUEST['link-login']);
+		// }
 
 		$form = $this->add('Form',null,null,['form/empty']);
 		$form->setLayout(['form/hotspot-login']);
 		$form->addField('Line','username','Mobile No / Username')->validate('required');
 		$form->addField('password','password')->validate('required');
-		$form->addField('hidden','link_login')->set($this->app->recall('link-login',$_REQUEST['link-login']));
+		$form->addField('hidden','link_login')->set($this->options['hotspot_base_url']);
 
 		$form->addSubmit($this->options['button_label'])->addClass('btn btn-primary btn-lg text-center btn-block');
 

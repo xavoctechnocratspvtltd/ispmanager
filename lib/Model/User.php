@@ -309,22 +309,26 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$this->testDebug('====================','');
 		$this->testDebug(($is_topup?'Adding Topup ':'Setting Plan ').($remove_old?'(Truncate Old Plan Data)'.($remove_old_topups?' (Removing old topups also)':''):''), $plan_model['name']. ' on '. $on_date);
 
-		$condition_model = $this->add('xavoc\ispmanager\Model_Condition')->addCondition('plan_id',$plan_model->id);
-		
-		// set all plan to expire
-		if(!$is_topup){
-			if($remove_old)
-				$update_query = "DELETE FROM  isp_user_plan_and_topup WHERE user_id = '".$this->id."' AND is_topup = '0'";
-			else
-				$update_query = "UPDATE isp_user_plan_and_topup SET is_expired = '1' WHERE user_id = '".$this->id."' AND is_topup = '0'";
-			
-			$this->app->db->dsql()->expr($update_query)->execute();
+		$condition_model = $this->add('xavoc\ispmanager\Model_Condition')
+							->addCondition('plan_id',$plan_model->id);
+
+		// setting same plan again then only update the existing condition
+		if($this['plan_id'] != $plan_model->id){
+			if(!$is_topup){
+				if($remove_old)
+					$update_query = "DELETE FROM  isp_user_plan_and_topup WHERE user_id = '".$this->id."' AND is_topup = '0'";
+				else
+					$update_query = "UPDATE isp_user_plan_and_topup SET is_expired = '1' WHERE user_id = '".$this->id."' AND is_topup = '0'";
+				
+				$this->app->db->dsql()->expr($update_query)->execute();
+			}
+
+			if($remove_old_topups){
+				$update_query = "DELETE FROM  isp_user_plan_and_topup WHERE user_id = '".$this->id."' AND is_topup = '1'";
+				$this->app->db->dsql()->expr($update_query)->execute();
+			}
 		}
 
-		if($remove_old_topups){
-			$update_query = "DELETE FROM  isp_user_plan_and_topup WHERE user_id = '".$this->id."' AND is_topup = '1'";
-			$this->app->db->dsql()->expr($update_query)->execute();
-		}
 		
 						
 		foreach ($condition_model as $key => $condition) {
@@ -334,9 +338,18 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			$fields = array_diff($fields,$unset_field);
 
 			$u_p = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup');
-			$u_p['user_id'] = $this->id;
-			$u_p['plan_id'] = $plan_model->id;
-			$u_p['condition_id'] = $condition['id'];
+			$u_p->addCondition('user_id',$this->id)
+				->addCondition('plan_id',$plan_model->id)
+				->addCondition('condition_id',$condition['id'])
+				;
+			$u_p->tryLoadAny();
+
+			if(!$u_p->loaded()){
+				$u_p['is_effective'] = 0;
+			}
+			// $u_p['user_id'] = $this->id;
+			// $u_p['plan_id'] = $plan_model->id;
+			// $u_p['condition_id'] = $condition['id'];
 			$u_p['is_topup'] = $plan_model['is_topup'];
 
 			// all fields same as condition are setted
@@ -381,7 +394,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			$u_p['expire_date'] = $u_p['is_topup']? $end_date : date("Y-m-d H:i:s", strtotime("+".($this['grace_period_in_days']?:'5')." days",strtotime($end_date)));
 			$u_p['is_recurring'] = $plan_model['is_auto_renew'];
 			$u_p['reset_date'] = $reset_date;
-			$u_p['is_effective'] = 0;
+			
 			$u_p['data_limit_row'] = null; //id condition has data_limit then set empty else previous data row limit id;
 			
 			// pro data update data_limit

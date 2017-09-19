@@ -10,6 +10,18 @@ class page_user extends \xepan\base\Page {
 		// parent::init();
 
 		$model = $this->add('xavoc\ispmanager\Model_User');
+		$model->addHook('afterSave',[$model,'updateUserConditon']);
+		$model->addHook('afterSave',[$model,'createInvoice']);
+		$model->addHook('afterSave',[$model,'updateNASCredential']);
+		$model->addHook('afterSave',[$model,'updateWebsiteUser']);
+		
+		// $model->addHook('afterSave',function($user_model){
+		// 	$user_model->updateUserConditon();
+		// 	$user_model->createInvoice($this);
+		// 	$user_model->updateNASCredential();
+		// 	$user_model->updateWebsiteUser();
+		// });
+
 		$crud = $this->add('xepan\hr\CRUD');
 		if($crud->isEditing()){
 			$form = $crud->form;

@@ -115,6 +115,8 @@ class Tool_User_Profile extends \xepan\cms\View_Tool{
 			if($base_user->updatePassword($change_pass_form['new_password'])){
 				$user['radius_password'] = $change_pass_form['new_password'];
 				$user->save();
+
+				$user->updateNASCredential();
 				$this->app->auth->logout();
 				$this->app->redirect($this->options['login_page']);
 			}

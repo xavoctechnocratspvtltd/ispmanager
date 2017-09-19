@@ -14,6 +14,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 				];
 	public $acl_type= "ispmanager_user";
 	private $plan_dirty = false;
+	private $radius_password_dirty = false;
 
 	public $debug = false;
 
@@ -74,6 +75,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$user_j->addField('installed_narration')->type('text');
 
 		$this->addHook('beforeSave',$this);
+		$this->addHook('afterSave',$this);
 		// $this->addHook('afterSave',[$this,'updateUserConditon']);
 		// $this->addHook('afterSave',[$this,'createInvoice']);
 		// $this->addHook('afterSave',[$this,'updateNASCredential']);
@@ -120,6 +122,10 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		if($this->isDirty('plan_id')){
 			$this->plan_dirty = $this->dirty['plan_id'];
 		}
+
+		if($this->isDirty('radius_password')){
+			$this->radius_password_dirty = 	$this->dirty['radius_password'];
+		}
 		
 		$this['billing_country_id'] = $this['billing_country_id']?:$this['country_id'];
 		$this['billing_state_id'] = $this['billing_state_id']?:$this['state_id'];
@@ -146,6 +152,12 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		if($this['last_dl_limit'] == null OR $this['last_dl_limit'] == 0 OR !is_numeric($this['last_dl_limit']))
 			$this['last_dl_limit'] = 0;
 
+	}
+
+	function afterSave(){
+		if($this->radius_password_dirty){
+			$this->updateNASCredential();
+		}
 	}
 
 	function updateUserConditon(){
@@ -651,12 +663,14 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	}
 
 	function updateNASCredential(){
+		if(!$this['radius_password']) throw new \Exception("radius password is not defined");
+
 		$radcheck_model = $this->add('xavoc\ispmanager\Model_RadCheck');
 		$radcheck_model->addCondition('username',$this['radius_username']);
 		$radcheck_model->addCondition('attribute',"Cleartext-Password");
 		$radcheck_model->addCondition('op', ":=");
 		$radcheck_model->tryLoadAny();
-		$radcheck_model['value'] = $this['radius_password']?:1234;
+		$radcheck_model['value'] = $this['radius_password'];
 		$radcheck_model->saveAndUnload();
 	}
 

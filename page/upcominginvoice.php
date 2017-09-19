@@ -15,16 +15,20 @@ class page_upcominginvoice extends \xepan\base\Page {
 		$user_name = $this->app->stickyGET('user_name');
 
 		$form = $this->add('Form');
-		$col = $form->add('Columns');
-		$col4 = $col->addColumn(3);
-		$col1 = $col->addColumn(2);
-		$col2 = $col->addColumn(2);
-		$col3 = $col->addColumn(3);
+		$form->add('xepan\base\Controller_FLC')
+				->addContentSpot()
+				->makePanelsCoppalsible()
+				->layout([
+						'user_name'=>'Filter~c1~3',
+						'from_date'=>'c2~3',
+						'to_date'=>'c3~3',
+						'FormButtons~'=>'c4~3'
+					]);
 
-		$col4->addField('user_name')->set($user_name);
-		$col1->addField('DatePicker','from_date')->set($from_date);
-		$col2->addField('DatePicker','to_date')->set($to_date);
-		$col3->addSubmit("Filter")->addClass('btn btn-primary btn-block');
+		$form->addField('user_name')->set($user_name);
+		$form->addField('DatePicker','from_date')->set($from_date);
+		$form->addField('DatePicker','to_date')->set($to_date);
+		$form->addSubmit("Filter")->addClass('btn btn-primary btn-block');
 
 		$model = $this->add('xavoc\ispmanager\Model_RecurringInvoiceItem',['from_date'=>$from_date,'to_date'=>$to_date]);
 		if($user_name){

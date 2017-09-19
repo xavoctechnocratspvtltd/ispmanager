@@ -10,24 +10,32 @@ class page_upcominginvoice extends \xepan\base\Page {
 	function init(){
 		parent::init();
 
-		$from_date = $this->app->stickyGET('from_date')?$_GET['from_date']:(date('Y-m-01',strtotime($this->app->today)));
-		$to_date = $this->app->stickyGET('to_date')?$_GET['to_date']:$this->app->today;
+		$from_date = $this->app->stickyGET('from_date')?:(date('Y-m-01',strtotime($this->app->today)));
+		$to_date = $this->app->stickyGET('to_date')?:$this->app->today;
+		$user_name = $this->app->stickyGET('user_name');
 
 		$form = $this->add('Form');
 		$col = $form->add('Columns');
-		$col1 = $col->addColumn(4)->addClass('col-md-4 col-sm-4 col-lg-4');
-		$col2 = $col->addColumn(4)->addClass('col-md-4 col-sm-4 col-lg-4');
-		$col3 = $col->addColumn(4)->addClass('col-md-4 col-sm-4 col-lg-4');
+		$col4 = $col->addColumn(3);
+		$col1 = $col->addColumn(2);
+		$col2 = $col->addColumn(2);
+		$col3 = $col->addColumn(3);
+
+		$col4->addField('user_name')->set($user_name);
 		$col1->addField('DatePicker','from_date')->set($from_date);
 		$col2->addField('DatePicker','to_date')->set($to_date);
 		$col3->addSubmit("Filter")->addClass('btn btn-primary btn-block');
 
 		$model = $this->add('xavoc\ispmanager\Model_RecurringInvoiceItem',['from_date'=>$from_date,'to_date'=>$to_date]);
+		if($user_name){
+			$model->addCondition([['customer',$user_name],['radius_username',$user_name]]);
+		}
+
 		$crud = $this->add('xepan\hr\CRUD',['allow_add'=>false]);
 
 		// filter form submission
 		if($form->isSubmitted()){
-			$form->js(null,$crud->js()->reload(['from_date'=>$form['from_date'],'to_date'=>$form['to_date']]))->univ()->execute();
+			$form->js(null,$crud->js()->reload(['from_date'=>$form['from_date'],'to_date'=>$form['to_date'],'user_name'=>$form['user_name']]))->univ()->execute();
 		}
 
 		$this->customer_list = [];
@@ -47,8 +55,12 @@ class page_upcominginvoice extends \xepan\base\Page {
 
 		$crud->setModel($model);
 		$grid = $crud->grid;
+		$grid->addColumn('customer');
+
 		$order = $grid->addOrder();
-		$order->move('customer','first');
+		if($grid->hasColumn('customer'))
+			$order->move('customer','first');
+
 		$order->move('name','after','customer');
 		$order->move('qty_unit','after','quantity');
 		$order->move('tax_percentage','after','qty_unit');

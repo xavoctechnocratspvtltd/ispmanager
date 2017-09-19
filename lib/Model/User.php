@@ -118,6 +118,8 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			if($old_model->loaded())
 				throw $this->Exception("(".$this['radius_username'].') radius user is already exist ','ValidityCheck')->setField('radius_username');
 		}
+
+		if(!$this['first_name']) $this['first_name'] = $this['radius_username'];
 		
 		if($this->isDirty('plan_id')){
 			$this->plan_dirty = $this->dirty['plan_id'];
@@ -820,6 +822,15 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			$this->api->db->beginTransaction();
 			foreach ($data as $key => $record) {
 				$user = $this->add('xavoc\ispmanager\Model_User');
+				// adding hook
+				$user->addHook('afterSave',[$user,'updateUserConditon']);
+				$user->addHook('afterSave',[$user,'createInvoice']);
+				$user->addHook('afterSave',[$user,'updateNASCredential']);
+				$user->addHook('afterSave',[$user,'updateWebsiteUser']);
+
+				$user->addCondition('radius_username',trim($record['RADIUS_USERNAME']));
+				$user->tryLoadAny();
+
 				$plan_name = strtolower(trim($record['PLAN']));
 
 				$plan_id = isset($plan_list[$plan_name])?$plan_list[$plan_name]:0;
@@ -837,12 +848,12 @@ class Model_User extends \xepan\commerce\Model_Customer{
 					$field_name = strtolower(trim($field));
 					$user[$field_name] = $value;
 				}
-				
 				$user['created_at'] = date('Y-m-d H:i:s',strtotime($record['CREATED_AT']))?:$this->app->now;
 				// $user['created_at'] = date('Y-m-d H:i:s',strtotime($record['INVOICE_DATE']))?:$this->app->now;
+				if(!strlen(trim($user['first_name'])))
+					$user['first_name'] = $user['radius_username'];
 				
 				$user->save();
-
 				// update email and phone number
 				if($record['MOBILE']){
 					$cp = $this->add('xepan\base\Model_Contact_Phone');
@@ -904,8 +915,8 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 	function updateWebsiteUser(){
 		if(!$this['radius_username']) return;
-
-		$username = str_replace(" ", "",$this['radius_username']);
+		
+		$username = trim($this['radius_username']);
 		if($this->app->getConfig('username_is_email',true)){
 			if(!filter_var($username, FILTER_VALIDATE_EMAIL)){
 				$username .= "@isp-fake.com";
@@ -916,8 +927,16 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$user->addCondition('scope','WebsiteUser');
 		$user->addCondition('username',$username);
 		$user->tryLoadAny();
-		if($user->loaded() && $user->id != $this['user_id'])
-			throw new \Exception("user name already use with other isp user");
+
+		$user_id = $this['user_id'];
+		if($this['id']){
+			$r_user = $this->add('xavoc\ispmanager\Model_User')
+						->load($this['id']);
+			$user_id = $r_user['user_id'];
+		}
+
+		if($user->loaded() && $user->id != $user_id)
+			throw new \Exception("(".$user->id."=".$username." = ".$this->id.") user name already use with other isp user ");
 		
 		// $user=$this->add('xepan\base\Model_User');
 		$this->add('BasicAuth')

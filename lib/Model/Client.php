@@ -87,6 +87,6 @@ class Model_Client extends \xepan\base\Model_Table{
 					"\t\t} \n".
 				"\t}";
 
-		return $config;
+		return strtolower($config);
 	}
 }

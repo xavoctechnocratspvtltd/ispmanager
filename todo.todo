@@ -2,7 +2,8 @@
 
  ✔ Invoice pe setPlan update condition @done (17-09-19 12:29)
  
- ☐ user importer
+ ✔ user importer @done (17-09-19 15:51)
+ 
  ☐ user active/inactive online status with new column
  ☐ user detail page
  ☐ dashboard/graph widget

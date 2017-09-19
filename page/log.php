@@ -81,7 +81,7 @@ class page_log extends \xepan\base\Page{
 		$query = "SELECT * FROM SystemEvents Where Message LIKE '%->%'";
 		if($_GET['username']){
 			$filter_user = $this->add('xavoc\ispmanager\Model_User')->load($_GET['username']);
-			$query .= " AND Message LIKE '%-".$filter_user['radius_username'].">%'";
+			$query .= " AND ( Message LIKE '%-".$filter_user['radius_username'].">%'". " OR SysLogTag Like '%".$filter_user['radius_username']."%'"." ) ";
 		}
 
 		if($from_date)
@@ -108,6 +108,7 @@ class page_log extends \xepan\base\Page{
 		$grid = $grid_view->add('Grid');
 		// $grid->add('View',null,'grid_buttons')->set($filter_user['radius_username']);
 		$grid->addColumn('username');
+		// $grid->addColumn('SysLogTag');
 		$grid->addColumn('Message');
 		$grid->addColumn('ReceivedAt');
 		// $grid->addColumn('from_ip');
@@ -138,7 +139,12 @@ class page_log extends \xepan\base\Page{
 			preg_match('/(.)*[<](.*)[>] (.*)/i', $g->current_row['Message'], $username);
 
 			$g->current_row_html['Message'] = $message;
-			$g->current_row_html['username'] = $username[2];
+
+			$user_name = $username[2];
+			if(!$user_name)
+				$user_name = $g->current_row['SysLogTag'];
+
+			$g->current_row_html['username'] = $user_name;
 		});
 
 

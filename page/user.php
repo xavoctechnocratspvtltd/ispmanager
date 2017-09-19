@@ -14,13 +14,6 @@ class page_user extends \xepan\base\Page {
 		$model->addHook('afterSave',[$model,'createInvoice']);
 		$model->addHook('afterSave',[$model,'updateNASCredential']);
 		$model->addHook('afterSave',[$model,'updateWebsiteUser']);
-		
-		// $model->addHook('afterSave',function($user_model){
-		// 	$user_model->updateUserConditon();
-		// 	$user_model->createInvoice($this);
-		// 	$user_model->updateNASCredential();
-		// 	$user_model->updateWebsiteUser();
-		// });
 
 		$crud = $this->add('xepan\hr\CRUD');
 		if($crud->isEditing()){

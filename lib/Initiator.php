@@ -52,7 +52,7 @@ class Initiator extends \Controller_Addon {
         $this->routePages('xavoc_dm');
         $this->addLocation(array('template'=>'templates','js'=>'templates/js','css'=>'templates/css'))
         ->setBaseURL('./shared/apps/xavoc/mlm/');
-        
+
         return $this;
     }
 
@@ -102,6 +102,19 @@ class Initiator extends \Controller_Addon {
         $user = $this->add('xavoc\ispmanager\Model_User');
         $this->app->addHook('invoice_paid',[$user,'invoicePaid']);
         
+        // cron job 
+        $this->app->addHook('cron_executor',function($app){
+            
+            $now = \DateTime::createFromFormat('Y-m-d H:i:s', $this->app->now);
+            $job = new \Cron\Job\ShellJob();
+            $job->setSchedule(new \Cron\Schedule\CrontabSchedule('0 0 * * *'));
+            if(!$job->getSchedule() || $job->getSchedule()->valid($now)){
+                echo " Executing Condition Reset<br/>";
+                $this->add('xavoc\ispmanager\Controller_ResetUserPlanAndTopup')->run();
+            }
+
+        });
+
         return $this;
     }
 

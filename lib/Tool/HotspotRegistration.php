@@ -81,7 +81,6 @@ class Tool_HotspotRegistration extends \xepan\cms\View_Tool{
 			$user['state_id'] = $c_s_m['state'];
 			$user['plan_id'] = $defalut_plan_model['default_hotspot_plan'];
 			$user->save();
-			$user->active();
 
 			$sms_model = $this->add('xepan\base\Model_ConfigJsonModel',
 				[
@@ -95,16 +94,19 @@ class Tool_HotspotRegistration extends \xepan\cms\View_Tool{
 			
 			// send SMS
 			if($this->app->getConfig('send_sms',false)){
+				if(!$sms_model['otp_msg_content']) throw new \Exception("Please update OTP SMS Content");
+
 				$message = $sms_model['otp_msg_content'];
 				$temp = $this->add('GiTemplate');
 				$temp->loadTemplateFromString($message);
 				$msg = $this->add('View',null,null,$temp);
 				$msg->template->trySetHTML('otp_number',$user['radius_password']);
 				
-				if(!$sms_model['otp_msg_content']) throw new \Exception("Please update OTP SMS Content");
 				$this->add('xepan\communication\Controller_Sms')->sendMessage($registration_form['mobile_no'],$msg->getHtml());
 			}
-
+			
+			//after sms send user active now
+			$user->active();
 			$this->app->memorize('success_message',"Your account registered successfully, password send on your mobile number");
 			$registration_form->js()->redirect($this->app->url($this->options['login_page']))->execute();
 		}

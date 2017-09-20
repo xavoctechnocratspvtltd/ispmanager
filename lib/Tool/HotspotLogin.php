@@ -9,7 +9,8 @@ namespace xavoc\ispmanager;
 class Tool_HotspotLogin extends \xepan\cms\View_Tool{
 	public $options = [
 						'after_login_url'=>'user_dashboard',
-						'registration_url'=>'',
+						'registration_page'=>'hotspot/registration',
+						'forgot_password_page'=>'hotspot/forgotpassword',
 						'button_label'=>'Log in',
 						'hotspot_base_url'=>'http://isp.prompthotspot.com'
 	];
@@ -41,6 +42,10 @@ class Tool_HotspotLogin extends \xepan\cms\View_Tool{
 		// if($_REQUEST['link-login']){
 		// 	$this->app->memorize('link-login',$_REQUEST['link-login']);
 		// }
+		if($message = $this->app->recall('success_message')){
+			$this->add('View')->set($message)->addClass('alert alert-success');
+			$this->app->forget('success_message');
+		}
 
 		$form = $this->add('Form',null,null,['form/empty']);
 		$form->setLayout(['form/hotspot-login']);
@@ -50,9 +55,13 @@ class Tool_HotspotLogin extends \xepan\cms\View_Tool{
 
 		$form->addSubmit($this->options['button_label'])->addClass('btn btn-primary btn-lg text-center btn-block');
 
-		if($this->options['registration_url']){
-			$form->layout->template->trySet('registration_url',$this->app->url($this->options['registration_url']));
+		if($this->options['registration_page']){
+			$form->layout->template->trySet('registration_url',$this->app->url($this->options['registration_page']));
 		}
+
+		if($this->options['forgot_password_page']){
+			$form->layout->template->trySet('forgot_password_url',$this->app->url($this->options['forgot_password_page']));
+		}			
 
 
 		if($form->isSubmitted()){

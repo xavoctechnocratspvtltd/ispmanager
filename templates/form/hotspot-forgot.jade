@@ -14,21 +14,15 @@
 								.form-group.atk-form-row.atk-form-field
 									{$mobile_no}
 								.form-group.atk-form-row.atk-form-field
-									{$otp}
-								//- .form-group
-								//- 	input#email.form-control(type='email', name='email', tabindex='1', placeholder='Email Address', value='')
-								//- .form-group
-								//- 	input#password.form-control(type='password', name='password', tabindex='2', placeholder='Password')
-								//- .form-group
-								//- 	input#confirm-password.form-control(type='password', name='confirm-password', tabindex='2', placeholder='Confirm Password')
+									{$otp}								
 								.form-group
 									.row
 										.col-sm-12
 											{$FormButtons}
 									.row(style="margin-top:10px;")
 										.col-sm-12
-											a.text-center.btn-block(href="{$login_page}")|Login
-											a.text-center.btn-block(href="{$forgot_password_url}")|Forgot Password
+											a.text-center.btn-block(href="{$login_url}")|Login
+											a.text-center.btn-block(href="{$registration_url}")|New Registration
 									//- .row
 									//- 	.col-sm-6.col-sm-offset-3
 									//- 		input#register-submit.form-control.btn.btn-register(type='submit', name='register-submit', tabindex='4', value='Register Now')

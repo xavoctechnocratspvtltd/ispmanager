@@ -124,6 +124,8 @@ class page_configuration extends \xepan\base\Page {
 		$content_model = $this->add('xepan\base\Model_ConfigJsonModel',
 			[
 				'fields'=>[
+							'forgot_password_sms_content'=>"Text",
+
 							'lead_assign_sms_content'=>'Text',
 							'lead_assign_email_subject'=>'Line',
 							'lead_assign_email_content'=>'xepan\base\RichText',
@@ -161,6 +163,8 @@ class page_configuration extends \xepan\base\Page {
 					'application'=>'ispmanager'
 			]);
 		$content_model->tryLoadAny();
+		$forgot_tab = $tab->addTab('HotSpot Forgot Password');
+
 		$s_assign_tab = $tab->addTab('Sale Lead Assign');
 		$i_assign_tab = $tab->addTab('Installation Lead Assign');
 		$new_account_tab = $tab->addTab('New Account');
@@ -168,6 +172,14 @@ class page_configuration extends \xepan\base\Page {
 		$renewal_alert_tab = $tab->addTab('Renewal Alert');
 		$account_reactivation_tab = $tab->addTab('Account Reactivation');
 		$plan_changed_tab = $tab->addTab('Plan Changed');
+
+		$form = $forgot_tab->add('Form');
+		$form->setModel($content_model,['forgot_password_sms_content']);
+		$form->addSubmit('save')->addClass('btn btn-primary');
+		if($form->isSubmitted()){
+			$form->save();
+			$form->js(null,$form->js()->reload())->univ()->successMessage("saved")->execute();
+		}
 
 		$form = $s_assign_tab->add('Form');
 		$form->setModel($content_model,['lead_assign_sms_content','lead_assign_email_subject','lead_assign_email_content']);

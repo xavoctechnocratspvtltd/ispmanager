@@ -76,11 +76,7 @@ class Tool_HotspotForgotpassword extends \xepan\cms\View_Tool{
 			}
 
 			$this->app->memorize('success_message',"Password send on your registered mobile number");
-			$form->js(null,
-						$form->js()
-							->univ()
-							->successMessage('Password send on your mobile number')
-					)->univ()->redirect($this->app->url($this->options['after_password_send_url']))->execute();
+			$form->js(null)->univ()->redirect($this->app->url($this->options['after_password_send_url']))->execute();
 		}
 
 	}

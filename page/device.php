@@ -93,9 +93,9 @@ check host localhost with address 127.0.0.1
 					$config_file[] = $d['override_check_line'];
 				}
 				elseif($d['monitor']=='ping'){
-					$config_file[] = "check host ". $d['name'] . " with address ". $d['ip'];					
+					$config_file[] = "check host ". $this->app->normalizeName($d['name']) . " with address ". $d['ip'];					
 				}elseif($d['monitor']=='host-port'){
-					$config_file[] = "check host ". $d['name'] . " with address ". $d['ip'];
+					$config_file[] = "check host ". $this->app->normalizeName($d['name']) . " with address ". $d['ip'];
 				}
 
 				if($d['override_failed_action']){

@@ -23,6 +23,8 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 		// destroy extra fields
 		// $cust_fields = $this->add('xepan\commerce\Model_Customer')->getActualFields();
+		$this->getElement('created_at')->sortable(true);
+
 		$destroy_field = ['assign_to_id','scope','is_designer','score','freelancer_type','related_with','related_id','assign_to','created_by_id','source'];
 		foreach ($destroy_field as $key => $field) {
 			if($this->hasElement($field))
@@ -33,8 +35,8 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 		$user_j->hasOne('xavoc\ispmanager\Plan','plan_id')->display(['form'=>'autocomplete/Basic']);
 
-		$user_j->addField('customer_id'); // added field why not before 
-		$user_j->addField('radius_username')->caption('Username');
+		$user_j->addField('customer_id'); // added field why not before
+		$user_j->addField('radius_username')->caption('Username')->sortable(true);
 		$user_j->addField('radius_password')->caption('Password');
 		$user_j->addField('simultaneous_use')->type('Number');
 		$user_j->addField('grace_period_in_days')->type('number')->defaultValue(0);
@@ -73,6 +75,14 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$user_j->addField('installation_assign_at')->type('date');
 		$user_j->addField('installed_at')->type('date');
 		$user_j->addField('installed_narration')->type('text');
+
+		$this->addExpression('last_login')->set(function($m,$q){
+			$act = $m->add('xavoc\ispmanager\Model_RadAcct')
+					->addCondition('username',$m->getElement('radius_username'))
+					->setOrder('radacctid','desc')
+					->setLimit(1);
+			return $q->expr('[0]',[$act->fieldQuery('acctstarttime')]);
+		})->sortable(true);
 
 		$this->addHook('beforeSave',$this);
 		$this->addHook('afterSave',$this);

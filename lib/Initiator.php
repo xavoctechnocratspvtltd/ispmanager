@@ -80,7 +80,7 @@ class Initiator extends \Controller_Addon {
     }
 
     function setup_frontend(){
-        $this->routePages('xavoc_prompt-web');
+        $this->routePages('xavoc_ispmanager');
         $this->addLocation(array('template'=>'templates','js'=>'templates/js','css'=>'templates/css'))
         ->setBaseURL('./shared/apps/xavoc/ispmanager/');
         

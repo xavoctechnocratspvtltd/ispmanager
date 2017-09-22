@@ -25,6 +25,7 @@ class page_user extends \xepan\base\Page {
 		$crud->grid->removeColumn('attachment_icon');
 		$crud->grid->addPaginator($ipp=50);
 		$crud->grid->addQuickSearch(['radius_username','plan']);
+		$crud->grid->addSno();
 
 		if($crud->isEditing()){
 			$form = $crud->form;

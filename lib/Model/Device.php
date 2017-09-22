@@ -16,7 +16,7 @@ class Model_Device extends \xepan\base\Model_Table{
 		$this->addField('port');
 		$this->addField('type')->enum(['udp','tcp']);
 		$this->addField('protocol');
-		$this->addField('status')->enum(['Active']);
+		$this->addField('status')->enum(['Active','Down','InActive']);
 		$this->addField('monitor')->enum(['ping','host-port']);
 		$this->addField('allowed_fail_cycle')->type('int');
 		
@@ -26,6 +26,12 @@ class Model_Device extends \xepan\base\Model_Table{
 		$this->addField('failed_action')->type('text')->system(true)->defaultValue('exec "wget http://{xepan_host}/?page=xepan_ispmanager_devicedown&failed_device_id={device_id}"');
 
 		// $this->add('dynamic_model/Controller_AutoCreator');
+	}
+
+	function markDown(){
+		if(!$this->loaded()) return;
+		$this['status']='Down';
+		$this->save();
 	}
 
 }

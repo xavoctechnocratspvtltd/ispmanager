@@ -36,6 +36,35 @@ SET @current_time = TIME(@now);
 SET @today = DATE(@now);
 SET @username = username;
 
+SET @t_applicable_row_id =null;
+SET @t_applicable_row_name = null;
+SET @t_net_data_limit = null;
+SET @t_last_dl_limit=null;
+SET @t_last_ul_limit=null;
+SET @t_last_accounting_dl_ratio=null;
+SET @t_last_accounting_ul_ratio=null;
+SET @t_download_data_consumed=null;
+SET @t_upload_data_consumed=null;
+SET @t_download_limit=null;
+SET @t_upload_limit=null;
+SET @t_fup_download_limit=null;
+SET @t_fup_upload_limit=null;
+SET @t_accounting_download_ratio=null;
+SET @t_accounting_upload_ratio=null;
+SET @t_burst_dl_limit=null;
+SET @t_burst_ul_limit=null;
+SET @t_burst_threshold_dl_limit=null;
+SET @t_burst_threshold_ul_limit=null;
+SET @t_burst_dl_time=null;
+SET @t_burst_ul_time=null;
+SET @t_priority=null;
+SET @t_time_limit=null;
+SET @t_time_consumed=null;
+SET @t_treat_fup_as_dl_for_last_limit_row=null;
+SET @t_SessionInputOctate =null;
+SET @t_SessionOutputOctate=null;
+SET @t_SessionTime=null;
+
 
 SELECT 
 	isp_user_plan_and_topup.id id,

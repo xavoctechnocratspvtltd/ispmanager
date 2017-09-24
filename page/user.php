@@ -17,7 +17,7 @@ class page_user extends \xepan\base\Page {
 		$model->setOrder('id','desc');
 
 		$model->addExpression('radius_login_response')->set(function($m,$q){
-			return $q->expr('(select checkAuthentication(null,[0]))',[$m->getElement('radius_username')]);
+			return $q->expr('(select checkAuthenticationReadOnly(null,[0]))',[$m->getElement('radius_username')]);
 		})->caption('Data Status');
 
 		$crud = $this->add('xepan\hr\CRUD');

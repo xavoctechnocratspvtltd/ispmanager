@@ -16,6 +16,6 @@ class Model_UserData  extends Model_User {
 						->addCondition('username',$m->getElement('radius_username'))
 						->addCondition('acctstoptime',null)
 						->count();
-		})->sortable(true);
+		})->sortable(true)->type('boolean');
 	}
 }

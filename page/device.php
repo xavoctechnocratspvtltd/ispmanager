@@ -30,11 +30,13 @@ class page_device extends \xepan\base\Page {
 			$db_config = $this->add('xepan\base\Model_ConfigJsonModel',
 				[
 					'fields'=>[
-								'mysql_host'=>'Line',
-								'mysql_port'=>'Line',
-								'mysql_user'=>'Line',
-								'mysql_password'=>'Line',
 								'xepan_host'=>'Line',
+								'monit_check_delay_in_secs'=>'Number',
+								'monit_init_check_delay_in_secs'=>'Number',
+								'monit_port'=>'Number',
+								'monit_ip'=>'Line',
+								'monit_username'=>'Line',
+								'monit_password'=>'Line'
 								],
 						'config_key'=>'DB_CONFIG_FOR_MONIT',
 						'application'=>'ispmanager'
@@ -80,6 +82,21 @@ check host localhost with address 127.0.0.1
 		$vp->set(function($page)use($db_config){
 			$devices = $this->add('xavoc\ispmanager\Model_Device');
 			$config_file=[];
+
+			$config_file[] = "set daemon ". $db_config['monit_check_delay_in_secs'];
+			$config_file[] = "\twith start delay ". $db_config['monit_init_check_delay_in_secs'];
+			$config_file[] = "set logfile /var/log/monit.log";
+			$config_file[] = "set statefile /var/lib/monit/state";
+			$config_file[] = "set httpd port ".$db_config['monit_port']." and ";
+			$config_file[] = "\tuse address ".$db_config['monit_ip'];
+			$config_file[] = "\tallow 0.0.0.0/0.0.0.0 ";
+			$config_file[] = "\tallow ".$db_config['monit_username'].":\"".$db_config['monit_password']."\"";
+			$config_file[] = "include /etc/monit/conf.d/*";
+			$config_file[] = "include /etc/monit/conf-enabled/*";
+			$config_file[] = "#### SERVICES ####";
+  
+
+
 
 			foreach ($devices as $d) {
 				$d['failed_action'] = str_replace('{xepan_host}', $db_config['xepan_host'], $d['failed_action']);

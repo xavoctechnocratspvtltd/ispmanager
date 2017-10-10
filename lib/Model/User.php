@@ -9,7 +9,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 				'Won'=>['view','edit','delete','assign_for_installation'],
 				'Installation'=>['view','edit','delete','installed','payment_receive'],
 				'Installed'=>['view','edit','delete','active'],
-				'Active'=>['view','edit','delete','AddTopups','CurrentConditions'],
+				'Active'=>['view','edit','delete','AddTopups','CurrentConditions','Reset_Current_Plan_Condition'],
 				'InActive'=>['view','edit','delete','active']
 				];
 	public $acl_type= "ispmanager_user";
@@ -1183,5 +1183,14 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$this->updateWebsiteUser();
 	}
 
+	function Reset_Current_Plan_Condition(){
+		if(!$this['plan_id']) throw new Exception("plan not added to user");
+		
+		$this->setPlan($this['plan_id']);
+		$this->updateNASCredential();
+		$this->updateWebsiteUser();
+		
+		return true;
+	}
 
 }

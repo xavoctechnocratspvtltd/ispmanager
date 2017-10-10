@@ -14,12 +14,27 @@ class Model_Device extends \xepan\base\Model_Table{
 		$this->addField('name');
 		$this->addField('ip');
 		$this->addField('port');
-		$this->addField('status')->enum(['Active']);
+		$this->addField('type')->enum(['udp','tcp']);
+		$this->addField('protocol');
+		$this->addField('status')->enum(['Active','Down','InActive']);
 		$this->addField('monitor')->enum(['ping','host-port']);
-		$this->addField('failed_action')->type('text')->system(true)->defaultValue("exec 'wget http://{xepan_host}/?page=xepan_ispmanager_devicedown&failed_device_id={device_id}'");
 		$this->addField('allowed_fail_cycle')->type('int');
+		
+		$this->addField('override_check_line');
+		$this->addField('override_failed_action');
+
+		$this->addField('failed_action')->type('text')->system(false)->defaultValue('exec "/usr/bin/wget -q \'http://{xepan_host}/?page=xavoc_ispmanager_devicedown --post-data \'failed_device_id={device_id}\' "');
+		$this->addField('secret')->system(true)->defaultValue(md5(uniqid()));
 
 		// $this->add('dynamic_model/Controller_AutoCreator');
+	}
+
+	function markDown($secret){
+		if(!$this->loaded()) return;
+		if($this['secret'] !== $secret) return;
+
+		$this['status']='Down';
+		$this->save();
 	}
 
 }

@@ -30,11 +30,13 @@ class page_device extends \xepan\base\Page {
 			$db_config = $this->add('xepan\base\Model_ConfigJsonModel',
 				[
 					'fields'=>[
-								'mysql_host'=>'Line',
-								'mysql_port'=>'Line',
-								'mysql_user'=>'Line',
-								'mysql_password'=>'Line',
 								'xepan_host'=>'Line',
+								'monit_check_delay_in_secs'=>'Number',
+								'monit_init_check_delay_in_secs'=>'Number',
+								'monit_port'=>'Number',
+								'monit_ip'=>'Line',
+								'monit_username'=>'Line',
+								'monit_password'=>'Line'
 								],
 						'config_key'=>'DB_CONFIG_FOR_MONIT',
 						'application'=>'ispmanager'
@@ -65,10 +67,10 @@ check host localhost with address 127.0.0.1
 		$db_config = $this->add('xepan\base\Model_ConfigJsonModel',
 			[
 				'fields'=>[
-							'mysql_host'=>'Line',
-							'mysql_port'=>'Line',
-							'mysql_user'=>'Line',
-							'mysql_password'=>'Line',
+							// 'mysql_host'=>'Line',
+							// 'mysql_port'=>'Line',
+							// 'mysql_user'=>'Line',
+							// 'mysql_password'=>'Line',
 							'xepan_host'=>'Line',
 							],
 					'config_key'=>'DB_CONFIG_FOR_MONIT',
@@ -81,22 +83,60 @@ check host localhost with address 127.0.0.1
 			$devices = $this->add('xavoc\ispmanager\Model_Device');
 			$config_file=[];
 
+			$config_file[] = "set daemon ". $db_config['monit_check_delay_in_secs'];
+			$config_file[] = "\twith start delay ". $db_config['monit_init_check_delay_in_secs'];
+			$config_file[] = "set logfile /var/log/monit.log";
+			$config_file[] = "set statefile /var/lib/monit/state";
+			$config_file[] = "set httpd port ".$db_config['monit_port']." and ";
+			$config_file[] = "\tuse address ".$db_config['monit_ip'];
+			$config_file[] = "\tallow 0.0.0.0/0.0.0.0 ";
+			$config_file[] = "\tallow ".$db_config['monit_username'].":\"".$db_config['monit_password']."\"";
+			$config_file[] = "include /etc/monit/conf.d/*";
+			$config_file[] = "include /etc/monit/conf-enabled/*";
+			$config_file[] = "#### SERVICES ####";
+  
+
+
+
 			foreach ($devices as $d) {
 				$d['failed_action'] = str_replace('{xepan_host}', $db_config['xepan_host'], $d['failed_action']);
 				$d['failed_action'] = str_replace('{device_id}', $d->id, $d['failed_action']);
 
-				$for_cycle = '';
-				if($d['allowed_fail_cycle']){
-					$for_cycle='for '. $d['allowed_fail_cycle'].' cycle';
+				$d['override_failed_action'] = str_replace('{xepan_host}', $db_config['xepan_host'], $d['override_failed_action']);
+				$d['override_failed_action'] = str_replace('{device_id}', $d->id, $d['override_failed_action']);
+
+
+				if($d['override_check_line']){
+					$config_file[] = $d['override_check_line'];
+				}
+				elseif($d['monitor']=='ping'){
+					$config_file[] = "check host ". $this->app->normalizeName($d['name']) . " with address ". $d['ip'];					
+				}elseif($d['monitor']=='host-port'){
+					$config_file[] = "check host ". $this->app->normalizeName($d['name']) . " with address ". $d['ip'];
 				}
 
-				if($d['monitor']=='ping'){
-					$config_file[] = "check host ". $d['name'] . " with address ". $d['ip'];
-					$config_file[] = "\tif failed ping $for_cycle then " . $d['failed_action'];
-					
-				}elseif($d['monitor']=='host-port'){
-					$config_file[] = "check host ". $d['name'] . " with address ". $d['ip'];
-					$config_file[] = "\tif failed port ".$d['port']." $for_cycle then " . $d['failed_action'];
+				if($d['override_failed_action']){
+					$config_file[] = $d['override_failed_action'];
+				}
+				else{
+					$for_cycle = '';
+					if($d['allowed_fail_cycle']){
+						$for_cycle='for '. $d['allowed_fail_cycle'].' cycle';
+					}
+					$type="";
+					if($d['type']){
+						$type= " type ".$d['type'];
+					}
+					$protocol="";
+					if($d['protocol']){
+						$protocol = " protocol ". $d['protocol'];
+					}
+
+					if($d['monitor']=='ping'){
+						$config_file[] = "\tif failed ping $for_cycle then " . $d['failed_action'];
+					}elseif($d['monitor']=='host-port'){
+						$config_file[] = "\tif failed port ".$d['port']." $type $protocol $for_cycle then " . $d['failed_action'];
+					}
 				}
 			}
 

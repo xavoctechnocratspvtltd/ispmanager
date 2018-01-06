@@ -11,7 +11,6 @@ class page_lead_installation extends \xepan\base\Page{
 
 		$model = $this->add('xavoc\ispmanager\Model_User');
 		$model->addCondition('status','Won');
-		// $model->addCondition('installation_assign_to_id',null);
 		
 		$crud = $this->add('xepan\hr\CRUD');
 		$crud->setModel($model,['name','status']);

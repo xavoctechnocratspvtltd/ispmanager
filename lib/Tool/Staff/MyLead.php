@@ -43,9 +43,9 @@ class Tool_Staff_MyLead extends \xepan\cms\View_Tool{
 		$lead->addCondition('assign_to_id',$this->staff->id);
  		$lead->addCondition('status','Open');
  		
-		$crud = $this->add('xepan\hr\CRUD',['allow_add'=>false,'allow_edit'=>false,'allow_del'=>false,'permissive_acl'=>true],null,['grid/mylead']);
+		$crud = $this->add('xepan\hr\CRUD',['allow_edit'=>false,'permissive_acl'=>true],null,['grid/mylead']);
 		$crud->setModel($lead,['name','organization','','status','created_at','assign_at','emails_str','contacts_str','remark']);
-
+		
 		$crud->grid->addHook('formatRow',function($g){
 			$g->current_row_html['created_date'] = date('d M, Y',strtotime($g->model['created_at'])); 
 		});
@@ -60,7 +60,7 @@ class Tool_Staff_MyLead extends \xepan\cms\View_Tool{
 		$lead->addCondition('installation_assign_to_id',$this->staff->id);
  		$lead->addCondition('status','Installation');
  		
-		$crud = $this->add('xepan\hr\CRUD',['allow_add'=>false,'allow_edit'=>false,'allow_del'=>false,'permissive_acl'=>true],null,['grid/mylead']);
+		$crud = $this->add('xepan\hr\CRUD',['allow_add'=>false,'allow_edit'=>false,'allow_del'=>false,'permissive_acl'=>true,'status_color'=>['Installation'=>'warning']],null,['grid/mylead']);
 		$crud->setModel($lead);
 
 		$crud->grid->addQuickSearch(['name','status','contacts_str','emails_str']);

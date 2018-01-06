@@ -1,10 +1,10 @@
 <?php
 
-
 namespace xavoc\ispmanager;
 
 class page_client extends \xepan\base\Page {
 	
+	public $title = "Microtik Routers";
 	function init(){
 		parent::init();
 

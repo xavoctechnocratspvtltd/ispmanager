@@ -12,25 +12,25 @@ class Initiator extends \Controller_Addon {
         ->setBaseURL('../shared/apps/xavoc/ispmanager/');
 
         $m = $this->app->top_menu->addMenu('CAF');
+            $m->addItem(['Lead Category','icon'=>'fa fa-check-square-o'],'xepan_marketing_marketingcategory');
             $m->addItem(['Lead','icon'=>'fa fa-users'],'xavoc_ispmanager_lead');
             $m->addItem(['Installation Due','icon'=>'fa fa-users'],'xavoc_ispmanager_lead_installation');
             $m->addItem(['Installed','icon'=>'fa fa-users'],'xavoc_ispmanager_lead_installed');
-            $m->addItem(['Active Customer','icon'=>'fa fa-users'],'xavoc_ispmanager_lead_active');
+            $m->addItem(['Active Customer','icon'=>'fa fa-users'],'xavoc_ispmanager_user');
             $m->addItem(['All Lead','icon'=>'fa fa-users'],'xavoc_ispmanager_lead_all');
 
         $m = $this->app->top_menu->addMenu('ISP MANAGER');
-        $m->addItem(['Lead Category','icon'=>'fa fa-check-square-o'],'xepan_marketing_marketingcategory');
-        $m->addItem(['Leads','icon'=>'fa fa-users'],'xavoc_ispmanager_lead');
+        // $m->addItem(['Leads','icon'=>'fa fa-users'],'xavoc_ispmanager_lead');
         $m->addItem(['Users','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_user');
         $m->addItem(['Plans','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_plan');
         $m->addItem(['Topups','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_topup');
         $m->addItem(['Invoices','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_invoice');
         $m->addItem(['Up-Coming Invoice','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_upcominginvoice');
-        $m->addItem(['Client','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_client');
+        $m->addItem(['Microtik Routers','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_client');
         $m->addItem(['Configuration','icon'=>'fa fa-cog'],'xavoc_ispmanager_configuration');
         $m->addItem(['Log','icon'=>'fa fa-user'],'xavoc_ispmanager_log');
         $m->addItem(['Device Management','icon'=>'fa fa-user'],'xavoc_ispmanager_device');
-        $m->addItem(['test','icon'=>'fa fa-cog'],'xavoc_ispmanager_test');
+        $m->addItem(['Employee Payment Collection','icon'=>'fa fa-users'],'xavoc_ispmanager_employeepaymentcollection');
 
         $this->addAppFunctions();
 

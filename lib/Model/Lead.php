@@ -6,10 +6,10 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 	
 	public $status = ['Active','InActive'];
 	public $actions = [
-					'Active'=>['view','edit','delete','assign','deactivate','communication'],
-					'Open'=>['view','edit','delete','close','lost','communication'], //need analysis
+					'Active'=>['view','assign','deactivate','communication','edit','delete'],
+					'Open'=>['view','assign','close','lost','communication','edit','delete'],
 					'Won'=>['view','edit','delete','communication'],
-					'Lost'=>['view','edit','delete','open','communication'],
+					'Lost'=>['view','open','communication','edit','delete'],
 					'InActive'=>['view','edit','delete','activate','communication']
 				];
 

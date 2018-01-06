@@ -14,7 +14,7 @@ class page_employeepaymentcollection extends \xepan\base\Page {
 		$payment_tra->getElement('payment_mode')->caption('Payment Detail');
 		// $payment_tra->getElement('is_submitted_to_company')->caption('submitted to company');
 
-		$crud = $this->add('xepan\hr\CRUD',['pass_acl'=>true]);
+		$crud = $this->add('xepan\hr\CRUD',['pass_acl'=>true,'allow_add'=>false,'allow_edit'=>false]);
 		$crud->setModel($payment_tra,['employee','contact','created_at','amount','payment_mode','narration','is_submitted_to_company']);
 
 		$crud->grid->addHook('formatRow',function($g){

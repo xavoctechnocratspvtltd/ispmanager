@@ -1,8 +1,6 @@
 <?php
 
 namespace xavoc\ispmanager;
-
-
 /**
 * 
 */
@@ -35,7 +33,7 @@ class Tool_User_Profile extends \xepan\cms\View_Tool{
 		$tabs = $this->add('Tabs');
 		$profile_tab = $tabs->addTab('Profile');
 		$pass_tab = $tabs->addTab('Change Password');
-		$account_tab = $tabs->addTab('My Account');
+		// $account_tab = $tabs->addTab('My Account');
 
 		$c = $profile_tab->add('Columns')->addClass('row');
 		$logo_c = $c->addColumn(4)->addClass('col-md-3');
@@ -98,7 +96,7 @@ class Tool_User_Profile extends \xepan\cms\View_Tool{
 		$this->api->auth->addEncryptionHook($base_user);
 		
 		$change_pass_form = $pass_tab->add('Form');
-		$change_pass_form->setLayout(['form/change-password']);
+		// $change_pass_form->setLayout(['form/change-password']);
 		$change_pass_form->addField('user_name')->set($base_user['username'])->setAttr('disabled',true);
 		$change_pass_form->addField('password','old_password')->validate('required');
 		$change_pass_form->addField('password','new_password')->validate('required');
@@ -124,8 +122,8 @@ class Tool_User_Profile extends \xepan\cms\View_Tool{
 		}
 		
 
-		$form = $account_tab->add('Form',null,null,['form/empty']);
-		$form->setLayout(['form/my-account']);
+		// $form = $account_tab->add('Form',null,null,['form/empty']);
+		// $form->setLayout(['form/my-account']);
 	}
 
 

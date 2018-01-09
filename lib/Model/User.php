@@ -8,7 +8,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	public $actions = [
 				'Won'=>['view','edit','delete','assign_for_installation'],
 				'Installation'=>['view','edit','delete','installed','payment_receive'],
-				'Installed'=>['view','edit','delete','active'],
+				'Installed'=>['view','assign_for_installation','edit','delete','active'],
 				'Active'=>['view','edit','delete','AddTopups','CurrentConditions','Reset_Current_Plan_Condition'],
 				'InActive'=>['view','edit','delete','active']
 				];

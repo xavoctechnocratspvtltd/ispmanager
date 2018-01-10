@@ -317,7 +317,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		}
 		else
 			$plan_model = $plan;
-
+		
 		$this->testDebug('====================','');
 		$this->testDebug(($is_topup?'Adding Topup ':'Setting Plan ').($remove_old?'(Truncate Old Plan Data)'.($remove_old_topups?' (Removing old topups also)':''):''), $plan_model['name']. ' on '. $on_date);
 
@@ -363,7 +363,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			// $u_p['plan_id'] = $plan_model->id;
 			// $u_p['condition_id'] = $condition['id'];
 			$u_p['is_topup'] = $plan_model['is_topup'];
-
+			
 			// all fields same as condition are setted
 			foreach ($fields as $key => $field_name) {
 				$u_p[$field_name] = $condition[$field_name];
@@ -438,7 +438,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 			$u_p->save();
 		}
-
+		
 		$this['last_dl_limit']=null;
 		$this['last_ul_limit']=null;
 		$this->save();
@@ -670,18 +670,27 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	}
 
 	function page_AddTopups($page){
+
+		$topup = $this->add('xavoc\ispmanager\Model_TopUp');
+		$topup->addCondition('status','Published');
+
 		$form = $page->add('Form');
-		$form->addField('DropDown','topup')->validate('required')->setEmptyText('Please Select Topup')->setModel($this->add('xavoc\ispmanager\Model_TopUp'));
+		$form->addField('DropDown','topup')
+			->validate('required')
+			->setEmptyText('Please Select Topup')
+			->setModel($topup);
 		$form->addSubmit('Add TopUp');
 
 		$crud = $page->add('CRUD',['allow_edit'=>false,'allow_add'=>false]);
+
 		if($form->isSubmitted()){
 			$this->addTopup($form['topup']);
 			$form->js(null,$crud->js()->reload())->univ()->successMessage('topup added successfuly')->execute();
 		}
 
 		$model = $page->add('xavoc\ispmanager\Model_UserPlanAndTopup');
-		$model->addCondition('is_topup',true)->addCondition('user_id',$this->id);
+		$model->addCondition('is_topup',true)
+			->addCondition('user_id',$this->id);
 		$model->getElement('plan_id')->caption('TopUp');
 		$crud->setModel($model);
 
@@ -791,6 +800,11 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$model->addCondition('user_id',$this->id);
 		$crud->setModel($model);
 
+		$crud->grid->removeAttachment();
+		$removeColumn = ['user','condition'];
+		foreach ($removeColumn as $key => $value) {
+			$crud->grid->removeColumn($value);
+		}
 	}
 
 	// function updateQSPBeforeSave($app,$master_data,$detail_data,$type){

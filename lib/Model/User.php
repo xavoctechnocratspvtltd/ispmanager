@@ -8,7 +8,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	public $actions = [
 				'Won'=>['view','edit','delete','assign_for_installation'],
 				'Installation'=>['view','edit','delete','installed','payment_receive'],
-				'Installed'=>['view','edit','delete','active'],
+				'Installed'=>['view','assign_for_installation','edit','delete','active'],
 				'Active'=>['view','edit','delete','AddTopups','CurrentConditions','Reset_Current_Plan_Condition'],
 				'InActive'=>['view','edit','delete','active']
 				];
@@ -317,7 +317,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		}
 		else
 			$plan_model = $plan;
-
+		
 		$this->testDebug('====================','');
 		$this->testDebug(($is_topup?'Adding Topup ':'Setting Plan ').($remove_old?'(Truncate Old Plan Data)'.($remove_old_topups?' (Removing old topups also)':''):''), $plan_model['name']. ' on '. $on_date);
 
@@ -363,7 +363,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			// $u_p['plan_id'] = $plan_model->id;
 			// $u_p['condition_id'] = $condition['id'];
 			$u_p['is_topup'] = $plan_model['is_topup'];
-
+			
 			// all fields same as condition are setted
 			foreach ($fields as $key => $field_name) {
 				$u_p[$field_name] = $condition[$field_name];
@@ -438,7 +438,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 			$u_p->save();
 		}
-
+		
 		$this['last_dl_limit']=null;
 		$this['last_ul_limit']=null;
 		$this->save();
@@ -670,21 +670,192 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	}
 
 	function page_AddTopups($page){
+
+		$topup = $this->add('xavoc\ispmanager\Model_TopUp');
+		$topup->addCondition('status','Published');
+
 		$form = $page->add('Form');
-		$form->addField('DropDown','topup')->validate('required')->setEmptyText('Please Select Topup')->setModel($this->add('xavoc\ispmanager\Model_TopUp'));
+		$form->addField('DropDown','topup')
+			->validate('required')
+			->setEmptyText('Please Select Topup')
+			->setModel($topup);
 		$form->addSubmit('Add TopUp');
 
-		$crud = $page->add('CRUD',['allow_edit'=>false,'allow_add'=>false]);
+		$crud = $page->add('CRUD',['allow_add'=>false]);
+		// if($crud->isEditing()){
+		// 	$form = $crud->form;
+		// 	$form->add('xepan\base\Controller_FLC')
+		// 		->addContentSpot()
+		// 		->layout([
+		// 				'remark~Row Name'=>'About Plan~c1~3',
+		// 				'data_limit'=>'c2~3~Data limit in Human Readable Formate 20gb, 1tb, 100mb',
+		// 				'time_limit'=>'c3~3~Time limit in minutes',
+		// 				'is_data_carry_forward~Data Carry Forward'=>'c4~3',
+		// 				// 'plan_id~Topup'=>'c5~3',
+
+		// 				// 'download_limit'=>'Topup DL/UL Limit~c1~3~Limit per second',
+		// 				// 'upload_limit'=>'c11~3~Limit per second',
+		// 				// 'fup_download_limit'=>'c12~3~Limit per second',
+		// 				// 'fup_upload_limit'=>'c13~3~Limit per second',
+		// 				// 'accounting_download_ratio'=>'c2~6~Ratio in %',
+		// 				// 'accounting_upload_ratio'=>'c21~6~Ratio in %',
+
+		// 				// 'download_data_consumed'=>'Consumed TOPUP Data~c31~4',
+		// 				// 'upload_data_consumed'=>'c32~4',
+		// 				// 'data_limit_row'=>'c33~4',
+		// 				// 'carry_data'=>'c34~4',
+
+		// 				// 'start_date'=>'Date & Time~c1~3',
+		// 				// 'start_time'=>'c2~3',
+		// 				// 'end_date'=>'c3~3',
+		// 				// 'end_time'=>'c4~3',
+		// 				// 'expire_date'=>'c5~3',
+		// 				// 'reset_date'=>'c6~3',
+		// 				// 'is_expired~'=>'c7~2',
+		// 				// 'is_recurring~'=>'c8~2',
+		// 				// 'is_effective~'=>'c9~2',
+
+		// 				// 'sun'=>'Week~c1~1',
+		// 				// 'mon'=>'c2~1',
+		// 				// 'tue'=>'c3~1',
+		// 				// 'wed'=>'c4~1',
+		// 				// 'thu'=>'c5~1',
+		// 				// 'fri'=>'c6~1',
+		// 				// 'sat'=>'c7~1',
+		// 				// 'd01'=>'Days~c1~1',
+		// 				// 'd02'=>'c2~1',
+		// 				// 'd03'=>'c3~1',
+		// 				// 'd04'=>'c4~1',
+		// 				// 'd05'=>'c5~1',
+		// 				// 'd06'=>'c6~1',
+		// 				// 'd07'=>'c7~1',
+		// 				// 'd08'=>'c8~1',
+		// 				// 'd09'=>'c9~1',
+		// 				// 'd10'=>'c10~1',
+		// 				// 'd11'=>'c11~1',
+		// 				// 'd12'=>'c12~1',
+		// 				// 'd13'=>'c13~1',
+		// 				// 'd14'=>'c14~1',
+		// 				// 'd15'=>'c15~1',
+		// 				// 'd16'=>'c16~1',
+		// 				// 'd17'=>'c17~1',
+		// 				// 'd18'=>'c18~1',
+		// 				// 'd19'=>'c19~1',
+		// 				// 'd20'=>'c20~1',
+		// 				// 'd21'=>'c21~1',
+		// 				// 'd22'=>'c22~1',
+		// 				// 'd23'=>'c23~1',
+		// 				// 'd24'=>'c24~1',
+		// 				// 'd25'=>'c25~1',
+		// 				// 'd26'=>'c26~1',
+		// 				// 'd27'=>'c27~1',
+		// 				// 'd28'=>'c28~1',
+		// 				// 'd29'=>'c29~1',
+		// 				// 'd30'=>'c30~1',
+		// 				// 'd31'=>'c31~1',
+		// 				// 'data_reset_value'=>'Reset Data~c1~6',
+		// 				// 'data_reset_mode'=>'c2~6',
+		// 				// 'burst_dl_limit'=>'Burst~c1~3~limit per second',
+		// 				// 'burst_ul_limit'=>'c11~3~limit per second',
+		// 				// 'burst_threshold_dl_limit'=>'c12~3~limit per second',
+		// 				// 'burst_threshold_ul_limit'=>'c13~3~limit per second',
+		// 				// 'burst_dl_time'=>'c2~3~time in second',
+		// 				// 'burst_ul_time'=>'c21~3~time in second',
+		// 				// 'priority'=>'c22~3',
+		// 				// 'treat_fup_as_dl_for_last_limit_row'=>'MISC~c1~6',
+		// 				// 'is_pro_data_affected'=>'c2~6',
+		// 				// 'carry_data'=>'c3~4'
+		// 		]);
+		// }
+
 		if($form->isSubmitted()){
 			$this->addTopup($form['topup']);
-			$form->js(null,$crud->js()->reload())->univ()->successMessage('topup added successfuly')->execute();
+			return $this->app->page_action_result = $this->app->js(true,$crud->js()->reload())->univ()->successMessage('Topup Added Successfully');
 		}
 
+		$field_to_show =[
+						'user_id',
+						'remark',
+						'data_limit',
+						'time_limit',
+						'is_data_carry_forward',
+						'plan_id',
+						'download_limit',
+						'upload_limit',
+						'fup_download_limit',
+						'fup_upload_limit',
+						'accounting_download_ratio',
+						'accounting_upload_ratio',
+						'start_time',
+						'end_time',
+						'sun',
+						'mon',
+						'tue',
+						'wed',
+						'thu',
+						'fri',
+						'sat',
+						'd01',
+						'd02',
+						'd03',
+						'd04',
+						'd05',
+						'd06',
+						'd07',
+						'd08',
+						'd09',
+						'd10',
+						'd11',
+						'd12',
+						'd13',
+						'd14',
+						'd15',
+						'd16',
+						'd17',
+						'd18',
+						'd19',
+						'd20',
+						'd21',
+						'd22',
+						'd23',
+						'd24',
+						'd25',
+						'd26',
+						'd27',
+						'd28',
+						'd29',
+						'd30',
+						'd31',
+						'data_reset_value',
+						'data_reset_mode',
+						'burst_dl_limit',
+						'burst_ul_limit',
+						'burst_threshold_dl_limit',
+						'burst_threshold_ul_limit',
+						'burst_dl_time',
+						'burst_ul_time',
+						'priority',
+						'treat_fup_as_dl_for_last_limit_row',
+						'is_pro_data_affected',
+						'download_data_consumed',
+						'upload_data_consumed',
+						'carry_data',
+						'data_limit_row',
+						'start_date',
+						'end_date',
+						'expire_date',
+						'reset_date',
+						'is_expired',
+						'is_recurring',
+						'is_effective',
+						'condition_id'
+					];
 		$model = $page->add('xavoc\ispmanager\Model_UserPlanAndTopup');
-		$model->addCondition('is_topup',true)->addCondition('user_id',$this->id);
+		$model->addCondition('is_topup',true)
+			->addCondition('user_id',$this->id);
 		$model->getElement('plan_id')->caption('TopUp');
 		$crud->setModel($model);
-
+		
 	}
 
 	function updateNASCredential(){
@@ -791,6 +962,11 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$model->addCondition('user_id',$this->id);
 		$crud->setModel($model);
 
+		$crud->grid->removeAttachment();
+		$removeColumn = ['user','condition'];
+		foreach ($removeColumn as $key => $value) {
+			$crud->grid->removeColumn($value);
+		}
 	}
 
 	// function updateQSPBeforeSave($app,$master_data,$detail_data,$type){

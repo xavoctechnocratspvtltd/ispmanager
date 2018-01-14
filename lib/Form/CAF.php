@@ -77,10 +77,19 @@ class Form_CAF extends \Form{
 		$this->setModel($this->model,['first_name','last_name','organization','customer_type','image_id','tin_no','pan_no','gstin','website','shipping_country_id','shipping_state_id','shipping_city','shipping_address','shipping_pincode','same_as_billing_address','billing_country_id','billing_state_id','billing_city','billing_pincode','billing_address','plan','plan_id','radius_username','radius_password','mac_address','simultaneous_use','grace_period_in_days','custom_radius_attributes','create_invoice','is_invoice_date_first_to_first','include_pro_data_basis']);
 
 		foreach ($attachment_type as $key => $value) {
-			$field = $this->addField('xepan\base\Upload',$this->app->normalizeName($value),$value);
-			$field->setModel('xepan\filestore\Image');
-		}
+			$attachment_name = $this->app->normalizeName($value);
 
+			$field = $this->addField('xepan\base\Upload',$attachment_name,$value);
+			$field->setModel('xepan\filestore\Image');
+
+			$attachment = $this->add('xavoc\ispmanager\Model_Attachment');
+			$attachment->addCondition('contact_id',$this->model->id);
+			$attachment->addCondition('title',$attachment_name);
+			$attachment->tryLoadAny();
+
+			$field->set($attachment['file_id']);
+			
+		}
 		// billing address
 		$country_field =  $this->getElement('billing_country_id');
 		$country_field->getModel()->addCondition('status','Active');

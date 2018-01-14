@@ -42,8 +42,15 @@ class Tool_Staff_MyLead extends \xepan\cms\View_Tool{
 		$lead = $this->add('xavoc\ispmanager\Model_Lead');
 		$lead->addCondition('assign_to_id',$this->staff->id);
  		$lead->addCondition('status','Open');
- 		
-		$crud = $this->add('xepan\hr\CRUD',['allow_edit'=>false,'permissive_acl'=>true],null,['grid/mylead']);
+ 		$lead->actions = [
+					'Active'=>['view','assign'],
+					'Open'=>['view','assign','close','lost'],
+					'Won'=>['view'],
+					'Lost'=>['view','open'],
+					'InActive'=>['view','activate']
+				];
+
+		$crud = $this->add('xepan\hr\CRUD',['allow_edit'=>false,'permissive_acl'=>true,'allow_add'=>false],null,['grid/mylead']);
 		$crud->setModel($lead,['name','organization','','status','created_at','assign_at','emails_str','contacts_str','remark']);
 		
 		$crud->grid->addHook('formatRow',function($g){
@@ -60,6 +67,14 @@ class Tool_Staff_MyLead extends \xepan\cms\View_Tool{
 		$lead->addCondition('installation_assign_to_id',$this->staff->id);
  		$lead->addCondition('status','Installation');
  		
+ 		$lead->actions = [
+				'Won'=>['view','assign_for_installation'],
+				'Installation'=>['view','payment_receive','installed'],
+				'Installed'=>['view'],
+				'Active'=>['view'],
+				'InActive'=>['view','active']
+				];
+
 		$crud = $this->add('xepan\hr\CRUD',['allow_add'=>false,'allow_edit'=>false,'allow_del'=>false,'permissive_acl'=>true,'status_color'=>['Installation'=>'warning']],null,['grid/mylead']);
 		$crud->setModel($lead);
 

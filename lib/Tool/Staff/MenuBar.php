@@ -31,7 +31,7 @@ class Tool_Staff_MenuBar extends \xepan\cms\View_Tool{
 
 		$menu = [
 				['key'=>'staff_dashboard','name'=>'Dashboard'],
-				['key'=>'staff_registration', 'name'=>'Registration'],
+				// ['key'=>'staff_registration', 'name'=>'Registration'],
 				['key'=>'staff_lead','name'=>'Leads '.'<span class="badge">'.($lead_open+$inst_lead_count).'</span>'],
 				['key'=>'staff_setting','name'=>'Settings'],
 				['key'=>'?page=logout','name'=>'Logout']

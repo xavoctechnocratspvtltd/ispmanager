@@ -11,6 +11,7 @@
       <thead>{cols}{col}
         <th><a href="#"><span>Name</span></a></th>
         <th><a href="#" class="asc"><span>Assign Date</span></a></th>
+        <th><a href="#" class="asc"><span>Address</span></a></th>
         <th><a href="#" class="asc"><span>Email`s </span></a></th>
         <th><a href="#" class="asc"><span>Contact </span></a></th>
         <th><a href="#" class="asc"><span>Remark</span></a></th>{/}{/}
@@ -20,6 +21,12 @@
         <tr data-id="{$id}" class="{$odd_even}">{cols}
           <td>{$name}<br/>{$organization}</td>
           <td>{$assign_at}</td>
+          <td>
+            Address: {$address}<br/>
+            City: {$city}<br/>
+            State: {$state}<br/>
+            Country: {$country}<br/>
+          </td>
           <td>{$emails_str}</td>
           <td>{$contacts_str}</td>
           <td>

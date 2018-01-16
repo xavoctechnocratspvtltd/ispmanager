@@ -51,7 +51,7 @@ class Tool_Staff_MyLead extends \xepan\cms\View_Tool{
 				];
 
 		$crud = $this->add('xepan\hr\CRUD',['allow_edit'=>false,'permissive_acl'=>true],null,['grid/mylead']);
-		
+
 		$crud->form->add('xepan\base\Controller_FLC')
 			->showLables(true)
 			->addContentSpot()
@@ -62,23 +62,33 @@ class Tool_Staff_MyLead extends \xepan\cms\View_Tool{
 					'organization'=>'c3~4',
 					'contact_no'=>'c4~6',
 					'email_id'=>'c5~6',
-					'created_at'=>'c8~4',
-					'source'=>'c9~4',
-					'remark'=>'c10~4',
-					'country_id~country'=>'Address~c4~3',
-					'state_id~state'=>'c5~3',
-					'city'=>'c6~3',
-					'address'=>'c7~3'
+					'created_at'=>'c9~4',
+					'source'=>'c10~4',
+					'remark'=>'c11~4',
+					'country_id~country'=>'Address~c4~2',
+					'state_id~state'=>'c5~2',
+					'city'=>'c6~2',
+					'address'=>'c7~4',
+					'pin_code'=>'c8~2'
 				]);
 
-		$crud->form->addField('contact_no');
-		$crud->form->addField('email_id');
+		$crud->form->addField('Number','contact_no')->validate('to_trim|required');
+		$crud->form->addField('line','email_id')->validate('email');
 
 		$crud->setModel($lead,
-				['first_name','last_name','address','city','state_id','country_id','organization','created_at','remark','source'],
+				['first_name','last_name','address','city','state_id','country_id','organization','created_at','remark','source','pin_code'],
 				['name','first_name','last_name','address','city','state_id','state','country','country_id','organization','status','created_at','assign_at','emails_str','contacts_str','remark']
 			);
 		
+		$state_field = $crud->form->getElement('state_id');
+		$state_field->getModel()->addCondition('status','Active');
+		if($country_id = $this->app->stickyGET('country_id')){
+			$state_field->getModel()->addCondition('country_id',$country_id);
+		}		
+		$country_field = $crud->form->getElement('country_id');
+		$country_field->getModel()->addCondition('status','Active');
+		$country_field->js('change',$state_field->js()->reload(null,null,[$this->app->url(null,['cut_object'=>$state_field->name]),'country_id'=>$country_field->js()->val()]));
+
 		$crud->grid->addHook('formatRow',function($g){
 			$g->current_row_html['created_date'] = date('d M, Y',strtotime($g->model['created_at'])); 
 		});
@@ -104,6 +114,7 @@ class Tool_Staff_MyLead extends \xepan\cms\View_Tool{
 
 		$crud->grid->addQuickSearch(['name','status','contacts_str','emails_str']);
 		$crud->grid->addPaginator(10);
+		$crud->grid->addSno();
 	}
 
 	function installationLead(){

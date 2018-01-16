@@ -10,6 +10,7 @@
     <table style="width:100%" class="table table-striped table-hover table-bordered">{header}
       <thead>{cols}{col}
         <th><a href="#"><span>Name</span></a></th>
+        <th><a href="#"><span>Sno</span></a></th>
         <th><a href="#" class="asc"><span>Assign Date</span></a></th>
         <th><a href="#" class="asc"><span>Address</span></a></th>
         <th><a href="#" class="asc"><span>Email`s </span></a></th>
@@ -19,6 +20,7 @@
       {$subheader}
       <tbody>{rows}{row}
         <tr data-id="{$id}" class="{$odd_even}">{cols}
+          <td>{$s_no}</td>
           <td>{$name}<br/>{$organization}</td>
           <td>{$assign_at}</td>
           <td>
@@ -30,7 +32,6 @@
           <td>{$emails_str}</td>
           <td>{$contacts_str}</td>
           <td>
-             
             {$installed_narration}{$remark}{$narration}
           </td>
           <td>{action}Action Here{/}</td>{/}

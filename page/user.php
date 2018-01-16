@@ -16,6 +16,8 @@ class page_user extends \xepan\base\Page {
 		$model->addHook('afterSave',[$model,'updateWebsiteUser']);
 		$model->setOrder('id','desc');
 
+		$model->getElement('emails_str')->caption('Emails');
+		$model->getElement('contacts_str')->caption('Contacts');
 		
 
 		$crud = $this->add('xepan\hr\CRUD',['entity_name'=>'User']);
@@ -23,7 +25,7 @@ class page_user extends \xepan\base\Page {
 			$form = $crud->form;
 			$form->setLayout('form/user');
 		}
-		$crud->setModel($model,['net_data_limit','radius_username','radius_password','plan_id','simultaneous_use','grace_period_in_days','custom_radius_attributes','first_name','last_name','create_invoice','is_invoice_date_first_to_first','include_pro_data_basis','country_id','state_id','city','address','pin_code','qty_unit_id','mac_address'],['radius_username','created_at','last_login','plan','radius_login_response','is_online']);
+		$crud->setModel($model,['net_data_limit','radius_username','radius_password','plan_id','simultaneous_use','grace_period_in_days','custom_radius_attributes','first_name','last_name','create_invoice','is_invoice_date_first_to_first','include_pro_data_basis','country_id','state_id','city','address','pin_code','qty_unit_id','mac_address'],['radius_username','contacts_str','emails_str','created_at','last_login','plan','radius_login_response','is_online']);
 		$crud->grid->removeColumn('attachment_icon');
 		$crud->grid->addPaginator($ipp=10);
 		$crud->grid->addQuickSearch(['radius_username','plan']);

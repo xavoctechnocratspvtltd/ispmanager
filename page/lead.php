@@ -11,7 +11,6 @@ class page_lead extends \xepan\marketing\page_lead{
 	function page_index(){
 		parent::page_index();
 		
-		$model = $this->add('xavoc\ispmanager\Model_Lead');
 		$data = $this->app->db->dsql()->expr('SELECT DISTINCT(city) AS city FROM contact')->get();
 		$city_list = [];
 		foreach ($data as $key => $value) {

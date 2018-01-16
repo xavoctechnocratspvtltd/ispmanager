@@ -6,11 +6,11 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	// public $table = "isp_user";
 	public $status = ['Active','InActive','Installation','Installed','Won'];
 	public $actions = [
-				'Won'=>['view','edit','delete','assign_for_installation'],
-				'Installation'=>['view','edit','delete','installed','payment_receive'],
-				'Installed'=>['view','assign_for_installation','edit','delete','active'],
-				'Active'=>['view','edit','delete','AddTopups','CurrentConditions','Reset_Current_Plan_Condition'],
-				'InActive'=>['view','edit','delete','active']
+				'Won'=>['view','edit','delete','assign_for_installation','documents'],
+				'Installation'=>['view','edit','delete','installed','payment_receive','documents'],
+				'Installed'=>['view','assign_for_installation','documents','edit','delete','active'],
+				'Active'=>['view','edit','delete','AddTopups','CurrentConditions','documents','Reset_Current_Plan_Condition'],
+				'InActive'=>['view','edit','delete','active','documents']
 				];
 	public $acl_type= "ispmanager_user";
 	private $plan_dirty = false;
@@ -490,6 +490,16 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 	function human2byte($value){
 		return $this->app->human2byte($value);
+	}
+
+	function page_documents($page){
+
+		$attachment = $this->add('xavoc\ispmanager\Model_Attachment');
+		$attachment->addCondition('contact_id',$this->id);
+		$crud = $page->add('CRUD');
+		$crud->setModel($attachment,['title','file_id','description'],['title','file','description']);
+		$crud->grid->addFormatter('file','image');
+
 	}
 
 
@@ -1332,15 +1342,11 @@ class Model_User extends \xepan\commerce\Model_Customer{
 						'radius_username'=>'required',
 						'radius_password'=>'required',
 						'plan_id'=>'required',
-						];
+					];
 		$form = $page->add('xavoc\ispmanager\Form_CAF',['model'=>$this,'mandatory_field'=>$mandatory_field]);
 
 		if(!$this['radius_username'])
 			$form->getElement('radius_username')->set($this['code']);
-		// $form = $page->add('Form');
-		// $form->setModel($this,['plan_id','radius_username','radius_password','is_invoice_date_first_to_first','create_invoice','include_pro_data_basis']);
-		// $form->addSubmit('Create User and Activate Plan');
-		// if($form->isSubmitted()){
 		$form->addHook('CAF_AfterSave',function($form)use($page){
 			$this->active();
 			return $this->app->page_action_result = $this->app->js(true,$page->js()->univ()->closeDialog())->univ()->successMessage('User Activated');

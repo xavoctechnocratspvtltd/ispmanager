@@ -32,6 +32,16 @@ class Initiator extends \Controller_Addon {
         $m->addItem(['Device Management','icon'=>'fa fa-user'],'xavoc_ispmanager_device');
         $m->addItem(['Employee Payment Collection','icon'=>'fa fa-users'],'xavoc_ispmanager_employeepaymentcollection');
 
+        $m = $this->app->top_menu->addMenu('CHANEL');
+        $m->addItem(['Chanel Mgnt','icon'=>'fa fa-cog'],'xavoc_ispmanager_chanel_chanel');
+        $m->addItem(['Plan','icon'=>'fa fa-cog'],'xavoc_ispmanager_chanel_plan');
+        $m->addItem(['Lead','icon'=>'fa fa-cog'],'xavoc_ispmanager_chanel_lead');
+        $m->addItem(['ISP User','icon'=>'fa fa-cog'],'xavoc_ispmanager_chanel_user');
+        $m->addItem(['Commission Mgnt','icon'=>'fa fa-cog'],'xavoc_ispmanager_chanel_commission');
+        $m->addItem(['Invoice','icon'=>'fa fa-cog'],'xavoc_ispmanager_chanel_invoice');
+        $m->addItem(['Payment Collection','icon'=>'fa fa-cog'],'xavoc_ispmanager_chanel_paymentcollection');
+        $m->addItem(['Ticket','icon'=>'fa fa-cog'],'xavoc_ispmanager_chanel_ticket');
+
         $this->addAppFunctions();
 
         $user = $this->add('xavoc\ispmanager\Model_User');

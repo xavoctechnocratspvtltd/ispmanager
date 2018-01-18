@@ -54,6 +54,7 @@ class Initiator extends \Controller_Addon {
     function exportEntities($app,&$array){
         $array['ispmanager_plan'] = ['caption'=>'Plan','type'=>'DropDown','model'=>'xavoc\ispmanager\Model_Plan'];
         $array['ispmanager_user'] = ['caption'=>'ISP User','type'=>'DropDown','model'=>'xavoc\ispmanager\Model_User'];
+        $array['ispmanager_Lead'] = ['caption'=>'ISP User','type'=>'DropDown','model'=>'xavoc\ispmanager\Model_Lead'];
         
     }
 

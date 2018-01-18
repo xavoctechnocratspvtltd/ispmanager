@@ -45,7 +45,16 @@ class Initiator extends \Controller_Addon {
                 $lead->assign($model['assign_to_id']);
             }
         });
+
+        $this->app->addHook('entity_collection',[$this,'exportEntities']);
+
         return $this;
+    }
+
+    function exportEntities($app,&$array){
+        $array['ispmanager_plan'] = ['caption'=>'Plan','type'=>'DropDown','model'=>'xavoc\ispmanager\Model_Plan'];
+        $array['ispmanager_user'] = ['caption'=>'ISP User','type'=>'DropDown','model'=>'xavoc\ispmanager\Model_User'];
+        
     }
 
     function setup_pre_frontend(){

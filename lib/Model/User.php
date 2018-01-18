@@ -9,7 +9,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 				'Won'=>['view','edit','delete','assign_for_installation','documents'],
 				'Installation'=>['view','edit','delete','installed','payment_receive','documents'],
 				'Installed'=>['view','assign_for_installation','documents','edit','delete','active'],
-				'Active'=>['view','edit','delete','AddTopups','CurrentConditions','documents','Reset_Current_Plan_Condition'],
+				'Active'=>['view','edit','delete','AddTopups','CurrentConditions','documents','Reset_Current_Plan_Condition','radius_attributes'],
 				'InActive'=>['view','edit','delete','active','documents']
 				];
 	public $acl_type= "ispmanager_user";
@@ -1373,6 +1373,20 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$this->updateWebsiteUser();
 		
 		return true;
+	}
+
+	function page_radius_attributes($page){
+
+		$tab = $page->add('Tabs');
+		$sip_tab = $tab->addTab('Static IP');
+
+		$model = $this->add('xavoc\ispmanager\Model_RadReply');
+		$model->addCondition('username',$this['radius_username']);
+		$model->addCondition('attribute','Framed-IP-Address');
+		$model->addCondition('op',':=');
+
+		$crud = $sip_tab->add('xepan\base\CRUD',['entity_name'=>'Static IP']);
+		$crud->setModel($model);
 	}
 
 }

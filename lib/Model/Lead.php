@@ -13,7 +13,7 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 					'InActive'=>['view','edit','delete','activate','communication']
 				];
 
-	public $acl_type="ispmanager_Lead";
+	// public $acl_type="ispmanager_Lead";
 
 	// 'createUser','send','manage_score','due_invoice','change_plan',
 	

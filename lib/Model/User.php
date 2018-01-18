@@ -9,9 +9,10 @@ class Model_User extends \xepan\commerce\Model_Customer{
 				'Won'=>['view','edit','delete','assign_for_installation','documents'],
 				'Installation'=>['view','edit','delete','installed','payment_receive','documents'],
 				'Installed'=>['view','assign_for_installation','documents','edit','delete','active'],
-				'Active'=>['view','edit','delete','AddTopups','CurrentConditions','documents','Reset_Current_Plan_Condition','radius_attributes'],
+				'Active'=>['view','edit','delete','AddTopups','CurrentConditions','documents','radius_attributes','deactivate','Reset_Current_Plan_Condition'],
 				'InActive'=>['view','edit','delete','active','documents']
 				];
+
 	public $acl_type= "ispmanager_user";
 	private $plan_dirty = false;
 	private $radius_password_dirty = false;
@@ -53,6 +54,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$user_j->addField('last_ul_limit')->defaultValue(0);
 		$user_j->addField('last_accounting_dl_ratio')->defaultValue(100);
 		$user_j->addField('last_accounting_ul_ratio')->defaultValue(100);
+		$user_j->addField('is_active')->type('boolean')->defaultValue(0);
 
 		$user_j->hasMany('xavoc\ispmanager\UserPlanAndTopup','user_id',null,'PlanConditions');
 		$user_j->hasMany('xepan\hr\Employee_Document','customer_id',null,'CustomerDocuments');
@@ -1357,6 +1359,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	function active(){
 		$this->setPlan($this['plan_id']);
 		$this['status'] = 'Active';
+		$this['is_active'] = true;
 		$this->save();
 
 		// $this->updateUserConditon();
@@ -1389,4 +1392,12 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$crud->setModel($model);
 	}
 
+	function deactivate(){
+		$this['status'] = 'InActive';
+		$this['is_active'] = false;
+		$this->app->employee
+            ->addActivity("Customer : '". $this['name'] ."' has been deactivated", null /*Related Document ID*/, $this->id /*Related Contact ID*/,null,null,"xepan_commerce_customerdetail&contact_id=".$this->id."")
+            ->notifyWhoCan('activate','InActive',$this);
+		return $this->save();
+	}
 }

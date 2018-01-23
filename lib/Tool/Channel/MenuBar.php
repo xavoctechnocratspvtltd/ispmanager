@@ -110,7 +110,7 @@ class Tool_Channel_MenuBar extends \xepan\cms\View_Tool{
 	}
 
 	function dashboard(){
-		$this->add('view')->set('Dashboard');
+		$this->container->add('view')->set('Dashboard Comming soon ...')->addClass('alert alert-success');
 	}
 
 	function plan(){
@@ -255,7 +255,7 @@ class Tool_Channel_MenuBar extends \xepan\cms\View_Tool{
 		$model->setOrder('created_at','DESC');
 		
 		$crud = $this->container->add('xepan\hr\CRUD',
-				['action_page'=>'xepan_commerce_quickqsp&document_type=SalesInvoice']
+				['action_page'=>'xavoc_ispmanager_quickqsp&document_type=SalesInvoice']
 				,null,
 				['view/invoice/sale/grid']
 			);

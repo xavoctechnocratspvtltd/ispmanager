@@ -217,6 +217,9 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 		}
 
 		$plan = $page->add('xavoc\ispmanager\Model_Plan');
+		if($page->add('xavoc\ispmanager\Model_Channel')->loadLoggedIn()){
+			$plan = $page->add('xavoc\ispmanager\Model_Channel_Plan');
+		}
 		$plan->addCondition('status','Published');
 
 		$form = $page->add('Form');
@@ -333,6 +336,7 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 		$form->addSubmit('create user')->addClass('btn btn-primary');
 		
 		if($form->isSubmitted()){
+			
 			
 			$p_field_array = [
 						'Cash'=>['amount'],
@@ -453,14 +457,14 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 
 				$this->updatePaymentTransaction($payment_detail);
 
-				$channel = $this->add('xepan\base\Contact');
+				$channel = $this->add('xepan\base\Model_Contact');
 				if($channel->loadLoggedIn('Channel')){
 					$asso = $this->add('xavoc\ispmanager\Model_Channel_Association');
 					$asso['channel_id'] = $channel->id;
 					$asso['isp_user_id'] = $this->id;
 					$asso->save();
 				}
-
+				
 				$this->close();
 			// 	$this->app->db->commit();
 			// }catch(\Exception $e){

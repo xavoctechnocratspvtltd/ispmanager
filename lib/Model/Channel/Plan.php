@@ -7,7 +7,7 @@ class Model_Channel_Plan extends \xavoc\ispmanager\Model_BasicPlan{
 	public $status = ['Published','UnPublished'];
 	public $actions = [
 				'Published'=>['view','edit','delete','condition'],
-				'UnPublished'=>['view','edit','delete','condition']
+				'UnPublished'=>['view','edit','delete','condition','publish']
 			];
 
 	function init(){

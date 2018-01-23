@@ -13,7 +13,7 @@ class Model_Channel extends \xepan\base\Model_Contact{
 	function init(){
 		parent::init();
 
-		$this->addCondition('type','channel');
+		$this->addCondition('type','Channel');
 		
 		$channel_j = $this->join('isp_channel.contact_id');
 		$channel_j->addField('permitted_bandwidth');

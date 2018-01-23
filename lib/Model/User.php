@@ -181,10 +181,20 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	}
 
 	function createInvoice($m,$detail_data=null,$false_condition=false,$master_created_at=null){
-		if(!$false_condition)
-			if(!$this->plan_dirty OR !$this['plan_id'] OR !$this['create_invoice']) return;
+		// if(!$false_condition)
+		// 	if(!$this->plan_dirty OR !$this['plan_id'] OR !$this['create_invoice']) return;
+		
+		$invoice_data = $this->createQSP($m,$detail_data,'SalesInvoice',null,$master_created_at);
 
-		return $this->createQSP($m,$detail_data,'SalesInvoice',null,$master_created_at);
+		$channel = $this->add('xepan\base\Model_Contact');
+		if($channel->loadLoggedIn('Channel')){
+			$asso = $this->add('xavoc\ispmanager\Model_Channel_Association');
+			$asso['channel_id'] = $channel->id;
+			$asso['invoice_id'] = $invoice_data['master_detail']['id'];
+			$asso->save();
+		}
+		
+		return $invoice_data;
 	}
 
 	function createQSP($m,$detail_data=[],$qsp_type="SalesInvoice",$plan_id=null,$master_created_at=null){
@@ -1308,18 +1318,39 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			$this->payment_receive($payment_detail);
 			return $this->app->page_action_result = $this->app->js(true,$page->js()->univ()->closeDialog())->univ()->successMessage('Payment Received');
 		}
+		
+		$payment_model = $this->add('xavoc\ispmanager\Model_PaymentTransaction');
+		$payment_model->addCondition('contact_id',$this->id);
+		$pay_grid = $page->add('xepan\base\Grid');
+		$pay_grid->setModel($payment_model,['contact','payment_mode','amount','narration','is_submitted_to_company']);
+
 	}
 
 	function payment_receive($detail_array){
 		if(!count($detail_array)) return;
 
+		$emp_id = $this->app->employee->id;
+		$channel = $this->add('xepan\base\Model_Contact');
+		if($channel->loadLoggedIn('Channel')){
+			$emp_id = $channel->id;
+		}
+		
 		$payment = $this->add('xavoc\ispmanager\Model_PaymentTransaction');
 		foreach ($detail_array as $field => $value) {
 			$payment[$field] = $value;
 		}
+		
 		$payment['contact_id'] = $this->id;
-		$payment['employee_id'] = $this->app->employee->id;
+		$payment['employee_id'] = $emp_id;
 		$payment->save();
+
+		if($channel->loadLoggedIn()){
+			$asso = $this->add('xavoc\ispmanager\Model_Channel_Association');
+			$asso['channel_id'] = $channel->id;
+			$asso['payment_transaction_id'] = $payment->id;
+			$asso->save();
+		}
+
 		return $payment;
 	}
 
@@ -1357,6 +1388,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	}
 
 	function active(){
+		
 		$this->setPlan($this['plan_id']);
 		$this['status'] = 'Active';
 		$this['is_active'] = true;

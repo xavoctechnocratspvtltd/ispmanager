@@ -11,7 +11,7 @@ class page_channel_plan extends \xepan\base\Page {
 
 		$model = $this->add('xavoc\ispmanager\Model_Channel_Plan');
 		$c_j = $model->join('isp_channel_association.plan_id');
-		$c_j->addField('channel_id');
+		$c_j->addField('isp_channel_id','channel_id');
 			
 		$model->addExpression('validity')->set(function($m,$q){
 			return $q->expr('CONCAT([0]," ",[1])',[$m->getElement('plan_validity_value'),$m->getElement('qty_unit')]);

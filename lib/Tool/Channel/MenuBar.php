@@ -4,7 +4,7 @@ namespace xavoc\ispmanager;
 
 class Tool_Channel_MenuBar extends \xepan\cms\View_Tool{
 	
-	public $options = ['login_page'=>'login'];
+	public $options = ['login_page'=>'chanel_login'];
 	
 	function init(){
 		parent::init();
@@ -13,9 +13,25 @@ class Tool_Channel_MenuBar extends \xepan\cms\View_Tool{
 
 		$this->app->actionsWithoutACL = true;
 
-		$this->app->stickyGET('view');
-		$this->channel = $this->add('xavoc\ispmanager\Model_Channel')->tryLoadAny();
+		// checking chanel is logged in or not
+		if(!$this->app->auth->isLoggedIn()){
+			$this->app->redirect($this->app->url($this->options['login_page']));
+			return;
+		}
+			
+		$this->channel = $channel = $this->add('xavoc\ispmanager\Model_Channel');
+		$this->channel->addCondition('user_id',$this->app->auth->model->id);
+		$this->channel->tryLoadAny();
 
+		if(!$channel->loadLoggedIn('Channel')){
+			$this->add('View')->addClass('alert alert-danger')->set('you are not the permitted Channel Partner');
+			return;
+		}
+
+		// end of checking chanel is logged in or not
+		
+
+		$this->app->stickyGET('view');
 		$page = $this->app->url();
 		$menu = [
 				['key'=>$page."&view=dashboard",'name'=>'Dashboard'],
@@ -101,6 +117,11 @@ class Tool_Channel_MenuBar extends \xepan\cms\View_Tool{
 		$plan = $this->add('xavoc\ispmanager\Model_Channel_Plan');
 		$plan->addCondition('channel_id',$this->channel->id);
 		$plan->setOrder('name','asc');
+		$plan->actions = [
+				'Published'=>['view','edit','delete','condition'],
+				'UnPublished'=>['view','edit','delete','condition']
+			];
+
 		$crud = $this->container->add('xepan\hr\CRUD',['actionsWithoutACL'=>true]);
 		if($crud->isEditing()){
 			$form = $crud->form;
@@ -131,11 +152,11 @@ class Tool_Channel_MenuBar extends \xepan\cms\View_Tool{
 		$lead->getElement('contacts_str')->caption('Contacts');
 
  		$lead->actions = [
-					'Active'=>['view','edit','delete'],
-					'Open'=>['view','edit','delete','close','lost'],
+					// 'Active'=>['view','edit','delete','open'],
+					'Open'=>['view','close','lost','edit','delete'],
 					'Won'=>['view'],
 					'Lost'=>['view','open'],
-					'InActive'=>['view','activate']
+					'InActive'=>['view','activate','edit','delete']
 				];
 
 		$crud = $this->container->add('xepan\hr\CRUD');
@@ -227,19 +248,107 @@ class Tool_Channel_MenuBar extends \xepan\cms\View_Tool{
 	}
 
 	function invoice(){
-		$this->add('view')->set('invoice');
+
+		$model = $this->add('xavoc\ispmanager\Model_Channel_Invoice');
+		$model->addCondition('channel_id',$this->channel->id);
+		$model->setOrder('created_at','DESC');
+		
+		$crud = $this->container->add('xepan\hr\CRUD',
+				['action_page'=>'xepan_commerce_quickqsp&document_type=SalesInvoice']
+				,null,
+				['view/invoice/sale/grid']
+			);
+		$crud->setModel($model);
+		$crud->grid->addPaginator(50);
+		$crud->add('xepan\base\Controller_Avatar',['name_field'=>'contact']);
+		
+		$crud->grid->removeAttachment();
+		// $crud->grid->removeColumn('delete');
 	}
 
 	function user(){
-		
+
+		$user = $this->add('xavoc\ispmanager\Model_Channel_User');
+		$user->addCondition('channel_id',$this->channel->id);
+
+		$crud = $this->container->add('xepan\hr\CRUD');
+		$crud->setModel($user,
+			['first_name','last_name','organization'],
+			['name','organization','address','city','remark','created_at','emails_str','contacts_str','plan','status','type']
+		);
+
+		$crud->grid->addQuickSearch(['name','status','contacts_str','emails_str']);
+		$crud->grid->addPaginator(10);
+		$crud->grid->removeAttachment();
+		$crud->grid->removeColumn('edit');
+		$crud->grid->removeColumn('delete');
+		$crud->grid->removeColumn('type');
+		$crud->grid->removeColumn('status');
 	}
 
 	function collection(){
-		$this->add('view')->set('collection');
+		$collection = $this->add('xavoc\ispmanager\Model_Channel_PaymentTransaction');
+		$collection->addCondition('channel_id',$this->channel->id);
+
+		$grid = $this->container->add('xepan\base\Grid');
+		$grid->setModel($collection,['contact','submitted_by','payment_mode','amount','narration','created_at']);
+		$grid->addHook('formatRow',function($g){
+			$phtml = "";
+			if($g->model['payment_mode'] == "Cash"){
+				$phtml = "Payment Mode: CASH";
+			}elseif($g->model['payment_mode'] == "Cheque"){
+				$phtml = "Payment Mode: Cheque"."<br/>";
+				$phtml .= "Cheque No: ".$g->model['cheque_no']."<br/>";
+				$phtml .= "Cheque Date: ".$g->model['cheque_date']."<br/>";
+				$phtml .= "Bank Detail: ".$g->model['bank_detail']."<br/>";
+
+			}elseif($g->model['payment_mode'] == "DD"){
+				$phtml = "Payment Mode: DD <br/>";
+				$phtml .= "DD No: ".$g->model['dd_no']."<br/>";
+				$phtml .= "dd_date: ".$g->model['dd_date']."<br/>";
+				$phtml .= "Bank Detail: ".$g->model['bank_detail']."<br/>";
+			}
+			$g->current_row_html['payment_mode'] = $phtml;
+		});
+
 	}
 
 	function settings(){
-		$this->add('view')->set('setting');
+
+
+		$change_pass_form = $this->container->add('Form');
+		$change_pass_form->add('xepan\base\Controller_FLC')
+			->showLables(true)
+			->makePanelsCoppalsible(true)
+			->addContentSpot()
+			->layout([
+				'user_name'=>'Update Your Password~c1~12',
+				'old_password'=>'c2~12',
+				'new_password'=>'c3~12',
+				'retype_password'=>'c4~12',
+				'FormButtons~&nbsp'=>'c5~12'
+			]);
+
+		$change_pass_form->addField('user_name')->set($this->app->auth->model['username'])->setAttr('disabled',true);
+		$change_pass_form->addField('password','old_password')->validate('required');
+		$change_pass_form->addField('password','new_password')->validate('required');
+		$change_pass_form->addField('password','retype_password')->validate('required');
+		$change_pass_form->addSubmit('Update Password')->addClass('btn btn-success');
+
+		if($change_pass_form->isSubmitted()){
+			if( $change_pass_form['new_password'] != $change_pass_form['retype_password'])
+				$change_pass_form->displayError('new_password','Password must match');
+			
+			if(!$this->api->auth->verifyCredentials($this->app->auth->model['username'],$change_pass_form['old_password']))
+				$change_pass_form->displayError('old_password','Password not match');
+			
+			if($this->app->auth->model->updatePassword($change_pass_form['new_password'])){
+				$this->app->auth->logout();
+				$this->app->redirect($this->options['login_page']);
+			}
+			$change_pass_form->js()->univ()->errorMessage('some thing happen wrong')->execute();
+		}
+		
 	}
 
 }

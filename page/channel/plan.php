@@ -10,9 +10,7 @@ class page_channel_plan extends \xepan\base\Page {
 		parent::init();
 
 		$model = $this->add('xavoc\ispmanager\Model_Channel_Plan');
-		$c_j = $model->join('isp_channel_association.plan_id');
-		$c_j->addField('isp_channel_id','channel_id');
-			
+		
 		$model->addExpression('validity')->set(function($m,$q){
 			return $q->expr('CONCAT([0]," ",[1])',[$m->getElement('plan_validity_value'),$m->getElement('qty_unit')]);
 		});
@@ -28,8 +26,18 @@ class page_channel_plan extends \xepan\base\Page {
 			);
 		
 		$crud->grid->removeColumn('attachment_icon');
-		$crud->grid->addQuickSearch(['name']);
+		$filter_form = $crud->grid->addQuickSearch(['name']);
 		$crud->grid->addPaginator($ipp=50);
 
+		$channel_field = $filter_form->addField('DropDown','channel_id','Channel');
+		$channel_field->setModel('xavoc\ispmanager\Model_Channel');
+		$channel_field->setEmptyText('Select Channel');
+
+		$filter_form->addHook('applyFilter',function($f,$m){
+			if($f['channel_id']){
+				$m->addCondition('channel_id',$f['channel_id']);
+			}
+			
+		});
 	}
 }

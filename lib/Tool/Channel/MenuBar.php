@@ -30,9 +30,9 @@ class Tool_Channel_MenuBar extends \xepan\cms\View_Tool{
 
 		// end of checking chanel is logged in or not
 		
-
-		$this->app->stickyGET('view');
-		$page = $this->app->url();
+		$view = $this->app->stickyGET('view');
+		$page = "?page=".$this->app->page;
+			
 		$menu = [
 				['key'=>$page."&view=dashboard",'name'=>'Dashboard'],
 				['key'=>$page."&view=plan",'name'=>'Plan'],
@@ -49,8 +49,9 @@ class Tool_Channel_MenuBar extends \xepan\cms\View_Tool{
 								'index.php?page=staff_lead&action=installation'=>'Installation Lead '
 							]
 				];
-		$page = $this->app->page;
-		$page = $this->app->page."_active";
+
+		$page = $page."&view=".$view;
+		// $page = $page."&view=".$view."_active";
 		$this->complete_lister = $cl = $this->add('CompleteLister',null,null,['view/staffmenubar']);
 		$cl->setSource($menu);
 		$cl->addHook('formatRow',function($g)use($page,$submenu_list){

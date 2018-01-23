@@ -2,7 +2,7 @@
 
 namespace xavoc\ispmanager;
 
-class Model_Chanel_Plan extends \xavoc\ispmanager\Model_Plan{ 
+class Model_Channel_Invoice extends \xavoc\ispmanager\Model_Invoice{ 
 	
 	function init(){
 		parent::init();

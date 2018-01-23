@@ -32,15 +32,15 @@ class Initiator extends \Controller_Addon {
         $m->addItem(['Device Management','icon'=>'fa fa-user'],'xavoc_ispmanager_device');
         $m->addItem(['Employee Payment Collection','icon'=>'fa fa-users'],'xavoc_ispmanager_employeepaymentcollection');
 
-        $m = $this->app->top_menu->addMenu('CHANEL');
-        $m->addItem(['Chanel Mgnt','icon'=>'fa fa-cog'],'xavoc_ispmanager_chanel_chanel');
-        $m->addItem(['Plan','icon'=>'fa fa-cog'],'xavoc_ispmanager_chanel_plan');
-        $m->addItem(['Lead','icon'=>'fa fa-cog'],'xavoc_ispmanager_chanel_lead');
-        $m->addItem(['ISP User','icon'=>'fa fa-cog'],'xavoc_ispmanager_chanel_user');
-        $m->addItem(['Commission Mgnt','icon'=>'fa fa-cog'],'xavoc_ispmanager_chanel_commission');
-        $m->addItem(['Invoice','icon'=>'fa fa-cog'],'xavoc_ispmanager_chanel_invoice');
-        $m->addItem(['Payment Collection','icon'=>'fa fa-cog'],'xavoc_ispmanager_chanel_paymentcollection');
-        $m->addItem(['Ticket','icon'=>'fa fa-cog'],'xavoc_ispmanager_chanel_ticket');
+        $m = $this->app->top_menu->addMenu('channel');
+        $m->addItem(['channel Mgnt','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_channel');
+        $m->addItem(['Plan','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_plan');
+        $m->addItem(['Lead','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_lead');
+        $m->addItem(['ISP User','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_user');
+        $m->addItem(['Commission Mgnt','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_commission');
+        $m->addItem(['Invoice','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_invoice');
+        $m->addItem(['Payment Collection','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_paymentcollection');
+        $m->addItem(['Ticket','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_ticket');
 
         $this->addAppFunctions();
 
@@ -69,7 +69,7 @@ class Initiator extends \Controller_Addon {
     }
 
     function setup_pre_frontend(){
-        $this->routePages('xavoc_dm');
+        $this->routePages('xavoc_ispmanager');
         $this->addLocation(array('template'=>'templates','js'=>'templates/js','css'=>'templates/css'))
         ->setBaseURL('./shared/apps/xavoc/mlm/');
 
@@ -119,6 +119,7 @@ class Initiator extends \Controller_Addon {
         $this->app->exportFrontEndTool('xavoc\ispmanager\Tool_CustomerRegistration','ISPMANAGER');
         $this->app->exportFrontEndTool('xavoc\ispmanager\Tool_Staff_MyLead','ISPMANAGER');
         $this->app->exportFrontEndTool('xavoc\ispmanager\Tool_Staff_PaymentReceived','ISPMANAGER');
+        $this->app->exportFrontEndTool('xavoc\ispmanager\Tool_Channel_MenuBar','ISPMANAGER');
 
         $user = $this->add('xavoc\ispmanager\Model_User');
         $this->app->addHook('invoice_paid',[$user,'invoicePaid']);

@@ -2,9 +2,9 @@
 
 namespace xavoc\ispmanager;
 
-class page_chanel_invoice extends \xepan\base\Page {
+class page_channel_invoice extends \xepan\base\Page {
 	
-	public $title = "Chanel Invoice Management";
+	public $title = "channel Invoice Management";
 		
 	function init(){
 		parent::init();

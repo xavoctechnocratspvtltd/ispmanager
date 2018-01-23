@@ -2,9 +2,9 @@
 
 namespace xavoc\ispmanager;
 
-class page_chanel_commission extends \xepan\base\Page {
+class page_channel_commission extends \xepan\base\Page {
 	
-	public $title = "Chanel commission Management";
+	public $title = "channel commission Management";
 		
 	function init(){
 		parent::init();

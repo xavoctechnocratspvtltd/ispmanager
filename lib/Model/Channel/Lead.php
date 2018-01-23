@@ -2,205 +2,19 @@
 
 namespace xavoc\ispmanager;
 
-class Model_Lead extends \xepan\marketing\Model_Lead{ 
-	
-	public $status = ['Active','InActive'];
-	public $actions = [
-					'Active'=>['view','assign','deactivate','communication','edit','delete'],
-					'Open'=>['view','assign','close','lost','communication','edit','delete'],
-					'Won'=>['view','edit','delete','communication'],
-					'Lost'=>['view','open','communication','edit','delete'],
-					'InActive'=>['view','edit','delete','activate','communication']
-				];
-
-	// public $acl_type = "ispmanager_Lead";
-
-	// 'createUser','send','manage_score','due_invoice','change_plan',
+class Model_Channel_Lead extends \xavoc\ispmanager\Model_Lead{ 
 	
 	function init(){
 		parent::init();
 		
-		// $this->addHook('beforeSave',$this);
-	}
-
-
-	function beforeSave(){
-		// if($this['status'] == "Active" AND $this['assign_to_id'] > 0){
-		// 	$this['status'] = "Open";
-		// }
-	}
-
-	function assign($assign_to_id,$remark=null){
-
-		$this['assign_to_id'] = $assign_to_id;
-		$this['remark'] .= " ".$remark;
-		$this['status'] = "Open";
-		$this['assign_at'] = $this->app->now;
-		$this->save();
-
-		$employee = $this->add('xavoc\ispmanager\Model_Employee')
-					->load($assign_to_id);
-		// send email and sms
-		$this->add('xavoc\ispmanager\Controller_Greet')->do($employee,'lead_assign',$this);
+		$join = $this->join('isp_channel_association.lead_id');
+		$join->addField('channel_id');
 		
-		// $this->app->employee
-		//         ->addActivity("Lead '".$this['code']."' assign to '".$employee['name']."'",null, $this['assign_to_id'] /*Related Contact ID*/,null,null,null)
-		//         ->notifyWhoCan('close,lost','Open')
-		//         ->notifyTo([$this['created_by_id']],"Lead : '" . $this['code'] ."' Assign to '".$employee['name']." by ".$this->app->employee['name']."'")
-		//         ;
-		// return $this;
-	}
-
-	function page_open($page){
-
-		$dept_id = $this->app->stickyGET('dept_id');
-		$emp = $page->add('xepan\hr\Model_Employee');
-		$emp->addCondition('id','<>',$this->app->employee->id);
-		
-		$form = $page->add('Form');
-		$dept = $page->add('xepan\hr\Model_Department');
-		$dept->addCondition('status','Active');
-
-		$dept_field = $form->addField('xepan\base\DropDown','department');
-		$dept_field->setModel($dept);
-		$dept_field->setEmptyText('Please Select Department');
-
-		$emp_field = $form->addField('xepan\base\DropDown','employee')->validate('required');
-		$emp_field->setModel($emp);
-		$emp_field->setEmptyText('Please Select');
-
-		$form->addField('text','remark');
-
-		if($this['assign_to_id'])
-			$emp_field->set($this['assign_to_id']);
-
-		if($dept_id){
-			$emp_field->getModel()->addCondition('department_id',$dept_id);
-		}
-
-		$dept_field->js('change',$form->js()->atk4_form('reloadField','employee',[$this->app->url(),'dept_id'=>$dept_field->js()->val()]));
-		// $dept_field->js('change',$emp_field->js()->reload(null,null,[$this->app->url(null,['cut_object'=>$emp_field->name]),'dept_id'=>$dept_field->js()->val()]));
-
-		$form->addSubmit('Re-open & Assign')->addClass('btn btn-primary');
-		if($form->isSubmitted()){
-			$this->open($form['employee'],$form['remark']);
-			return $this->app->page_action_result = $this->app->js(true,$page->js()->univ()->closeDialog())->univ()->successMessage('Assigned');
-		}
-	}
-
-	function open($assign_to_id,$remark=null){
-		$this['assign_to_id'] = $assign_to_id;
-		$this['remark'] .= " ".$remark;
-		$this['status'] = "Open";
-		$this['assign_at'] = $this->app->now;
-		$this->save();
-
-		$employee = $this->add('xepan\hr\Model_Employee')->load($assign_to_id);
-		// send email and sms
-		$this->add('xavoc\ispmanager\Controller_Greet')->do($employee,'lead_assign',$this);
-		return $this;
-	}
-
-	function page_lost($page){
-
-		$config = $this->add('xepan\base\Model_ConfigJsonModel',
-			[
-				'fields'=>[
-							'lead_lost_region'=>'text'
-						],
-					'config_key'=>'ISPMANAGER_MISC',
-					'application'=>'ispmanager'
-			]);
-		$config->add('xepan\hr\Controller_ACL');
-		$config->tryLoadAny();
-
-		$temp = explode(",", $config['lead_lost_region']);
-		$regions = [];
-		foreach ($temp as $key => $value) {
-			$regions[$value] = $value;
-		}
-
-		$form = $page->add('Form');
-		$region_field = $form->addField('xepan\base\DropDown','region')->validate('required');
-		$region_field->setValueList($regions);
-		$region_field->setEmptyText('Please Select');
-
-		$form->addField('text','narration');
-		$form->addSubmit('Save');
-		if($form->isSubmitted()){
-			$region = $form['region'];
-			if($form['narration'])
-				$region .= "::".$form['narration'];
-			
-			$this->lost($region);
-			return $this->app->page_action_result = $this->app->js(true,$page->js()->univ()->closeDialog())->univ()->errorMessage('Lead Lost');	
-		}
-	}
-
-	function lost($remark){
-		if(!$this->loaded()) throw new \Exception("lead model must loaded");
-
-		$this['remark'] = $this['remark']." ".$remark;
-		$this['status'] = "Lost";
-		$this->save();
-	}
-
-
-	function page_assign_for_installation($page){
-
-	}
-
-
-	function page_change_plan($page){
-		$isp_user = $page->add('xavoc\ispmanager\Model_User');
-		$isp_user->addCondition('customer_id',$this->id);		
-		$isp_user->tryLoadAny();
-		if(!$isp_user->loaded()){
-			$page->add('View')->set('User not Exist ( Please Create User First)')->addClass('py-1 bg-success');
-			return ;
-		}
-
-		$plan = $page->add('xavoc\ispmanager\Model_Plan');
-		$plan->addCondition('status','Published');
-		// $plan->addCondition('id',$isp_user['plan_id']);
-
-		$form = $page->add('Form');
-		$form->setLayout('form/changeplan');
-		$plan_field = $form->addField('xepan\base\DropDown','plan');
-		$plan_field->setModel($plan);
-		$plan_field->set($isp_user['plan_id']);
-		$form->addField('Checkbox','create_invoice','');
-		$form->addSubmit('Change Plan')->addClass('btn btn-primary');
-
-		if($form->isSubmitted()){
-			$isp_user['plan_id'] = $form['plan'];
-			$isp_user['create_invoice'] = $form['create_invoice'];
-			$isp_user->save();
-
-			return $this->app->page_action_result = $this->app->js(true,$page->js()->univ()->closeDialog())->univ()->successMessage('Plan Chnaged Successfully');
-		}
-		
-	}
-
-	function page_due_invoice($page){
-		$invoice = $page->add('xavoc\ispmanager\Model_Invoice');
-		$invoice->addCondition('contact_id',$this->id);
-		$invoice->addCondition('status',"<>",'Paid');
-
-		$g = $page->add('xepan\base\Grid',null,null,['grid/due-invoice']);
-		$g->setModel($invoice);
-		$pay_btn = $g->addColumn('Button','Pay_Now');
-
-		$g->addMethod('format_Pay_Now',function($g,$f){
-				$g->current_row_html['Pay_Now']= '<a href="javascript:void(0)" onclick="'.$g->js()->univ()->newWindow($this->app->url('staff_received-payment',['invoice_id'=>$g->model->id,'customer_id'=>$this->id])).'"><span class="btn btn-success">Pay Now</span></a>';
-		});
-		$g->addFormatter('Pay_Now','Pay_Now');
-
+		$this->getElement('status')
+			->defaultValue('Open');
 	}
 
 	function page_close($page){
-		
-		// echo "type= ".$this['type']." = id=".$this['id']."<br/>";
 
 		$this->app->stickyGET('b_country_id');
 		$this->app->stickyGET('s_country_id');
@@ -216,9 +30,9 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 			// return;
 		}
 
-		$plan = $page->add('xavoc\ispmanager\Model_Plan');
+		$plan = $page->add('xavoc\ispmanager\Model_Channel_Plan');
 		$plan->addCondition('status','Published');
-
+		
 		$form = $page->add('Form');
 		$form->setLayout('form/createuser');
 
@@ -452,15 +266,6 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 				}
 
 				$this->updatePaymentTransaction($payment_detail);
-
-				$channel = $this->add('xepan\base\Contact');
-				if($channel->loadLoggedIn('Channel')){
-					$asso = $this->add('xavoc\ispmanager\Model_Channel_Association');
-					$asso['channel_id'] = $channel->id;
-					$asso['isp_user_id'] = $this->id;
-					$asso->save();
-				}
-
 				$this->close();
 			// 	$this->app->db->commit();
 			// }catch(\Exception $e){
@@ -484,19 +289,4 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
         return $this;
 		// $this->add('xavoc\ispmanager\Controller_Greet')->do($this,'lead_won');
 	}
-
-
-	function updatePaymentTransaction($detail_array){
-		if(!count($detail_array)) return;
-
-		$payment = $this->add('xavoc\ispmanager\Model_PaymentTransaction');
-		foreach ($detail_array as $field => $value) {
-			$payment[$field] = $value;
-		}
-		$payment['contact_id'] = $this->id;
-		$payment['employee_id'] = $this->app->employee->id;
-		$payment->save();
-		return $payment;
-	}
-
 }

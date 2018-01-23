@@ -2,9 +2,9 @@
 
 namespace xavoc\ispmanager;
 
-class page_chanel_paymentcollection extends \xepan\base\Page {
+class page_channel_paymentcollection extends \xepan\base\Page {
 	
-	public $title = "Chanel Payment Collection Management";
+	public $title = "channel Payment Collection Management";
 		
 	function init(){
 		parent::init();

@@ -2,9 +2,9 @@
 
 namespace xavoc\ispmanager;
 
-class page_chanel_ticket extends \xepan\base\Page {
+class page_channel_ticket extends \xepan\base\Page {
 	
-	public $title = "Chanel Support Ticket";
+	public $title = "channel Support Ticket";
 		
 	function init(){
 		parent::init();

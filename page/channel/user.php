@@ -2,9 +2,9 @@
 
 namespace xavoc\ispmanager;
 
-class page_chanel_user extends \xepan\base\Page {
+class page_channel_user extends \xepan\base\Page {
 	
-	public $title = "Chanel User Management";
+	public $title = "channel User Management";
 		
 	function init(){
 		parent::init();

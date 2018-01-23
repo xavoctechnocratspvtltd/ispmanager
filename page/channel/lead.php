@@ -2,9 +2,9 @@
 
 namespace xavoc\ispmanager;
 
-class page_chanel_lead extends \xepan\base\Page {
+class page_channel_lead extends \xepan\base\Page {
 	
-	public $title = "Chanel Lead Management";
+	public $title = "channel Lead Management";
 		
 	function init(){
 		parent::init();

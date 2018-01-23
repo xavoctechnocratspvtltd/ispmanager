@@ -7,8 +7,8 @@ class Model_Plan extends \xepan\commerce\Model_Item{
 	public $status = ['Published','UnPublished'];
 	public $actions = [
 				'Published'=>['view','edit','delete','condition'],
-				'UnPublished'=>['view','edit','delete','Published']
-				];
+				'UnPublished'=>['view','edit','delete','publish']
+			];
 	
 	public $acl_type="ispmanager_plan";
 
@@ -17,7 +17,7 @@ class Model_Plan extends \xepan\commerce\Model_Item{
 
 		// destroy extra fields
 		$item_fields = $this->add('xepan\commerce\Model_Item')->getActualFields();
-		$required_field = ['name','sku','description','sale_price','original_price','status','document_id','id','created_by','updated_by','created_at','updated_at','type','qty_unit_id','qty_unit','renewable_unit','renewable_value','is_renewable'];
+		$required_field = ['name','sku','description','sale_price','original_price','status','document_id','id','created_by','created_by_id','updated_by','created_at','updated_at','type','qty_unit_id','qty_unit','renewable_unit','renewable_value','is_renewable'];
 		$destroy_field = array_diff($item_fields, $required_field);
 		foreach ($destroy_field as $key => $field) {
 			if($this->hasElement($field))

@@ -28,7 +28,7 @@ class page_user extends \xepan\base\Page {
 		$crud->setModel($model,['net_data_limit','radius_username','radius_password','plan_id','simultaneous_use','grace_period_in_days','custom_radius_attributes','first_name','last_name','create_invoice','is_invoice_date_first_to_first','include_pro_data_basis','country_id','state_id','city','address','pin_code','qty_unit_id','mac_address'],['radius_username','contacts_str','emails_str','created_at','last_login','plan','radius_login_response','is_online']);
 		$crud->grid->removeColumn('attachment_icon');
 		$crud->grid->addPaginator($ipp=10);
-		$crud->grid->addQuickSearch(['radius_username','plan']);
+		$filter_form = $crud->grid->addQuickSearch(['radius_username','plan']);
 		$crud->grid->addSno(null,true);
 
 		if($crud->isEditing()){
@@ -47,7 +47,27 @@ class page_user extends \xepan\base\Page {
 			->frameURL(
 					'Import CSV',
 					$this->app->url('./import')
-					);		
+					);
+
+		// filter form  add city column
+		$data = $this->app->db->dsql()->expr('SELECT DISTINCT(city) AS city FROM contact')->get();
+		$city_list = [];
+		foreach ($data as $key => $value) {
+			if(!trim($value['city'])) continue;
+			$city_list[$value['city']] = $value['city'];
+		}
+		$city_field = $filter_form->addField('DropDown','filter_city');
+		$city_field->setValueList($city_list);
+		$city_field->setEmptyText('Select City to filter');
+
+		$filter_form->addHook('applyFilter',function($f,$m){
+			if($f['filter_city']){
+				$m->addCondition('city',$f['filter_city']);
+			}
+		});
+
+		$city_field->js('change',$filter_form->js()->submit());
+
 	}
 
 	function page_import(){

@@ -109,5 +109,6 @@ class page_channel_channel extends \xepan\base\Page {
 		}
 
 		$crud->removeAttachment();
+		$crud->grid->addQuickSearch(['name']);
 	}
 }

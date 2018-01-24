@@ -23,5 +23,11 @@ class Model_Channel_User extends \xavoc\ispmanager\Model_User{
 		$this->getElement('emails_str')->caption('Emails');
 		$this->getElement('status')->defaultValue('Won');
 
+		$this->addExpression('channel_name',function($m,$q){
+			$asso = $m->add('xavoc\ispmanager\Model_Channel_Association');
+			$asso->addCondition('isp_user_id',$m->getElement('id'));
+			return $q->expr('[0]',[$asso->fieldQuery('channel')]);
+		});
+
 	}
 }

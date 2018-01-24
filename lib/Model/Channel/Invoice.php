@@ -50,6 +50,13 @@ class Model_Channel_Invoice extends \xavoc\ispmanager\Model_Invoice{
 		$this->addExpression('sales_order_id',function($m,$q){
 			return $m->refSQL('related_qsp_master_id')->fieldQuery('id');
 		});
+
+		$this->addExpression('channel_name',function($m,$q){
+			$asso = $m->add('xavoc\ispmanager\Model_Channel_Association');
+			$asso->addCondition('invoice_id',$m->getElement('id'));
+			return $q->expr('[0]',[$asso->fieldQuery('channel')]);
+		});
 		
+		$this->getElement('document_no')->caption('Invoice No');
 	}
 }

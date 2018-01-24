@@ -4,14 +4,20 @@ namespace xavoc\ispmanager;
 
 class page_channel_lead extends \xepan\base\Page {
 	
-	public $title = "channel Lead Management";
+	public $title = "Channel Lead Management";
 		
 	function init(){
 		parent::init();
 
 		$model = $this->add('xavoc\ispmanager\Model_Channel_Lead');
-		$crud = $this->add('xepan\hr\CRUD');
-		$crud->setModel($model);
+
+		$all_fields = $model->getActualFields();
+		$all_fields = array_combine($all_fields, $all_fields);
+		$crud = $this->add('xepan\hr\CRUD',['allow_add'=>false]);
+		$crud->setModel($model,
+			$all_fields,
+			['channel_name','name','organization','address','city','source','remark','created_at','emails_str','contacts_str']
+		);
 		
 		$crud->grid->removeColumn('attachment_icon');
 		$filter_form = $crud->grid->addQuickSearch(['name']);
@@ -27,6 +33,7 @@ class page_channel_lead extends \xepan\base\Page {
 			}
 			
 		});
+		$channel_field->js('change',$filter_form->js()->submit());
 		
 	}
 }

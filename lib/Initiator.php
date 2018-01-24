@@ -32,7 +32,7 @@ class Initiator extends \Controller_Addon {
         $m->addItem(['Device Management','icon'=>'fa fa-user'],'xavoc_ispmanager_device');
         $m->addItem(['Employee Payment Collection','icon'=>'fa fa-users'],'xavoc_ispmanager_employeepaymentcollection');
 
-        $m = $this->app->top_menu->addMenu('channel');
+        $m = $this->app->top_menu->addMenu('Channel');
         $m->addItem(['channel Mgnt','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_channel');
         $m->addItem(['Plan','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_plan');
         $m->addItem(['Lead','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_lead');
@@ -40,7 +40,7 @@ class Initiator extends \Controller_Addon {
         $m->addItem(['Commission Mgnt','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_commission');
         $m->addItem(['Invoice','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_invoice');
         $m->addItem(['Payment Collection','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_paymentcollection');
-        $m->addItem(['Ticket','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_ticket');
+        // $m->addItem(['Ticket','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_ticket');
 
         $this->addAppFunctions();
 
@@ -66,6 +66,9 @@ class Initiator extends \Controller_Addon {
         $array['ispmanager_user'] = ['caption'=>'ISP User','type'=>'DropDown','model'=>'xavoc\ispmanager\Model_User'];
         $array['ispmanager_Lead'] = ['caption'=>'ISP User','type'=>'DropDown','model'=>'xavoc\ispmanager\Model_Lead'];
         
+        // channel
+        $array['Channel'] = ['caption'=>'Channel','type'=>'DropDown','model'=>'xavoc\ispmanager\Model_Channel'];
+        $array['Channel_Lead'] = ['caption'=>'Channel Lead','type'=>'DropDown','model'=>'xavoc\ispmanager\Model_Channel_Lead'];
     }
 
     function setup_pre_frontend(){

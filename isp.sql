@@ -195,6 +195,7 @@ CREATE TABLE `isp_user` (
   `narration` text,
   `custom_radius_attributes` text,
   `otp_verified` tinyint(1) DEFAULT NULL,
+  `is_active` tinyint(1) DEFAULT NULL,
   `verified_by` varchar(255) DEFAULT NULL,
   `created_at` datetime DEFAULT NULL,
   `ip_address_mode_cm` varchar(255) DEFAULT NULL,

@@ -310,7 +310,7 @@ WHERE
 							(is_expired=0 or is_expired is null)
 
 						AND
-						`user_id`= (SELECT customer_id from isp_user where radius_username = @username)
+						`user_id`= (SELECT customer_id from isp_user where radius_username = @username AND is_active = 1 )
 						AND (
 							(IF('sun'=@day,1,0)=1 AND sun = 1) OR
 							(IF('mon'=@day,1,0)=1 AND mon = 1) OR

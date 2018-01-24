@@ -11,12 +11,11 @@ class Model_PaymentTransaction extends \xepan\base\Model_Table{
 	function init(){
 		parent::init();
 		
-
 		$this->hasOne('xepan\base\Contact','contact_id');
 		$this->hasOne('xepan\hr\Employee','employee_id')->defaultValue($this->app->employee->id);
 		$this->hasOne('xavoc\ispmanager\Invoice','invoice_id');
 		$this->hasOne('xavoc\ispmanager\SalesOrder','order_id');
-		$this->hasOne('xepan\hr\Model_Employee','submitted_by_id');
+		$this->hasOne('xepan\base\Model_Contact','submitted_by_id');
 		
 		$this->addField('created_at')->type('datetime')->defaultValue($this->app->now)->system(true);
 		$this->addField('payment_mode')->enum(['Cash','Cheque','DD'])->display(['form'=>'xepan\base\DropDownNormal']);

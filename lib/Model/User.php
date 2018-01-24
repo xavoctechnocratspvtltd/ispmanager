@@ -6,12 +6,13 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	// public $table = "isp_user";
 	public $status = ['Active','InActive','Installation','Installed','Won'];
 	public $actions = [
-				'Won'=>['view','edit','delete','assign_for_installation'],
-				'Installation'=>['view','edit','delete','installed','payment_receive'],
-				'Installed'=>['view','assign_for_installation','edit','delete','active'],
-				'Active'=>['view','edit','delete','AddTopups','CurrentConditions','Reset_Current_Plan_Condition'],
-				'InActive'=>['view','edit','delete','active']
+				'Won'=>['view','edit','delete','assign_for_installation','documents'],
+				'Installation'=>['view','edit','delete','installed','payment_receive','documents'],
+				'Installed'=>['view','assign_for_installation','documents','edit','delete','active'],
+				'Active'=>['view','edit','delete','AddTopups','CurrentConditions','documents','radius_attributes','deactivate','Reset_Current_Plan_Condition'],
+				'InActive'=>['view','edit','delete','active','documents']
 				];
+
 	public $acl_type= "ispmanager_user";
 	private $plan_dirty = false;
 	private $radius_password_dirty = false;
@@ -53,6 +54,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$user_j->addField('last_ul_limit')->defaultValue(0);
 		$user_j->addField('last_accounting_dl_ratio')->defaultValue(100);
 		$user_j->addField('last_accounting_ul_ratio')->defaultValue(100);
+		$user_j->addField('is_active')->type('boolean')->defaultValue(0);
 
 		$user_j->hasMany('xavoc\ispmanager\UserPlanAndTopup','user_id',null,'PlanConditions');
 		$user_j->hasMany('xepan\hr\Employee_Document','customer_id',null,'CustomerDocuments');
@@ -179,10 +181,20 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	}
 
 	function createInvoice($m,$detail_data=null,$false_condition=false,$master_created_at=null){
-		if(!$false_condition)
-			if(!$this->plan_dirty OR !$this['plan_id'] OR !$this['create_invoice']) return;
+		// if(!$false_condition)
+		// 	if(!$this->plan_dirty OR !$this['plan_id'] OR !$this['create_invoice']) return;
+		
+		$invoice_data = $this->createQSP($m,$detail_data,'SalesInvoice',null,$master_created_at);
 
-		return $this->createQSP($m,$detail_data,'SalesInvoice',null,$master_created_at);
+		$channel = $this->add('xepan\base\Model_Contact');
+		if($channel->loadLoggedIn('Channel')){
+			$asso = $this->add('xavoc\ispmanager\Model_Channel_Association');
+			$asso['channel_id'] = $channel->id;
+			$asso['invoice_id'] = $invoice_data['master_detail']['id'];
+			$asso->save();
+		}
+		
+		return $invoice_data;
 	}
 
 	function createQSP($m,$detail_data=[],$qsp_type="SalesInvoice",$plan_id=null,$master_created_at=null){
@@ -490,6 +502,16 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 	function human2byte($value){
 		return $this->app->human2byte($value);
+	}
+
+	function page_documents($page){
+
+		$attachment = $this->add('xavoc\ispmanager\Model_Attachment');
+		$attachment->addCondition('contact_id',$this->id);
+		$crud = $page->add('CRUD');
+		$crud->setModel($attachment,['title','file_id','description'],['title','file','description']);
+		$crud->grid->addFormatter('file','image');
+
 	}
 
 
@@ -1296,18 +1318,39 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			$this->payment_receive($payment_detail);
 			return $this->app->page_action_result = $this->app->js(true,$page->js()->univ()->closeDialog())->univ()->successMessage('Payment Received');
 		}
+		
+		$payment_model = $this->add('xavoc\ispmanager\Model_PaymentTransaction');
+		$payment_model->addCondition('contact_id',$this->id);
+		$pay_grid = $page->add('xepan\base\Grid');
+		$pay_grid->setModel($payment_model,['contact','payment_mode','amount','narration','is_submitted_to_company']);
+
 	}
 
 	function payment_receive($detail_array){
 		if(!count($detail_array)) return;
 
+		$emp_id = $this->app->employee->id;
+		$channel = $this->add('xepan\base\Model_Contact');
+		if($channel->loadLoggedIn('Channel')){
+			$emp_id = $channel->id;
+		}
+		
 		$payment = $this->add('xavoc\ispmanager\Model_PaymentTransaction');
 		foreach ($detail_array as $field => $value) {
 			$payment[$field] = $value;
 		}
+		
 		$payment['contact_id'] = $this->id;
-		$payment['employee_id'] = $this->app->employee->id;
+		$payment['employee_id'] = $emp_id;
 		$payment->save();
+
+		if($channel->loadLoggedIn()){
+			$asso = $this->add('xavoc\ispmanager\Model_Channel_Association');
+			$asso['channel_id'] = $channel->id;
+			$asso['payment_transaction_id'] = $payment->id;
+			$asso->save();
+		}
+
 		return $payment;
 	}
 
@@ -1332,15 +1375,11 @@ class Model_User extends \xepan\commerce\Model_Customer{
 						'radius_username'=>'required',
 						'radius_password'=>'required',
 						'plan_id'=>'required',
-						];
+					];
 		$form = $page->add('xavoc\ispmanager\Form_CAF',['model'=>$this,'mandatory_field'=>$mandatory_field]);
 
 		if(!$this['radius_username'])
 			$form->getElement('radius_username')->set($this['code']);
-		// $form = $page->add('Form');
-		// $form->setModel($this,['plan_id','radius_username','radius_password','is_invoice_date_first_to_first','create_invoice','include_pro_data_basis']);
-		// $form->addSubmit('Create User and Activate Plan');
-		// if($form->isSubmitted()){
 		$form->addHook('CAF_AfterSave',function($form)use($page){
 			$this->active();
 			return $this->app->page_action_result = $this->app->js(true,$page->js()->univ()->closeDialog())->univ()->successMessage('User Activated');
@@ -1349,8 +1388,10 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	}
 
 	function active(){
+		
 		$this->setPlan($this['plan_id']);
 		$this['status'] = 'Active';
+		$this['is_active'] = true;
 		$this->save();
 
 		// $this->updateUserConditon();
@@ -1369,4 +1410,26 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		return true;
 	}
 
+	function page_radius_attributes($page){
+
+		$tab = $page->add('Tabs');
+		$sip_tab = $tab->addTab('Static IP');
+
+		$model = $this->add('xavoc\ispmanager\Model_RadReply');
+		$model->addCondition('username',$this['radius_username']);
+		$model->addCondition('attribute','Framed-IP-Address');
+		$model->addCondition('op',':=');
+
+		$crud = $sip_tab->add('xepan\base\CRUD',['entity_name'=>'Static IP']);
+		$crud->setModel($model);
+	}
+
+	function deactivate(){
+		$this['status'] = 'InActive';
+		$this['is_active'] = false;
+		$this->app->employee
+            ->addActivity("Customer : '". $this['name'] ."' has been deactivated", null /*Related Document ID*/, $this->id /*Related Contact ID*/,null,null,"xepan_commerce_customerdetail&contact_id=".$this->id."")
+            ->notifyWhoCan('activate','InActive',$this);
+		return $this->save();
+	}
 }

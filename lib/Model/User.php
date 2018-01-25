@@ -166,6 +166,11 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		if($this['last_dl_limit'] == null OR $this['last_dl_limit'] == 0 OR !is_numeric($this['last_dl_limit']))
 			$this['last_dl_limit'] = 0;
 
+		if($this['status'] == "Active"){
+			$this['is_active'] = true;
+		}else{
+			$this['is_active'] = false;
+		}
 	}
 
 	function afterSave(){

@@ -7,9 +7,12 @@ class Initiator extends \Controller_Addon {
     public $addon_name = 'xavoc_ispmanager';
 
     function setup_admin(){
+
         $this->routePages('xavoc_ispmanager');
         $this->addLocation(array('template'=>'templates','js'=>'templates/js','css'=>'templates/css'))
-        ->setBaseURL('../shared/apps/xavoc/ispmanager/');
+            ->setBaseURL('../shared/apps/xavoc/ispmanager/');
+
+        $this->app->js(true)->_css('adminstyle');
 
         $m = $this->app->top_menu->addMenu('CAF');
             $m->addItem(['Lead Category','icon'=>'fa fa-check-square-o'],'xepan_marketing_marketingcategory');

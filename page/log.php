@@ -64,8 +64,8 @@ class page_log extends \xepan\base\Page{
 		$user_name_field->setModel($user);
 		$user_name_field->set($_GET['username']);
 
-		$f->addField('DatePicker','from_date')->set($from_date);
-		$f->addField('DatePicker','to_date')->set($to_date);
+		$f->addField('DateTimePicker','from_date')->set($from_date);
+		$f->addField('DateTimePicker','to_date')->set($to_date);
 
 		$f->addSubmit('Get Detail')->addClass('btn btn-primary');
 
@@ -90,7 +90,7 @@ class page_log extends \xepan\base\Page{
 		// 	$query .= " Where ReceivedAt >= '".$from_date."'";
 
 		if($to_date)
-			$query .= " AND ReceivedAt < '".$this->app->nextDate($to_date)."'";
+			$query .= " AND ReceivedAt < '".$to_date."'";
 		// else
 		// 	$query .= " Where ReceivedAt < '".$this->app->nextDate($to_date)."'";
 

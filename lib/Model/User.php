@@ -1419,6 +1419,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 		$tab = $page->add('Tabs');
 		$sip_tab = $tab->addTab('Static IP');
+		$mac_tab = $tab->addTab('MAC Address Bind');
 
 		$model = $this->add('xavoc\ispmanager\Model_RadReply');
 		$model->addCondition('username',$this['radius_username']);
@@ -1427,6 +1428,51 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 		$crud = $sip_tab->add('xepan\base\CRUD',['entity_name'=>'Static IP']);
 		$crud->setModel($model);
+
+		$mac_address = $this['mac_address'];
+		if($_GET['recent_mac_address'])
+			$mac_address = $_GET['recent_mac_address'];
+
+		$form = $mac_tab->add('Form');
+		$form->addField('line','mac_address')->set($mac_address);
+
+		$get_mac_btn = $form->addSubmit('Get Mac Address')->addClass('btn btn-info');
+		$bind_mac_btn = $form->addSubmit('Bind Mac Address')->addClass('btn btn-primary');
+		$release_mac_btn = $form->addSubmit('Release Mac Address')->addClass('btn btn-danger');
+
+		if($form->isSubmitted()){
+
+			if($form->isClicked($get_mac_btn)){
+				$data_model = $this->getRecentRadAcct();
+				$form->js()->reload(['recent_mac_address'=>$data_model['callingstationid']])->execute();
+			}
+
+			if($form->isClicked($bind_mac_btn)){
+				$radcheck = $this->add('xavoc\ispmanager\Model_RadCheck');
+				$radcheck->addCondition('value',$form['mac_address']);
+				if($radcheck->count()->getOne() > 1){
+					$name = "";
+					foreach ($radcheck as $model) {
+						$name .= $model['username'].",";
+					}
+					$form->error('mac_address','mac_address associate with multiple user named '.$name);
+				}
+
+				$radcheck->tryLoadAny();
+				if($radcheck['username'] != $this['radius_username'])
+					$form->error('mac_address','mac_address associate with other user named '.$radcheck['username']);
+
+				$radcheck['username'] = $this['radius_username'];
+				$radcheck['attribute'] = "Calling-Station-Ip";
+				$radcheck['op'] = ":=";
+				$radcheck->save();
+
+				$this['mac_address'] = $form['mac_address'];
+				$this->save();
+				$form->js()->univ()->successMessage('Mac Address Updated')->execute();
+			}
+		}
+
 	}
 
 	function deactivate(){
@@ -1437,4 +1483,16 @@ class Model_User extends \xepan\commerce\Model_Customer{
             ->notifyWhoCan('activate','InActive',$this);
 		return $this->save();
 	}
+
+	function getRecentRadAcct(){
+		if(!$this->loaded()) return;
+
+		$radacct_m = $this->add('xavoc\ispmanager\Model_RadAcct');
+		$radacct_m->addCondition('username',$this['radius_username']);
+		$radacct_m->setOrder('radacctid','desc');
+		$radacct_m->setLimit(1);
+		$radacct_m->tryLoadAny();
+		return $radacct_m;
+	}
+
 }

@@ -1434,9 +1434,17 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			$mac_address = $_GET['recent_mac_address'];
 
 		$form = $mac_tab->add('Form');
+		$form->add('xepan\base\Controller_FLC')
+			->showLables(true)
+			->makePanelsCoppalsible(true)
+			->layout([
+				'mac_address'=>'Update Mac Address~c1~12',
+				'FormButtons~&nbsp;'=>'c2~12'
+			]);
+
 		$form->addField('line','mac_address')->set($mac_address);
 
-		$get_mac_btn = $form->addSubmit('Get Mac Address')->addClass('btn btn-info');
+		$get_mac_btn = $form->addSubmit('Get Mac Address')->addClass('btn btn-warning');
 		$bind_mac_btn = $form->addSubmit('Bind Mac Address')->addClass('btn btn-primary');
 		$release_mac_btn = $form->addSubmit('Release Mac Address')->addClass('btn btn-danger');
 
@@ -1448,8 +1456,13 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			}
 
 			if($form->isClicked($bind_mac_btn)){
+				if(!$form['mac_address']){
+					$form->error('mac_address','mac address must not be empty');
+				}
+
 				$radcheck = $this->add('xavoc\ispmanager\Model_RadCheck');
 				$radcheck->addCondition('value',$form['mac_address']);
+
 				if($radcheck->count()->getOne() > 1){
 					$name = "";
 					foreach ($radcheck as $model) {
@@ -1459,7 +1472,8 @@ class Model_User extends \xepan\commerce\Model_Customer{
 				}
 
 				$radcheck->tryLoadAny();
-				if($radcheck['username'] != $this['radius_username'])
+				
+				if($radcheck->loaded() AND $radcheck['username'] != $this['radius_username'])
 					$form->error('mac_address','mac_address associate with other user named '.$radcheck['username']);
 
 				$radcheck['username'] = $this['radius_username'];
@@ -1469,11 +1483,66 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 				$this['mac_address'] = $form['mac_address'];
 				$this->save();
-				$form->js()->univ()->successMessage('Mac Address Updated')->execute();
-			}
-		}
 
+				return $this->app->page_action_result = $form->js(null,$form->js()->reload())->univ()->successMessage('Mac Address Updated');
+			}
+
+			if($form->isClicked($release_mac_btn)){
+				if(!$form['mac_address']){
+					$form->error('mac_address','mac address must not be empty');
+				}
+
+				$this->releaseMacAddress($form['mac_address']);
+				return $this->app->page_action_result = $form->js(null,$form->js()->reload())->univ()->successMessage('Mac Address Removed');
+			}
+
+		}
 	}
+
+	function bindMacAddress($mac_address){
+		$radcheck = $this->add('xavoc\ispmanager\Model_RadCheck');
+		$radcheck->addCondition('value',$mac_address);
+
+		if($radcheck->count()->getOne() > 1){
+			$name = "";
+			foreach ($radcheck as $model) {
+				$name .= $model['username'].",";
+			}
+			throw new \Exception('mac_address associate with multiple user named '.$name);
+		}
+		
+		$radcheck->tryLoadAny();
+		if($radcheck->loaded() AND $radcheck['username'] != $this['radius_username'])
+			throw new \Exception('mac_address associate with other user named '.$radcheck['username']);
+
+		$radcheck['username'] = $this['radius_username'];
+		$radcheck['attribute'] = "Calling-Station-Ip";
+		$radcheck['op'] = ":=";
+		$radcheck->save();
+
+		$this['mac_address'] = $mac_address;
+		$this->save();
+
+		return $radcheck;
+	}
+
+	function releaseMacAddress($mac_address){
+		$radcheck = $this->add('xavoc\ispmanager\Model_RadCheck');
+		$radcheck->addCondition('value',$mac_address);
+		$radcheck->addCondition('username',$this['radius_username']);
+		$radcheck->addCondition('attribute','Calling-Station-Ip');
+		$radcheck->addCondition('op',':=');
+		$radcheck->tryLoadAny();
+
+		if(!$radcheck->loaded())
+			throw new \Exception("no one bind mac address found");
+		
+		$radcheck->delete();
+
+		$this['mac_address'] = "";
+		$this->save();
+	}
+
 
 	function deactivate(){
 		$this['status'] = 'InActive';

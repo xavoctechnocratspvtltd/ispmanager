@@ -145,6 +145,7 @@ class page_configuration extends \xepan\base\Page {
 							'renewal_alert_sms_content'=>'Text',
 							'renewal_alert_email_subject'=>'Line',
 							'renewal_alert_email_content'=>'xepan\base\RichText',
+							'renewal_alert_duration'=>'Line',
 
 							'account_reactivation_sms_content'=>'Text',
 							'account_reactivation_email_subject'=>'Line',
@@ -217,8 +218,9 @@ class page_configuration extends \xepan\base\Page {
 		}
 
 		// Renewal Alert
+		$content_model->getElement('renewal_alert_duration')->hint('Renewal alert duration before in days, ie. 0, 5, 10');
 		$form = $renewal_alert_tab->add('Form');
-		$form->setModel($content_model,['renewal_alert_sms_content','renewal_alert_email_subject','renewal_alert_email_content']);
+		$form->setModel($content_model,['renewal_alert_sms_content','renewal_alert_email_subject','renewal_alert_email_content','renewal_alert_duration']);
 		$form->addSubmit('save')->addClass('btn btn-primary');
 		if($form->isSubmitted()){
 			$form->save();
@@ -243,6 +245,7 @@ class page_configuration extends \xepan\base\Page {
 			$form->save();
 			$form->js(null,$form->js()->reload())->univ()->successMessage("Plan Changed content updated")->execute();
 		}
+
 
 	}
 

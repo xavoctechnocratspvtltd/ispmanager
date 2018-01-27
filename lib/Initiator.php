@@ -37,6 +37,7 @@ class Initiator extends \Controller_Addon {
 
         $m = $this->app->top_menu->addMenu('Channel');
         $m->addItem(['channel Mgnt','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_channel');
+        $m->addItem(['Agent Mgnt','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_agent');
         $m->addItem(['Plan','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_plan');
         $m->addItem(['Lead','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_lead');
         $m->addItem(['ISP User','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_user');

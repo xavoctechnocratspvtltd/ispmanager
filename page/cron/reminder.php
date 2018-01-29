@@ -9,7 +9,7 @@ class page_cron_reminder extends \xepan\base\Page{
 
 		$date = $this->app->today;
 		$dates[$date] = $date;
-
+		
 		$content_model = $this->add('xepan\base\Model_ConfigJsonModel',
 			[
 				'fields'=>[
@@ -42,5 +42,22 @@ class page_cron_reminder extends \xepan\base\Page{
 		}
 		
 
+		$campaign_detail = [
+				'title'=>"Reminder Alert",
+				'starting_date'=>$this->app->today,
+				'ending_date'=>$this->app->nextDate($this->app->today),
+				'campaign_type'=>'campaign',
+				'status'=>'Draft',
+			];
+
+		$new_model = $this->add('xepan\marketing\Model_Newsletter');
+		$new_model->tryLoadAny();
+
+		$document_list = [];
+		$document_list[$new_model->id] = ['date'=>$this->app->today];
+
+		$campaign = $this->add('xepan\marketing\Model_Campaign');
+		$cmp_model = $campaign->scheduleCampaign($campaign_detail,[$this->app->today],$leads,$document_list,$delete_old_association=true);
+		$cmp_model->approve();
 	}
 }

@@ -73,6 +73,7 @@ class Initiator extends \Controller_Addon {
         // channel
         $array['Channel'] = ['caption'=>'Channel','type'=>'DropDown','model'=>'xavoc\ispmanager\Model_Channel'];
         $array['Channel_Lead'] = ['caption'=>'Channel Lead','type'=>'DropDown','model'=>'xavoc\ispmanager\Model_Channel_Lead'];
+        $array['Agent'] = ['caption'=>'Agent','type'=>'DropDown','model'=>'xavoc\ispmanager\Model_Channel_Agent'];
     }
 
     function setup_pre_frontend(){

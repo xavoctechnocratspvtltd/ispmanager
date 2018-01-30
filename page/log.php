@@ -97,7 +97,7 @@ class page_log extends \xepan\base\Page{
 		if($skip_page)
 			$query .= " order by id desc Limit 50,".($skip_page * 50).";";
 		else
-			$query .= " order by id desc Limit 50;";
+			$query .= " order by id desc Limit 0;";
 
 		// echo $query;
 		/*Access SysLog DB*/

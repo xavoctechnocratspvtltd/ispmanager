@@ -4,7 +4,7 @@ namespace xavoc\ispmanager;
 
 class Model_Lead extends \xepan\marketing\Model_Lead{ 
 	
-	public $status = ['Active','InActive'];
+	public $status = ['Active','InActive','Open','Won','Lost'];
 	public $actions = [
 					'Active'=>['view','assign','deactivate','communication','edit','delete'],
 					'Open'=>['view','assign','close','lost','communication','edit','delete'],

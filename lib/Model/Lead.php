@@ -111,7 +111,7 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 					'config_key'=>'ISPMANAGER_MISC',
 					'application'=>'ispmanager'
 			]);
-		$config->add('xepan\hr\Controller_ACL');
+		// $config->add('xepan\hr\Controller_ACL');
 		$config->tryLoadAny();
 
 		$temp = explode(",", $config['lead_lost_region']);

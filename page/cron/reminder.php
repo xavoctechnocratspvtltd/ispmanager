@@ -6,8 +6,9 @@ class page_cron_reminder extends \xepan\base\Page{
 
 	function init(){
 		parent::init();
-
-		$date = $this->app->today;
+		
+		$debug = $_GET['debug'];
+		$date = $_GET['on_date']?:$this->app->today;
 		$dates[$date] = $date;
 		
 		$content_model = $this->add('xepan\base\Model_ConfigJsonModel',
@@ -16,6 +17,7 @@ class page_cron_reminder extends \xepan\base\Page{
 					'renewal_alert_sms_content'=>'Text',
 					'renewal_alert_email_subject'=>'Line',
 					'renewal_alert_email_content'=>'xepan\base\RichText',
+					'renewal_alert_newsletter_id'=>'DropDown',
 					'renewal_alert_duration'=>'Line'
 				],
 				'config_key'=>'ISPMANAGER_EMAIL_SMS_CONTENT',
@@ -40,7 +42,6 @@ class page_cron_reminder extends \xepan\base\Page{
 		foreach ($data as $key => $value){
 			$leads[$value['customer_id']] = $value['customer_id'];
 		}
-		
 
 		$campaign_detail = [
 				'title'=>"Reminder Alert",
@@ -51,13 +52,21 @@ class page_cron_reminder extends \xepan\base\Page{
 			];
 
 		$new_model = $this->add('xepan\marketing\Model_Newsletter');
-		$new_model->tryLoadAny();
+		$new_model->load($content_model['renewal_alert_newsletter_id']);
 
 		$document_list = [];
 		$document_list[$new_model->id] = ['date'=>$this->app->today];
 
-		$campaign = $this->add('xepan\marketing\Model_Campaign');
-		$cmp_model = $campaign->scheduleCampaign($campaign_detail,[$this->app->today],$leads,$document_list,$delete_old_association=true);
-		$cmp_model->approve();
+			$campaign = $this->add('xepan\marketing\Model_Campaign');
+			$cmp_model = $campaign->scheduleCampaign($campaign_detail,[$this->app->today],$leads,$document_list,$delete_old_association=true);
+			$cmp_model->approve();
+		
+		if($debug){
+			$this->add('View')->setHtml('Dates :'.count($dates).' <br/>'.implode(", ", $dates));
+			$this->add('View')->setHtml('Leads :'.count($leads).' <br/>'.implode(", ", $leads));
+			$this->add('View')->setHtml('New Letters :<br/>Subject: '.$new_model['title']."<br/> Body: ".$new_model['message_blog']);
+			$this->add('View')->set('Campaign Detail');
+		}
+
 	}
 }

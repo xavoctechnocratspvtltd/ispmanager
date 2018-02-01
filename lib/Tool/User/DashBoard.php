@@ -2,7 +2,6 @@
 
 namespace xavoc\ispmanager;
 
-
 /**
 * 
 */
@@ -24,8 +23,9 @@ class Tool_User_DashBoard extends \xepan\cms\View_Tool{
 			return;
 		}
 
-		$user = $this->add('xavoc\ispmanager\Model_User');
+		$this->user = $user = $this->add('xavoc\ispmanager\Model_User');
 		$user->loadLoggedIn();
+
 		$plan = $this->add('xavoc\ispmanager\Model_Plan')
 			->addCondition('id',$user['plan_id'])
 			->tryLoadAny();
@@ -77,9 +77,77 @@ class Tool_User_DashBoard extends \xepan\cms\View_Tool{
 		$this->template->trySet('consume_data',$user->byte2human($total_data_consumed));
 		$this->template->trySet('total_data_limit',$user->byte2human($total_data_limit));
 
+		$this->dataconsumed();
 	}
 
 	function defaultTemplate(){
 		return ['view/user-dashboard'];
+	}
+
+	function dataconsumed(){
+
+		$rad_model = $this->add('xavoc\ispmanager\Model_RadAcctData');
+		$rad_model->addCondition('username',$this->user['radius_username']);
+		$rad_model->setOrder('radacctid','desc');
+		$rad_model->_dsql()->group('year');
+		// $rad_model->debug();
+		$grid = $this->add('Grid');
+		$grid->setModel($rad_model,['year','total_data','total_upload','total_download']);
+		$grid->add('VirtualPage')
+			->addColumn('month')
+ 			->set(function($page){
+				$id = $_GET[$page->short_name.'_id'];
+				$selected_row = $this->add('xavoc\ispmanager\Model_RadAcctData');
+				$selected_row->load($id);
+
+				$rad_model = $this->add('xavoc\ispmanager\Model_RadAcctData');
+				$rad_model->addCondition('year',$selected_row['year']);
+				$rad_model->addCondition('username',$this->user['radius_username']);
+				$rad_model->setOrder('radacctid','desc');
+				$rad_model->_dsql()->group('month_year');
+
+				$grid = $page->add('Grid');
+				$grid->setModel($rad_model,['month_year','total_data','total_upload','total_download']);
+				$grid->addTotals(['total_upload','total_download']);
+				
+				$grid->add('VirtualPage')
+					->addColumn('Days')
+		 			->set(function($day_page){
+
+		 				$id = $_GET[$day_page->short_name.'_id'];
+		 				$temp = $this->add('xavoc\ispmanager\Model_RadAcctData');
+		 				$temp->load($id);
+		 				
+		 				$rad_model = $this->add('xavoc\ispmanager\Model_RadAcctData');
+						$rad_model->addCondition('year',$temp['year']);
+						$rad_model->addCondition('month_year',$temp['month_year']);
+						$rad_model->addCondition('username',$this->user['radius_username']);
+						$rad_model->setOrder('radacctid','desc');
+						$rad_model->_dsql()->group('date');
+
+						$grid = $day_page->add('Grid');
+						$grid->setModel($rad_model,['date','total_data','total_upload','total_download']);
+						$grid->addTotals(['total_upload','total_download']);
+
+						$grid->add('VirtualPage')
+							->addColumn('session')
+				 			->set(function($session_page){
+
+				 				$id = $_GET[$session_page->short_name.'_id'];
+				 				$temp = $this->add('xavoc\ispmanager\Model_RadAcctData');
+				 				$temp->load($id);
+				 				
+				 				$rad_model = $this->add('xavoc\ispmanager\Model_RadAcctData');
+								$rad_model->addCondition('date',$temp['date']);
+								$rad_model->addCondition('username',$this->user['radius_username']);
+								$rad_model->setOrder('radacctid','desc');
+
+								$grid = $session_page->add('Grid');
+								$grid->setModel($rad_model,['date','total_data','total_upload','total_download']);
+								$grid->addTotals(['total_upload','total_download']);
+				 			});
+		 			});
+		});
+
 	}
 }

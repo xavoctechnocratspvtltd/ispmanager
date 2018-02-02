@@ -3,21 +3,34 @@
 namespace xavoc\ispmanager;
 
 class View_UserDataConsumption extends \View{
+	public $username;
 
 	function init(){
 		parent::init();
 
 		$this->user = $user = $this->add('xavoc\ispmanager\Model_User');
-		$user->loadLoggedIn();
-		
+
+		if($this->username){
+			$this->user->addCondition('radius_username',$this->username);
+			$this->user->tryLoadAny();
+		}else{
+			$user->loadLoggedIn();
+		}
+
+		if(!$user->loaded()){
+			$this->add('View')->set("ISP User is not loaded")->addClass('alert alert-danger');
+			return;
+		}
+
 		$rad_model = $this->add('xavoc\ispmanager\Model_RadAcctData');
 		$rad_model->addCondition('username',$this->user['radius_username']);
 		$rad_model->setOrder('radacctid','desc');
-		$rad_model->_dsql()->group('year');
+		// $rad_model->_dsql()->group('year');
 		$grid = $this->add('xepan\base\Grid');
 		$grid->setModel($rad_model,['year','total_data_consumed','total_upload','total_download']);
 		$grid->addColumn('total_data_consumed');
 
+		$grid->add('View',null,'Pannel')->setElement('h3')->set('User Data Consumption');
 		$grid->add('VirtualPage')
 			->addColumn('month')
  			->set(function($page){
@@ -109,6 +122,7 @@ class View_UserDataConsumption extends \View{
 			$g->current_row_html['total_download'] = $this->app->byte2human($g->model['total_download']);
 		});
 
+ 		$grid->addPaginator(10);
  		// $grid->addTotals(['total_data_consumed','total_upload','total_download']);
  		// $grid->addHook('formatTotalsRow',function($g){
 		// 	$g->current_row_html['total_data_consumed'] = $this->app->byte2human($g->model['total_data_consumed']);

@@ -37,7 +37,7 @@ class Tool_User_DashBoard extends \xepan\cms\View_Tool{
 		
 		// if($ll=$_GET['link-login'] OR $ll = $this->app->recall('link-login') ){
 		// 	$this->app->memorize('link-login',$ll);
-
+		if($this->app->recall('hotspot-link-login',false)){
 			if(!$this->app->recall('isLoggedIn',false)){
 				$ll = $this->options['hotspot_base_url']."/login";
 
@@ -52,7 +52,7 @@ class Tool_User_DashBoard extends \xepan\cms\View_Tool{
 					");
 				$this->app->memorize('isLoggedIn',true);
 			}
-		// }
+		}
 
 		// echo "string". $user['plan_id'];
 		// $user = $this->app->auth->model;

@@ -25,7 +25,7 @@ class View_UserDataConsumption extends \View{
 		$rad_model = $this->add('xavoc\ispmanager\Model_RadAcctData');
 		$rad_model->addCondition('username',$this->user['radius_username']);
 		$rad_model->setOrder('radacctid','desc');
-		// $rad_model->_dsql()->group('year');
+		$rad_model->_dsql()->group('year');
 		$grid = $this->add('xepan\base\Grid');
 		$grid->setModel($rad_model,['year','total_data_consumed','total_upload','total_download']);
 		$grid->addColumn('total_data_consumed');

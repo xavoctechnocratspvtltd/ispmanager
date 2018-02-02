@@ -20,28 +20,33 @@ class Tool_HotspotLogin extends \xepan\cms\View_Tool{
 
 		if($this->owner instanceof \AbstractController) return;
 		
-		if($this->app->auth->isLoggedIn() && $_POST['error']){
-			$this->app->redirect($this->app->url($this->options['after_login_url'],['error'=>$_POST['error']]));
-			return;
+		if($_REQUEST['link-login']){
+			$this->app->memorize('hotspot-link-login',$_REQUEST['link-login']);
 		}
 
-		if($_GET['logout']){
-			$this->app->auth->logout();
-			$this->app->forget('isLoggedIn');
+		if($this->app->recall('hotspot-link-login',false)){
+			if($this->app->auth->isLoggedIn() && $_POST['error']){
+				$this->app->redirect($this->app->url($this->options['after_login_url'],['error'=>$_POST['error']]));
+				return;
+			}
+
+			if($_GET['logout']){
+				$this->app->auth->logout();
+				$this->app->forget('isLoggedIn');
+				
+				$ll = $this->options['hotspot_base_url']."/logout";
+				$this->add('View')->setHTML("
+						<form name='redirect' action='$ll'>
+						</form>
+						<script>
+							document.redirect.submit();
+						</script>
+					");
+			}
 			
-			$ll = $this->options['hotspot_base_url']."/logout";
-			$this->add('View')->setHTML("
-					<form name='redirect' action='$ll'>
-					</form>
-					<script>
-						document.redirect.submit();
-					</script>
-				");
 		}
 
-		// if($_REQUEST['link-login']){
-		// 	$this->app->memorize('link-login',$_REQUEST['link-login']);
-		// }
+		
 		if($message = $this->app->recall('success_message')){
 			$this->add('View')->set($message)->addClass('alert alert-success');
 			$this->app->forget('success_message');

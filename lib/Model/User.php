@@ -1420,6 +1420,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$tab = $page->add('Tabs');
 		$sip_tab = $tab->addTab('Static IP');
 		$mac_tab = $tab->addTab('MAC Address Bind');
+		$udc_tab = $tab->addTab('User Data Consumed');
 
 		$model = $this->add('xavoc\ispmanager\Model_RadReply');
 		$model->addCondition('username',$this['radius_username']);
@@ -1497,6 +1498,9 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			}
 
 		}
+
+
+		$udc_tab->add('xavoc\ispmanager\View_UserDataConsumption',['username'=>$this['radius_username']]);
 	}
 
 	function bindMacAddress($mac_address){

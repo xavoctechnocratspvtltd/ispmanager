@@ -1478,7 +1478,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 					$form->error('mac_address','mac_address associate with other user named '.$radcheck['username']);
 
 				$radcheck['username'] = $this['radius_username'];
-				$radcheck['attribute'] = "Calling-Station-Ip";
+				$radcheck['attribute'] = "Calling-Station-Id";
 				$radcheck['op'] = ":=";
 				$radcheck->save();
 

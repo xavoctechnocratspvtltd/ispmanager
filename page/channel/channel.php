@@ -5,37 +5,44 @@ namespace xavoc\ispmanager;
 class page_channel_channel extends \xepan\base\Page {
 	
 	public $title = "channel Management";
-		
+	public $model_class = "xavoc\ispmanager\Model_Channel";
+	
+
 	function init(){
 		parent::init();
 
-		$model = $this->add('xavoc\ispmanager\Model_Channel');
+		$model = $this->add($this->model_class);
 		$model->addExpression('user_password')->set(function($m,$q){
 			return $m->refSQL('user_id')->fieldQuery('password');
 		});
 
 		$crud = $this->add('xepan\hr\CRUD');
 		$form = $crud->form;
+		$layout_array = [
+			'first_name'=>'channel Details~c1~4',
+			'last_name'=>'c2~4',
+			'organization'=>'c3~4',
+			'address'=>'c11~6',
+			'country_id~Country'=>'c12~3',
+			'state_id~State'=>'c12~3',
+			'city'=>'c13~3',
+			'pin_code'=>'c13~3',
+			'status'=>'c12~3',
+			'email_ids'=>'c14~12~(,) comma seperated mutiple values',
+			'contact_nos'=>'c15~12~(,) comma seperated mutiple values',
+			'user_name'=>'Login Account Credential~c21~6',
+			'password'=>'Login Account Credential~c22~6',
+			'permitted_bandwidth'=>'Permitted Bandwidth~c31~4~Permitted Bandwidth ie. 200MB, 2GB etc.'
+		];
+
+		if($this->model_class == "xavoc\ispmanager\Model_Agent")
+			unset($layout_array['permitted_bandwidth']);
+
 		$form->add('xepan\base\Controller_FLC')
 			->showLables(true)
 			->makePanelsCoppalsible(true)
 			->addContentSpot()
-			->layout([
-					'first_name'=>'channel Details~c1~4',
-					'last_name'=>'c2~4',
-					'organization'=>'c3~4',
-					'address'=>'c11~6',
-					'country_id~Country'=>'c12~3',
-					'state_id~State'=>'c12~3',
-					'city'=>'c13~3',
-					'pin_code'=>'c13~3',
-					'status'=>'c12~3',
-					'email_ids'=>'c14~12~(,) comma seperated mutiple values',
-					'contact_nos'=>'c15~12~(,) comma seperated mutiple values',
-					'user_name'=>'Login Account Credential~c21~6',
-					'password'=>'Login Account Credential~c22~6',
-					'permitted_bandwidth'=>'Permitted Bandwidth~c31~4~Permitted Bandwidth ie. 200MB, 2GB etc.'
-				]);
+			->layout($layout_array);
 
 		$user_name_field = $form->addField('user_name')->validate('email');
 		$password_field = $form->addField('password')->validate('required');
@@ -44,10 +51,10 @@ class page_channel_channel extends \xepan\base\Page {
 		$form->addField('DropDown','status')->setValueList(['Active'=>'Active','InActive'=>'InActive']);
 		
 		$crud->setModel($model,
-				['first_name','last_name','organization','address','country_id','state_id','city','pin_code','permitted_bandwidth','status','action','emails_str','contacts_comma_seperated','user_id'],
+				['first_name','last_name','organization','address','country_id','state_id','city','pin_code','permitted_bandwidth','status','action','emails_str','contacts_comma_seperated'],
 				['name','organization','city','permitted_bandwidth','action','emails_str','contacts_comma_seperated','user']
 			);
-					
+							
 		if($crud->isEditing('edit') AND !$crud->form->isSubmitted()){
 			$email_field->set(str_replace("<br/>", ",",$crud->model['emails_str']));
 			$contact_field->set($crud->model['contacts_comma_seperated']);

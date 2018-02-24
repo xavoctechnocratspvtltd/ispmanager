@@ -9,11 +9,12 @@ class Model_Channel extends \xepan\base\Model_Contact{
 					'Active'=>['view','edit','delete','deactivate','communication','login_credential'],
 					'InActive'=>['view','edit','delete','activate','communication','login_credential']
 					];
+	public $contact_type = "Channel";
 
 	function init(){
 		parent::init();
 
-		$this->addCondition('type','Channel');
+		$this->addCondition('type',$this->contact_type);
 		
 		$channel_j = $this->join('isp_channel.contact_id');
 		$channel_j->addField('permitted_bandwidth');
@@ -21,6 +22,7 @@ class Model_Channel extends \xepan\base\Model_Contact{
 		$this->is(
 			['permitted_bandwidth|to_trim|required']
 		);
+
 	}
 
 	function page_login_credential($page){

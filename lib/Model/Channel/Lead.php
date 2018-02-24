@@ -26,6 +26,13 @@ class Model_Channel_Lead extends \xavoc\ispmanager\Model_Lead{
 			$asso->addCondition('lead_id',$m->getElement('id'));
 			return $q->expr('IFNULL([0],"")',[$asso->fieldQuery('channel')]);
 		})->caption('Channel');
+
+		$this->addExpression('channel_type',function($m,$q){
+			$asso = $m->add('xavoc\ispmanager\Model_Channel_Association',['channel_title_field'=>'name']);
+			$asso->addCondition('lead_id',$m->getElement('id'));
+			return $q->expr('IFNULL([0],"")',[$asso->fieldQuery('contact_type')]);
+		});
+
 	}
 
 	// function page_plan_activate($page){

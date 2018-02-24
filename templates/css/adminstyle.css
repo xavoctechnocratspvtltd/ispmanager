@@ -1,0 +1,19 @@
+/* YOUR CUSTOM STYLES */
+
+.red-bg{
+	font-weight: bold;
+	color:white;
+}
+.green-bg{
+	font-weight: bold;
+	color:white;	
+}
+.Online{
+	color:green;
+	background: white;
+}
+
+.Offline{
+	color:red;
+	background: white;
+}

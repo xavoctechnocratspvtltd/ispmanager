@@ -50,19 +50,31 @@ class Tool_User_Profile extends \xepan\cms\View_Tool{
 			$dp_form->js(null,$dp_form->js()->univ()->successMessage('Profile Updated'))->reload()->execute();
 		}
 
-		$form = $detail_c->add('Form',null,null,['form/empty']);
-		$form->setLayout(['form/user-profile','detail_wrapper']);
-		$form->addField('DatePicker','dob')->set($user['dob']);
-		$form->setModel($user,['first_name','last_name','country_id','state_id','city','address','pin_code','dob','emails_str','contacts_str']);
-		$form->addField('email')->set($user['email']);
-		$form->addField('contact')->set($user['contacts_str']);
+		$user->getElement('country_id')->getModel()->addCondition('status','Active');
+		$user->getElement('state_id')->getModel()->addCondition('status','Active');
 
+		$form = $detail_c->add('Form');
+		// $form->setLayout(['form/user-profile','detail_wrapper']);
+		$form->setModel($user,
+					['first_name','last_name','country_id','state_id','city','address','pin_code','dob','emails_str','contacts_str']);
+		$form->addField('DatePicker','dob')->set($user['dob']);
+		
+		$clist = explode("<br/>",$user['contacts_str']);
+		$elist = explode("<br/>",$user['emails_str']);
+		$form->addField('email')->set(array_slice($elist, -1)[0]);
+		$form->addField('contact')->set(array_slice($clist, -1)[0]);
+		
 		$form->addSubmit("Update")->addClass('btn btn-primary');
 		
 
 		if($form->isSubmitted()){
+			if($form['email'] && !filter_var($form['email'], FILTER_VALIDATE_EMAIL)){
+                $form->error('email','must be valid email address');
+            }
+
 			$form->update();
-			$this->add('xepan\base\Model_Contact_Email')
+			if($form['email']){
+				$this->add('xepan\base\Model_Contact_Email')
 					->addCondition('contact_id',$user->id)
 					->addCondition('head','Official')
 					->addCondition('value',$form['email'])
@@ -70,16 +82,19 @@ class Tool_User_Profile extends \xepan\cms\View_Tool{
 					->addCondition('is_valid',1)
 					->tryLoadAny()
 					->save();
+			}
 
 			// $user->addEmail($form['email']);
-			$this->add('xepan\base\Model_Contact_Phone')
-					->addCondition('contact_id',$user->id)
-					->addCondition('head','Official')
-					->addCondition('value',$form['contact'])
-					->addCondition('is_active',true)
-					->addCondition('is_valid',1)
-					->tryLoadAny()
-					->save();
+			if($form['contact']){
+				$this->add('xepan\base\Model_Contact_Phone')
+						->addCondition('contact_id',$user->id)
+						->addCondition('head','Official')
+						->addCondition('value',$form['contact'])
+						->addCondition('is_active',true)
+						->addCondition('is_valid',1)
+						->tryLoadAny()
+						->save();
+			}
 			// $user->addPhone($form['contact']);
 			$this->add('xepan\base\Model_Contact_Event')
 					->addCondition('contact_id',$user->id)

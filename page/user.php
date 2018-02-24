@@ -10,6 +10,44 @@ class page_user extends \xepan\base\Page {
 		// parent::init();
 
 		$model = $this->add('xavoc\ispmanager\Model_UserData');
+		$model->getElement('country_id')->getModel('status','Active');
+		$model->getElement('state_id')->getModel('status','Active');
+
+		// return net_data_limit, data_consumed
+		$model->addExpression('active_condition_data')->set(function($m,$q){
+			$upt = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup');
+			$upt->addCondition('plan_id',$m->getElement('plan_id'));
+			$upt->addCondition('user_id',$m->getElement('id'));
+			$upt->addCondition('is_effective',true);
+
+			return $q->expr('CONCAT(IFNULL([0],0),",",IFNULL([1],0))',[
+					$upt->fieldQuery('net_data_limit'),
+					$upt->fieldQuery('data_consumed')
+				]);
+		});
+
+		$model->addExpression('framed_ip_address')->set(function($m,$q){
+			$acc = $this->add('xavoc\ispmanager\Model_RadAcct');
+			$acc->addCondition('username',$m->getElement('radius_username'));
+			$acc->setOrder('radacctid','desc');
+			$acc->setLimit(1);
+
+			return $q->expr('IFNULL([0],"NONE")',[$acc->fieldQuery('framedipaddress')]);
+		});
+
+		$model->is([
+				'radius_username|to_trim|required',
+				'radius_password|to_trim|required',
+				'plan_id|required',
+				'first_name|to_trim|required',
+				'last_name|to_trim|required',
+				'country_id|required',
+				'state_id|required',
+				'city|required',
+				'pin_code|required',
+				'address|required'
+			]);
+
 		$model->addHook('afterSave',[$model,'updateUserConditon']);
 		$model->addHook('afterSave',[$model,'createInvoice']);
 		$model->addHook('afterSave',[$model,'updateNASCredential']);
@@ -23,9 +61,35 @@ class page_user extends \xepan\base\Page {
 		$crud = $this->add('xepan\hr\CRUD',['entity_name'=>'User']);
 		if($crud->isEditing()){
 			$form = $crud->form;
-			$form->setLayout('form/user');
+
+			$form->add('xepan\base\Controller_FLC')
+				->showLables(true)
+				->addContentSpot()
+				->makePanelsCoppalsible(true)
+				->layout([
+						'first_name'=>'User Information~c1~6',
+						'last_name'=>'c2~6',
+						'address'=>'c7~12',
+						'country_id'=>'c3~3',
+						'state_id'=>'c4~3',
+						'city'=>'c5~3',
+						'pin_code'=>'c6~3',
+						
+						'plan~Plan'=>'User Plan Information~c1~4',
+						'radius_username~Radius User Name'=>'c2~4',
+						'radius_password'=>'c3~4',
+						'simultaneous_use'=>'c4~4',
+						'grace_period_in_days'=>'c5~4',
+						'mac_address'=>'c6~4',
+						'custom_radius_attributes'=>'c7~12',
+						'create_invoice~'=>'c8~12',
+						'is_invoice_date_first_to_first~'=>'c9~12',
+						'include_pro_data_basis'=>'c10~12'
+					]);
+			// $form->setLayout('form/user');
 		}
-		$crud->setModel($model,['net_data_limit','radius_username','radius_password','plan_id','simultaneous_use','grace_period_in_days','custom_radius_attributes','first_name','last_name','create_invoice','is_invoice_date_first_to_first','include_pro_data_basis','country_id','state_id','city','address','pin_code','qty_unit_id','mac_address'],['radius_username','contacts_str','emails_str','created_at','last_login','plan','radius_login_response','is_online']);
+
+		$crud->setModel($model,['net_data_limit','radius_username','radius_password','plan_id','simultaneous_use','grace_period_in_days','custom_radius_attributes','first_name','last_name','create_invoice','is_invoice_date_first_to_first','include_pro_data_basis','country_id','state_id','city','address','pin_code','qty_unit_id','mac_address'],['radius_username','plan','radius_login_response','contacts_str','emails_str','created_at','last_login','is_online','active_condition_data','framed_ip_address']);
 		$crud->grid->removeColumn('attachment_icon');
 		$crud->grid->addPaginator($ipp=10);
 		$filter_form = $crud->grid->addQuickSearch(['radius_username','plan']);
@@ -37,7 +101,73 @@ class page_user extends \xepan\base\Page {
 			$date_to_date_field->js(true)->univ()->bindConditionalShow([
 				'1'=>['include_pro_data_basis']
 			],'div.atk-form-row');
+
+			$country_field = $form->getElement('country_id');
+			$state_field = $form->getElement('state_id');
+			$country_id = $this->app->stickyGET('country_id');
+
+			$country_field->js('change',$state_field->js()->reload(null,null,[$this->app->url(null,['cut_object'=>$state_field->name]),'country_id'=>$country_field->js()->val()]));
+			if($country_id){
+				$state_field->getModel()->addCondition('country_id',$country_id);
+			}
 		}
+
+		$crud->grid->addHook('formatRow',function($g){
+			$data = explode(",",$g->model['radius_login_response']);
+			$limits = explode("/", $data[2]);
+			$ul_limit = $this->app->byte2human($limits[0]);
+			$dl_limit = $this->app->byte2human($limits[1]);
+			$data[2] = $ul_limit.' / '.$dl_limit;
+
+			// data status 
+			$g->current_row_html['radius_login_response'] = 'Access: '.($data[0]?'yes':'no').'<br/>'.'COA: '.($data[1]?'yes':'no').'<br/>UL / DL: '.$data[2].'<br/>Burst: '.$data['3'];
+			
+			// add online /offline
+			$status = $g->model['is_online']?"Online":"Offline";
+			$g->current_row_html['radius_username'] = $g->model['radius_username']."<br/><div class='".$status."'><i class='fa fa-circle'></i>&nbsp;".$status."</div>";
+
+
+			$data_limit = explode(",",$g->model['active_condition_data']);
+			$percentage = 0;
+			if($data_limit[0] != 0){
+				$percentage = ($data_limit[1] / $data_limit[0])*100;
+			}
+
+			$status_class = "green-bg";
+			if($g->model['status'] != "InActive" AND ($data_limit[1] > $data_limit[0])){
+				$status_class = "yellow-bg";
+			}elseif($g->model['status'] == "InActive"){
+				$status_class = "red-bg";
+			}
+
+			$progress = $this->app->add('xepan\base\View_Widget_ProgressStatus',
+					[
+						'heading'=>$this->app->byte2human($data_limit[1]),
+						'progress_percentage'=>$percentage,
+						'value'=>round($percentage,0).'%',
+						'footer'=>'Total: '.$this->app->byte2human($data_limit[0])
+					]);
+			$view_html = $progress->getHtml();
+			$g->current_row_html['plan'] = $g->model['plan']."<br/>".$view_html;
+
+			$g->setTDParam('radius_username','class',$status_class);
+
+			$g->current_row_html['created_at'] = str_replace(" ", "<br/>", $g->model['created_at']);
+			$g->current_row_html['last_login'] = str_replace(" ", "<br/>", $g->model['last_login']);
+		});
+
+		$crud->grid->addFormatter('emails_str','wrap');
+		$crud->grid->addFormatter('contacts_str','wrap');
+		$crud->grid->removeColumn('active_condition_data');
+		$crud->grid->removeColumn('is_online');
+		// $g->addMethod('format_redgreen',function($g,$f){
+		// 	if($g->model['status']=='Red'){
+		// 		$g->setTDParam($f,'style/color','red');
+		// 	}else{
+		// 		$g->setTDParam($f,'style/color','');
+		// 	}
+		// });
+		// $g->addFormatter('user','redgreen');
 
 		$import_btn = $crud->grid->addButton('Import CSV')->addClass('btn btn-primary');
 		$import_btn->setIcon('fa fa fa-arrow-up');

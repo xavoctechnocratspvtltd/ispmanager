@@ -5,7 +5,8 @@ namespace xavoc\ispmanager;
 class Tool_Channel_MenuBar extends \xepan\cms\View_Tool{
 	
 	public $options = ['login_page'=>'chanel_login'];
-	
+	public $is_agent = false;
+
 	function init(){
 		parent::init();
 
@@ -24,9 +25,22 @@ class Tool_Channel_MenuBar extends \xepan\cms\View_Tool{
 		$this->channel->tryLoadAny();
 
 		if(!$channel->loadLoggedIn('Channel')){
-			$this->add('View')->addClass('alert alert-danger')->set('you are not the permitted Channel Partner');
-			return;
+
+			$this->channel = $channel = $this->add('xavoc\ispmanager\Model_Agent');
+			$this->channel->addCondition('user_id',$this->app->auth->model->id);
+			$this->channel->tryLoadAny();
+			if(!$channel->loadLoggedIn('Agent')){
+				$this->add('View')
+					->addClass('alert alert-danger')
+					->set('you are not the permitted agent');
+				return;
+			}else{
+				$this->is_agent = true;
+			}
+			// $this->add('View')->addClass('alert alert-danger')->set('you are not the permitted Channel Partner');
+			// return;
 		}
+
 
 		// end of checking chanel is logged in or not
 		
@@ -49,6 +63,13 @@ class Tool_Channel_MenuBar extends \xepan\cms\View_Tool{
 								'index.php?page=staff_lead&action=installation'=>'Installation Lead '
 							]
 				];
+
+		if($this->is_agent){
+			unset($menu[1]); //$page."&view=plan"
+			unset($menu[3]); //$page."&view=user"
+			unset($menu[4]); //
+			unset($menu[5]); //
+		}
 
 		$page = $page."&view=".$view;
 		// $page = $page."&view=".$view."_active";
@@ -145,9 +166,10 @@ class Tool_Channel_MenuBar extends \xepan\cms\View_Tool{
 
 		$this->app->actionsWithoutACL = true;
 		
+		// if($this->is_agent)
 		$lead = $this->add('xavoc\ispmanager\Model_Channel_Lead');
 		$lead->addCondition('channel_id',$this->channel->id);
-
+		
 		$lead->setOrder('name','asc');
 		$lead->getElement('emails_str')->caption('Emails');
 		$lead->getElement('contacts_str')->caption('Contacts');

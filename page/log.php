@@ -11,8 +11,8 @@ class page_log extends \xepan\base\Page{
 		parent::init();
 
 		$this->app->stickyGET('username');
-		$from_date = $this->app->stickyGET('from_date')?:$this->app->today;
-		$to_date = $this->app->stickyGET('to_date')?:$this->app->today;
+		$from_date = $this->app->stickyGET('from_date');
+		$to_date = $this->app->stickyGET('to_date');
 
 		$skip_page = $this->app->stickyGET('pagintor');
 
@@ -64,8 +64,8 @@ class page_log extends \xepan\base\Page{
 		$user_name_field->setModel($user);
 		$user_name_field->set($_GET['username']);
 
-		$f->addField('DatePicker','from_date')->set($from_date);
-		$f->addField('DatePicker','to_date')->set($to_date);
+		$f->addField('DateTimePicker','from_date')->set($from_date?:$this->app->now);
+		$f->addField('DateTimePicker','to_date')->set($to_date?:$this->app->now);
 
 		$f->addSubmit('Get Detail')->addClass('btn btn-primary');
 
@@ -90,30 +90,35 @@ class page_log extends \xepan\base\Page{
 		// 	$query .= " Where ReceivedAt >= '".$from_date."'";
 
 		if($to_date)
-			$query .= " AND ReceivedAt < '".$this->app->nextDate($to_date)."'";
+			$query .= " AND ReceivedAt < '".$to_date."'";
 		// else
 		// 	$query .= " Where ReceivedAt < '".$this->app->nextDate($to_date)."'";
 
 		if($skip_page)
-			$query .= " order by id desc Limit 50,".($skip_page * 50).";";
+			$query .= " order by id desc Limit 15,".($skip_page * 15).";";
 		else
-			$query .= " order by id desc Limit 50;";
+			$query .= " order by id desc Limit 15;";
 
 		// echo $query;
 		/*Access SysLog DB*/
-		$new_db = $this->add('DB');
-		$new_db->connect($dsn);
-		$x = $new_db->dsql()->expr($query);//->get();
-		
 		$grid = $grid_view->add('Grid');
+		$x = [];
+		if($_GET['username'] || $from_date || $to_date){
+
+			$new_db = $this->add('DB');
+			$new_db->connect($dsn);
+			$x = $new_db->dsql()->expr($query);//->get();
+			
+			$grid->addColumn('username');
+			$grid->addColumn('Message');
+			$grid->addColumn('ReceivedAt');
+			
+		}
+		$grid->setSource($x);
 		// $grid->add('View',null,'grid_buttons')->set($filter_user['radius_username']);
-		$grid->addColumn('username');
 		// $grid->addColumn('SysLogTag');
-		$grid->addColumn('Message');
-		$grid->addColumn('ReceivedAt');
 		// $grid->addColumn('from_ip');
 		// $grid->addColumn('to_ip');
-		$grid->setSource($x);
 
 		$grid->addHook('formatRow',function($g){
 			$temp = explode("->", $g->current_row['Message']);

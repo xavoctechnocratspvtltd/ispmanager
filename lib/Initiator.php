@@ -7,9 +7,12 @@ class Initiator extends \Controller_Addon {
     public $addon_name = 'xavoc_ispmanager';
 
     function setup_admin(){
+
         $this->routePages('xavoc_ispmanager');
         $this->addLocation(array('template'=>'templates','js'=>'templates/js','css'=>'templates/css'))
-        ->setBaseURL('../shared/apps/xavoc/ispmanager/');
+            ->setBaseURL('../shared/apps/xavoc/ispmanager/');
+
+        $this->app->js(true)->_css('adminstyle');
 
         $m = $this->app->top_menu->addMenu('CAF');
             $m->addItem(['Lead Category','icon'=>'fa fa-check-square-o'],'xepan_marketing_marketingcategory');
@@ -34,6 +37,7 @@ class Initiator extends \Controller_Addon {
 
         $m = $this->app->top_menu->addMenu('Channel');
         $m->addItem(['channel Mgnt','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_channel');
+        $m->addItem(['Agent Mgnt','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_agent');
         $m->addItem(['Plan','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_plan');
         $m->addItem(['Lead','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_lead');
         $m->addItem(['ISP User','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_user');
@@ -69,6 +73,7 @@ class Initiator extends \Controller_Addon {
         // channel
         $array['Channel'] = ['caption'=>'Channel','type'=>'DropDown','model'=>'xavoc\ispmanager\Model_Channel'];
         $array['Channel_Lead'] = ['caption'=>'Channel Lead','type'=>'DropDown','model'=>'xavoc\ispmanager\Model_Channel_Lead'];
+        $array['Agent'] = ['caption'=>'Agent','type'=>'DropDown','model'=>'xavoc\ispmanager\Model_Channel_Agent'];
     }
 
     function setup_pre_frontend(){

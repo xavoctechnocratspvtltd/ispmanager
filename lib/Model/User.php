@@ -1520,7 +1520,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			throw new \Exception('mac_address associate with other user named '.$radcheck['username']);
 
 		$radcheck['username'] = $this['radius_username'];
-		$radcheck['attribute'] = "Calling-Station-Ip";
+		$radcheck['attribute'] = "Calling-Station-Id";
 		$radcheck['op'] = ":=";
 		$radcheck->save();
 
@@ -1534,7 +1534,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$radcheck = $this->add('xavoc\ispmanager\Model_RadCheck');
 		$radcheck->addCondition('value',$mac_address);
 		$radcheck->addCondition('username',$this['radius_username']);
-		$radcheck->addCondition('attribute','Calling-Station-Ip');
+		$radcheck->addCondition('attribute','Calling-Station-Id');
 		$radcheck->addCondition('op',':=');
 		$radcheck->tryLoadAny();
 

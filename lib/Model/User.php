@@ -1422,7 +1422,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			$this->updateNASCredential();
 			$this->updateWebsiteUser();
 			
-			return true;
+			return $this->app->page_action_result = $this->app->js(true,$page->js()->univ()->closeDialog())->univ()->successMessage('User Plan Condition Resetted');
 			
 		}
 	}

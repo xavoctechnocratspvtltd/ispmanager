@@ -26,6 +26,24 @@ class page_user extends \xepan\base\Page {
 				]);
 		});
 
+		$model->addExpression('is_expired')->set(function($m,$q){
+			$upt = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup');
+			$upt->addCondition('plan_id',$m->getElement('plan_id'));
+			$upt->addCondition('user_id',$m->getElement('id'));
+			$upt->addCondition('is_effective',true);
+
+			return $upt->fieldQuery('is_expired');
+		});
+
+		$model->addExpression('active_plan_end_date')->set(function($m,$q){
+			$upt = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup');
+			$upt->addCondition('plan_id',$m->getElement('plan_id'));
+			$upt->addCondition('user_id',$m->getElement('id'));
+			$upt->addCondition('is_effective',true);
+
+			return $upt->fieldQuery('end_date');
+		});
+
 		$model->addExpression('framed_ip_address')->set(function($m,$q){
 			$acc = $this->add('xavoc\ispmanager\Model_RadAcct');
 			$acc->addCondition('username',$m->getElement('radius_username'));
@@ -120,10 +138,18 @@ class page_user extends \xepan\base\Page {
 			$data[2] = $ul_limit.' / '.$dl_limit;
 
 			// data status 
-			$g->current_row_html['radius_login_response'] = 'Access: '.($data[0]?'yes':'no').'<br/>'.'COA: '.($data[1]?'yes':'no').'<br/>UL / DL: '.$data[2].'<br/>Burst: '.$data['3'];
+			// find prosiible cause of no access 
+			$access="Yes";
+			
+			if(!$data[0]){
+				if($g->model['is_expired'] || strtotime($this->app->now) > strtotime($g->model['active_plan_end_date'])) $access=" Plan Expired ";
+				$access = "No Valid Plan Condition Matched: Authentication failed";
+			}
+
+			$g->current_row_html['radius_login_response'] = 'Access: '.($data[0]?'yes':'<span class="label label-danger">'.$access.'</span>').'<br/>'.'COA: '.($data[1]?'yes':'no').'<br/>UL / DL: '.$data[2].'<br/>Burst: '.$data['3'];
 			
 			// add online /offline
-			$status = $g->model['is_online']?"Online":"Offline";
+			$status = ($g->model['is_online'] && $data[0]) ? "Online":"Offline";
 			$g->current_row_html['radius_username'] = $g->model['radius_username']."<br/><div class='".$status."'><i class='fa fa-circle'></i>&nbsp;".$status."</div>";
 
 

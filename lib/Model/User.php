@@ -1405,14 +1405,26 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$this->updateWebsiteUser();
 	}
 
-	function Reset_Current_Plan_Condition(){
+	function page_Reset_Current_Plan_Condition($page){
 		if(!$this['plan_id']) throw new Exception("plan not added to user");
 		
-		$this->setPlan($this['plan_id']);
-		$this->updateNASCredential();
-		$this->updateWebsiteUser();
-		
-		return true;
+		$last_end_date = $this->ref('PlanConditions')->setLimit(1)->setOrder('end_date','desc')->tryLoadAny()->get('end_date');
+
+		$form = $page->add('Form');
+		$form->addField('DatePicker','from_date')->set($last_end_date)->setFieldHint('Previous plan end date was '. $last_end_date)->validate('required');
+		$form->addSubmit('Reset');
+
+		if($form->isSubmitted()){
+			if(strtotime($form['from_date']) < strtotime($last_end_date))
+				$form->displayError('from_date','Cannot Reset before previous end date');
+
+			$this->setPlan($this['plan_id'],$form['from_date']);
+			$this->updateNASCredential();
+			$this->updateWebsiteUser();
+			
+			return true;
+			
+		}
 	}
 
 	function page_radius_attributes($page){

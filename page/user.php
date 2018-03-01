@@ -142,8 +142,8 @@ class page_user extends \xepan\base\Page {
 			$access="Yes";
 			
 			if(!$data[0]){
-				if($g->model['is_expired'] || strtotime($this->app->now) > strtotime($g->model['active_plan_end_date'])) $access=" Plan Expired ";
 				$access = "No Valid Plan Condition Matched: Authentication failed";
+				if($g->model['is_expired'] || strtotime($this->app->now) > strtotime($g->model['active_plan_end_date'])) $access=" Plan Expired / Ended : Authentication Failed ";
 			}
 
 			$g->current_row_html['radius_login_response'] = 'Access: '.($data[0]?'yes':'<span class="label label-danger">'.$access.'</span>').'<br/>'.'COA: '.($data[1]?'yes':'no').'<br/>UL / DL: '.$data[2].'<br/>Burst: '.$data['3'];

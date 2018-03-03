@@ -152,9 +152,22 @@ class Initiator extends \Controller_Addon {
         // run radius sql file to create tables
         // run stored_procedures file to create stored procedures
 
+
+        preg_match(
+                    '|([a-z]+)://([^:]*)(:(.*))?@([A-Za-z0-9\.-]*)'.
+                    '(/([0-9a-zA-Z_/\.-]*))|',
+                    $this->app->getConfig('dsn'),
+                    $matches
+                );
+        
+        $username = $matches[2];
+        $database = $matches[7];
+        $host = $matches[5];
+        $password = $matches[4];
+
         $pre = '/';
         if((isset($this->app->is_install) && $this->app->is_install) || (isset($this->app->is_admin) && $this->app->is_admin)) $pre= '/../';
-        $this->app->db->dsql()->expr(file_get_contents(getcwd().$pre.'shared/apps/xavoc/ispmanager/stored_procedures.sql'))->execute();
+        shell_exec("mysql -u$username -p$password -h$host $database < ".getcwd().$pre.'shared/apps/xavoc/ispmanager/stored_procedures.sql');
         $this->app->db->dsql()->expr(file_get_contents(getcwd().$pre.'shared/apps/xavoc/ispmanager/radius.sql'))->execute();
         $this->app->db->dsql()->expr(file_get_contents(getcwd().$pre.'shared/apps/xavoc/ispmanager/isp.sql'))->execute();
     }

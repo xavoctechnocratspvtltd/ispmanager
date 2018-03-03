@@ -154,9 +154,9 @@ class Initiator extends \Controller_Addon {
 
         $pre = '/';
         if((isset($this->app->is_install) && $this->app->is_install) || (isset($this->app->is_admin) && $this->app->is_admin)) $pre= '/../';
+        $this->app->db->dsql()->expr(file_get_contents(getcwd().$pre.'shared/apps/xavoc/ispmanager/stored_procedures.sql'))->execute();
         $this->app->db->dsql()->expr(file_get_contents(getcwd().$pre.'shared/apps/xavoc/ispmanager/radius.sql'))->execute();
         $this->app->db->dsql()->expr(file_get_contents(getcwd().$pre.'shared/apps/xavoc/ispmanager/isp.sql'))->execute();
-        $this->app->db->dsql()->expr(file_get_contents(getcwd().$pre.'shared/apps/xavoc/ispmanager/stored_procedures.sql'))->execute();
     }
 
 }

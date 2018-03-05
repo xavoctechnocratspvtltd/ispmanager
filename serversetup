@@ -1,0 +1,53 @@
+apt-get upgrade
+apt-get update
+sudo dpkg-reconfigure tzdata
+sudo apt-get install software-properties-common
+sudo apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
+sudo apt-get update && sudo apt-get install mariadb-server mariadb-client
+service mysql start
+#mysql_secure_installation
+sed -i 's/bind-address/#bind-address/g' /etc/mysql/mariadb.conf.d/50-server.cnf
+echo What is mysql password you set
+read mysqlpassword
+mysql -uroot -p$mysqlpassword -e "GRANT ALL ON *.* to root@'%' IDENTIFIED BY '$mysqlpassword';GRANT ALL ON *.* to root@'localhost' IDENTIFIED BY '$mysqlpassword';"
+service mysql restart
+echo Input xepan installation database name
+read xepan_db_name
+mysql -uroot -p$mysqlpassword -e "create database $xepan_db_name;"
+
+apt-get install apache2
+
+sudo apt-get install -y php7.1 libapache2-mod-php7.1 php7.1-cli php7.1-common php7.1-mbstring php7.1-gd php7.1-intl php7.1-xml php7.1-mysql php7.1-mcrypt php7.1-zip php7.1-curl php7.1-imap
+apt-get install unzip 
+cd /var/www/html
+
+echo Which Epan version you want to install (0.92)
+read xepan_version
+
+wget http://epan.in/xepan2-$xepan_version.zip
+
+unzip xepan2-$xepan_version.zip
+rm index.html
+
+chown -R www-data:www-data .
+cd /tmp
+rm -rf ispmanager
+git clone https://github.com/xavoctechnocratspvtltd/ispmanager.git
+
+apt-get install freeradius
+apt-get install freeradius-mysql
+
+cp /tmp/ispmanager/radius-conf/policy.d.xavoc /etc/freeradius/3.0/policy.d/xavoc
+cp /tmp/ispmanager/radius-conf/site-enabled.default /etc/freeradius/3.0/sites-enabled/default
+cp /etc/freeradius/3.0/mods-available/sql /etc/freeradius/3.0/mods-enabled/sql
+
+
+sed -i 's/driver = "rlm_sql_null"/driver = "rlm_sql_mysql"/g' /etc/freeradius/3.0/mods-enabled/sql
+sed -i 's/dialect = "sqlite"/dialect = "mysql"/g' /etc/freeradius/3.0/mods-enabled/sql
+sed -i 's/#\tserver = "localhost"/server = "localhost"/g' /etc/freeradius/3.0/mods-enabled/sql
+sed -i 's/#\tport = 3306/port = 3306/g' /etc/freeradius/3.0/mods-enabled/sql
+sed -i 's/#\tlogin = "radius"/login = "root"/g' /etc/freeradius/3.0/mods-enabled/sql
+sed -i "s/#\tpassword = \"radpass\"/password = \"$mysqlpassword\"/g" /etc/freeradius/3.0/mods-enabled/sql
+sed -i "s/radius_db = \"radius\"/radius_db = \"$xepan_db_name\"/g" /etc/freeradius/3.0/mods-enabled/sql
+
+service freeradius restart

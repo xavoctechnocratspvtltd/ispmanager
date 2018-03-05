@@ -21,7 +21,7 @@ sudo apt-get install -y php7.1 libapache2-mod-php7.1 php7.1-cli php7.1-common ph
 apt-get install unzip 
 cd /var/www/html
 
-echo Which Epan version you want to install (0.92)
+echo Which Epan version you want to install like 0.92
 read xepan_version
 
 wget http://epan.in/xepan2-$xepan_version.zip

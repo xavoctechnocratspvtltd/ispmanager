@@ -171,8 +171,8 @@ class Initiator extends \Controller_Addon {
         $this->app->db->dsql()->expr(file_get_contents(getcwd().$pre.'shared/apps/xavoc/ispmanager/radius.sql'))->execute();
         $this->app->db->dsql()->expr(file_get_contents(getcwd().$pre.'shared/apps/xavoc/ispmanager/isp.sql'))->execute();
 
-        $config_path = 'websites/'.$this->app->current_website_name.'/config.php';
-        $webapppath = 'shared/apps/xavoc/ispmanager/webappconfig';
+        $config_path = getcwd().$pre.'websites/'.$this->app->current_website_name.'/config.php';
+        $webapppath = getcwd().$pre.'shared/apps/xavoc/ispmanager/webappconfig';
         file_put_contents($config_path, file_get_contents($config_path). file_get_contents($webapppath));
 
     }

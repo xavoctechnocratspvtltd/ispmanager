@@ -18,8 +18,8 @@ class Initiator extends \Controller_Addon {
 
         if($this->app->is_admin && !$this->app->isAjaxOutput()){
 
-            $this->app->top_menu->getMenuName('Support/Customers',true)->destroy();
-            $this->app->top_menu->getMenuName('Commerce/Customer',true)->destroy();
+            if($x=$this->app->top_menu->getMenuName('Support/Customers',true)) $x->destroy();
+            if($x=$this->app->top_menu->getMenuName('Commerce/Customer',true)) $x->destroy();
 
             $m = $this->app->top_menu->addMenu('CAF');
                 $m->addItem(['Lead Category','icon'=>'fa fa-check-square-o'],'xepan_marketing_marketingcategory');

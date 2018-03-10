@@ -17,7 +17,7 @@ class Model_UserData  extends Model_User {
 						->setOrder('radacctid','desc')
 						->setLimit(1);
 						->addCondition('acctstoptime',null);
-			return $q->expr('IF([0] is null,0,1)',[$acc->fieldQuery('acctstoptime')]);
+			return $q->expr('IF([0] is null,0,1)',[$t->fieldQuery('acctstoptime')]);
 		})->sortable(true)->type('boolean');
 	}
 }

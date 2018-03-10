@@ -12,10 +12,12 @@ class Model_UserData  extends Model_User {
 		})->caption('Data Status');
 
 		$this->addExpression('is_online')->set(function($m,$q){
-			return $m->add('xavoc\ispmanager\Model_RadAcct')
+			$t = $m->add('xavoc\ispmanager\Model_RadAcct')
 						->addCondition('username',$m->getElement('radius_username'))
+						->setOrder('radacctid','desc');
+						->setLimit(1);
 						->addCondition('acctstoptime',null)
-						->count();
+			return $q->expr('IF([0] is null,0,1)',[$acc->fieldQuery('acctstoptime')]);
 		})->sortable(true)->type('boolean');
 	}
 }

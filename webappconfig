@@ -1,0 +1,31 @@
+
+$config['locale']['date_js'] = 'dd/mm/yy';
+
+$config['hidden_xepan_communication']= false;
+$config['hidden_my_menu']= true;
+$config['only_my_menu']= false;
+
+$config['hidden_xepan_hr']= false;
+$config['base_hr_only']= false;
+$config['only_xepan_hr']= true;
+
+$config['hidden_xepan_projects']= false;
+$config['only_xepan_projects']= true;
+
+$config['hidden_xepan_marketing']= false;
+$config['only_xepan_marketing']= true;
+
+$config['hidden_xepan_accounts']= false;
+$config['only_xepan_accounts']= true;
+
+$config['hidden_xepan_commerce']= true;
+$config['only_xepan_commerce']= false;
+
+$config['hidden_xepan_production']= false;
+$config['only_xepan_production']= true;
+
+$config['hidden_xepan_crm']= false;
+$config['only_xepan_crm']= true;
+
+$config['hidden_xepan_cms']= false;
+$config['only_xepan_cms']= true;

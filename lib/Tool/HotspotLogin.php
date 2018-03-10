@@ -12,7 +12,7 @@ class Tool_HotspotLogin extends \xepan\cms\View_Tool{
 						'registration_page'=>'hotspot/registration',
 						'forgot_password_page'=>'hotspot/forgotpassword',
 						'button_label'=>'Log in',
-						'hotspot_base_url'=>'http://isp.prompthotspot.com'
+						'hotspot_base_url'=>'http://isp.prompthotspot.com' // defined as hotpot url in mikrotik, must come from option
 	];
 
 	function init(){

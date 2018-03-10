@@ -8,6 +8,8 @@ class Initiator extends \Controller_Addon {
 
     function setup_admin(){
 
+        if(!$this->add('xepan\base\Controller_License')->check(__NAMESPACE__)) return;
+
         $this->routePages('xavoc_ispmanager');
         $this->addLocation(array('template'=>'templates','js'=>'templates/js','css'=>'templates/css'))
             ->setBaseURL('../shared/apps/xavoc/ispmanager/');

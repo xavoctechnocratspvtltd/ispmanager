@@ -16,37 +16,43 @@ class Initiator extends \Controller_Addon {
 
         $this->app->js(true)->_css('adminstyle');
 
-        $m = $this->app->top_menu->addMenu('CAF');
-            $m->addItem(['Lead Category','icon'=>'fa fa-check-square-o'],'xepan_marketing_marketingcategory');
-            $m->addItem(['Lead','icon'=>'fa fa-users'],'xavoc_ispmanager_lead');
-            $m->addItem(['Installation Due','icon'=>'fa fa-users'],'xavoc_ispmanager_lead_installation');
-            $m->addItem(['Installed','icon'=>'fa fa-users'],'xavoc_ispmanager_lead_installed');
-            $m->addItem(['Active User','icon'=>'fa fa-users'],'xavoc_ispmanager_user');
-            $m->addItem(['All Lead','icon'=>'fa fa-users'],'xavoc_ispmanager_lead_all');
+        if($this->app->is_admin && !$this->app->isAjaxOutput()){
 
-        $m = $this->app->top_menu->addMenu('ISP MANAGER');
-        // $m->addItem(['Leads','icon'=>'fa fa-users'],'xavoc_ispmanager_lead');
-        $m->addItem(['Users','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_user');
-        $m->addItem(['Plans','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_plan');
-        $m->addItem(['Topups','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_topup');
-        $m->addItem(['Invoices','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_invoice');
-        $m->addItem(['Up-Coming Invoice','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_upcominginvoice');
-        $m->addItem(['Microtik Routers','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_client');
-        $m->addItem(['Configuration','icon'=>'fa fa-cog'],'xavoc_ispmanager_configuration');
-        $m->addItem(['Log','icon'=>'fa fa-user'],'xavoc_ispmanager_log');
-        $m->addItem(['Device Management','icon'=>'fa fa-user'],'xavoc_ispmanager_device');
-        $m->addItem(['Employee Payment Collection','icon'=>'fa fa-users'],'xavoc_ispmanager_employeepaymentcollection');
+            $this->app->top_menu->getMenuName('Support/Customers',true)->destroy();
+            $this->app->top_menu->getMenuName('Commerce/Customer',true)->destroy();
 
-        $m = $this->app->top_menu->addMenu('Channel');
-        $m->addItem(['channel Mgnt','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_channel');
-        $m->addItem(['Agent Mgnt','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_agent');
-        $m->addItem(['Plan','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_plan');
-        $m->addItem(['Lead','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_lead');
-        $m->addItem(['ISP User','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_user');
-        $m->addItem(['Commission Mgnt','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_commission');
-        $m->addItem(['Invoice','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_invoice');
-        $m->addItem(['Payment Collection','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_paymentcollection');
-        // $m->addItem(['Ticket','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_ticket');
+            $m = $this->app->top_menu->addMenu('CAF');
+                $m->addItem(['Lead Category','icon'=>'fa fa-check-square-o'],'xepan_marketing_marketingcategory');
+                $m->addItem(['Lead','icon'=>'fa fa-users'],'xavoc_ispmanager_lead');
+                $m->addItem(['Installation Due','icon'=>'fa fa-users'],'xavoc_ispmanager_lead_installation');
+                $m->addItem(['Installed','icon'=>'fa fa-users'],'xavoc_ispmanager_lead_installed');
+                $m->addItem(['Active User','icon'=>'fa fa-users'],'xavoc_ispmanager_user');
+                $m->addItem(['All Lead','icon'=>'fa fa-users'],'xavoc_ispmanager_lead_all');
+
+            $m = $this->app->top_menu->addMenu('ISP MANAGER');
+            // $m->addItem(['Leads','icon'=>'fa fa-users'],'xavoc_ispmanager_lead');
+            $m->addItem(['Users','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_user');
+            $m->addItem(['Plans','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_plan');
+            $m->addItem(['Topups','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_topup');
+            $m->addItem(['Invoices','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_invoice');
+            $m->addItem(['Up-Coming Invoice','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_upcominginvoice');
+            $m->addItem(['Microtik Routers','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_client');
+            $m->addItem(['Configuration','icon'=>'fa fa-cog'],'xavoc_ispmanager_configuration');
+            $m->addItem(['Log','icon'=>'fa fa-user'],'xavoc_ispmanager_log');
+            $m->addItem(['Device Management','icon'=>'fa fa-user'],'xavoc_ispmanager_device');
+            $m->addItem(['Employee Payment Collection','icon'=>'fa fa-users'],'xavoc_ispmanager_employeepaymentcollection');
+
+            $m = $this->app->top_menu->addMenu('Channel');
+            $m->addItem(['channel Mgnt','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_channel');
+            $m->addItem(['Agent Mgnt','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_agent');
+            $m->addItem(['Plan','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_plan');
+            $m->addItem(['Lead','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_lead');
+            $m->addItem(['ISP User','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_user');
+            $m->addItem(['Commission Mgnt','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_commission');
+            $m->addItem(['Invoice','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_invoice');
+            $m->addItem(['Payment Collection','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_paymentcollection');
+            // $m->addItem(['Ticket','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_ticket');
+        }
 
         $this->addAppFunctions();
 

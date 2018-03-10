@@ -16,7 +16,7 @@ class Model_UserData  extends Model_User {
 						->addCondition('username',$m->getElement('radius_username'))
 						->setOrder('radacctid','desc')
 						->setLimit(1);
-			return $q->expr('IF([0] is null,0,1)',[$t->fieldQuery('acctstoptime')]);
+			return $q->expr('IF([0] is null,1,0)',[$t->fieldQuery('acctstoptime')]);
 		})->sortable(true)->type('boolean');
 	}
 }

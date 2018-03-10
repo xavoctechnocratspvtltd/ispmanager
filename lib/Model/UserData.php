@@ -14,9 +14,9 @@ class Model_UserData  extends Model_User {
 		$this->addExpression('is_online')->set(function($m,$q){
 			$t = $m->add('xavoc\ispmanager\Model_RadAcct')
 						->addCondition('username',$m->getElement('radius_username'))
-						->setOrder('radacctid','desc');
+						->setOrder('radacctid','desc')
 						->setLimit(1);
-						->addCondition('acctstoptime',null)
+						->addCondition('acctstoptime',null);
 			return $q->expr('IF([0] is null,0,1)',[$acc->fieldQuery('acctstoptime')]);
 		})->sortable(true)->type('boolean');
 	}

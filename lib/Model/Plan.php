@@ -437,8 +437,8 @@ class Model_Plan extends \xepan\commerce\Model_Item{
 		$v = $page->add('View');
 		$ht = "<div class='alert alert-info'>Regular Plan: Data Limit 200GB @ 4 MB/No Fup, for 1 Month<br/>";
 		$ht .= "Extra Topup: Data Limit 50GB  @ 20MB/8MB Fup, for 8 Days</div>";
-		$ht .= "<div class='alert alert-danger'>if this option is <b>off</b>: 50GB  @ 20MB and then 8mbps for unlimited data for rest of days.</div>";
-		$ht .= "<div class='alert alert-success'>if this option is <b>ON</b>: 50GB  @ 20MB and then 8mbps, but data from 200GB is consumed.<br/> if that 200GB is finished, net disconnected or will work on 200Gb FUP(if exist)</div>";
+		$ht .= "<div class='alert alert-danger'>if this option is <b>off</b>: 50GB  @ 20MB and then 8mbps for unlimited data for rest of days (if left from 8 days) and then back on reglar plan</div>";
+		$ht .= "<div class='alert alert-success'>if this option is <b>ON</b>: 50GB  @ 20MB and then 8mbps, but data from 200GB is consumed [for rest of days (if left from 8 days) then back on regular plan]<br/> if that 200GB is finished, net disconnected or will work on 200Gb FUP(if exist)</div>";
 		
 		$v->setHtml($ht);
 	}

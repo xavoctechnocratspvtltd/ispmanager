@@ -132,17 +132,10 @@
 		}
 
 		$user->debug = false;
-		$return_data = $user->createInvoice($detail_data,null,true,$invoice_recurring_date);
+		$return_data = $user->createInvoice($detail_data,null,true,$invoice_recurring_date,$force_create=true);
 		
-		$page->add('View')->set("You have successfully created Invoice for this user, you can edit too ");
-
-		$page->add("Button")->set('Edit Invoice')
-				->js("click")
-				->redirect($this->api->url('xepan_commerce_quickqsp', array("document_type" => 'SalesInvoice','action'=>'edit','document_id'=>$return_data['master_detail']['id'])));
-
-		$invoice_model = $this->add('xepan\commerce\Model_SalesInvoice')->load($return_data['master_detail']['id']);
-		$page->add('xepan\commerce\View_QSP',['qsp_model'=>$invoice_model]);
-
+		$invoice_model = $this->add('xepan\commerce\Model_SalesInvoice')
+				->load($return_data['master_detail']['id']);
 		$config = $this->add('xepan\base\Model_ConfigJsonModel',
 			[
 				'fields'=>[
@@ -155,7 +148,17 @@
 			]);
 		$config->tryLoadAny();
 		if($config['recurring_invoice_default_status'] == "Due"){
-			$invoice_model->approved();
+			$invoice_model->approve();
 		}
+		
+
+		$page->add('View')->set("You have successfully created Invoice for this user, you can edit too ");
+		$page->add("Button")->set('Edit Invoice')
+				->js("click")
+				->redirect($this->api->url('xepan_commerce_quickqsp', array("document_type" => 'SalesInvoice','action'=>'edit','document_id'=>$return_data['master_detail']['id'])));
+		
+		$page->add('xepan\commerce\View_QSP',['qsp_model'=>$invoice_model]);
+
+		// throw new \Exception("Error Processing Request", 1);
 	}
 }

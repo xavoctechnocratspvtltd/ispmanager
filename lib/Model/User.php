@@ -95,7 +95,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		})->sortable(true);
 
 		$this->addHook('beforeSave',$this);
-		$this->addHook('afterSave',$this);
+		$this->addHook('afterSave',[$this,'updateNASCredentialHook']);
 		// $this->addHook('afterSave',[$this,'updateUserConditon']);
 		// $this->addHook('afterSave',[$this,'createInvoice']);
 		// $this->addHook('afterSave',[$this,'updateNASCredential']);
@@ -181,7 +181,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		}
 	}
 
-	function afterSave(){
+	function updateNASCredentialHook(){
 		if($this->radius_password_dirty){
 			$this->updateNASCredential();
 		}
@@ -193,9 +193,9 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$this->setPlan($this['plan_id'],$on_date=null, $remove_old=false,$is_topup=false,$remove_old_topups=false,$expire_all_plan,$expire_all_topup);
 	}
 
-	function createInvoice($m,$detail_data=null,$false_condition=false,$master_created_at=null){
+	function createInvoice($m,$detail_data=null,$false_condition=false,$master_created_at=null,$force_create=false){
 		// if(!$false_condition)
-		if(!$this['create_invoice']) return;
+		if(!$this['create_invoice'] AND !$force_create) return;
 		
 		$invoice_data = $this->createQSP($m,$detail_data,'SalesInvoice',null,$master_created_at);
 

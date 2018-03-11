@@ -15,15 +15,52 @@ class page_plan extends \xepan\base\Page {
 			return $q->expr('CONCAT([0]," ",[1])',[$m->getElement('plan_validity_value'),$m->getElement('qty_unit')]);
 		});
 
+		$plan->addExpression('renew_invoice')->set(function($m,$q){
+			return $q->expr('CONCAT([0]," ",[1])',[$m->getElement('renewable_value'),$m->getElement('renewable_unit')]);
+		});
+
 		$crud = $this->add('xepan\hr\CRUD');
 		if($crud->isEditing()){
 			$form = $crud->form;
-			$form->setLayout('form/plan');
+			$form->add('xepan\base\Controller_FLC')
+				->showLables(true)
+				->addContentSpot()
+				->makePanelsCoppalsible(true)
+				->layout([
+					'name~Plan Name'=>'Plan Detail~c1~4',
+					'sku~Code'=>'c2~4',
+					'available_in_user_control_panel~'=>'c3~4~<br/>display in customer panel',
+					'description'=>'c4~12',
+					'original_price'=>'Invoicing~c11~4~used for marketing purpose',
+					'sale_price'=>'c12~4~actual billed/selling amount',
+					'tax_id~Tax'=>'c13~4~taxation',
+					'is_renewable~'=>'c21~4~<br/>if checked this invoice will be show in upcoming invoices',
+					// 'is_auto_renew~'=>'c21~4',
+					'renewable_value'=>'c22~4~0,1,2,4',
+					'renewable_unit'=>'c23~4',
+					'hint_renew~'=>'c24~12',
+					'plan_validity_value'=>'Plan Validity~c11~4~0,1,2,4',
+					'qty_unit_id~plan validity unit'=>'c12~4',
+					'hint_valid~'=>'c21~12',
+				]);
+			// $form->setLayout('form/plan');
+			$form->layout->add('View',null,'hint_renew')
+				->addClass('alert alert-info')
+				->set('invoice will be informed as "due" on specific date on page "up-comming invoice", you have to create it and pay it to renew from that page')
+				;
+			$form->layout->add('View',null,'hint_valid')
+				->addClass('alert alert-danger')
+				->set('internet will be provided for this validity duration, even if in between invoices are not paid. to stop internet after grace period of invoice put same vaules as invoice renewable unit and value.')
+				;
 		}
-		$crud->setModel($plan,['name','sku','description','sale_price','original_price','status','document_id','id','created_by','updated_by','created_at','updated_at','type','qty_unit_id','qty_unit','renewable_unit','renewable_value','tax_id','tax','plan_validity_value','is_auto_renew','available_in_user_control_panel','is_renewable'],['name','code','sale_price','validity','is_renewable']);
+
+		$crud->setModel($plan,
+				['name','sku','description','sale_price','original_price','status','document_id','id','created_by','updated_by','created_at','updated_at','type','qty_unit_id','qty_unit','renewable_unit','renewable_value','tax_id','tax','plan_validity_value','available_in_user_control_panel','is_renewable'],
+				['name','code','sale_price','validity','is_renewable','renew_invoice','created_at','created_by']
+			);
+
 		$crud->grid->removeColumn('attachment_icon');
 		$crud->grid->addQuickSearch(['name']);
-		// $crud->grid->addOrder()->move('qty_unit','after','plan_validity_value')->now();
 		$crud->grid->addPaginator($ipp=50);
 
 		$grid = $crud->grid;

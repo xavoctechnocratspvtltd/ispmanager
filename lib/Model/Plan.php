@@ -7,7 +7,7 @@ class Model_Plan extends \xepan\commerce\Model_Item{
 	public $status = ['Published','UnPublished'];
 	public $actions = [
 				'Published'=>['view','edit','delete','condition'],
-				'UnPublished'=>['view','edit','delete','publish']
+				'UnPublished'=>['view','edit','delete','publish','condition']
 			];
 	
 	public $acl_type="ispmanager_plan";
@@ -28,6 +28,10 @@ class Model_Plan extends \xepan\commerce\Model_Item{
 		// if($this->hasElement('minimum_order_qty'))
 		// 	$this->getElement('minimum_order_qty')->set(1);
 
+		// renewable unit and renewable value from item model
+		$this->getElement('renewable_value')->type('int');
+		$this->getElement('is_renewable')->sortable(true);
+
 		$plan_j = $this->join('isp_plan.item_id');
 		$plan_j->hasOne('xepan\commerce\Model_Taxation','tax_id');
 
@@ -36,7 +40,7 @@ class Model_Plan extends \xepan\commerce\Model_Item{
 		$plan_j->addField('is_topup')->type('boolean')->defaultValue(false);
 		$plan_j->addField('is_auto_renew')->type('boolean')->defaultValue(0);
 		$plan_j->addField('available_in_user_control_panel')->type('boolean');
-		$plan_j->addField('plan_validity_value')->type('number')->defaultValue(1);
+		$plan_j->addField('plan_validity_value')->type('int')->defaultValue(1);
 
 		$this->hasMany('xavoc\ispmanager\Condition','plan_id',null,'conditions');
 
@@ -60,6 +64,7 @@ class Model_Plan extends \xepan\commerce\Model_Item{
 	}
 
 	function page_condition($page){
+
 		$condition_model = $this->add('xavoc\ispmanager\Model_Condition');
 		$condition_model->addcondition('plan_id',$this->id);
 
@@ -71,14 +76,14 @@ class Model_Plan extends \xepan\commerce\Model_Item{
 			$form->add('xepan\base\Controller_FLC')
 				->addContentSpot()
 			->layout([
-						'remark~Row Name'=>'About Plan~c1~3',
-						'data_limit'=>'c2~3~Data limit in Human Readable Formate 20gb, 1tb, 100mb',
+						'remark~Condition Name'=>'About Plan~c1~3',
+						'data_limit'=>'c2~3~Data limit in Human Readable Formate 20gb, 1tb, 100mb <br/>For unlimited data put any data here but make sure FUP is same as download/upload limit ',
 						'time_limit'=>'c3~3~Time limit in minutes',
 						'is_data_carry_forward~Data Carry Forward'=>'c4~3',
-						'download_limit'=>'DL/UL Limit~c1~3~Limit per second',
-						'upload_limit'=>'c11~3~Limit per second',
-						'fup_download_limit'=>'c12~3~Limit per second',
-						'fup_upload_limit'=>'c13~3~Limit per second',
+						'download_limit'=>'DL/UL Limit~c1~3~Limit per second format 4mb or 2mb or ...',
+						'upload_limit'=>'c11~3~Limit per second format 4mb or 2mb or ...',
+						'fup_download_limit'=>'c12~3~Limit per second format 4mb or 2mb or ...',
+						'fup_upload_limit'=>'c13~3~Limit per second format 4mb or 2mb or ...',
 						'accounting_download_ratio'=>'c2~6~Ratio in %',
 						'accounting_upload_ratio'=>'c21~6~Ratio in %',
 						'start_time'=>'Time~c1~6',
@@ -123,22 +128,90 @@ class Model_Plan extends \xepan\commerce\Model_Item{
 						'd31'=>'c31~1',
 						'data_reset_value'=>'Reset Data~c1~6',
 						'data_reset_mode'=>'c2~6',
-						'burst_dl_limit'=>'Burst~c1~3~limit per second',
-						'burst_ul_limit'=>'c11~3~limit per second',
-						'burst_threshold_dl_limit'=>'c12~3~limit per second',
-						'burst_threshold_ul_limit'=>'c13~3~limit per second',
+						'burst_dl_limit'=>'Burst~c1~3~Limit per second format 4kb or 2kb or ...',
+						'burst_ul_limit'=>'c11~3~Limit per second format 4kb or 2kb or ...',
+						'burst_threshold_dl_limit'=>'c12~3~Limit per second format 4kb or 2kb or ...',
+						'burst_threshold_ul_limit'=>'c13~3~Limit per second format 4kb or 2kb or ...',
 						'burst_dl_time'=>'c2~3~time in second',
 						'burst_ul_time'=>'c21~3~time in second',
 						'priority'=>'c22~3',
-						'treat_fup_as_dl_for_last_limit_row'=>'MISC~c1~6',
-						'is_pro_data_affected'=>'c2~6',
+						'treat_fup_as_dl_for_last_limit_row~'=>'MISC~c1~6',
+						'explanation~'=>'c1~6',
+						'is_pro_data_affected~'=>'c2~6',
 					]);
-			
+
+			$b = $form->layout->add('Button',null,'explanation')
+				->set('explanation');
+			$b->add('VirtualPage')
+			->bindEvent('Explanation of treat fup as dl for last limit row','click')
+			->set([$this,"explanation"]);
+
 		}
 
 		$crud->setModel($condition_model);
+		if($crud->isEditing()){
+			$form = $crud->form;
+			$form->getElement('start_time')
+				->setOption('showMeridian',false)
+				->setOption('defaultTime',0)
+				->setOption('minuteStep',1)
+				->setOption('showSeconds',true)
+				;
+			$form->getElement('end_time')
+				->setOption('showMeridian',false)
+				->setOption('defaultTime',0)
+				->setOption('minuteStep',1)
+				->setOption('showSeconds',true)
+				;
+		}
+		$crud->grid->addColumn('detail');
+		$crud->grid->addColumn('week_days');
+		$crud->grid->addColumn('off_dates');
 
-		$crud->grid->removeColumn('plan');
+		$crud->grid->addHook('formatRow',function($g){
+			$speed = "UP/DL Limit: ".$g->model['upload_limit']."/".$g->model['download_limit']."<br/>";
+			$speed .= "FUP UP/DL Limit: ".$g->model['fup_upload_limit']."/".$g->model['fup_download_limit']."<br/>";
+			$speed .= "Accounting UP/DL Limit: ".$g->model['accounting_upload_ratio']."/".$g->model['accounting_download_ratio']."<br/>";
+			$speed .= "start/end time: ".$g->model['start_time']."/".$g->model['end_time']."<br/>";
+
+			$g->current_row_html['detail'] = $speed;
+
+			$g->current_row['time_limit'] = $g->model['time_limit']?($g->model['time_limit']." minutes"):"";
+			
+			$week_days = '';
+			foreach (['sun','mon','tue','wed','thu','fri','sat'] as $name) {
+				if($g->model[$name])
+  					$week_days .= "<span style='color:green;'>".$name."&nbsp;</span>";
+  				else
+  					$week_days .= "<span style='color:red;'>".$name."&nbsp;</span>";
+			}
+			$g->current_row_html['week_days'] = $week_days;
+			
+			$week_days .= '</div>';
+
+			$off_dates = "";
+			foreach (['d01','d02','d03','d04','d05','d06','d07','d08','d09','d10','d11','d12','d13','d14','d15','d16','d17','d18','d19','d20','d21','d22','d23','d24','d25','d26','d27','d28','d29','d30','d31'] as $name) {
+				if(!$g->model[$name])
+					$off_dates .= trim($name,'d').",";
+			}
+			$g->current_row_html['off_dates'] = trim($off_dates,',');
+
+			$g->current_row_html['data_reset_value'] = $g->model['data_reset_value']." ".$g->model['data_reset_mode'];
+		});
+		$removeColumn_list = [
+					'plan','upload_limit','download_limit','fup_download_limit','fup_upload_limit','accounting_upload_ratio','accounting_download_ratio',
+					'sun','mon','tue','wed','thu','fri','sat','d01','d02','d03','d04','d05','d06','d07','d08','d09','d10','d11','d12','d13','d14','d15','d16','d17','d18','d19','d20','d21','d22','d23','d24','d25','d26','d27','d28','d29','d30','d31',
+					'start_time','end_time',
+					'data_reset_mode',
+				];
+		foreach ($removeColumn_list as $field) {
+			$crud->grid->removeColumn($field);
+		}		
+		$crud->grid->removeAttachment();
+
+		$crud->grid->addFormatter('detail','Wrap');
+		$crud->grid->addFormatter('week_days','Wrap');
+		$crud->grid->addFormatter('off_dates','Wrap');
 	}
 
 	function import($data){
@@ -360,4 +433,13 @@ class Model_Plan extends \xepan\commerce\Model_Item{
 		return $result;
 	}
 
+	function explanation($page){
+		$v = $page->add('View');
+		$ht = "<div class='alert alert-info'>Regular Plan: Data Limit 200GB @ 4 MB/No Fup, for 1 Month<br/>";
+		$ht .= "Extra Topup: Data Limit 50GB  @ 20MB/8MB Fup, for 8 Days</div>";
+		$ht .= "<div class='alert alert-danger'>if this option is <b>off</b>: 50GB  @ 20MB and then 8mbps for unlimited data for rest of days.</div>";
+		$ht .= "<div class='alert alert-success'>if this option is <b>ON</b>: 50GB  @ 20MB and then 8mbps, but data from 200GB is consumed.<br/> if that 200GB is finished, net disconnected or will work on 200Gb FUP(if exist)</div>";
+		
+		$v->setHtml($ht);
+	}
 }

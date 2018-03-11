@@ -23,8 +23,8 @@ class Model_Condition extends \xepan\base\Model_Table{
 
 		$this->addField('is_data_carry_forward')->enum(['none','once','allways'])->defaultValue('none');
 		
-		$this->addField('start_time');//->type('time')->display(['form'=>'TimePicker']);
-		$this->addField('end_time');//->type('time')->display(['form'=>'TimePicker']);
+		$this->addField('start_time')->type('time')->display(['form'=>'TimePicker']);
+		$this->addField('end_time')->type('time')->display(['form'=>'TimePicker']);
 
 		// for factor day
 		$this->addField('sun')->type('boolean')->defaultValue(true);
@@ -69,7 +69,7 @@ class Model_Condition extends \xepan\base\Model_Table{
 
 		// $this->addField('is_recurring')->type('boolean');
 		// if condition is recurring then show
-		$this->addField('data_reset_value')->type('number')->defaultValue(0);
+		$this->addField('data_reset_value')->type('int')->defaultValue(0);
 		$this->addField('data_reset_mode')->enum(['hours','days','months','years']);
 		$this->addField('treat_fup_as_dl_for_last_limit_row')->type('boolean')->defaultValue(false);
 		$this->addField('is_pro_data_affected')->type('boolean')->defaultValue(false);

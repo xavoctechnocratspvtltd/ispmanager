@@ -47,10 +47,11 @@ class page_user extends \xepan\base\Page {
 		$model->addExpression('framed_ip_address')->set(function($m,$q){
 			$acc = $this->add('xavoc\ispmanager\Model_RadAcct');
 			$acc->addCondition('username',$m->getElement('radius_username'));
+			$acc->addCondition('acctstoptime',null);
 			$acc->setOrder('radacctid','desc');
 			$acc->setLimit(1);
 
-			return $q->expr('IFNULL([0],"NONE")',[$acc->fieldQuery('framedipaddress')]);
+			return $q->expr('IFNULL([0],"")',[$acc->fieldQuery('framedipaddress')]);
 		});
 
 		$model->is([
@@ -77,6 +78,8 @@ class page_user extends \xepan\base\Page {
 		
 
 		$crud = $this->add('xepan\hr\CRUD',['entity_name'=>'User']);
+		$crud->grid->fixed_header = false;
+
 		if($crud->isEditing()){
 			$form = $crud->form;
 
@@ -107,8 +110,12 @@ class page_user extends \xepan\base\Page {
 			// $form->setLayout('form/user');
 		}
 
-		$crud->setModel($model,['net_data_limit','radius_username','radius_password','plan_id','simultaneous_use','grace_period_in_days','custom_radius_attributes','first_name','last_name','create_invoice','is_invoice_date_first_to_first','include_pro_data_basis','country_id','state_id','city','address','pin_code','qty_unit_id','mac_address'],['radius_username','plan','radius_login_response','contacts_str','emails_str','created_at','last_login','is_online','active_condition_data','framed_ip_address']);
+		$crud->setModel($model,['net_data_limit','radius_username','radius_password','plan_id','simultaneous_use','grace_period_in_days','custom_radius_attributes','first_name','last_name','create_invoice','is_invoice_date_first_to_first','include_pro_data_basis','country_id','state_id','city','address','pin_code','qty_unit_id','mac_address'],['radius_username','plan','radius_login_response','contacts_str','emails_str','created_at','last_login','is_online','active_condition_data','framed_ip_address','last_logout']);
+
 		$crud->grid->removeColumn('attachment_icon');
+		$crud->grid->removeColumn('framed_ip_address');
+		$crud->grid->removeColumn('last_logout');
+
 		$crud->grid->addPaginator($ipp=10);
 		$filter_form = $crud->grid->addQuickSearch(['radius_username','plan']);
 		$crud->grid->addSno(null,true);
@@ -146,11 +153,11 @@ class page_user extends \xepan\base\Page {
 				if($g->model['is_expired'] || strtotime($this->app->now) > strtotime($g->model['active_plan_end_date'])) $access=" Plan Expired / Ended : Authentication Failed ";
 			}
 
-			$g->current_row_html['radius_login_response'] = 'Access: '.($data[0]?'yes':'<span class="label label-danger">'.$access.'</span>').'<br/>'.'COA: '.($data[1]?'yes':'no').'<br/>UL / DL: '.$data[2].'<br/>Burst: '.$data['3'];
+			$g->current_row_html['radius_login_response'] = 'Access: <br/>'.($data[0]?'yes':'<span class="label label-danger" style="font-size:8px;">'.$access.'</span>').'<br/>'.'COA: '.($data[1]?'yes':'no').'<br/>UL / DL: '.$data[2].'<br/>Burst: '.$data['3'];
 			
 			// add online /offline
 			$status = ($g->model['is_online'] && $data[0]) ? "Online":"Offline";
-			$g->current_row_html['radius_username'] = $g->model['radius_username']."<br/><div class='".$status."'><i class='fa fa-circle'></i>&nbsp;".$status."</div>";
+			$g->current_row_html['radius_username'] = $g->model['radius_username']."<br/><div class='".$status."'><i class='fa fa-circle'></i>&nbsp;".$status."</div><br>IP: ".$g->model['framed_ip_address'];
 
 
 			$data_limit = explode(",",$g->model['active_condition_data']);
@@ -179,11 +186,13 @@ class page_user extends \xepan\base\Page {
 			$g->setTDParam('radius_username','class',$status_class);
 
 			$g->current_row_html['created_at'] = str_replace(" ", "<br/>", $g->model['created_at']);
-			$g->current_row_html['last_login'] = str_replace(" ", "<br/>", $g->model['last_login']);
+			$g->current_row_html['last_login'] = "<small>last login </small><br/>".str_replace(" ", "<br/>", $g->model['last_login']).'<br/><small>last logout </small><br/>'.str_replace(" ", "<br/>", $g->model['last_logout']);
+			$g->current_row_html['contacts_str'] = $g->model['contacts_str']."<br/>".$g->model['emails_str'];
 		});
 
-		$crud->grid->addFormatter('emails_str','wrap');
-		$crud->grid->addFormatter('contacts_str','wrap');
+		$crud->grid->removeColumn('emails_str');
+		$crud->grid->addFormatter('contacts_str','Wrap');
+		$crud->grid->addFormatter('radius_login_response','Wrap');
 		$crud->grid->removeColumn('active_condition_data');
 		$crud->grid->removeColumn('is_online');
 		// $g->addMethod('format_redgreen',function($g,$f){

@@ -85,6 +85,14 @@ class Model_User extends \xepan\commerce\Model_Customer{
 					->setLimit(1);
 			return $q->expr('[0]',[$act->fieldQuery('acctstarttime')]);
 		})->sortable(true);
+		$this->addExpression('last_logout')->set(function($m,$q){
+			$act = $m->add('xavoc\ispmanager\Model_RadAcct')
+					->addCondition('username',$m->getElement('radius_username'))
+					->addCondition('acctstoptime','<>',null)
+					->setOrder('radacctid','desc')
+					->setLimit(1);
+			return $q->expr('[0]',[$act->fieldQuery('acctstoptime')]);
+		})->sortable(true);
 
 		$this->addHook('beforeSave',$this);
 		$this->addHook('afterSave',$this);

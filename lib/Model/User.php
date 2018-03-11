@@ -207,6 +207,24 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			$asso->save();
 		}
 		
+		// 
+		$config = $this->add('xepan\base\Model_ConfigJsonModel',
+			[
+				'fields'=>[
+							'lead_lost_region'=>'text',
+							'attachment_type'=>'text',
+							'invoice_default_status'=>'DropDown'
+						],
+					'config_key'=>'ISPMANAGER_MISC',
+					'application'=>'ispmanager'
+			]);
+		$config->tryLoadAny();
+		if($config['recurring_invoice_default_status'] == "Due"){
+			$invoice_model = $this->add('xepan\commerce\Model_SalesInvoice')
+				->load($invoice_data['master_detail']['id']);
+			$invoice_model->approve();
+			$invoice_data['master_detail'] = $invoice_model->getRows()[0];
+		}
 		return $invoice_data;
 	}
 
@@ -332,7 +350,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$this->setPlan($topup_id,$date,false,true,$remove_old_topups);
 	}
 
-	function setPlan($plan, $on_date=null, $remove_old=false,$is_topup=false,$remove_old_topups=false,$expire_all_plan=false,$expire_all_topup=false){
+	function setPlan($plan, $on_date=null, $remove_old=false,$is_topup=false,$remove_old_topups=false,$expire_all_plan=false,$expire_all_topup=false,$work_on_pro_data=true){
 		if(!$on_date) $on_date = isset($this->app->isptoday)? $this->app->isptoday : $this->app->today;
 		if(is_numeric($plan)){
 			$plan_model = $this->add('xavoc\ispmanager\Model_Plan')->load($plan);
@@ -411,8 +429,8 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			$end_date = date("Y-m-d H:i:s", strtotime("+".$plan_model['plan_validity_value']." ".$plan_model['qty_unit'],strtotime($on_date)));
 			
 			// set end date last
-			if($this['is_invoice_date_first_to_first']){
-				$end_date = date("Y-m-t H:i:s", strtotime($end_date));
+			if($this['is_invoice_date_first_to_first'] && $work_on_pro_data){
+				$end_date = date("Y-m-t H:i:s", strtotime($on_date));
 			}
 
 			if($condition['data_reset_value']){
@@ -449,7 +467,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			$u_p['data_limit_row'] = null; //id condition has data_limit then set empty else previous data row limit id;
 			
 			// pro data update data_limit
-			if( $condition['is_pro_data_affected'] && $this['is_invoice_date_first_to_first'] && in_array($this['include_pro_data_basis'], ['data_only','invoice_and_data_both']) && $reset_date){
+			if( $work_on_pro_data && $condition['is_pro_data_affected'] && $this['is_invoice_date_first_to_first'] && in_array($this['include_pro_data_basis'], ['data_only','invoice_and_data_both']) && $reset_date){
 				$end_time = strtotime(date('Y-m-d',strtotime($reset_date)));
 				$day_first_start_time = strtotime(date('Y-m-01',strtotime($on_date)));
 				$actual_start_time = strtotime($on_date);
@@ -1293,10 +1311,16 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		
 		$user = $this->add('xavoc\ispmanager\Model_User');
 		$user->loadBy('radius_username',$customer['radius_username']);
+		
+		$items = $invoice_model->Items()->getRows();
+		$items_ids = array_column($items, 'item_id');
+		$plan = $this->add('xavoc\ispmanager\Model_Plan')->addCondition('id',$items_ids)->tryLoadAny();
+		if($plan->loaded()){
+			$oi = $invoice_model->Items()->tryLoadBy('item_id',$plan->id);
 
-		$items = $invoice_model->Items()->tryLoadAny();
-		if($items->loaded())
-			$user->setPlan($items['item_id']);
+			$user->setPlan($plan->id,$invoice_model['created_at'],$remove_old=false,$is_topup=false,$remove_old_topups=false,$expire_all_plan=true,$expire_all_topup=false,!$oi['recurring_qsp_detail_id']);
+																
+		}		
 	}
 
 	function addAttachment($attach_id,$type=null){

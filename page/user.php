@@ -67,7 +67,7 @@ class page_user extends \xepan\base\Page {
 				'address|required'
 			]);
 
-		$model->addHook('afterSave',[$model,'updateUserConditon']);
+		// $model->addHook('afterSave',[$model,'updateUserConditon']);
 		$model->addHook('afterSave',[$model,'createInvoice'],[null,null,$this->app->now]);
 		$model->addHook('afterSave',[$model,'updateNASCredential']);
 		$model->addHook('afterSave',[$model,'updateWebsiteUser']);

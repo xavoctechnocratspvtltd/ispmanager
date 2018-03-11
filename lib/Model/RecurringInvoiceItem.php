@@ -136,22 +136,7 @@
 		
 		$invoice_model = $this->add('xepan\commerce\Model_SalesInvoice')
 				->load($return_data['master_detail']['id']);
-		$config = $this->add('xepan\base\Model_ConfigJsonModel',
-			[
-				'fields'=>[
-							'lead_lost_region'=>'text',
-							'attachment_type'=>'text',
-							'recurring_invoice_default_status'=>'DropDown'
-						],
-					'config_key'=>'ISPMANAGER_MISC',
-					'application'=>'ispmanager'
-			]);
-		$config->tryLoadAny();
-		if($config['recurring_invoice_default_status'] == "Due"){
-			$invoice_model->approve();
-		}
-		
-
+				
 		$page->add('View')->set("You have successfully created Invoice for this user, you can edit too ");
 		$page->add("Button")->set('Edit Invoice')
 				->js("click")

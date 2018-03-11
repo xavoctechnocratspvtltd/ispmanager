@@ -181,9 +181,9 @@ class Model_Plan extends \xepan\commerce\Model_Item{
 			$week_days = '';
 			foreach (['sun','mon','tue','wed','thu','fri','sat'] as $name) {
 				if($g->model[$name])
-  					$week_days .= "<span style='color:green;'>".$name."&nbsp;</span>";
+  					$week_days .= "<span style='color:green;'>".strtoupper(substr($name,0,1))."&nbsp;</span>";
   				else
-  					$week_days .= "<span style='color:red;'>".$name."&nbsp;</span>";
+  					$week_days .= "<span style='color:red;'>".strtoupper(substr($name,0,1))."&nbsp;</span>";
 			}
 			$g->current_row_html['week_days'] = $week_days;
 			

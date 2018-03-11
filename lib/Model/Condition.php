@@ -4,8 +4,10 @@ namespace xavoc\ispmanager;
 
 class Model_Condition extends \xepan\base\Model_Table{ 
 	public $table = "isp_condition";
-	
-	public $acl_type="ispmanager_plan";
+	public $status = ['All'];
+
+	public $acl = false;
+	// public $acl_type="ispmanager_plan";
 	function init(){
 		parent::init();
 
@@ -72,7 +74,7 @@ class Model_Condition extends \xepan\base\Model_Table{
 		$this->addField('data_reset_value')->type('int')->defaultValue(0);
 		$this->addField('data_reset_mode')->enum(['hours','days','months','years']);
 		$this->addField('treat_fup_as_dl_for_last_limit_row')->type('boolean')->defaultValue(false);
-		$this->addField('is_pro_data_affected')->type('boolean')->defaultValue(false);
+		$this->addField('is_pro_data_affected')->type('boolean')->defaultValue(true);
 		
 		$this->addField('burst_dl_limit')->hint('limit per second');
 		$this->addField('burst_ul_limit')->hint('limit per second');
@@ -81,7 +83,6 @@ class Model_Condition extends \xepan\base\Model_Table{
 		$this->addField('burst_dl_time')->hint('time in second');
 		$this->addField('burst_ul_time')->hint('time in second');
 		$this->addField('priority');
-
 
 		$this->addHook('beforeSave',$this);
 

@@ -167,13 +167,15 @@ class Model_Plan extends \xepan\commerce\Model_Item{
 		$crud->grid->addColumn('detail');
 		$crud->grid->addColumn('week_days');
 		$crud->grid->addColumn('off_dates');
+		$crud->grid->addColumn('burst_detail');
 
 		$crud->grid->addHook('formatRow',function($g){
 			$speed = "UP/DL Limit: ".$g->model['upload_limit']."/".$g->model['download_limit']."<br/>";
 			$speed .= "FUP UP/DL Limit: ".$g->model['fup_upload_limit']."/".$g->model['fup_download_limit']."<br/>";
-			$speed .= "Accounting UP/DL Limit: ".$g->model['accounting_upload_ratio']."/".$g->model['accounting_download_ratio']."<br/>";
+			$speed .= "Accounting UP/DL Limit: ".$g->model['accounting_upload_ratio']."%/".$g->model['accounting_download_ratio']."%<br/>";
 			$speed .= "start/end time: ".$g->model['start_time']."/".$g->model['end_time']."<br/>";
-
+			if($g->model['treat_fup_as_dl_for_last_limit_row'])
+				$speed .= "<strong style='color:red;'>FUP as DL for last limit row</strong>";
 			$g->current_row_html['detail'] = $speed;
 
 			$g->current_row['time_limit'] = $g->model['time_limit']?($g->model['time_limit']." minutes"):"";
@@ -195,23 +197,39 @@ class Model_Plan extends \xepan\commerce\Model_Item{
 					$off_dates .= trim($name,'d').",";
 			}
 			$g->current_row_html['off_dates'] = trim($off_dates,',');
+			
+			// burts detail
+			$bt = "UL\DL Limit: ".$g->model['burst_ul_limit']."/".$g->model['burst_dl_limit']."<br/>";
+			$bt .= "UL\DL Time: ".$g->model['burst_ul_time']."/".$g->model['burst_dl_time']."<br/>";
+			$bt .= "Threshold UL\DL Time: ".$g->model['burst_threshold_ul_limit']."/".$g->model['burst_threshold_dl_limit']."<br/>";
+			$bt .= "Priority: ".$g->model['priority'];
+			$g->current_row_html['burst_detail'] = $bt;
 
-			$g->current_row_html['data_reset_value'] = $g->model['data_reset_value']." ".$g->model['data_reset_mode'];
+			$detail = $g->model['data_limit']."<br/>"."Reset Every: ".($g->model['data_reset_value']." ".$g->model['data_reset_mode'])."<br/> Carried: ".$g->model['is_data_carry_forward']."<br/>";
+			if(!$g->model['is_pro_data_affected'])
+				$detail .= "<strong style='color:red;'>Pro Data Not Affected</strong>";
+			else
+				$detail .= "Pro Data Affected";
+
+			$g->current_row_html['data_limit'] = $detail;
 		});
 		$removeColumn_list = [
 					'plan','upload_limit','download_limit','fup_download_limit','fup_upload_limit','accounting_upload_ratio','accounting_download_ratio',
 					'sun','mon','tue','wed','thu','fri','sat','d01','d02','d03','d04','d05','d06','d07','d08','d09','d10','d11','d12','d13','d14','d15','d16','d17','d18','d19','d20','d21','d22','d23','d24','d25','d26','d27','d28','d29','d30','d31',
 					'start_time','end_time',
-					'data_reset_mode',
+					'data_reset_mode','data_reset_value','is_data_carry_forward',
+					'burst_ul_limit','burst_dl_limit','burst_ul_time','burst_dl_time','burst_threshold_ul_limit','burst_threshold_dl_limit','priority',
+					'treat_fup_as_dl_for_last_limit_row','is_pro_data_affected','action'
 				];
 		foreach ($removeColumn_list as $field) {
 			$crud->grid->removeColumn($field);
 		}		
 		$crud->grid->removeAttachment();
-
-		$crud->grid->addFormatter('detail','Wrap');
-		$crud->grid->addFormatter('week_days','Wrap');
-		$crud->grid->addFormatter('off_dates','Wrap');
+		// $o = $crud->grid->addOrder();
+		// $o->move('action','last')->now();
+		// $crud->grid->addFormatter('detail','Wrap');
+		// $crud->grid->addFormatter('week_days','Wrap');
+		// $crud->grid->addFormatter('off_dates','Wrap');
 	}
 
 	function import($data){

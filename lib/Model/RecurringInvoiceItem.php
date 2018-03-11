@@ -31,9 +31,9 @@
 			return $m->refSQL('item_id')->fieldQuery('renewable_unit');
 		});
 
-		$this->addExpression('created_at')->set(function($m,$q){
-			return $m->refSQL('qsp_master_id')->fieldQuery('created_at');
-		});
+		// $this->addExpression('created_at')->set(function($m,$q){
+		// 	return $m->refSQL('qsp_master_id')->fieldQuery('created_at');
+		// });
 
 		$this->addExpression('is_invoice_date_first_to_first')->set(function($m,$q){
 			$user = $m->add('xavoc\ispmanager\Model_User');
@@ -96,7 +96,7 @@
 		}
 		
 		$this->addExpression('status')->set('"All"');
-		$this->setOrder('customer_id');
+		$this->setOrder(['customer_id','qsp_master_id']);
 	}
 
 	function page_create_invoice($page){
@@ -106,7 +106,8 @@
 		}
 		
 		$recu_items = $this->add('xavoc\ispmanager\Model_RecurringInvoiceItem',['customer_id'=>$this['customer_id'],'from_date'=>$_GET['from_date'],'to_date'=>$_GET['to_date'],'table_alias'=>'itemssssss']);
-				
+		$recu_items->addCondition('qsp_master_id',$this['qsp_master_id']);
+
 		$user = $this->add('xavoc\ispmanager\Model_User')->load($this['customer_id']);
 		$detail_data = [];
 		
@@ -139,9 +140,22 @@
 				->js("click")
 				->redirect($this->api->url('xepan_commerce_quickqsp', array("document_type" => 'SalesInvoice','action'=>'edit','document_id'=>$return_data['master_detail']['id'])));
 
-
 		$invoice_model = $this->add('xepan\commerce\Model_SalesInvoice')->load($return_data['master_detail']['id']);
 		$page->add('xepan\commerce\View_QSP',['qsp_model'=>$invoice_model]);
 
+		$config = $this->add('xepan\base\Model_ConfigJsonModel',
+			[
+				'fields'=>[
+							'lead_lost_region'=>'text',
+							'attachment_type'=>'text',
+							'recurring_invoice_default_status'=>'DropDown'
+						],
+					'config_key'=>'ISPMANAGER_MISC',
+					'application'=>'ispmanager'
+			]);
+		$config->tryLoadAny();
+		if($config['recurring_invoice_default_status'] == "Due"){
+			$invoice_model->approved();
+		}
 	}
 }

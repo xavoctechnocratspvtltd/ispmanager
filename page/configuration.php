@@ -27,7 +27,8 @@ class page_configuration extends \xepan\base\Page {
 			[
 				'fields'=>[
 							'lead_lost_region'=>'text',
-							'attachment_type'=>'text'
+							'attachment_type'=>'text',
+							'recurring_invoice_default_status'=>'DropDown'
 						],
 					'config_key'=>'ISPMANAGER_MISC',
 					'application'=>'ispmanager'
@@ -39,6 +40,8 @@ class page_configuration extends \xepan\base\Page {
 		$form->setModel($config);
 		$form->getElement('lead_lost_region')->setFieldHint("comma (,) seperated multiple values");
 		$form->getElement('attachment_type')->setFieldHint("comma (,) seperated multiple values");
+		$form->getElement('recurring_invoice_default_status')
+				->setValueList(['Draft'=>'Draft','Due'=>'Due']);
 		$form->addSubmit('Save');
 		if($form->isSubmitted()){
 			$form->save();

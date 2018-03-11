@@ -110,7 +110,7 @@ class page_user extends \xepan\base\Page {
 			// $form->setLayout('form/user');
 		}
 
-		$crud->setModel($model,['net_data_limit','radius_username','radius_password','plan_id','simultaneous_use','grace_period_in_days','custom_radius_attributes','first_name','last_name','create_invoice','is_invoice_date_first_to_first','include_pro_data_basis','country_id','state_id','city','address','pin_code','qty_unit_id','mac_address'],['radius_username','plan','radius_login_response','contacts_str','emails_str','created_at','last_login','is_online','active_condition_data','framed_ip_address','last_logout']);
+		$crud->setModel($model,['net_data_limit','radius_username','radius_password','plan_id','simultaneous_use','grace_period_in_days','custom_radius_attributes','first_name','last_name','create_invoice','is_invoice_date_first_to_first','include_pro_data_basis','country_id','state_id','city','address','pin_code','qty_unit_id','mac_address'],['name','radius_username','plan','radius_login_response','contacts_str','emails_str','created_at','last_login','is_online','active_condition_data','framed_ip_address','last_logout','name']);
 
 		$crud->grid->removeColumn('attachment_icon');
 		$crud->grid->removeColumn('framed_ip_address');
@@ -160,7 +160,7 @@ class page_user extends \xepan\base\Page {
 			
 			// add online /offline
 			$status = ($g->model['is_online'] && $data[0]) ? "Online":"Offline";
-			$g->current_row_html['radius_username'] = $g->model['radius_username']."<br/><div class='".$status."'><i class='fa fa-circle'></i>&nbsp;".$status."</div><br>IP: ".$g->model['framed_ip_address'];
+			$g->current_row_html['radius_username'] = $g->model['radius_username']."<br>".$g->model['name']."<br/><div class='".$status."'><i class='fa fa-circle'></i>&nbsp;".$status."</div><br>IP: ".$g->model['framed_ip_address'];
 
 
 			$data_limit = explode(",",$g->model['active_condition_data']);
@@ -194,6 +194,7 @@ class page_user extends \xepan\base\Page {
 		});
 
 		$crud->grid->removeColumn('emails_str');
+		$crud->grid->removeColumn('name');
 		$crud->grid->addFormatter('contacts_str','Wrap');
 		$crud->grid->addFormatter('radius_login_response','Wrap');
 		$crud->grid->removeColumn('active_condition_data');

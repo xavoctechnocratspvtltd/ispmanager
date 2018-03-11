@@ -11,7 +11,7 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 
 		$this->hasOne('xavoc\ispmanager\User','user_id');
 		$this->hasOne('xavoc\ispmanager\Plan','plan_id');
-		$this->hasOne('xavoc\ispmanager\Condition','condition_id');
+		$this->hasOne('xavoc\ispmanager\Condition','condition_id')->system(true);
 
 		$this->addField('remark');
 		$this->addField('is_topup')->type('boolean')->defaultValue(0)->caption('TopUp');
@@ -113,7 +113,8 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 					'upload_limit',
 					'fup_download_limit',
 					'fup_upload_limit',
-					'data_consumed'
+					'data_consumed',
+					'net_data_limit'
 				]);
 
 		$this->setOrder('id');
@@ -122,6 +123,8 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 	}
 
 	function beforeSave(){
+		if(!$this['plan_id']) throw new \Exception("Error Processing Request", 1);
+		
 		if($this['start_time']=='') $this['start_time']=null;
 		if($this['end_time']=='') $this['end_time']=null;
 		if(!$this['data_reset_value']) $this['data_reset_value']=null;

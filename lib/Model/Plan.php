@@ -176,9 +176,9 @@ class Model_Plan extends \xepan\commerce\Model_Item{
 			$speed .= "start/end time: ".$g->model['start_time']."/".$g->model['end_time']."<br/>";
 			if($g->model['treat_fup_as_dl_for_last_limit_row'])
 				$speed .= "<strong style='color:red;'>FUP as DL for last limit row</strong>";
-			$g->current_row_html['detail'] = $speed;
 
-			$g->current_row['time_limit'] = $g->model['time_limit']?($g->model['time_limit']." minutes"):"";
+			$speed .= "Time Limit: ".($g->model['time_limit']>0?($g->model['time_limit']." minutes"):"");
+			$g->current_row_html['detail'] = $speed;
 			
 			$week_days = '';
 			foreach (['sun','mon','tue','wed','thu','fri','sat'] as $name) {
@@ -216,7 +216,7 @@ class Model_Plan extends \xepan\commerce\Model_Item{
 		$removeColumn_list = [
 					'plan','upload_limit','download_limit','fup_download_limit','fup_upload_limit','accounting_upload_ratio','accounting_download_ratio',
 					'sun','mon','tue','wed','thu','fri','sat','d01','d02','d03','d04','d05','d06','d07','d08','d09','d10','d11','d12','d13','d14','d15','d16','d17','d18','d19','d20','d21','d22','d23','d24','d25','d26','d27','d28','d29','d30','d31',
-					'start_time','end_time',
+					'start_time','end_time','time_limit',
 					'data_reset_mode','data_reset_value','is_data_carry_forward',
 					'burst_ul_limit','burst_dl_limit','burst_ul_time','burst_dl_time','burst_threshold_ul_limit','burst_threshold_dl_limit','priority',
 					'treat_fup_as_dl_for_last_limit_row','is_pro_data_affected','action'

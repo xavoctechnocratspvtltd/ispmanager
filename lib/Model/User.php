@@ -41,7 +41,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$user_j->addField('radius_password')->caption('Password');
 		$user_j->addField('simultaneous_use')->type('Number');
 		$user_j->addField('grace_period_in_days')->type('number')->defaultValue(0);
-		$user_j->addField('custom_radius_attributes')->type('text')->caption('Custom RADIUS Attributes');
+		$user_j->addField('custom_radius_attributes')->type('text')->caption('Custom RADIUS Attributes')->system(true);
 		
 		$user_j->addField('create_invoice')->type('boolean')->defaultValue(false);
 		$user_j->addField('is_invoice_date_first_to_first')->type('boolean')->defaultValue(false);
@@ -187,15 +187,15 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		}
 	}
 
-	function updateUserConditon(){
+	function updateUserConditon($expire_all_plan=false,$expire_all_topup=false){
 		if(!$this->plan_dirty OR !$this['plan_id']) return;
 		
-		$this->setPlan($this['plan_id']);
+		$this->setPlan($this['plan_id'],$on_date=null, $remove_old=false,$is_topup=false,$remove_old_topups=false,$expire_all_plan,$expire_all_topup);
 	}
 
 	function createInvoice($m,$detail_data=null,$false_condition=false,$master_created_at=null){
 		// if(!$false_condition)
-		// 	if(!$this->plan_dirty OR !$this['plan_id'] OR !$this['create_invoice']) return;
+		if(!$this['create_invoice']) return;
 		
 		$invoice_data = $this->createQSP($m,$detail_data,'SalesInvoice',null,$master_created_at);
 
@@ -220,13 +220,12 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 		$qsp_master = $this->add('xepan\commerce\Model_QSP_Master');
 		$master_data = [];
-
+		
 		if($master_created_at){
 			$created_at = $master_created_at;
 		}elseif($qsp_type == "SalesOrder") {
 			$created_at = $this->app->now;
-		}
-		else{
+		}else{
 			$created_at = $this['created_at']?:$this->app->now;
 		}
 		
@@ -259,7 +258,8 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$master_data['round_amount'] = 0;
 		$master_data['discount_amount'] = $this->getProDataAmount();
 		$master_data['exchange_rate'] = 1;
-		$master_data['tnc_id'] = 0;
+		$master_data['tnc_id'] = $this->add('xepan\commerce\Model_TNC')->addCondition('is_default_for_sale_invoice',true)->tryLoadAny()->id;
+		$master_data['nominal_id'] = $this->add('xepan\accounts\Model_Ledger')->load('Sales Account')->get('id');
 		
 		if(!count($detail_data)){
 			$detail_data = [];
@@ -332,7 +332,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$this->setPlan($topup_id,$date,false,true,$remove_old_topups);
 	}
 
-	function setPlan($plan, $on_date=null, $remove_old=false,$is_topup=false,$remove_old_topups=false){
+	function setPlan($plan, $on_date=null, $remove_old=false,$is_topup=false,$remove_old_topups=false,$expire_all_plan=false,$expire_all_topup=false){
 		if(!$on_date) $on_date = isset($this->app->isptoday)? $this->app->isptoday : $this->app->today;
 		if(is_numeric($plan)){
 			$plan_model = $this->add('xavoc\ispmanager\Model_Plan')->load($plan);
@@ -366,7 +366,20 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			}
 		}
 
-		
+		// expire 
+		if($expire_all_plan){
+			$old_p = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup');
+			$old_p->addCondition('user_id',$this->id);
+			$old_p->addCondition('is_topup',false);
+			$old_p->_dsql()->set('is_expired',1)->update();
+		}
+
+		if($expire_all_topup){
+			$old_p = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup');
+			$old_p->addCondition('user_id',$this->id);
+			$old_p->addCondition('topup_id',true);
+			$old_p->_dsql()->set('is_expired',1)->update();
+		}
 						
 		foreach ($condition_model as $key => $condition) {
 			
@@ -378,8 +391,9 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			$u_p->addCondition('user_id',$this->id)
 				->addCondition('plan_id',$plan_model->id)
 				->addCondition('condition_id',$condition['id'])
+				->addCondition('is_expired',false)
 				;
-			$u_p->tryLoadAny();
+			// $u_p->tryLoadAny();
 
 			if(!$u_p->loaded()){
 				$u_p['is_effective'] = 0;
@@ -428,7 +442,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			// factor based on implemention
 			$u_p['start_date'] = $on_date;						
 			$u_p['end_date'] = $end_date;
-			$u_p['expire_date'] = $u_p['is_topup']? $end_date : date("Y-m-d H:i:s", strtotime("+".($this['grace_period_in_days']?:'5')." days",strtotime($end_date)));
+			$u_p['expire_date'] = $u_p['is_topup']? $end_date : date("Y-m-d H:i:s", strtotime("+".($this['grace_period_in_days']?:0)." days",strtotime($end_date)));
 			$u_p['is_recurring'] = $plan_model['is_auto_renew'];
 			$u_p['reset_date'] = $reset_date;
 			
@@ -915,11 +929,11 @@ class Model_User extends \xepan\commerce\Model_Customer{
 				// ->makePanelsCoppalsible()
 				->layout([
 						'plan_id'=>'About Plan~c1~3',
-						'condition_id'=>'c11~3',
-						'remark'=>'c12~3',
-						'is_topup'=>'c13~3',
-						'data_limit'=>'c2~6',
-						'carry_data'=>'c21~6',
+						// 'condition_id'=>'c11~3',
+						'remark'=>'c2~2',
+						'is_topup'=>'c3~2',
+						'data_limit'=>'c4~3',
+						'carry_data'=>'c5~2',
 						'download_limit'=>'DL/UL Limit~c1~3~in KBps',
 						'upload_limit'=>'c11~3~in KBps',
 						'fup_download_limit'=>'c12~3~in KBps',
@@ -982,6 +996,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 						'd30'=>'c30~1',
 						'd31'=>'c31~1',
 						'treat_fup_as_dl_for_last_limit_row'=>'MISC~c1~6',
+						'explanation'=>'c1~6',
 						'is_pro_data_affected'=>'c2~6',
 						'burst_dl_limit'=>'Burst~c1~3~limit per second',
 						'burst_ul_limit'=>'c11~3~limit per second',
@@ -991,17 +1006,111 @@ class Model_User extends \xepan\commerce\Model_Customer{
 						'burst_ul_time'=>'c21~3~time in second',
 						'priority'=>'c22~6',
 				]);
-						
+			
+			$b = $form->layout->add('Button',null,'explanation')
+				->set('explanation');
+			$b->add('VirtualPage')
+			->bindEvent('Explanation of treat fup as dl for last limit row','click')
+			->set([$this,"explanation"]);
+
 		}
 		$model = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup');
 		$model->addCondition('user_id',$this->id);
 		$crud->setModel($model);
+		$model->setOrder(['id desc','is_expired desc']);
+		// if($crud->isEditing()){
+		// 	$form = $crud->form;
+		// 	$form->getElement('start_time')
+		// 		->setOption('showMeridian',false)
+		// 		->setOption('defaultTime',0)
+		// 		->setOption('minuteStep',1)
+		// 		->setOption('showSeconds',true)
+		// 		;
+		// 	$form->getElement('end_time')
+		// 		->setOption('showMeridian',false)
+		// 		->setOption('defaultTime',0)
+		// 		->setOption('minuteStep',1)
+		// 		->setOption('showSeconds',true)
+		// 		;
+		// }
 
+		$crud->grid->addColumn('validity');
+		$crud->grid->addColumn('detail');
+		$crud->grid->addColumn('week_days');
+		$crud->grid->addColumn('off_dates');
+		$crud->grid->addColumn('burst_detail');
+
+		$crud->grid->addHook('formatRow',function($g){
+			// data detail
+			$speed = "UP/DL Limit: ".$g->model['upload_limit']."/".$g->model['download_limit']."<br/>";
+			$speed .= "FUP UP/DL Limit: ".$g->model['fup_upload_limit']."/".$g->model['fup_download_limit']."<br/>";
+			$speed .= "Accounting UP/DL Limit: ".$g->model['accounting_upload_ratio']."%/".$g->model['accounting_download_ratio']."%<br/>";
+			$speed .= "start/end time: ".$g->model['start_time']."/".$g->model['end_time']."<br/>";
+			if($g->model['treat_fup_as_dl_for_last_limit_row'])
+				$speed .= "<strong style='color:red;'>FUP as DL for last limit row</strong><br/>";
+
+			$speed .= "Time Limit: ".($g->model['time_limit']>0?($g->model['time_limit']." minutes"):"");
+			$g->current_row_html['detail'] = $speed;
+			
+			$week_days = '';
+			foreach (['sun','mon','tue','wed','thu','fri','sat'] as $name) {
+				if($g->model[$name])
+  					$week_days .= "<span style='color:green;'>".strtoupper(substr($name,0,1))."&nbsp;</span>";
+  				else
+  					$week_days .= "<span style='color:red;'>".strtoupper(substr($name,0,1))."&nbsp;</span>";
+			}
+			$g->current_row_html['week_days'] = $week_days;
+			
+			$week_days .= '</div>';
+
+			$off_dates = "";
+			foreach (['d01','d02','d03','d04','d05','d06','d07','d08','d09','d10','d11','d12','d13','d14','d15','d16','d17','d18','d19','d20','d21','d22','d23','d24','d25','d26','d27','d28','d29','d30','d31'] as $name) {
+				if(!$g->model[$name])
+					$off_dates .= trim($name,'d').",";
+			}
+			$g->current_row_html['off_dates'] = trim($off_dates,',');
+			
+			// burts detail
+			$bt = "UL\DL Limit: ".$g->model['burst_ul_limit']."/".$g->model['burst_dl_limit']."<br/>";
+			$bt .= "UL\DL Time: ".$g->model['burst_ul_time']."/".$g->model['burst_dl_time']."<br/>";
+			$bt .= "Threshold UL\DL Time: ".$g->model['burst_threshold_ul_limit']."/".$g->model['burst_threshold_dl_limit']."<br/>";
+			$bt .= "Priority: ".$g->model['priority'];
+			$g->current_row_html['burst_detail'] = $bt;
+
+			$detail = "Carry Data: ".$g->model['carry_data']."<br/>Condition Data: ".$g->model['data_limit']."<br/>Net Data: ".$g->model['net_data_limit']."<br/>"."Reset Every: ".($g->model['data_reset_value']." ".$g->model['data_reset_mode'])."<br/> Carried: ".$g->model['is_data_carry_forward']."<br/>";
+			if(!$g->model['is_pro_data_affected'])
+				$detail .= "<strong style='color:red;'>Pro Data Not Affected</strong>";
+			else
+				$detail .= "Pro Data Affected";
+
+			$g->current_row_html['data_limit'] = $detail;
+
+			// validity
+			$g->current_row_html['validity'] = "Start Date: ".$g->model['start_date']."<br/>End Date: ".$g->model['end_date']."<br/>Expire Date: ".$g->model['expire_date']."<br/>Next Reset Date: ".$g->model['reset_date'];
+			$g->current_row_html['remark'] = "<strong style='font-size:14px;'>".$g->model['plan']."</strong><br/>".$g->model['remark'].($g->model['is_topup']?"<strong style='color:red;'>TopUp</strong>":"").($g->model['is_expired']?('<br/><div class="label label-danger">Expired</div>'):"");
+			// $g->current_row_html['data_consumed'] = $g->model['data_consumed'];
+
+			if($g->model['is_effective']){
+				$g->setTDParam('remark','class',"green-bg");
+			}else
+				$g->setTDParam('remark','class'," ");
+
+		});
+		$removeColumn_list = [
+					'user_id','user','condition','plan','upload_limit','download_limit','fup_download_limit','fup_upload_limit','accounting_upload_ratio','accounting_download_ratio',
+					'sun','mon','tue','wed','thu','fri','sat','d01','d02','d03','d04','d05','d06','d07','d08','d09','d10','d11','d12','d13','d14','d15','d16','d17','d18','d19','d20','d21','d22','d23','d24','d25','d26','d27','d28','d29','d30','d31',
+					'start_time','end_time','net_data_limit','carry_data',
+					'data_reset_mode','data_reset_value','is_data_carry_forward',
+					'burst_ul_limit','burst_dl_limit','burst_ul_time','burst_dl_time','burst_threshold_ul_limit','burst_threshold_dl_limit','priority',
+					'treat_fup_as_dl_for_last_limit_row','is_pro_data_affected','action',
+					'start_date','end_date','expire_date','is_topup','reset_date',
+					'download_data_consumed','upload_data_consumed','time_limit','data_limit_row','duplicated_from_record_id',
+					'is_recurring','is_effective','is_expired'
+				];
+		foreach ($removeColumn_list as $field) {
+			$crud->grid->removeColumn($field);
+		}		
 		$crud->grid->removeAttachment();
-		$removeColumn = ['user','condition'];
-		foreach ($removeColumn as $key => $value) {
-			$crud->grid->removeColumn($value);
-		}
 	}
 
 	// function updateQSPBeforeSave($app,$master_data,$detail_data,$type){
@@ -1588,4 +1697,13 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		return $radacct_m;
 	}
 
+	function explanation($page){
+		$v = $page->add('View');
+		$ht = "<div class='alert alert-info'>Regular Plan: Data Limit 200GB @ 4 MB/No Fup, for 1 Month<br/>";
+		$ht .= "Extra Topup: Data Limit 50GB  @ 20MB/8MB Fup, for 8 Days</div>";
+		$ht .= "<div class='alert alert-danger'>if this option is <b>off</b>: 50GB  @ 20MB and then 8mbps for unlimited data for rest of days (if left from 8 days) and then back on reglar plan</div>";
+		$ht .= "<div class='alert alert-success'>if this option is <b>ON</b>: 50GB  @ 20MB and then 8mbps, but data from 200GB is consumed [for rest of days (if left from 8 days) then back on regular plan]<br/> if that 200GB is finished, net disconnected or will work on 200Gb FUP(if exist)</div>";
+		
+		$v->setHtml($ht);
+	}
 }

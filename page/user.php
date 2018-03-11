@@ -68,7 +68,7 @@ class page_user extends \xepan\base\Page {
 			]);
 
 		$model->addHook('afterSave',[$model,'updateUserConditon']);
-		$model->addHook('afterSave',[$model,'createInvoice']);
+		$model->addHook('afterSave',[$model,'createInvoice'],[null,null,$this->app->now]);
 		$model->addHook('afterSave',[$model,'updateNASCredential']);
 		$model->addHook('afterSave',[$model,'updateWebsiteUser']);
 		$model->setOrder('id','desc');
@@ -102,7 +102,7 @@ class page_user extends \xepan\base\Page {
 						'simultaneous_use'=>'c4~4',
 						'grace_period_in_days'=>'c5~4',
 						'mac_address'=>'c6~4',
-						'custom_radius_attributes'=>'c7~12',
+						// 'custom_radius_attributes'=>'c7~12',
 						'create_invoice~'=>'c8~12',
 						'is_invoice_date_first_to_first~'=>'c9~12',
 						'include_pro_data_basis'=>'c10~12'
@@ -135,6 +135,9 @@ class page_user extends \xepan\base\Page {
 			if($country_id){
 				$state_field->getModel()->addCondition('country_id',$country_id);
 			}
+
+			$form->getElement('create_invoice')->set(false);
+			$form->getElement('is_invoice_date_first_to_first')->set(false);
 		}
 
 		$crud->grid->addHook('formatRow',function($g){
@@ -173,7 +176,7 @@ class page_user extends \xepan\base\Page {
 				$status_class = "red-bg";
 			}
 
-			$progress = $this->app->add('xepan\base\View_Widget_ProgressStatus',
+			$progress = $this->add('AbstractController')->add('xepan\base\View_Widget_ProgressStatus',
 					[
 						'heading'=>$this->app->byte2human($data_limit[1]),
 						'progress_percentage'=>$percentage,

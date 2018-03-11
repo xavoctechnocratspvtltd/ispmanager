@@ -13,7 +13,8 @@
 		$model->addExpression('city')->set(function($m,$q){
 			return $q->expr('[0]',[$m->refSQL('contact_id')->fieldQuery('city')]);
 		});
-
+		$model->setOrder('created_at','desc');
+		
 		$data = $this->app->db->dsql()->expr('SELECT DISTINCT(city) AS city FROM contact')->get();
 		$city_list = [];
 		foreach ($data as $key => $value) {
@@ -31,6 +32,5 @@
 			}
 		});
 		$city_field->js('change',$this->filter_form->js()->submit());
-
 	}
 }

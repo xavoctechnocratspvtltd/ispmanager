@@ -6,12 +6,12 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	// public $table = "isp_user";
 	public $status = ['Active','InActive','Installation','Installed','Won'];
 	public $actions = [
-				'Won'=>['view','edit','delete','assign_for_installation','documents'],
-				'Installation'=>['view','edit','delete','installed','payment_receive','documents'],
-				'Installed'=>['view','assign_for_installation','documents','edit','delete','active'],
-				'Active'=>['view','edit','delete','AddTopups','CurrentConditions','documents','radius_attributes','deactivate','Reset_Current_Plan_Condition'],
-				'InActive'=>['view','edit','delete','active','documents']
-				];
+				'Won'=>['view','print_caf','edit','delete','assign_for_installation','documents'],
+				'Installation'=>['view','print_caf','edit','delete','installed','payment_receive','documents'],
+				'Installed'=>['view','print_caf','assign_for_installation','documents','edit','delete','active'],
+				'Active'=>['view','print_caf','edit','delete','AddTopups','CurrentConditions','documents','radius_attributes','deactivate','Reset_Current_Plan_Condition'],
+				'InActive'=>['view','print_caf','edit','delete','active','documents']
+			];
 
 	public $acl_type= "ispmanager_user";
 	private $plan_dirty = false;
@@ -1535,7 +1535,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 	function active(){
 		
-		$this->setPlan($this['plan_id']);
+		// $this->setPlan($this['plan_id']);
 		$this['status'] = 'Active';
 		$this['is_active'] = true;
 		$this->save();
@@ -1729,5 +1729,10 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$ht .= "<div class='alert alert-success'>if this option is <b>ON</b>: 50GB  @ 20MB and then 8mbps, but data from 200GB is consumed [for rest of days (if left from 8 days) then back on regular plan]<br/> if that 200GB is finished, net disconnected or will work on 200Gb FUP(if exist)</div>";
 		
 		$v->setHtml($ht);
+	}
+
+	function print_caf(){
+		$js = $this->app->js()->univ()->newWindow($this->app->url('xavoc_ispmanager_cafprint',['contact_id'=>$this->id]),'PrintCAF'.$this->id);
+		$this->app->js(null,$js)->univ()->execute();
 	}
 }

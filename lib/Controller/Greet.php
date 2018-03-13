@@ -66,6 +66,9 @@ class Controller_Greet extends \AbstractController {
 				
 			if($messages_model[$event.'_sms_content']){
 				$this->add('xepan\communication\Controller_Sms')->sendMessage($contact['mobile_number'],$message);
+				
+				// $this->add('xepan\communication\Model_Communication_Comment')
+				// 	->createNew(null,$contact,"Reminder - ".$remark,$remark,$on_date=$this->app->now);
 			}
 		}
 	}

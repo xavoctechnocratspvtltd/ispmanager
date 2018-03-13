@@ -56,7 +56,7 @@ class page_plan extends \xepan\base\Page {
 
 		$crud->setModel($plan,
 				['name','sku','description','sale_price','original_price','status','document_id','id','created_by','updated_by','created_at','updated_at','type','qty_unit_id','qty_unit','renewable_unit','renewable_value','tax_id','tax','plan_validity_value','available_in_user_control_panel','is_renewable'],
-				['name','code','sale_price','validity','is_renewable','renew_invoice','created_at','created_by']
+				['name','code','sale_price','is_renewable','renew_invoice','validity','created_at','created_by']
 			);
 
 		$crud->grid->removeColumn('attachment_icon');
@@ -64,6 +64,15 @@ class page_plan extends \xepan\base\Page {
 		$crud->grid->addPaginator($ipp=50);
 
 		$grid = $crud->grid;
+
+		$grid->addHook('formatRow',function($g){
+			if(strtolower($g->model['renew_invoice']) != strtolower($g->model['validity'])){
+				$g->setTDParam('validity','style/background-color','red');
+			}else{
+				$g->setTDParam('validity','style/background-color','none');
+			}
+		});
+
 		$import_btn = $grid->addButton('Import CSV')->addClass('btn btn-primary');
 		$import_btn->setIcon('fa fa fa-arrow-up');
 

@@ -18,8 +18,29 @@ class page_configuration extends \xepan\base\Page {
 		$tab->addTabURL('./otpexpired','OTP Expired Time');
 		$tab->addTabURL('./syslogconfig','SysLog DB Config');
 		$tab->addTabURL('./misc','MISC');
+		$tab->addTabURL('./caf_layout','CAF Layout');
 		$tab->addTabURL('xepan_marketing_leadsource','Lead source');
 		
+	}
+
+	function page_caf_layout(){
+		$config = $this->add('xepan\base\Model_ConfigJsonModel',
+			[
+				'fields'=>[
+							'caf_layout'=>'xepan\base\RichText'
+					],
+					'config_key'=>'ISPMANAGER_MISC',
+					'application'=>'ispmanager'
+			]);
+		$config->tryLoadAny();
+		$form = $this->add('Form');
+		$form->setModel($config);
+		$form->addSubmit('update');
+		if($form->isSubmitted()){
+			$form->save();
+			$form->js(null,$form->js()->reload())
+				->univ()->successMessage('Saved Successfully')->execute();
+		}
 	}
 
 	function page_misc(){
@@ -124,49 +145,7 @@ class page_configuration extends \xepan\base\Page {
 			$form->js(null,$form->js()->reload())->univ()->successMessage('Saved')->execute();
 		}
 
-		$content_model = $this->add('xepan\base\Model_ConfigJsonModel',
-			[
-				'fields'=>[
-							'forgot_password_sms_content'=>"Text",
-
-							'lead_assign_sms_content'=>'Text',
-							'lead_assign_email_subject'=>'Line',
-							'lead_assign_email_content'=>'xepan\base\RichText',
-
-							'installation_lead_assign_sms_content'=>'Text',
-							'installation_lead_assign_email_subject'=>'Line',
-							'installation_lead_assign_email_content'=>'xepan\base\RichText',
-
-							'new_account_sms_content'=>'Text',
-							'new_account_email_subject'=>'Line',
-							'new_account_email_content'=>'xepan\base\RichText',
-
-							'invoice_paid_sms_content'=>'Text',
-							'invoice_paid_email_subject'=>'Line',
-							'invoice_paid_email_content'=>'xepan\base\RichText',
-
-							'renewal_alert_sms_content'=>'Text',
-							'renewal_alert_email_subject'=>'Line',
-							'renewal_alert_email_content'=>'xepan\base\RichText',
-							'renewal_alert_duration'=>'Line',
-							'renewal_alert_newsletter_id'=>'DropDown',
-
-							'account_reactivation_sms_content'=>'Text',
-							'account_reactivation_email_subject'=>'Line',
-							'account_reactivation_email_content'=>'xepan\base\RichText',
-							
-							'account_reactivation_sms_content'=>'Text',
-							'account_reactivation_email_subject'=>'Line',
-							'account_reactivation_email_content'=>'xepan\base\RichText',
-
-							'plan_changed_sms_content'=>'Text',
-							'plan_changed_email_subject'=>'Line',
-							'plan_changed_email_content'=>'xepan\base\RichText',
-
-						],
-					'config_key'=>'ISPMANAGER_EMAIL_SMS_CONTENT',
-					'application'=>'ispmanager'
-			]);
+		$content_model = $this->add('xavoc\ispmanager\Model_Config_EmailSMS');
 		$content_model->tryLoadAny();
 		$forgot_tab = $tab->addTab('HotSpot Forgot Password');
 
@@ -224,8 +203,8 @@ class page_configuration extends \xepan\base\Page {
 		// Renewal Alert
 		$content_model->getElement('renewal_alert_duration')->hint('Renewal alert duration before in days, ie. 0, 5, 10');
 		$form = $renewal_alert_tab->add('Form');
-		$form->setModel($content_model,['renewal_alert_sms_content','renewal_alert_duration','renewal_alert_newsletter_id']);
-		$form->getElement('renewal_alert_newsletter_id')->setModel('xepan\marketing\Model_Newsletter')->addCondition('status','Approved');
+		$form->setModel($content_model,['renewal_alert_sms_content','renewal_alert_duration','renewal_alert_email_subject','renewal_alert_email_content']);
+		// $form->getElement('renewal_alert_newsletter_id')->setModel('xepan\marketing\Model_Newsletter')->addCondition('status','Approved');
 		$form->addSubmit('save')->addClass('btn btn-primary');
 		if($form->isSubmitted()){
 			$form->save();
@@ -249,8 +228,6 @@ class page_configuration extends \xepan\base\Page {
 			$form->save();
 			$form->js(null,$form->js()->reload())->univ()->successMessage("Plan Changed content updated")->execute();
 		}
-
-
 	}
 
 	function page_hotspotplan(){

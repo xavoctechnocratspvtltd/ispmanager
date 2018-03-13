@@ -6,11 +6,11 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 	
 	public $status = ['Active','InActive','Open','Won','Lost'];
 	public $actions = [
-					'Active'=>['view','assign','deactivate','communication','edit','delete'],
-					'Open'=>['view','assign','close','lost','communication','edit','delete'],
-					'Won'=>['view','edit','delete','communication'],
-					'Lost'=>['view','open','communication','edit','delete'],
-					'InActive'=>['view','edit','delete','activate','communication']
+					'Active'=>['view','assign','print_caf','deactivate','communication','edit','delete'],
+					'Open'=>['view','assign','print_caf','close','lost','communication','edit','delete'],
+					'Won'=>['view','edit','print_caf','delete','communication'],
+					'Lost'=>['view','open','print_caf','communication','edit','delete'],
+					'InActive'=>['view','print_caf','edit','delete','activate','communication']
 				];
 
 	// public $acl_type = "ispmanager_Lead";
@@ -43,12 +43,12 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 		// send email and sms
 		$this->add('xavoc\ispmanager\Controller_Greet')->do($employee,'lead_assign',$this);
 		
-		// $this->app->employee
-		//         ->addActivity("Lead '".$this['code']."' assign to '".$employee['name']."'",null, $this['assign_to_id'] /*Related Contact ID*/,null,null,null)
-		//         ->notifyWhoCan('close,lost','Open')
-		//         ->notifyTo([$this['created_by_id']],"Lead : '" . $this['code'] ."' Assign to '".$employee['name']." by ".$this->app->employee['name']."'")
-		//         ;
-		// return $this;
+		$this->app->employee
+		        ->addActivity("Lead '".$this['code']."' assign to '".$employee['name']."'",null, $this['assign_to_id'] /*Related Contact ID*/,null,null,null)
+		        ->notifyWhoCan('close,lost','Open')
+		        ->notifyTo([$this['assign_to_id']],"Lead : '" . $this['code'] ."' Assign to '".$employee['name']." by ".$this->app->employee['name']."'")
+		        ;
+		return $this;
 	}
 
 	function page_open($page){
@@ -143,6 +143,10 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 		$this['remark'] = $this['remark']." ".$remark;
 		$this['status'] = "Lost";
 		$this->save();
+
+		$this->add('xepan\communication\Model_Communication_Comment')
+			->createNew($this->app->employee,$this,"Lost Lead - ".$remark,$remark,$on_date=$this->app->now);
+
 	}
 
 
@@ -497,6 +501,8 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 			->notifyWhoCan('view,edit,assign_for_installation','Won');
         	// ->notifyTo([$this['created_by_id']],"Lead : '" . $this['code'] ."' Closed by '".$this->app->employee['name']);
 
+		$this->add('xepan\communication\Model_Communication_Comment')
+			->createNew($this->app->employee,$this,"Lead Close/Won","Lead Won",$on_date=$this->app->now);
         return $this;
 		// $this->add('xavoc\ispmanager\Controller_Greet')->do($this,'lead_won');
 	}
@@ -515,4 +521,8 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 		return $payment;
 	}
 
+	function print_caf(){
+		$js = $this->app->js()->univ()->newWindow($this->app->url('xavoc_ispmanager_cafprint',['contact_id'=>$this->id]),'PrintCAF'.$this->id);
+		$this->app->js(null,$js)->univ()->execute();
+	}
 }

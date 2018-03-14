@@ -41,10 +41,10 @@ class Tool_User_Profile extends \xepan\cms\View_Tool{
 
 		$dp_form= $logo_c->add('Form',null,null,['form/empty']);
 		$dp_form->setLayout(['form/user-profile','logo_wrapper']);
-		$dp_form->layout->add('View',null,'dp')->setElement('img')->setAttr(['src'=>$user['image'],'width'=>'100','height'=>'100'])->addClass(' avatar img-circle');		
+		$dp_form->layout->add('View',null,'dp')->setElement('img')->setAttr(['src'=>$user['image'],'width'=>'100','height'=>'100'])->addClass(' avatar img-circle');
 		$dp_form->setModel($user,['image_id']);
 		$dp_form->addSubmit('Update Profile');
-		$img_field = $dp_form->getElement('image_id');	
+		$img_field = $dp_form->getElement('image_id');
 		if($dp_form->isSubmitted()){
 			$dp_form->update();
 			$dp_form->js(null,$dp_form->js()->univ()->successMessage('Profile Updated'))->reload()->execute();

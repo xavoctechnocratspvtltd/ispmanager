@@ -1,14 +1,12 @@
 <?php
 
 namespace xavoc\ispmanager;
-
-
 /**
 * 
 */
 class Tool_User_MenuBar extends \xepan\cms\View_Tool{
 	public $options = [
-						'plan_url'=>'plan'
+		'plan_url'=>'plan'
 	];
 	
 	function init(){
@@ -31,8 +29,7 @@ class Tool_User_MenuBar extends \xepan\cms\View_Tool{
 		$this->template->trySet('user_name',$user['name']);
 		$this->template->trySet($page,'active-nav');
 		$this->template->trySet('user_dp',($user['image']?:"shared/apps/xavoc/ispmanager/templates/img/profile.png"));
-
-
+		
 		// $this->on('click','.ispmanager-user-logout-btn',function($js)use($user){
 		// 	$ret=[];
 		// 	if($ll = $this->app->recall('link-login')){

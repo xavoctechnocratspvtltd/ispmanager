@@ -1,21 +1,24 @@
 
-<div id="{$_name}" style="{$style} width:100%" class="{$class}"></div>
-<div style="width:100%" class="container">
-  <h2 class="text-center">Welcome: {$username}</h2>
-  <div class="xepan-push"></div>
-  <div class="row">
-    <div class="col-md-12 col-lg-12 col-sm-12 col-xs 12">
-      <h4 class="text-center">Current Plan: {plan} NONE {/}</h4>
+<div id="{$_name}" style="{$style} width:100%" class="{$class}">
+  <div style="width:100%" class="container">
+    <h2 class="text-center">Welcome: {$username}</h2>
+    <div class="xepan-push"></div>
+    <div class="row">
+      <div class="col-md-12 col-lg-12 col-sm-12 col-xs 12">
+        <h4 class="text-center">Current Plan: {plan_name} NONE {/}</h4>
+        <div class="plan-description">{$plan_description}</div>
+      </div>
     </div>
+    <hr/>
+    <!-- <div class="row">
+      <div class="col-md-6 col-lg-6 col-sm-12 col-xs 12">
+        <div class="text-center alert alert-info">Total Data Limit: {$total_data_limit}</div>
+      </div>
+      <div class="col-md-6 col-lg-6 col-sm-12 col-xs 12">
+        <div class="text-center alert alert-warning">Total Consume Data : {consume_data}...{/}</div>
+      </div>
+    </div>
+    <div class="xepan-push-large"></div> -->
+    {$Content}      
   </div>
-  <hr/>
-  <div class="row">
-    <div class="col-md-6 col-lg-6 col-sm-12 col-xs 12">
-      <div class="text-center alert alert-info">Total Data Limit: {$total_data_limit}</div>
-    </div>
-    <div class="col-md-6 col-lg-6 col-sm-12 col-xs 12">
-      <div class="text-center alert alert-warning">Total Consume Data : {consume_data}...{/}</div>
-    </div>
-  </div>
-  <div class="xepan-push-large"></div>{$Content}			
 </div>

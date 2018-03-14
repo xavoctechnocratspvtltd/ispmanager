@@ -56,28 +56,12 @@ class Tool_User_DashBoard extends \xepan\cms\View_Tool{
 
 		// echo "string". $user['plan_id'];
 		// $user = $this->app->auth->model;
-
-
-
-		$this->template->set('plan',$plan['name']);
+		$this->setModel($plan);
+		$this->template->set('plan_name',$plan['name']);
+		$this->template->setHtml('plan_description',$plan['description']);
 		$this->template->set('username',$this->app->auth->model['username']);
 
-		$list = $user->getCurrentCondition();
-		$dw_t_consumed = 0;
-		$up_t_consumed = 0;
-		$total_data_limit = 0;
-		$total_data_consumed = 0;
-		foreach ($list as $key => $condition) {
-			$up_t_consumed += $condition['upload_data_consumed']?:0 + $condition['session_upload_data_consumed']?:0;
-			$dw_t_consumed += $condition['download_data_consumed']?:0 + $condition['session_download_data_consumed']?:0;
-			$total_data_consumed += $condition['data_consumed']?:0;
-			$total_data_limit += $condition['data_limit']?:0;
-		}
-
-		$this->template->trySet('consume_data',$user->byte2human($total_data_consumed));
-		$this->template->trySet('total_data_limit',$user->byte2human($total_data_limit));
-
-		$this->dataconsumed();
+		$this->add('xavoc\ispmanager\View_UserData',['isp_user_model'=>$this->user]);
 	}
 
 	function defaultTemplate(){

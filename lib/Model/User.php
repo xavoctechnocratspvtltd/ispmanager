@@ -1737,7 +1737,10 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	}
 
 	function personal_info(){
-		$this->app->js()->univ()->frameURL($this->app->url('xepan_commerce_customerdetail',['action'=>'edit','contact_id'=>$this->id]))->execute();
+		$this->app->js()->univ()->frameURL('User Personal Info',
+			$this->app->url('xepan_commerce_customerdetail',
+					['action'=>'edit','contact_id'=>$this->id]
+				))->execute();
 	}
 
 }

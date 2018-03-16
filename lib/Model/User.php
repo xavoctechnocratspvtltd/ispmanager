@@ -6,11 +6,11 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	// public $table = "isp_user";
 	public $status = ['Active','InActive','Installation','Installed','Won'];
 	public $actions = [
-				'Won'=>['view','print_caf','edit','delete','assign_for_installation','documents'],
-				'Installation'=>['view','print_caf','edit','delete','installed','payment_receive','documents'],
-				'Installed'=>['view','print_caf','assign_for_installation','documents','edit','delete','active'],
-				'Active'=>['view','print_caf','edit','delete','AddTopups','CurrentConditions','documents','radius_attributes','deactivate','Reset_Current_Plan_Condition'],
-				'InActive'=>['view','print_caf','edit','delete','active','documents']
+				'Won'=>['view','print_caf','personal_info','edit','delete','assign_for_installation','documents'],
+				'Installation'=>['view','print_caf','personal_info','edit','delete','installed','payment_receive','documents'],
+				'Installed'=>['view','print_caf','personal_info','assign_for_installation','documents','edit','delete','active'],
+				'Active'=>['view','print_caf','personal_info','edit','delete','AddTopups','CurrentConditions','documents','radius_attributes','deactivate','Reset_Current_Plan_Condition'],
+				'InActive'=>['view','print_caf','personal_info','edit','delete','active','documents']
 			];
 
 	public $acl_type= "ispmanager_user";
@@ -1735,4 +1735,9 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$js = $this->app->js()->univ()->newWindow($this->app->url('xavoc_ispmanager_cafprint',['contact_id'=>$this->id]),'PrintCAF'.$this->id);
 		$this->app->js(null,$js)->univ()->execute();
 	}
+
+	function personal_info(){
+		$this->app->js()->univ()->frameURL($this->app->url('xepan_commerce_customerdetail',['action'=>'edit','contact_id'=>$this->id]))->execute();
+	}
+
 }

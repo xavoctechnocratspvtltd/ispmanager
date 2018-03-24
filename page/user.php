@@ -128,12 +128,19 @@ class page_user extends \xepan\base\Page {
 			],'div.atk-form-row');
 
 			$country_field = $form->getElement('country_id');
+			$country_field->getModel()->addCondition('status','Active');
+			$country_field->set(100);
+
 			$state_field = $form->getElement('state_id');
+			$state_field->getModel()->addCondition('status','Active');
+
 			$country_id = $this->app->stickyGET('country_id');
 
 			$country_field->js('change',$state_field->js()->reload(null,null,[$this->app->url(null,['cut_object'=>$state_field->name]),'country_id'=>$country_field->js()->val()]));
 			if($country_id){
 				$state_field->getModel()->addCondition('country_id',$country_id);
+			}else{
+				$state_field->set(95);
 			}
 
 			$form->getElement('create_invoice')->set(false);

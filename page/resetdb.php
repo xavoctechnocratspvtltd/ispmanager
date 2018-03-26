@@ -118,6 +118,12 @@ class page_resetdb extends \xepan\base\Page {
 				$c->out(' All Quotation Deleted Successfully');
 			}
 
+			// deleting remaining qsp and its item
+			$c->out('--------*** Remaining QSP Master/Items : total : ***--------');
+			$this->app->db->dsql()->expr('TRUNCATE Table qsp_master; ALTER TABLE qsp_master AUTO_INCREMENT = 1;')->execute();
+			$this->app->db->dsql()->expr('TRUNCATE Table qsp_detail; ALTER TABLE qsp_detail AUTO_INCREMENT = 1;')->execute();
+			$c->out(' All QSP Master Deleted Successfully');
+			
 			if($_GET['delete_all_stock']){
 				$model = $this->add('xepan\commerce\Model_Store_TransactionAbstract');
 				$c->out('--------*** Deleting Store Transaction : total :'.$model->count()->getOne().' ***--------');
@@ -223,6 +229,7 @@ class page_resetdb extends \xepan\base\Page {
 				$this->app->db->dsql()->expr("UPDATE contact SET created_at = '".$_GET['contact_created_at']." 00:00:00 '; ")->execute();
 				$c->out('Updated all Contact created date');
 			}
+
 
 			$c->out('All Data Deleted Successfully ...| (-_-) ----- ');
 		});

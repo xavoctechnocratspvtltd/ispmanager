@@ -79,7 +79,7 @@ class page_user extends \xepan\base\Page {
 
 		$crud = $this->add('xepan\hr\CRUD',['entity_name'=>'User']);
 		$crud->grid->fixed_header = false;
-
+		$crud->grid->add('misc\Export');
 		if($crud->isEditing()){
 			$form = $crud->form;
 

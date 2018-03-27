@@ -67,7 +67,7 @@ class page_user extends \xepan\base\Page {
 				'address|required'
 			]);
 
-		// $model->addHook('afterSave',[$model,'updateUserConditon']);
+		$model->addHook('afterSave',[$model,'updateUserConditon']);
 		$model->addHook('afterSave',[$model,'createInvoice'],[null,null,$this->app->now]);
 		$model->addHook('afterSave',[$model,'updateNASCredential']);
 		$model->addHook('afterSave',[$model,'updateWebsiteUser']);
@@ -256,7 +256,7 @@ class page_user extends \xepan\base\Page {
 		$form->addSubmit('Download Sample File')->addClass('btn btn-primary');
 		
 		if($_GET['download_sample_csv_file']){
-			$output = ['RADIUS_USERNAME','RADIUS_PASSWORD','PLAN','SIMULTANEOUS_USE','GRACE_PERIOD_IN_DAYS','FIRST_NAME','LAST_NAME','COUNTRY','STATE','CITY','ADDRESS','PIN_CODE','CREATE_INVOICE','INVOICE_DATE','IS_INVOICE_DATE_FIRST_TO_FIRST','INCLUDE_PRO_DATA_BASIS','CUSTOM_RADIUS_ATTRIBUTES','DATA_CONSUMED','MAC_ADDRESS'];
+			$output = ['RADIUS_USERNAME','RADIUS_PASSWORD','PLAN','SIMULTANEOUS_USE','GRACE_PERIOD_IN_DAYS','FIRST_NAME','LAST_NAME','COUNTRY','STATE','CITY','ADDRESS','PIN_CODE','CREATE_INVOICE','INVOICE_DATE','IS_INVOICE_DATE_FIRST_TO_FIRST','INCLUDE_PRO_DATA_BASIS','CUSTOM_RADIUS_ATTRIBUTES','DATA_CONSUMED','MAC_ADDRESS','PHONE','MOBILE','EMAIL','CREATED_AT'];
 			$output = implode(",", $output);
 	    	header("Content-type: text/csv");
 	        header("Content-disposition: attachment; filename=\"sample_xepan_isp_user_import.csv\"");
@@ -284,7 +284,7 @@ class page_user extends \xepan\base\Page {
 				$user->delete();
 			}
 			
-			foreach ($this->add('xavoc\ispmanager\Model_Condition') as $cond) {
+			foreach ($this->add('xavoc\ispmanager\Model_UserPlanAndTopup') as $cond) {
 				$cond->delete();
 			}
 
@@ -307,8 +307,8 @@ class page_user extends \xepan\base\Page {
 		}
 
 		$this->add('View')->setElement('iframe')->setAttr('src',$this->api->url('./execute',array('cut_page'=>1)))->setAttr('width','100%');
-		
-		$this->add('View')->setHtml('CSV Field Detail: set include_pro_data_basis value in list 1. none 2. invoice_only 3. data_only 4. invoice_and_data_both <br/> Data_Consumed: dl/ul/remark');
+			
+		$this->add('View')->setHtml('CSV Field Detail: set include_pro_data_basis value in list <b>1. none 2. invoice_only 3. data_only 4. invoice_and_data_both</b> <br/> Data_Consumed: <b>dl/ul/remark</b> in Gb, Mb <br/> Plan value = <b>plan name</b>');
 	}
 
 	function page_import_execute(){
@@ -334,11 +334,24 @@ class page_user extends \xepan\base\Page {
 
 				$importer = new \xepan\base\CSVImporter($_FILES['csv_user_file']['tmp_name'],true,',');
 				$data = $importer->get();
-
+				
 				$user = $this->add('xavoc\ispmanager\Model_User');
 				$user->import($data);
-				$this->add('View_Info')->set('Total Records : '.count($data));
+
+				// $this->add('View_Console')->set(function($c){
+				// 	$c->out('-- Import Started Total Record to Import: '.count($data).'--');
+				// 	$i = 1;
+				// 	foreach ($data as $one_data) {
+				// 		$c->out('Data: '.$i." of user ".$one_data['RADIUS_USERNAME']." -- Import started");
+				// 		$c->out('Data: '.$i." of user ".$one_data['RADIUS_USERNAME']." -- Imported Successfully");
+
+				// 		$i++;
+				// 	};
+				// 	$c->out('-- All Record Imported Successfully --');
+				// });
+				$this->add('View')->set('All Data Imported');
 			}
 		}
+
 	}
 }

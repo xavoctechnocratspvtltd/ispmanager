@@ -187,10 +187,10 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		}
 	}
 
-	function updateUserConditon($expire_all_plan=false,$expire_all_topup=false){
+	function updateUserConditon($expire_all_plan=false,$expire_all_topup=false,$as_grace=true,$on_date=null){
 		if(!$this->plan_dirty OR !$this['plan_id']) return;
 		
-		$this->setPlan($this['plan_id'],$on_date=null, $remove_old=false,$is_topup=false,$remove_old_topups=false,$expire_all_plan,$expire_all_topup);
+		$this->setPlan($this['plan_id'],$on_date, $remove_old=false,$is_topup=false,$remove_old_topups=false,$expire_all_plan,$expire_all_topup,null,$as_grace);
 	}
 
 	function createInvoice($m,$detail_data=null,$false_condition=false,$master_created_at=null,$force_create=false){
@@ -350,7 +350,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$this->setPlan($topup_id,$date,false,true,$remove_old_topups);
 	}
 
-	function setPlan($plan, $on_date=null, $remove_old=false,$is_topup=false,$remove_old_topups=false,$expire_all_plan=false,$expire_all_topup=false,$work_on_pro_data=true){
+	function setPlan($plan, $on_date=null, $remove_old=false,$is_topup=false,$remove_old_topups=false,$expire_all_plan=false,$expire_all_topup=false,$work_on_pro_data=true,$as_grace = true){
 		if(!$on_date) $on_date = isset($this->app->isptoday)? $this->app->isptoday : $this->app->today;
 		if(is_numeric($plan)){
 			$plan_model = $this->add('xavoc\ispmanager\Model_Plan')->load($plan);
@@ -360,7 +360,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		}
 		else
 			$plan_model = $plan;
-		
+				
 		$this->testDebug('====================','');
 		$this->testDebug(($is_topup?'Adding Topup ':'Setting Plan ').($remove_old?'(Truncate Old Plan Data)'.($remove_old_topups?' (Removing old topups also)':''):''), $plan_model['name']. ' on '. $on_date);
 
@@ -384,6 +384,13 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			}
 		}
 
+		$is_same_plan_continued = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup')
+									->addCondition('user_id',$this->id)
+									->setOrder('id','desc')
+									->setLimit(1)
+									->addCondition('is_topup',false)
+									->tryLoadAny()->get('plan_id') == $plan_model->id;
+
 		// expire 
 		if($expire_all_plan){
 			$old_p = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup');
@@ -395,10 +402,11 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		if($expire_all_topup){
 			$old_p = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup');
 			$old_p->addCondition('user_id',$this->id);
-			$old_p->addCondition('topup_id',true);
+			$old_p->addCondition('is_topup',true);
 			$old_p->_dsql()->set('is_expired',1)->update();
 		}
-						
+		
+
 		foreach ($condition_model as $key => $condition) {
 			
 			$fields = $condition->getActualFields();
@@ -409,12 +417,16 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			$u_p->addCondition('user_id',$this->id)
 				->addCondition('plan_id',$plan_model->id)
 				->addCondition('condition_id',$condition['id'])
-				->addCondition('is_expired',false)
+				// ->addCondition('is_expired',false)
 				;
-			// $u_p->tryLoadAny();
+
+			if($is_same_plan_continued){
+				$u_p->tryLoadAny();
+			}
 
 			if(!$u_p->loaded()){
 				$u_p['is_effective'] = 0;
+				$u_p['start_date'] = $on_date;															
 			}
 			// $u_p['user_id'] = $this->id;
 			// $u_p['plan_id'] = $plan_model->id;
@@ -458,11 +470,15 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			}
 
 			// factor based on implemention
-			$u_p['start_date'] = $on_date;						
 			$u_p['end_date'] = $end_date;
-			$u_p['expire_date'] = $u_p['is_topup']? $end_date : date("Y-m-d H:i:s", strtotime("+".($this['grace_period_in_days']?:0)." days",strtotime($end_date)));
+			if($as_grace){
+				$u_p['expire_date'] = $u_p['is_topup']? $on_date : date("Y-m-d H:i:s", strtotime("+".($this['grace_period_in_days']?:0)." days",strtotime($on_date)));
+			}else{
+				$u_p['expire_date'] = $u_p['is_topup']? $end_date : date("Y-m-d H:i:s", strtotime("+".($this['grace_period_in_days']?:0)." days",strtotime($end_date)));
+			}
 			$u_p['is_recurring'] = $plan_model['is_auto_renew'];
 			$u_p['reset_date'] = $reset_date;
+			$u_p['is_expired'] = false;
 			
 			$u_p['data_limit_row'] = null; //id condition has data_limit then set empty else previous data row limit id;
 			
@@ -1141,40 +1157,59 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	// }
 
 	function import($data){
+		
 		// get all plan list
 		$plan_list = [];
-		foreach ($this->add('xavoc\ispmanager\Model_Plan')->getRows() as $key => $plan) {
-			$plan_list[strtolower(trim($plan['name']))] = $plan['id'];
+		if($this->app->recall('isp_user_import_plan',false) == false){
+			foreach ($this->add('xavoc\ispmanager\Model_Plan')->getRows() as $key => $plan) {
+				$plan_list[strtolower(trim($plan['name']))] = $plan['id'];
+			}
+			$this->app->memorize('isp_user_import_plan',$plan_list);
 		}
+		$plan_list = $this->app->recall('isp_user_import_plan');
+
 		
 		// get all country list
 		$country_list = [];
-		foreach ($this->add('xepan\base\Model_Country') as $key => $country) {
-			$country_list[strtolower(trim($country['name']))] = $country['id'];
+		if($this->app->recall('isp_user_import_country',false) == false){
+			foreach($this->add('xepan\base\Model_Country') as $key => $country){
+				$country_list[strtolower(trim($country['name']))] = $country['id'];
+			}
+			$this->app->memorize('isp_user_import_country',$country_list);
 		}
+		$country_list = $this->app->recall('isp_user_import_country');
 
 		$state_list = [];
-		$state_model = $this->add('xepan\base\Model_State');
-		foreach ($state_model as $key => $state) {
-			$state_list[strtolower(trim($state['name']))] = $state['id'];
+		if($this->app->recall('isp_user_import_state',false) == false){
+			$state_model = $this->add('xepan\base\Model_State');
+			foreach ($state_model as $key => $state) {
+				$state_list[strtolower(trim($state['name']))] = $state['id'];
+			}
+
+			$this->app->memorize('isp_user_import_state',$state_list);
 		}
+		$state_list = $this->app->recall('isp_user_import_state');
 
 		// echo "<pre>";
 		// print_r($plan_list);
 		// print_r($country_list);
 		// print_r($state_list);
+		// print_r($data);
 		// echo "</pre>";
 		// die();
 
 		try{
 			$this->api->db->beginTransaction();
 			foreach ($data as $key => $record) {
+
+				if(!trim($record['RADIUS_USERNAME'])) continue;
+
 				$user = $this->add('xavoc\ispmanager\Model_User');
 				// adding hook
-				$user->addHook('afterSave',[$user,'updateUserConditon']);
-				$user->addHook('afterSave',[$user,'createInvoice']);
-				$user->addHook('afterSave',[$user,'updateNASCredential']);
-				$user->addHook('afterSave',[$user,'updateWebsiteUser']);
+				// $user->addHook('afterSave',[$user,'updateUserConditon']);
+				// $user->addHook('afterSave',[$user,'createInvoice']);
+				// $user->addHook('afterSave',[$user,'updateNASCredential']);
+				// $user->addHook('afterSave',[$user,'updateWebsiteUser']);
 
 				$user->addCondition('radius_username',trim($record['RADIUS_USERNAME']));
 				$user->tryLoadAny();
@@ -1202,6 +1237,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 					$user['first_name'] = $user['radius_username'];
 				
 				$user->save();
+
 				// update email and phone number
 				if($record['MOBILE']){
 					$cp = $this->add('xepan\base\Model_Contact_Phone');
@@ -1227,6 +1263,18 @@ class Model_User extends \xepan\commerce\Model_Customer{
 				}
 
 
+				if(trim($record['INVOICE_DATE'])){
+					// $user->updateUserConditon($expire_all_plan=false,$expire_all_topup=false,$as_grace=true,$record['INVOICE_DATE']);
+					$user->setPlan($user['plan_id'],$record['INVOICE_DATE'], $remove_old=false,$is_topup=false,$remove_old_topups=false,$expire_all_plan=false,$expire_all_topup=false,null,$as_grace=true);
+					$user->createInvoice(null,$detail_data=null,$false_condition=false,$master_created_at=$record['INVOICE_DATE'],$force_create=false);
+				}else{
+					$user->updateUserConditon();
+					$user->createInvoice(null);
+				}
+				
+				$user->updateNASCredential();
+				$user->updateWebsiteUser();
+
 				// data_Remark: eg.dl/up/remark, 1039/209/MainPlan,3089/Topupplan
 				if($record['DATA_CONSUMED']){
 					$condition_consumed_list = explode(",", $record['DATA_CONSUMED']);
@@ -1239,6 +1287,12 @@ class Model_User extends \xepan\commerce\Model_Customer{
 						$remark = trim($consumed_condition[2]);
 
 						$upt = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup');
+						$upt->add('xavoc\ispmanager\Controller_HumanByte')
+							->handleFields([
+								'download_data_consumed',
+								'upload_data_consumed'
+							]);
+						
 						$upt->addCondition('user_id',$user->id);
 						$upt->addCondition('plan_id',$plan_id);
 						$upt->addCondition('remark',$remark);
@@ -1251,13 +1305,35 @@ class Model_User extends \xepan\commerce\Model_Customer{
 					}	
 				}
 
+				// Static IP 
+				if(trim($record['STATIC_IP'])){
+					$model = $this->add('xavoc\ispmanager\Model_RadReply');
+					$model->addCondition('username',$user['radius_username']);
+					$model->addCondition('attribute','Framed-IP-Address');
+					$model->addCondition('op',':=');
+					$model->tryLoadAny();
+					$model['value'] = $record['STATIC_IP'];
+					$model->save();
+				}
+
+				if(trim($record['MAC_ADDRESS'])){
+					$radcheck = $this->add('xavoc\ispmanager\Model_RadCheck');
+					$radcheck->addCondition('value',$record['MAC_ADDRESS']);
+					$radcheck->addCondition('username', $user['radius_username']);
+					$radcheck->addCondition('attribute',"Calling-Station-Id");
+					$radcheck->addCondition('op',":=");
+					$radcheck->tryLoadAny();
+					$radcheck->save();
+				}
+
+				echo "user : ".$user['radius_username']." : $user->id <br/>";
 			}
 
 			$this->api->db->commit();
 
 		}catch(\Exception $e){
 			$this->api->db->rollback();
-			throw new \Exception($e->getMessage());
+			throw $e;
 		}
 	}
 
@@ -1318,7 +1394,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		if($plan->loaded()){
 			$oi = $invoice_model->Items()->tryLoadBy('item_id',$plan->id);
 
-			$user->setPlan($plan->id,$invoice_model['created_at'],$remove_old=false,$is_topup=false,$remove_old_topups=false,$expire_all_plan=true,$expire_all_topup=false,!$oi['recurring_qsp_detail_id']);
+			$user->setPlan($plan->id,$invoice_model['created_at'],$remove_old=false,$is_topup=false,$remove_old_topups=false,$expire_all_plan=true,$expire_all_topup=false,!$oi['recurring_qsp_detail_id'],$as_grace= false);
 																
 		}		
 	}

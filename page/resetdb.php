@@ -5,8 +5,8 @@ class page_resetdb extends \xepan\base\Page {
 	public $title ="Reset DB";
 
 	function page_index(){
-		// parent::init();
-		
+		// parent::init();	
+				
 		ini_set("memory_limit", "-1");
 		set_time_limit(0);
 
@@ -31,6 +31,7 @@ class page_resetdb extends \xepan\base\Page {
 					'delete_all_account_data'=>'c10~4',
 					'delete_task'=>'c11~4',
 					'delete_rad_post_auth'=>'c12~4',
+					'users_no_delete'=>'c22~12',
 				]);
 
 		$form->addField('DatePicker','contact_created_at');
@@ -44,10 +45,14 @@ class page_resetdb extends \xepan\base\Page {
 		$form->addField('checkbox','delete_all_account_data');
 		$form->addField('checkbox','delete_task');
 		$form->addField('checkbox','delete_rad_post_auth');
-
+		$multiselect_field = $form->addField('dropdown','users_no_delete');
+		$multiselect_field->addClass('multiselect-full-width')
+					->setAttr(['multiple'=>'multiple']);
+		$multiselect_field->setModel('xavoc\ispmanager\Model_User')->title_field = "radius_username";
 
 		$form->addSubmit('Reset DB Now');
 		if($form->isSubmitted()){
+			
 			$form->js()->univ()->frameURL('Resting DB',$this->app->url($vp->getURL(),[
 					'contact_created_at'=>$form['contact_created_at'],
 					'delete_all_isp_user'=>$form['delete_all_isp_user'],
@@ -59,7 +64,9 @@ class page_resetdb extends \xepan\base\Page {
 					// 'delete_all_caf_data'=>$form['delete_all_caf_data'],
 					'delete_all_account_data'=>$form['delete_all_account_data'],
 					'delete_task'=>$form['delete_task'],
-					'delete_rad_post_auth'=>$form['delete_rad_post_auth']
+					'delete_rad_post_auth'=>$form['delete_rad_post_auth'],
+					'users_no_delete'=>$form['users_no_delete'],
+
 				]))->execute();
 		}
 	}
@@ -76,6 +83,7 @@ class page_resetdb extends \xepan\base\Page {
 		$this->app->stickyGET('delete_all_account_data');
 		$this->app->stickyGET('delete_task');
 		$this->app->stickyGET('delete_rad_post_auth');
+		$this->app->stickyGET('users_no_delete');
 
 		$page->add('View_Console')->set(function($c){
 			$c->out('--------*** (-_-) Reset Started  (-_-) ***--------');
@@ -196,7 +204,6 @@ class page_resetdb extends \xepan\base\Page {
 			}
 			$c->out('--------*** All Communication Deleted Successfully ***--------');
 			
-			// delete isp user
 
 			// delete task
 			if($_GET['delete_task']){
@@ -221,6 +228,79 @@ class page_resetdb extends \xepan\base\Page {
 				$this->app->db->dsql()->expr('ALTER TABLE radpostauth AUTO_INCREMENT = 1')->execute();
 
 				$c->out('All Auth Data Successfully');
+			}
+
+			// delete isp user
+			if($_GET['delete_all_isp_user']){
+
+
+				$user_no_delete = [];
+				if($_GET['users_no_delete']){
+					$user_no_delete = explode(',', $_GET['users_no_delete']);
+				}
+
+				$base_user_id_for_no_delete = [];
+				$users = $this->add('xavoc\ispmanager\Model_User');
+				$c->out('--------*** Deleting All ISP USER : total: '.$users->count()->getOne().'***--------');
+				$i = 1;
+				foreach ($users as $user) {
+					if(in_array($user->id, $user_no_delete)){
+						$base_user_id_for_no_delete[$user['user_id']] = $user['user_id'];
+						continue;
+					}
+
+					$user->delete();
+
+					if($i%100 == 0)
+						$c->out($i." Isp User deleted");
+					$i++;
+				}
+				$c->out('--------*** Deleted All ISP USER : ***--------');
+
+
+				// deleting commerce customer
+				$customer = $this->add('xepan\commerce\Model_Customer');
+				if(count($user_no_delete))
+					$customer->addCondition('id','<>',$user_no_delete);
+				foreach ($customer as $cst) {
+					$cst->delete();
+				}
+
+				$upn = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup');
+				$c->out('--------*** Deleting ISP USER Plan Condition : total: '.$upn->count()->getOne().'***--------');
+				if(count($user_no_delete)){
+					$upn->addCondition('user_id','<>',$user_no_delete);
+				}
+				$i = 1;
+				foreach ($upn as $cond) {
+					$cond->delete();
+					if($i%100 == 0)
+						$c->out($i." Isp User deleted");
+					$i++;
+				}
+				$c->out('--------*** Deleted ISP USER Plan Condition : ***--------');
+
+
+				$c->out('--------*** Deleting Base USER login Account : ***--------');
+				$user = $this->add('xepan\base\Model_User');
+				$user->addCondition('scope','WebsiteUser');
+				if(count($base_user_id_for_no_delete))
+					$user->addCondition('id','<>',$base_user_id_for_no_delete);
+				$user->deleteAll();
+				$c->out('--------*** Deleted Base USER login Account : ***--------');
+
+
+				$c->out('--------*** Deleting Contact Info : ***--------');
+				$ci = $this->add('xepan\base\Model_Contact_Info');
+				$ci->addCondition('contact_type','Customer');
+				if(count($user_no_delete)){
+					$ci->addCondition('contact_id','<>',$user_no_delete);
+				}
+				$ci->deleteAll();
+
+				$c->out('--------*** Deleted Contact Info : ***--------');
+
+				// end of user dele
 			}
 
 			// contact created at

@@ -350,7 +350,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$this->setPlan($topup_id,$date,false,true,$remove_old_topups);
 	}
 
-	function setPlan($plan, $on_date=null, $remove_old=false,$is_topup=false,$remove_old_topups=false,$expire_all_plan=false,$expire_all_topup=false,$work_on_pro_data=true,$as_grace = true){
+	function setPlan($plan, $on_date=null, $remove_old=false,$is_topup=false,$remove_old_topups=false,$expire_all_plan=false,$expire_all_topup=false,$work_on_pro_data=true,$as_grace = true,$force_plan_end_date=null){
 		if(!$on_date) $on_date = isset($this->app->isptoday)? $this->app->isptoday : $this->app->today;
 		if(is_numeric($plan)){
 			$plan_model = $this->add('xavoc\ispmanager\Model_Plan')->load($plan);
@@ -470,8 +470,13 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			}
 
 			// factor based on implemention
+			if($force_plan_end_date){
+				$end_date = $force_plan_end_date;
+			}
+
 			$u_p['end_date'] = $end_date;
-			if($as_grace){
+
+			if($as_grace AND !$force_plan_end_date){
 				$u_p['expire_date'] = $u_p['is_topup']? $on_date : date("Y-m-d H:i:s", strtotime("+".($this['grace_period_in_days']?:0)." days",strtotime($on_date)));
 			}else{
 				$u_p['expire_date'] = $u_p['is_topup']? $end_date : date("Y-m-d H:i:s", strtotime("+".($this['grace_period_in_days']?:0)." days",strtotime($end_date)));
@@ -1157,7 +1162,6 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	// }
 
 	function import($data){
-		
 		// get all plan list
 		$plan_list = [];
 		if($this->app->recall('isp_user_import_plan',false) == false){
@@ -1265,7 +1269,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 				if(trim($record['INVOICE_DATE'])){
 					// $user->updateUserConditon($expire_all_plan=false,$expire_all_topup=false,$as_grace=true,$record['INVOICE_DATE']);
-					$user->setPlan($user['plan_id'],$record['INVOICE_DATE'], $remove_old=false,$is_topup=false,$remove_old_topups=false,$expire_all_plan=false,$expire_all_topup=false,null,$as_grace=true);
+					$user->setPlan($user['plan_id'],$record['INVOICE_DATE'], $remove_old=false,$is_topup=false,$remove_old_topups=false,$expire_all_plan=false,$expire_all_topup=false,null,$as_grace=true,$force_plan_end_date=$record['PLAN_END_DATE']);
 					$user->createInvoice(null,$detail_data=null,$false_condition=false,$master_created_at=$record['INVOICE_DATE'],$force_create=false);
 				}else{
 					$user->updateUserConditon();

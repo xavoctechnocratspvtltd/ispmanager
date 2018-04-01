@@ -247,7 +247,7 @@ class page_user extends \xepan\base\Page {
 	}
 
 	function page_import(){
-
+		
 		$col = $this->add('Columns');
 		$col1 = $col->addColumn('6')->addClass('col-md-6 col-lg-6 col-sm-12');
 		$col2 = $col->addColumn('6')->addClass('col-md-6 col-lg-6 col-sm-12');
@@ -256,7 +256,7 @@ class page_user extends \xepan\base\Page {
 		$form->addSubmit('Download Sample File')->addClass('btn btn-primary');
 		
 		if($_GET['download_sample_csv_file']){
-			$output = ['RADIUS_USERNAME','RADIUS_PASSWORD','PLAN','SIMULTANEOUS_USE','GRACE_PERIOD_IN_DAYS','FIRST_NAME','LAST_NAME','COUNTRY','STATE','CITY','ADDRESS','PIN_CODE','CREATE_INVOICE','INVOICE_DATE','IS_INVOICE_DATE_FIRST_TO_FIRST','INCLUDE_PRO_DATA_BASIS','CUSTOM_RADIUS_ATTRIBUTES','DATA_CONSUMED','MAC_ADDRESS','PHONE','MOBILE','EMAIL','CREATED_AT'];
+			$output = ['RADIUS_USERNAME','RADIUS_PASSWORD','PLAN','SIMULTANEOUS_USE','GRACE_PERIOD_IN_DAYS','FIRST_NAME','LAST_NAME','COUNTRY','STATE','CITY','ADDRESS','PIN_CODE','CREATE_INVOICE','INVOICE_DATE','IS_INVOICE_DATE_FIRST_TO_FIRST','INCLUDE_PRO_DATA_BASIS','CUSTOM_RADIUS_ATTRIBUTES','DATA_CONSUMED','PLAN_END_DATE','MAC_ADDRESS','PHONE','MOBILE','EMAIL','CREATED_AT'];
 			$output = implode(",", $output);
 	    	header("Content-type: text/csv");
 	        header("Content-disposition: attachment; filename=\"sample_xepan_isp_user_import.csv\"");

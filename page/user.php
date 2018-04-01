@@ -313,7 +313,8 @@ class page_user extends \xepan\base\Page {
 
 	function page_import_execute(){
 
-		ini_set('max_execution_time', 0);
+		ini_set("memory_limit", "-1");
+		set_time_limit(0);
 
 		$form= $this->add('Form');
 		$form->template->loadTemplateFromString("<form method='POST' action='".$this->api->url(null,array('cut_page'=>1))."' enctype='multipart/form-data'>

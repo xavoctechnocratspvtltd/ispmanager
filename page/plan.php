@@ -19,6 +19,14 @@ class page_plan extends \xepan\base\Page {
 			return $q->expr('CONCAT([0]," ",[1])',[$m->getElement('renewable_value'),$m->getElement('renewable_unit')]);
 		});
 
+		$plan->addExpression('users')->set(function($m,$q){
+			return $m->add('xavoc\ispmanager\Model_UserPlanAndTopup')
+				->addCondition('plan_id',$m->getElement('id'))
+				->addCondition('is_expired',false)
+				->count();
+		});
+
+
 		$crud = $this->add('xepan\hr\CRUD');
 		if($crud->isEditing()){
 			$form = $crud->form;
@@ -56,7 +64,7 @@ class page_plan extends \xepan\base\Page {
 
 		$crud->setModel($plan,
 				['name','sku','description','sale_price','original_price','status','document_id','id','created_by','updated_by','created_at','updated_at','type','qty_unit_id','qty_unit','renewable_unit','renewable_value','tax_id','tax','plan_validity_value','available_in_user_control_panel','is_renewable'],
-				['name','code','sale_price','is_renewable','renew_invoice','validity','created_at','created_by']
+				['name','code','sale_price','is_renewable','renew_invoice','validity','created_at','created_by','users']
 			);
 
 		$crud->grid->removeColumn('attachment_icon');

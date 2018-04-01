@@ -134,6 +134,34 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 	function cron($now=null){
 		if(!$now) $now= $this->app->now;
 
-		
 	}
+
+	function createInvoice(){
+
+		$plan_model = $this->add('xavoc\ispmanager\Model_Plan')->load($this['plan_id']);
+		$plan_amount = $plan_model->getAmount([], 1);
+		
+		$detail_data = [];
+		$invoice_recurring_date = $this['end_date'];
+		$item = [
+				'item_id'=>$this['plan_id'],
+				'price'=>$plan_amount['sale_amount'],
+				'quantity'=>1,
+				'taxation_id'=>$plan_model['tax_id'],
+				'shipping_charge'=>$plan_amount['shipping_charge'],
+				'shipping_duration'=>$plan_amount['shipping_duration'],
+				'express_shipping_charge'=>$plan_amount['express_shipping_charge'],
+				'express_shipping_duration'=>$plan_amount['express_shipping_duration'],
+				'qty_unit_id'=>$plan_model['qty_unit_id'],
+				'discount'=>0
+			];
+		array_push($detail_data, $item);
+
+		$user = $this->add('xavoc\ispmanager\Model_User');
+		$user->load($this['user_id']);
+
+		$data = $user->createInvoice($detail_data,null,true,$invoice_recurring_date,$force_create=true);
+		return $data;
+	}
+
 }

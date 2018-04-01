@@ -1337,6 +1337,8 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 		}catch(\Exception $e){
 			$this->api->db->rollback();
+			
+			$this->app->print_r($record);
 			throw $e;
 		}
 	}

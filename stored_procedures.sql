@@ -125,7 +125,7 @@ WHERE
 						(
 							@now >= start_date
 							AND
-							@now <= end_date
+							@now <= expire_date
 						)
 						AND
 							(is_expired=0 or is_expired is null)

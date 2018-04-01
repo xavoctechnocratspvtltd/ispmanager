@@ -18,7 +18,7 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 
 		$this->addField('data_limit'); // no default value keep null as null
 		$this->addField('carry_data')->defaultValue(0);
-		$this->addExpression('net_data_limit')->set('data_limit+carry_data');
+		$this->addExpression('net_data_limit')->set('IFNULL(data_limit,0)+IFNULL(carry_data,0)');
 		
 		$this->addField('download_limit')->hint('in KBps');
 		$this->addField('upload_limit')->hint('in KBps');
@@ -41,7 +41,7 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 		$this->addField('time_limit');
 		$this->addField('time_consumed')->system(true);
 
-		$this->addExpression('data_consumed')->set('download_data_consumed+upload_data_consumed+session_download_data_consumed+session_upload_data_consumed');
+		$this->addExpression('data_consumed')->set('IFNULL(download_data_consumed,0)+IFNULL(upload_data_consumed,0)+IFNULL(session_download_data_consumed,0)+IFNULL(session_upload_data_consumed,0)');
 		
 		// row in which consumptin data value to be stored
 		$this->addField('data_limit_row');
@@ -114,7 +114,11 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 					'fup_download_limit',
 					'fup_upload_limit',
 					'data_consumed',
-					'net_data_limit'
+					'net_data_limit',
+					'download_data_consumed',
+					'upload_data_consumed',
+					'session_download_data_consumed',
+					'session_upload_data_consumed'
 				]);
 
 		$this->setOrder('id');

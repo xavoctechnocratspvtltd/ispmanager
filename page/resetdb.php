@@ -32,6 +32,10 @@ class page_resetdb extends \xepan\base\Page {
 					'delete_task'=>'c11~4',
 					'delete_rad_post_auth'=>'c12~4',
 					'users_no_delete'=>'c22~12',
+					'delete_lead'=>'c23~4',
+					'delete_leadger'=>'c24~4',
+					'delete_employee_attendance'=>'c25~4',
+					'delete_employee_movement'=>'c26~4'
 				]);
 
 		$form->addField('DatePicker','contact_created_at');
@@ -50,6 +54,12 @@ class page_resetdb extends \xepan\base\Page {
 					->setAttr(['multiple'=>'multiple']);
 		$multiselect_field->setModel('xavoc\ispmanager\Model_User')->title_field = "radius_username";
 
+		$form->addField('checkbox','delete_lead');
+		$form->addField('checkbox','delete_leadger');
+		$form->addField('checkbox','delete_employee_attendance');
+		$form->addField('checkbox','delete_employee_movement');
+
+
 		$form->addSubmit('Reset DB Now');
 		if($form->isSubmitted()){
 			
@@ -66,6 +76,10 @@ class page_resetdb extends \xepan\base\Page {
 					'delete_task'=>$form['delete_task'],
 					'delete_rad_post_auth'=>$form['delete_rad_post_auth'],
 					'users_no_delete'=>$form['users_no_delete'],
+					'delete_lead'=>$form['delete_lead'],
+					'delete_leadger'=>$form['delete_leadger'],
+					'delete_employee_movement'=>$form['delete_employee_movement'],
+					'delete_employee_attendance'=>$form['delete_employee_attendance'],
 
 				]))->execute();
 		}
@@ -84,6 +98,11 @@ class page_resetdb extends \xepan\base\Page {
 		$this->app->stickyGET('delete_task');
 		$this->app->stickyGET('delete_rad_post_auth');
 		$this->app->stickyGET('users_no_delete');
+
+		$this->app->stickyGET('delete_lead');
+		$this->app->stickyGET('delete_leadger');
+		$this->app->stickyGET('delete_employee_attendance');
+		$this->app->stickyGET('delete_employee_movement');
 
 		$page->add('View_Console')->set(function($c){
 			$c->out('--------*** (-_-) Reset Started  (-_-) ***--------');
@@ -311,6 +330,68 @@ class page_resetdb extends \xepan\base\Page {
 			}
 
 
+			if($_GET['delete_lead']){
+				$model = $this->add('xavoc\ispmanager\Model_Lead');
+				$model->addCondition([['type','Contact'],['type','Lead']]);
+
+				$c->out('--------*** Deleting Lead : total: '.$model->count()->getOne().'***--------');
+				$i = 1;
+				foreach ($model as $m) {
+					$m->delete();
+
+					if($i%10 == 0)
+						$c->out($i." Lead and it's category association deleted");
+					$i++;
+				}
+				$c->out('--------*** Deleted Lead Successfully: ***--------');
+			}
+
+			if($_GET['delete_leadger']){
+				$model = $this->add('xepan\accounts\Model_Ledger');
+				$model->addCondition('contact_id','<>',null);
+				$model->addCondition('contact_id','>',0);
+
+				$c->out('--------*** Deleting Ledger : total: '.$model->count()->getOne().'***--------');
+				$i = 1;
+				foreach ($model as $m) {
+					$m->delete();
+					if($i%10 == 0)
+						$c->out($i." ledger deleted");
+					$i++;
+				}
+				$c->out('--------*** Deleted Ledager Successfully: ***--------');
+			}
+
+			if($_GET['delete_employee_attendance']){
+				$model = $this->add('xepan\hr\Model_Employee_Attandance');
+
+				$c->out('--------*** Deleting Attendance : total: '.$model->count()->getOne().'***--------');
+				$i = 1;
+				foreach ($model as $m) {
+					$m->delete();
+					if($i%100 == 0)
+						$c->out($i." Attendance record deleted");
+					$i++;
+				}
+				$c->out('--------*** Deleted Employee Attendance Successfully: ***--------');
+			}
+
+			if($_GET['delete_employee_movement']){
+				$model = $this->add('xepan\hr\Model_Employee_Movement');
+
+				$c->out('--------*** Deleting Employee Movement : total: '.$model->count()->getOne().'***--------');
+				$i = 1;
+				foreach ($model as $m) {
+					$m->delete();
+					if($i%100 == 0)
+						$c->out($i." Employee Movement record deleted");
+					$i++;
+				}
+				$c->out('--------*** Deleted Employee Movement Successfully: ***--------');
+			}
+
+
+			$c->out('-----------------------------****----------------------------');
 			$c->out('All Data Deleted Successfully ...| (-_-) ----- ');
 		});
 

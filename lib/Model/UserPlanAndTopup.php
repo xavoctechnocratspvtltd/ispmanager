@@ -150,14 +150,15 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 		$item = [
 				'item_id'=>$this['plan_id'],
 				'price'=>$plan_amount['sale_amount'],
-				'quantity'=>1,
+				'quantity'=>$plan_model['renewable_value'],
 				'taxation_id'=>$plan_model['tax_id'],
 				'shipping_charge'=>$plan_amount['shipping_charge'],
 				'shipping_duration'=>$plan_amount['shipping_duration'],
 				'express_shipping_charge'=>$plan_amount['express_shipping_charge'],
 				'express_shipping_duration'=>$plan_amount['express_shipping_duration'],
 				'qty_unit_id'=>$plan_model['qty_unit_id'],
-				'discount'=>0
+				'discount'=>0,
+				'narration'=>'Start Date: '.date('Y-m-d',strtotime($this['start_date']))." End Date: ".date('Y-m-d', strtotime($this['end_date']))
 			];
 		array_push($detail_data, $item);
 

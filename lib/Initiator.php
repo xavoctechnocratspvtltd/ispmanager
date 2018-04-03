@@ -42,6 +42,7 @@ class Initiator extends \Controller_Addon {
             $m->addItem(['Log','icon'=>'fa fa-user'],'xavoc_ispmanager_log');
             $m->addItem(['Device Management','icon'=>'fa fa-user'],'xavoc_ispmanager_device');
             $m->addItem(['Employee Payment Collection','icon'=>'fa fa-users'],'xavoc_ispmanager_employeepaymentcollection');
+            $m->addItem(['Up coming Invoice Correction','icon'=>'fa fa-users'],'xavoc_ispmanager_invoicecorrection');
 
             $m = $this->app->top_menu->addMenu('Channel');
             $m->addItem(['channel Mgnt','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_channel');

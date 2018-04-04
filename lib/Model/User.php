@@ -1190,14 +1190,14 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 	function import($data){
 		// get all plan list
-		$plan_list = [];
-		if($this->app->recall('isp_user_import_plan',false) == false){
-			foreach ($this->add('xavoc\ispmanager\Model_Plan')->getRows() as $key => $plan) {
-				$plan_list[strtolower(trim($plan['name']))] = $plan['id'];
-			}
-			$this->app->memorize('isp_user_import_plan',$plan_list);
-		}
-		$plan_list = $this->app->recall('isp_user_import_plan');
+		// $plan_list = [];
+		// if($this->app->recall('isp_user_import_plan',false) == false){
+		// 	foreach ($this->add('xavoc\ispmanager\Model_Plan')->getRows() as $key => $plan) {
+		// 		$plan_list[strtolower(trim($plan['name']))] = $plan['id'];
+		// 	}
+		// 	$this->app->memorize('isp_user_import_plan',$plan_list);
+		// }
+		// $plan_list = $this->app->recall('isp_user_import_plan');
 
 		
 		// // get all country list
@@ -1244,13 +1244,11 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 				$user->addCondition('radius_username',trim($record['RADIUS_USERNAME']));
 				$user->tryLoadAny();
-
-				$plan_name = strtolower(trim($record['PLAN']));
-
-				$plan_id = isset($plan_list[$plan_name])?$plan_list[$plan_name]:0;
-				if($plan_id == 0){
-					throw new \Exception("User Plan not found".$record['RADIUS_USERNAME'], 1);
-				}
+				// $plan_name = strtolower(trim($record['PLAN']));
+				// $plan_id = isset($plan_list[$plan_name])?$plan_list[$plan_name]:0;
+				// if($plan_id == 0){
+				// 	throw new \Exception("User Plan not found".$record['RADIUS_USERNAME'], 1);
+				// }
 
 				// $user['plan_id'] = $plan_id;
 				
@@ -1348,13 +1346,13 @@ class Model_User extends \xepan\commerce\Model_Customer{
 						// 	]);
 						
 						$upt->addCondition('user_id',$user->id);
-						$upt->addCondition('plan_id',$plan_id);
+						// $upt->addCondition('plan_id',$plan_id);
 						$upt->setOrder('id','desc');
 						$upt->tryLoadAny();
 						
 						// $upt->addCondition('remark',$remark);
 						if(!$upt->loaded()){
-							echo $remark."<div style='color:red;'> condition not loaded user ".$user['radius_username']." Plan ".$plan_name."</div><br/>";
+							echo "<div style='color:red;'> condition not loaded user ".$user['radius_username']."</div><br/>";
 							continue;
 						}
 

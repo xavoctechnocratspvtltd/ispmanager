@@ -85,7 +85,7 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 				$g->skip_sno = true;
 			}
 
-			if($g->model['end_date'] == $g->model['last_invoice_date'])
+			if(strtotime($g->model['end_date']) == strtotime($g->model['last_invoice_date']))
 				$g->current_row_html['last_invoice_date'] = "<div class='alert alert-success'>Yes, Invoice created <br/><strong>".$g->model['last_invoice_date']."</strong></div>";
 			else
 				$g->current_row_html['last_invoice_date'] = "<div class='alert alert-danger'>No, Last Invoice Date: <br/><strong>".$g->model['last_invoice_date']."</strong></div>";

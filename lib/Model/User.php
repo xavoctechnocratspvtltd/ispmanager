@@ -198,7 +198,6 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		if(!$this['create_invoice'] AND !$force_create) return;
 		
 		$invoice_data = $this->createQSP($m,$detail_data,'SalesInvoice',null,$master_created_at);
-
 		$channel = $this->add('xepan\base\Model_Contact');
 		if($channel->loadLoggedIn('Channel')){
 			$asso = $this->add('xavoc\ispmanager\Model_Channel_Association');
@@ -223,7 +222,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			$invoice_model = $this->add('xepan\commerce\Model_SalesInvoice')
 				->load($invoice_data['master_detail']['id']);
 			$invoice_model->approve();
-			$invoice_data['master_detail'] = $invoice_model->getRows()[0];
+			$invoice_data['master_detail'] = $invoice_model->data;
 		}
 		return $invoice_data;
 	}
@@ -364,7 +363,8 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			echo "</pre>";
 		}
 		
-		return $qsp_master->createQSP($master_data,$detail_data,$qsp_type);
+		$t = $qsp_master->createQSP($master_data,$detail_data,$qsp_type);
+		return $t;
 	}
 
 	function getProDataAmount(){

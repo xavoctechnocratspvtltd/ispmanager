@@ -219,7 +219,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 					'application'=>'ispmanager'
 			]);
 		$config->tryLoadAny();
-		if($config['recurring_invoice_default_status'] == "Due"){
+		if($config['invoice_default_status'] == "Due"){
 			$invoice_model = $this->add('xepan\commerce\Model_SalesInvoice')
 				->load($invoice_data['master_detail']['id']);
 			$invoice_model->approve();

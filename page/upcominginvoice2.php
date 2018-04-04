@@ -72,6 +72,7 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 			$form->js(null,$crud->js()->reload(['from_date'=>$form['from_date'],'to_date'=>$form['to_date'],'user_name'=>$form['user_name']]))->univ()->execute();
 		}
 
+
 		$crud->grid->addHook('formatRow',function($g){
 
 			if($g->current_customer != $g->model['user_id']){
@@ -85,11 +86,14 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 				$g->skip_sno = true;
 			}
 
-			if($g->model['end_date'] == $g->model['last_invoice_date'])
+			if(strtotime($g->model['end_date']) == strtotime($g->model['last_invoice_date']))
 				$g->current_row_html['last_invoice_date'] = "<div class='alert alert-success'>Yes, Invoice created <br/><strong>".$g->model['last_invoice_date']."</strong></div>";
 			else
 				$g->current_row_html['last_invoice_date'] = "<div class='alert alert-danger'>No, Last Invoice Date: <br/><strong>".$g->model['last_invoice_date']."</strong></div>";
+				
 
+			$g->current_row_html['end_date'] = "<div class='alert alert-danger'><strong>".$g->model['end_date']."</strong></div>";
+				
 		// 	if($g->current_invoice != $g->model['qsp_master_id']){
 
 		// 		$g->current_row_html['qsp_master'] = $g->model['qsp_master']."<br/>".$g->model['qsp_status'];
@@ -110,6 +114,7 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 		$crud->grid->current_invoice = null;
 
 		$crud->setModel($model,['user_id','user','radius_username','customer','plan','sale_price','start_date','end_date','expire_date','last_invoice_date']);
+	
 		$grid = $crud->grid;
 		$grid->add('VirtualPage')
 			->addColumn('create_invoice')

@@ -136,8 +136,9 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 						->set('Edit Invoice')
 						->js("click")
 						->redirect($this->api->url('xepan_commerce_quickqsp', array("document_type" => 'SalesInvoice','action'=>'edit','document_id'=>$return_data['master_detail']['id'])));
-				
-				$page->add('xepan\commerce\View_QSP',['qsp_model'=>$invoice_model]);
+				$v= $page->add('View');
+				$v->add('xepan\commerce\page_quickqsp',['document_id'=>$invoice_model->id,'document_type'=>'SalesInvoice','readmode'=>true]);		
+				// $page->add('xepan\commerce\View_QSP',['qsp_model'=>$invoice_model]);
 			});
 
 		$order = $grid->addOrder();

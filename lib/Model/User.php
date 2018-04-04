@@ -1200,26 +1200,26 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$plan_list = $this->app->recall('isp_user_import_plan');
 
 		
-		// get all country list
-		$country_list = [];
-		if($this->app->recall('isp_user_import_country',false) == false){
-			foreach($this->add('xepan\base\Model_Country') as $key => $country){
-				$country_list[strtolower(trim($country['name']))] = $country['id'];
-			}
-			$this->app->memorize('isp_user_import_country',$country_list);
-		}
-		$country_list = $this->app->recall('isp_user_import_country');
+		// // get all country list
+		// $country_list = [];
+		// if($this->app->recall('isp_user_import_country',false) == false){
+		// 	foreach($this->add('xepan\base\Model_Country') as $key => $country){
+		// 		$country_list[strtolower(trim($country['name']))] = $country['id'];
+		// 	}
+		// 	$this->app->memorize('isp_user_import_country',$country_list);
+		// }
+		// $country_list = $this->app->recall('isp_user_import_country');
 
-		$state_list = [];
-		if($this->app->recall('isp_user_import_state',false) == false){
-			$state_model = $this->add('xepan\base\Model_State');
-			foreach ($state_model as $key => $state) {
-				$state_list[strtolower(trim($state['name']))] = $state['id'];
-			}
+		// $state_list = [];
+		// if($this->app->recall('isp_user_import_state',false) == false){
+		// 	$state_model = $this->add('xepan\base\Model_State');
+		// 	foreach ($state_model as $key => $state) {
+		// 		$state_list[strtolower(trim($state['name']))] = $state['id'];
+		// 	}
 
-			$this->app->memorize('isp_user_import_state',$state_list);
-		}
-		$state_list = $this->app->recall('isp_user_import_state');
+		// 	$this->app->memorize('isp_user_import_state',$state_list);
+		// }
+		// $state_list = $this->app->recall('isp_user_import_state');
 		// echo "<pre>";
 		// print_r($plan_list);
 		// print_r($country_list);
@@ -1227,8 +1227,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		// print_r($data);
 		// echo "</pre>";
 		// die();
-
-
+		
 		try{
 			$this->api->db->beginTransaction();
 			$imported_user_count = 1;
@@ -1312,56 +1311,61 @@ class Model_User extends \xepan\commerce\Model_Customer{
 				// $user->updateWebsiteUser();
 
 				// data_Remark: eg.dl/up/remark, 1039/209/MainPlan,3089/Topupplan
-				if($record['DATA_CONSUMED']){
-					$condition_consumed_list = explode(",", $record['DATA_CONSUMED']);
+				// if($record['DATA_CONSUMED']){
+					// $condition_consumed_list = explode(",", $record['DATA_CONSUMED']);
 
-					foreach ($condition_consumed_list as $key => $c_c) {
-						$consumed_condition = explode("/", $c_c);
-						if(count($consumed_condition) != 3 ) continue;
+					// foreach ($condition_consumed_list as $key => $c_c) {
+					// 	$consumed_condition = explode("/", $c_c);
+					// 	if(count($consumed_condition) != 3 ) continue;
 
 
-						$dl_data_remaining =  $this->app->human2byte($consumed_condition[0]);
-						$up_data_remaining =  $this->app->human2byte($consumed_condition[1]);
-						$remark = trim($consumed_condition[2]);
+						// $dl_data_remaining =  $this->app->human2byte($consumed_condition[0]);
+						// $up_data_remaining =  $this->app->human2byte($consumed_condition[1]);
+						// $remark = trim($consumed_condition[2]);
 
-						$plan_condition = $this->add('xavoc\ispmanager\Model_Condition');
-						$plan_condition->addCondition('plan_id',$plan_id);
-						$plan_condition->addCondition('remark',$remark);
-						$plan_condition->tryLoadAny();
+						// $plan_condition = $this->add('xavoc\ispmanager\Model_Condition');
+						// $plan_condition->addCondition('plan_id',$plan_id);
+						// $plan_condition->addCondition('remark',$remark);
+						// $plan_condition->tryLoadAny();
 
-						if(!$plan_condition->loaded()) throw new \Exception("Plan Condition not found of plan ".$plan_name);
+						// if(!$plan_condition->loaded()) throw new \Exception("Plan Condition not found of plan ".$plan_name);
 						
 
-						$dl_data_consumed = $this->app->human2byte($plan_condition['data_limit']) - ($dl_data_remaining + $up_data_remaining) ;
+						// $dl_data_consumed = $this->app->human2byte($plan_condition['data_limit']) - ($dl_data_remaining + $up_data_remaining) ;
 
 						// echo "data limit = ".$this->app->human2byte($plan_condition['data_limit'])."<br/>";
 						// echo "dl_data_remaining = ".$dl_data_remaining."<br/>";
 						// echo "up_data_remaining = ".$up_data_remaining."<br/>";
 						// echo "dl_data_consumed = ".$dl_data_consumed."<br/>";
 
-						$up_data_consumed = 0;
+						// $up_data_consumed = 0;
 
 						$upt = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup');
-						$upt->add('xavoc\ispmanager\Controller_HumanByte')
-							->handleFields([
-								'download_data_consumed',
-								'upload_data_consumed'
-							]);
+						// $upt->add('xavoc\ispmanager\Controller_HumanByte')
+						// 	->handleFields([
+						// 		'download_data_consumed',
+						// 		'upload_data_consumed'
+						// 	]);
 						
 						$upt->addCondition('user_id',$user->id);
 						$upt->addCondition('plan_id',$plan_id);
-						$upt->addCondition('remark',$remark);
+						$upt->setOrder('id','desc');
 						$upt->tryLoadAny();
+						
+						// $upt->addCondition('remark',$remark);
 						if(!$upt->loaded()){
-							echo $remark." condition not loaded user ".$user['radius_username']." Plan ".$plan_name."<br/>";
+							echo $remark."<div style='color:red;'> condition not loaded user ".$user['radius_username']." Plan ".$plan_name."</div><br/>";
 							continue;
 						}
 
-						$upt['download_data_consumed'] = $dl_data_consumed;
-						$upt['upload_data_consumed'] = $up_data_consumed;
-						$upt->save();
-					}	
-				}
+						// $upt['download_data_consumed'] = $dl_data_consumed;
+						// $upt['upload_data_consumed'] = $up_data_consumed;
+						if($record['PLAN_END_DATE']){
+							$upt['end_date'] = $record['PLAN_END_DATE'];
+							$upt->save();
+						}
+					// }
+				// }
 
 				// // Static IP 
 				// if(trim($record['STATIC_IP'])){

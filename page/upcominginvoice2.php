@@ -124,7 +124,22 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 			->set(function($page){
 	          	$id = $_GET[$page->short_name.'_id'];
 
-	          	$model = $page->add('xavoc\ispmanager\Model_UserPlanAndTopup')->load($id);
+	          	$model = $page->add('xavoc\ispmanager\Model_UserPlanAndTopup');
+	          	$model->addExpression('last_invoice_date')->set(function($m,$q){
+					$act = $m->add('xavoc\ispmanager\Model_Invoice')
+							->addCondition('contact_id',$m->getElement('user_id'))
+							->setOrder('id','desc')
+							->setLimit(1);
+					return $q->expr('IFNULL([0],0)',[$act->fieldQuery('created_at')]);
+				});
+	          	$model->load($id);
+
+	          	if(strtotime($model['end_date']) == strtotime(date('Y-m-d',strtotime($model['last_invoice_date'])))){
+	          		$page->add('View')->addClass('alert alert-danger')->set('Invoice Already Created');
+	          		return;
+	          	}
+			
+				
 	          	$return_data = $model->createInvoice();
 
 	          	$invoice_model = $this->add('xepan\commerce\Model_SalesInvoice')

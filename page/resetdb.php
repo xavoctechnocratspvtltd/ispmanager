@@ -146,10 +146,10 @@ class page_resetdb extends \xepan\base\Page {
 			}
 
 			// deleting remaining qsp and its item
-			$c->out('--------*** Remaining QSP Master/Items : total : ***--------');
-			$this->app->db->dsql()->expr('TRUNCATE Table qsp_master; ALTER TABLE qsp_master AUTO_INCREMENT = 1;')->execute();
-			$this->app->db->dsql()->expr('TRUNCATE Table qsp_detail; ALTER TABLE qsp_detail AUTO_INCREMENT = 1;')->execute();
-			$c->out(' All QSP Master Deleted Successfully');
+			// $c->out('--------*** Remaining QSP Master/Items : total : ***--------');
+			// $this->app->db->dsql()->expr('TRUNCATE Table qsp_master; ALTER TABLE qsp_master AUTO_INCREMENT = 1;')->execute();
+			// $this->app->db->dsql()->expr('TRUNCATE Table qsp_detail; ALTER TABLE qsp_detail AUTO_INCREMENT = 1;')->execute();
+			// $c->out(' All QSP Master Deleted Successfully');
 			
 			if($_GET['delete_all_stock']){
 				$model = $this->add('xepan\commerce\Model_Store_TransactionAbstract');
@@ -201,27 +201,27 @@ class page_resetdb extends \xepan\base\Page {
 			}
 
 			// deleting activity
-			$model = $this->add('xepan\base\Model_Activity');
-			$c->out('--------*** Deleting All Activity : total :'.$model->count()->getOne().' ***--------');
-			$i = 1;
-			foreach ($model as $m) {
-				$m->delete();
-				if($i%100 == 0)
-					$c->out($i." record deleted");
-				$i++;
-			}
-			$c->out('--------*** All Activity Deleted Successfully');
+			// $model = $this->add('xepan\base\Model_Activity');
+			// $c->out('--------*** Deleting All Activity : total :'.$model->count()->getOne().' ***--------');
+			// $i = 1;
+			// foreach ($model as $m) {
+			// 	$m->delete();
+			// 	if($i%100 == 0)
+			// 		$c->out($i." record deleted");
+			// 	$i++;
+			// }
+			// $c->out('--------*** All Activity Deleted Successfully');
 
-			$model = $this->add('xepan\communication\Model_Communication');
-			$c->out('--------*** Deleting All Communication : total :'.$model->count()->getOne().' ***--------');
-			$i = 1;
-			foreach ($model as $m) {
-				$m->delete();
-				if($i%100 == 0)
-					$c->out($i." record deleted");
-				$i++;
-			}
-			$c->out('--------*** All Communication Deleted Successfully ***--------');
+			// $model = $this->add('xepan\communication\Model_Communication');
+			// $c->out('--------*** Deleting All Communication : total :'.$model->count()->getOne().' ***--------');
+			// $i = 1;
+			// foreach ($model as $m) {
+			// 	$m->delete();
+			// 	if($i%100 == 0)
+			// 		$c->out($i." record deleted");
+			// 	$i++;
+			// }
+			// $c->out('--------*** All Communication Deleted Successfully ***--------');
 			
 
 			// delete task

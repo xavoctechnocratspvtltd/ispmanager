@@ -68,6 +68,7 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 
 		$crud = $this->add('xepan\hr\CRUD',['allow_add'=>false,'fixed_header'=>false]);
 		$crud->grid->fixed_header = false;
+		$crud->grid->add('misc\Export');
 		// $crud->grid->addColumn('customer');
 		// filter form submission
 		if($form->isSubmitted()){

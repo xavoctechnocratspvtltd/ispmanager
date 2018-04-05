@@ -25,6 +25,7 @@ class Initiator extends \Controller_Addon {
                 $m->addItem(['Lead Category','icon'=>'fa fa-check-square-o'],'xepan_marketing_marketingcategory');
                 $m->addItem(['Lead','icon'=>'fa fa-users'],'xavoc_ispmanager_lead');
                 $m->addItem(['Installation Due','icon'=>'fa fa-users'],'xavoc_ispmanager_lead_installation');
+                $m->addItem(['Installation Assigned','icon'=>'fa fa-users'],'xavoc_ispmanager_lead_installationassigned');
                 $m->addItem(['Installed','icon'=>'fa fa-users'],'xavoc_ispmanager_lead_installed');
                 $m->addItem(['Active User','icon'=>'fa fa-users'],'xavoc_ispmanager_user');
                 $m->addItem(['All Lead','icon'=>'fa fa-users'],'xavoc_ispmanager_lead_all');

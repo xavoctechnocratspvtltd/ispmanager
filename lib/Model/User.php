@@ -378,6 +378,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	}
 
 	function setPlan($plan, $on_date=null, $remove_old=false,$is_topup=false,$remove_old_topups=false,$expire_all_plan=false,$expire_all_topup=false,$work_on_pro_data=true,$as_grace = true,$force_plan_end_date=null){
+		
 		if(!$on_date) $on_date = isset($this->app->isptoday)? $this->app->isptoday : $this->app->today;
 		if(is_numeric($plan)){
 			$plan_model = $this->add('xavoc\ispmanager\Model_Plan')->load($plan);
@@ -1264,12 +1265,18 @@ class Model_User extends \xepan\commerce\Model_Customer{
 				// 	$field_name = strtolower(trim($field));
 				// 	$user[$field_name] = $value;
 				// }
+				if($record['GSTIN']){
+					$user['gstin'] = $record['GSTIN'];
+				}
+				if($record['ORGANIZATION']){
+					$user['organization'] = $record['ORGANIZATION'];
+				}
 				// $user['created_at'] = date('Y-m-d H:i:s',strtotime($record['CREATED_AT']))?:$this->app->now;
 				// // $user['created_at'] = date('Y-m-d H:i:s',strtotime($record['INVOICE_DATE']))?:$this->app->now;
 				// if(!strlen(trim($user['first_name'])))
 				// 	$user['first_name'] = $user['radius_username'];
 				
-				// $user->save();
+				$user->save();
 
 				// update email and phone number
 				// if($record['MOBILE']){
@@ -1351,10 +1358,10 @@ class Model_User extends \xepan\commerce\Model_Customer{
 						$upt->tryLoadAny();
 						
 						// $upt->addCondition('remark',$remark);
-						if(!$upt->loaded()){
-							echo "<div style='color:red;'> condition not loaded user ".$user['radius_username']."</div><br/>";
-							continue;
-						}
+						// if(!$upt->loaded()){
+						// 	echo "<div style='color:red;'> condition not loaded user ".$user['radius_username']."</div><br/>";
+						// 	continue;
+						// }
 
 						// $upt['download_data_consumed'] = $dl_data_consumed;
 						// $upt['upload_data_consumed'] = $up_data_consumed;

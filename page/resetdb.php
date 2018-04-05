@@ -113,7 +113,7 @@ class page_resetdb extends \xepan\base\Page {
 				$i=1;
 				foreach ($sale_invoice as $m){
 					$m->delete();
-					if($i%100 == 0)
+					if($i%10 == 0)
 						$c->out($i." record deleted");
 					$i++;
 				}

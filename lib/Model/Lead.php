@@ -48,6 +48,10 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 		        ->notifyWhoCan('close,lost','Open')
 		        ->notifyTo([$this['assign_to_id']],"Lead : '" . $this['code'] ."' Assign to '".$employee['name']." by ".$this->app->employee['name']."'")
 		        ;
+
+		$remark = "Lead Assigned to ".$employee['name']." by ".$this->app->employee['name'];
+		$this->add('xepan\communication\Model_Communication_Comment')
+			->createNew($this->app->employee,$this,$remark,$remark,$on_date=$this->app->now);
 		return $this;
 	}
 
@@ -202,7 +206,7 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 
 	}
 
-	function page_close($page){
+	function page_won($page){
 		
 		// echo "type= ".$this['type']." = id=".$this['id']."<br/>";
 		$this->app->stickyGET('b_country_id');
@@ -226,20 +230,38 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 		$plan->addCondition('status','Published');
 
 		$form = $page->add('Form');
-		// $form->add('xepan\base\Controller_FLC')
-		// 		->showLables(true)
-		// 		->addContentSpot()
-		// 		->makePanelsCoppalsible(true)
-		// 		->layout([
-		// 				'plan~Plan'=>'User Plan Information~c1~12',
-
-		// 				'first_name'=>'User Information~c1~6',
-		// 				'last_name'=>'c2~6',
-		// 				'mobile_no'=>'c3~6',
-		// 				'email_id'=>'c4~6',
-		// 				'billing_country'=>'c5~3'
-		// 			]);
-		$form->setLayout('form/createuser');
+		$form->add('xepan\base\Controller_FLC')
+				->showLables(true)
+				->addContentSpot()
+				->makePanelsCoppalsible(true)
+				->layout([
+						'plan~Plan'=>'User Plan Information~c1~4',
+						'first_name'=>'c2~3',
+						'last_name'=>'c3~3',
+						'mobile_no'=>'c4~4',
+						'email_id'=>'c5~4',
+						'customer_type'=>'c61~4',
+						'billing_country'=>'Billing Address~c1~3',
+						'billing_state'=>'c2~3',
+						'billing_city'=>'c3~3',
+						'billing_pincode'=>'c4~3',
+						'billing_address'=>'c5~3',
+						'shipping_address_same_as_billing_address~'=>'c6~6',
+						'shipping_country'=>'Connection Address~c1~3~closed',
+						'shipping_state'=>'c2~3',
+						'shipping_city'=>'c3~3',
+						'shipping_pincode'=>'c4~3',
+						'shipping_address'=>'c5~3',
+						'payment_mode'=>'Payment Mode~c1~12',
+						'cheque_no'=>'c2~3',
+						'cheque_date'=>'c3~3',
+						'dd_no'=>'c4~3',
+						'dd_date'=>'c5~3',
+						'bank_detail'=>'c6~3',
+						'amount'=>'c7~3',
+						'narration'=>'c8~12'
+					]);
+		// $form->setLayout('form/createuser');
 
 		$plan_field = $form->addField('xepan\base\DropDown','plan')->validate('required');
 		$plan_field->setModel($plan);
@@ -250,7 +272,7 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 
 		$form->addField('first_name')->set($this['first_name']);
 		$form->addField('last_name')->set($this['last_name']);
-
+		$form->addField('DropDown','customer_type')->setValueList(['Individual'=>'Individual','Company'=>'Company']);
 		// billing address
 		$b_c_model = $this->add('xepan\base\Model_Country')->addCondition('status','Active');
 		$b_s_model = $this->add('xepan\base\Model_State')->addCondition('status','Active');
@@ -347,13 +369,13 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 				'Cash'=>['amount','narration'],
 				'Cheque'=>['cheque_no','cheque_date','bank_detail','amount','narration'],
 				'DD'=>['dd_no','dd_date','bank_detail','amount','narration'],
-			],'div.atk-form-row');
+			],'div[class*="col-md-"]');
 
 		$form->addSubmit('create user')->addClass('btn btn-primary');
 		
-		if($form->isSubmitted()){
-			
-			
+		if($form->isSubmitted()){	
+
+
 			$p_field_array = [
 						'Cash'=>['amount'],
 						'Cheque'=>['cheque_no','cheque_date','bank_detail','amount','narration'],
@@ -434,8 +456,8 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 				// insert customer
 				$this['type'] = "Customer";
 				$this->save();
-
-				$cust_q = "INSERT into customer (contact_id, billing_country_id, billing_state_id, billing_city, billing_address, billing_pincode, shipping_country_id, shipping_state_id, shipping_city, shipping_address, shipping_pincode, same_as_billing_address ) VALUES (".$this->id.",".$form['billing_country'].",".$form['billing_state'].",'".$form['billing_city']."','".$form['billing_address']."','".$form['billing_pincode']."',".$shipping_country.",".$shipping_state.",'".$shipping_city."','".$shipping_address."','".$shipping_pincode."','".$form['shipping_address_same_as_billing_address']."')";
+				
+				$cust_q = "INSERT into customer (contact_id, billing_country_id, billing_state_id, billing_city, billing_address, billing_pincode, shipping_country_id, shipping_state_id, shipping_city, shipping_address, shipping_pincode, same_as_billing_address, customer_type ) VALUES (".$this->id.",".$form['billing_country'].",".$form['billing_state'].",'".$form['billing_city']."','".$form['billing_address']."','".$form['billing_pincode']."',".$shipping_country.",".$shipping_state.",'".$shipping_city."','".$shipping_address."','".$shipping_pincode."','".$form['shipping_address_same_as_billing_address']."','".$form['customer_type']."')";
 				$this->app->db->dsql()->expr($cust_q)->execute();
 
 				// insert user
@@ -481,7 +503,7 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 					$asso->save();
 				}
 				
-				$this->close();
+				$this->won();
 			// 	$this->app->db->commit();
 			// }catch(\Exception $e){
 			// 	$this->app->db->rollback();
@@ -491,7 +513,7 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 		}
 	}
 
-	function close(){
+	function won(){
 
 		$this['status'] = "Won";
 		$this->save();
@@ -507,6 +529,9 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 		// $this->add('xavoc\ispmanager\Controller_Greet')->do($this,'lead_won');
 	}
 
+	function checkDocumentValidity(){
+
+	}
 
 	function updatePaymentTransaction($detail_array){
 		if(!count($detail_array)) return;

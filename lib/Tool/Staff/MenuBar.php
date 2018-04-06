@@ -39,7 +39,8 @@ class Tool_Staff_MenuBar extends \xepan\cms\View_Tool{
 		$submenu_list = [
 					'staff_lead'=>[
 								'index.php?page=staff_lead&action=open'=>'Open Lead '.$lead_badge_html,
-								'index.php?page=staff_lead&action=installation'=>'Installation Lead '.$inst_lead_badge_html
+								'index.php?page=staff_lead&action=installation'=>'Installation Lead '.$inst_lead_badge_html,
+								'index.php?page=staff_lead&action=leads'=>'All Lead '
 							]
 				];
 

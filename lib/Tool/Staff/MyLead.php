@@ -33,6 +33,9 @@ class Tool_Staff_MyLead extends \xepan\cms\View_Tool{
 			case 'installation':
 				$this->installationLead();
 				break;
+			case 'leads':
+				$this->allLead();
+				break;
 		}
 	}
 
@@ -41,16 +44,17 @@ class Tool_Staff_MyLead extends \xepan\cms\View_Tool{
 
 		$lead = $this->add('xavoc\ispmanager\Model_Lead');
 		$lead->addCondition('assign_to_id',$this->staff->id);
+
  		$lead->addCondition('status','Open');
  		$lead->actions = [
 					'Active'=>['view','assign'],
-					'Open'=>['view','assign','close','lost'],
+					'Open'=>['view','assign','won','lost'],
 					'Won'=>['view'],
 					'Lost'=>['view','open'],
 					'InActive'=>['view','activate']
 				];
 
-		$crud = $this->add('xepan\hr\CRUD',['allow_edit'=>false,'permissive_acl'=>true],null,['grid/mylead']);
+		$crud = $this->add('xepan\hr\CRUD',['allow_edit'=>false,'permissive_acl'=>true]);
 
 		$crud->form->add('xepan\base\Controller_FLC')
 			->showLables(true)
@@ -77,9 +81,9 @@ class Tool_Staff_MyLead extends \xepan\cms\View_Tool{
 
 		$crud->setModel($lead,
 				['first_name','last_name','address','city','state_id','country_id','organization','created_at','remark','source','pin_code'],
-				['name','first_name','last_name','address','city','state_id','state','country','country_id','organization','status','created_at','assign_at','emails_str','contacts_str','remark']
+				['name','address','city','state','organization','status','created_at','assign_at','emails_str','contacts_str','remark','created_by','assign_to']
 			);
-		
+			
 		$state_field = $crud->form->getElement('state_id');
 		$state_field->getModel()->addCondition('status','Active');
 		if($country_id = $this->app->stickyGET('country_id')){
@@ -90,7 +94,11 @@ class Tool_Staff_MyLead extends \xepan\cms\View_Tool{
 		$country_field->js('change',$state_field->js()->reload(null,null,[$this->app->url(null,['cut_object'=>$state_field->name]),'country_id'=>$country_field->js()->val()]));
 
 		$crud->grid->addHook('formatRow',function($g){
-			$g->current_row_html['created_date'] = date('d M, Y',strtotime($g->model['created_at'])); 
+			$g->current_row_html['address'] = $g->model['address']."<br/>".$g->model['city']."<br/>".$g->model['state'];
+			$g->current_row_html['name'] = $g->model['name']."<br/>( ".$g->model['organization']." )";
+			$g->current_row_html['created_at'] = $g->model['created_at']."<br/>( ".$g->model['created_by']." )";
+			$g->current_row_html['assign_at'] = $g->model['assign_at']."<br/>( ".$g->model['assign_to']." )";
+
 		});
 
 		if($crud->form->isSubmitted() && $crud->isEditing('add')){
@@ -115,6 +123,13 @@ class Tool_Staff_MyLead extends \xepan\cms\View_Tool{
 		$crud->grid->addQuickSearch(['name','status','contacts_str','emails_str']);
 		$crud->grid->addPaginator(10);
 		$crud->grid->addSno();
+
+		$crud->grid->removeColumn('status');
+		$crud->grid->removeColumn('state');
+		$crud->grid->removeColumn('city');
+		$crud->grid->removeColumn('organization');
+		$crud->grid->removeAttachment();
+
 	}
 
 	function installationLead(){
@@ -138,4 +153,30 @@ class Tool_Staff_MyLead extends \xepan\cms\View_Tool{
 		$crud->grid->addPaginator(10);
 	}
 
+	function alllead(){
+
+		$lead = $this->add('xavoc\ispmanager\Model_Lead');
+		$lead->addCondition([['created_by_id',$this->staff->id],['assign_to_id',$this->staff->id]]);
+		$lead->setOrder('created_at','desc');
+		$grid = $this->add('xepan\hr\Grid');
+		$grid->setModel($lead,['name','address','city','state','organization','created_at','assign_at','emails_str','contacts_str','remark','created_by','assign_to','status']);
+		
+		$grid->addHook('formatRow',function($g){
+			$g->current_row_html['address'] = $g->model['address']."<br/>".$g->model['city']."<br/>".$g->model['state'];
+			$g->current_row_html['name'] = $g->model['name']."<br/>( ".$g->model['organization']." )";
+			$g->current_row_html['created_at'] = $g->model['created_at']."<br/>( ".$g->model['created_by']." )";
+			$g->current_row_html['assign_at'] = $g->model['assign_at']."<br/>( ".$g->model['assign_to']." )";
+
+			$g->current_row_html['status'] = '<div class="alert alert-info">'.$g->model['status'].'</div>';
+		});
+		$grid->removeColumn('state');
+		$grid->removeColumn('city');
+		$grid->removeColumn('created_by');
+		$grid->removeColumn('assign_to');
+		$grid->removeColumn('organization');
+		$grid->removeAttachment();
+
+		$grid->addQuickSearch(['name','contacts_str','emails_str','address','city']);
+		$grid->addPaginator(25);
+	}
 }

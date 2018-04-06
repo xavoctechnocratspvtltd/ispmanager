@@ -5,10 +5,12 @@ namespace xavoc\ispmanager;
 class Form_CAF extends \Form{
 	public $model;
 	public $mandatory_field = [];  // field_name => validation rule
+	public $manage_consumption=true;
+	public $session_item;
 
 	function init(){
 		parent::init();
-
+		
 		if(!$this->model)
 			$this->model = $model = $this->add('xavoc\ispmanager\Model_User');
 
@@ -20,7 +22,7 @@ class Form_CAF extends \Form{
 					'config_key'=>'ISPMANAGER_MISC',
 					'application'=>'ispmanager'
 			]);
-		$config->add('xepan\hr\Controller_ACL');
+		// $config->add('xepan\hr\Controller_ACL');
 		$config->tryLoadAny();
 		$this->attachment_type = $attachment_type = [];
 		$this->attachment_fields = $attachment_fields = [];
@@ -65,7 +67,8 @@ class Form_CAF extends \Form{
 					'create_invoice~'=>'c8~4',
 					'is_invoice_date_first_to_first~'=>'c9~4',
 					'include_pro_data_basis'=>'c10~4',
-					'documents'=>'Documents~c1-12',
+					'consumptions~'=>'Consumptions~c1-12',
+					'documents~'=>'Documents~c1-12',
 				];
 		$layout_array = array_merge($model_layout_fields,$attachment_fields);
 
@@ -118,6 +121,36 @@ class Form_CAF extends \Form{
 			$this->getElement($field_name)->validate($validation);
 		}
 
+		if($this->manage_consumption){
+			// session model
+			$session_item = $this->session_item = $this->add('Model',['table'=>'item']);
+			$session_item->setSource('Session');
+
+			$session_item->addField('item')->display(['form'=>'xepan\commerce\Item'])->setModel('xepan\commerce\Model_Store_Item');
+			$session_item->addField('item_name');
+			$session_item->addHook('afterLoad',function($m){$m['item_name'] = $this->add('xepan\commerce\Model_Store_Item')->load($m['item'])->get('name'); });
+		
+			$session_item->addField('quantity')->type('number');
+			$session_item->addField('extra_info')->type('text');
+			$session_item->addField('narration')->type('text');
+			$session_item->addField('serial_nos')->type('text')->hint('Enter Seperated');
+
+			$session_item->addHook('beforeSave',function($m){
+				
+				$oi = $this->add('xepan\commerce\Model_Item')->load($m['item']);
+				$serial_no_array = [];
+				if($oi['is_serializable']){
+		          $code = preg_replace('/\n$/','',preg_replace('/^\n/','',preg_replace('/[\r\n]+/',"\n",$m['serial_nos'])));
+		          $serial_no_array = explode("\n",trim($code));
+		          if($serial_no_array[0] == "" || $m['quantity'] != count($serial_no_array))
+		          	throw $this->exception('count of serial nos must be equal to receive quantity','ValidityCheck')->setField('serial_nos');
+		        }
+			});
+
+			$crud = $this->layout->add('CRUD',['entity_name'=>'Consumed Item'],'consumptions');
+			$crud->setModel($session_item,['item','quantity','extra_info','narration','serial_nos'],['item_name','quantity','extra_info','narration','serial_nos']);
+		}
+
 		$this->addSubmit('Save')->addClass('btn btn-primary btn-block');
 		
 	}
@@ -125,25 +158,64 @@ class Form_CAF extends \Form{
 
 	function process(){
 		if($this->isSubmitted()){
-			$this->hook('CAF_BeforeSave',[$this]);
-			$this->save();
+			try{
+				$this->app->db->beginTransaction();	
+				$this->hook('CAF_BeforeSave',[$this]);
+				$this->save();
 
-			// attachment entry
-			if(isset($this->attachment_type)){
-				foreach ($this->attachment_type as $key => $value) {
-					$attachment_name = $this->app->normalizeName($value);
-					if($this[$attachment_name]){
-						$attachment = $this->add('xavoc\ispmanager\Model_Attachment');
-						$attachment->addCondition('contact_id',$this->model->id);
-						$attachment->addCondition('title',$attachment_name);
-						$attachment->tryLoadAny();
-						
-						$attachment['file_id'] = $this[$attachment_name];
-						$attachment->save();
+				//consumption entry
+				if(!$this->session_item->count()){
+					$this->js()->univ()->errorMessage('please add consumption items')->execute();
+				}
+
+				$warehouse = $this->add('xepan\commerce\Model_Store_Warehouse');
+				$transaction = $warehouse->newTransaction(null,null,$this->app->employee->id,'Issue',null,$this->model->id,"Issue to customer ".$this->model['name'],null,'Received',$this->app->now);
+				foreach ($this->session_item as $model){
+					$item_model = $this->add('xepan\commerce\Model_Item')
+							->load($model['item']);
+
+					// check serial no exist or not in department
+					$result_data = [];
+					$senitized_serial_nos = $code = preg_replace('/\n$/','',preg_replace('/^\n/','',preg_replace('/[\r\n]+/',"\n",$model['serial_nos'])));
+					$stock_data = $item_model->getStockAvalibility(($model['extra_info']?:'{}'),$model['quantity'],$result_data,$this->app->employee->id,$item_model['qty_unit_id'],explode("\n",$senitized_serial_nos));
+					
+					$cf_key = $item_model->convertCustomFieldToKey(json_decode($model['extra_info']?:'{}',true));
+					if($item_model['is_serializable'] && isset($stock_data[$item_model['name']][$cf_key]['serial']) && count($stock_data[$item_model['name']][$cf_key]['serial']['unavailable']) ){
+						$this->js()->univ()->errorMessage('Serial nos not found in '.$this->app->employee['name'] . ' => '. implode(",", $stock_data[$item_model['name']][$cf_key]['serial']['unavailable']))->execute();
+					}
+					$serial_fields=[
+						'contact_id'=>$this->model->id,
+						'transaction_id'=>$transaction->id
+					];
+
+					$transaction->addItem(null,$model['item'],$model['quantity'],null,$cf_key,'Received',null,null,null,$senitized_serial_nos,null,$model['narration'],$serial_fields);
+				}
+
+				// attachment entry
+				if(isset($this->attachment_type)){
+					foreach ($this->attachment_type as $key => $value) {
+						$attachment_name = $this->app->normalizeName($value);
+						if($this[$attachment_name]){
+							$attachment = $this->add('xavoc\ispmanager\Model_Attachment');
+							$attachment->addCondition('contact_id',$this->model->id);
+							$attachment->addCondition('title',$attachment_name);
+							$attachment->tryLoadAny();
+							
+							$attachment['file_id'] = $this[$attachment_name];
+							$attachment->save();
+						}
 					}
 				}
+				$this->hook('CAF_AfterSave',[$this]);
+
+				$this->app->db->commit();
+			}catch(\Exception $e){
+				$this->app->db->rollback();
+				throw $e;
 			}
-			$this->hook('CAF_AfterSave',[$this]);
+
+
+			return $this->app->js(true,$this->js()->univ()->closeDialog())->univ()->successMessage('Installation done');
 		}
 	}
 }

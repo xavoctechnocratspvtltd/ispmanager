@@ -7,7 +7,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	public $status = ['Active','InActive','Installation','Installed','Won'];
 	public $actions = [
 				'Won'=>['view','assign_for_installation','documents','print_caf','personal_info','communication','edit','delete'],
-				'Installation'=>['view','print_caf','personal_info','communication','edit','delete','installed','payment_receive','documents'],
+				'Installation'=>['view','print_caf','personal_info','communication','edit','delete','installed','payment_receive','documents','assign_for_installation'],
 				'Installed'=>['view','print_caf','personal_info','assign_for_installation','documents','communication','edit','delete','active'],
 				'Active'=>['view','print_caf','personal_info','communication','edit','delete','AddTopups','CurrentConditions','documents','radius_attributes','deactivate','Reset_Current_Plan_Condition'],
 				'InActive'=>['view','print_caf','personal_info','communication','edit','delete','active','documents']
@@ -1649,6 +1649,28 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		return $payment;
 	}
 
+	function page_installed($page){
+		$mandatory_field = [];
+		$form = $page->add('xavoc\ispmanager\Form_CAF',['model'=>$this,'mandatory_field'=>$mandatory_field]);
+		if(!$this['radius_username'])
+			$form->getElement('radius_username')->set($this['code']);
+		// $form->addHook('CAF_AfterSave',function($form)use($page){
+		// 	$this->active();
+		// 	return $this->app->page_action_result = $this->app->js(true,$page->js()->univ()->closeDialog())->univ()->successMessage('User Activated');
+		// });
+		try{
+			$this->app->db->beginTransaction();
+			if($t=$form->process()){
+				$this->installed();
+				$this->app->db->commit();
+				return $this->app->page_action_result = $t;
+			}
+		}catch(\Exception $e){
+			$this->app->db->rollback();
+			throw $e;
+		}
+	}
+	
 	function installed(){
 		$this['status'] = "Installed";
 		$this->save();

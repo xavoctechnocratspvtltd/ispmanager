@@ -140,17 +140,35 @@ class Tool_Staff_MyLead extends \xepan\cms\View_Tool{
  		
  		$lead->actions = [
 				'Won'=>['view','assign_for_installation'],
-				'Installation'=>['view','payment_receive','installed'],
+				'Installation'=>['view','payment_receive','installed','lost'],
 				'Installed'=>['view'],
 				'Active'=>['view'],
 				'InActive'=>['view','active']
 				];
 
-		$crud = $this->add('xepan\hr\CRUD',['allow_add'=>false,'allow_edit'=>false,'allow_del'=>false,'permissive_acl'=>true,'status_color'=>['Installation'=>'warning']],null,['grid/mylead']);
-		$crud->setModel($lead);
+		$crud = $this->add('xepan\hr\CRUD',['allow_add'=>false,'allow_edit'=>false,'allow_del'=>false,'permissive_acl'=>true,'status_color'=>['Installation'=>'warning']]);
+		$crud->setModel($lead,['name','address','city','state','organization','created_at','installation_assign_at','installation_assign_to','emails_str','contacts_str','remark','installed_narration','created_by','status']);
 
-		$crud->grid->addQuickSearch(['name','status','contacts_str','emails_str']);
-		$crud->grid->addPaginator(10);
+		$grid = $crud->grid;
+		$grid->addHook('formatRow',function($g){
+			$g->current_row_html['address'] = $g->model['address']."<br/>".$g->model['city']."<br/>".$g->model['state'];
+			$g->current_row_html['name'] = $g->model['name']."<br/>( ".$g->model['organization']." )";
+			$g->current_row_html['created_at'] = $g->model['created_at']."<br/>( ".$g->model['created_by']." )";
+			$g->current_row_html['installation_assign_at'] = $g->model['installation_assign_at']."<br/>( ".$g->model['installation_assign_to']." )";
+			$g->current_row_html['remark'] = $g->model['remark']."<br/>".$g->model['installed_narration'];
+
+		});
+		$grid->removeColumn('state');
+		$grid->removeColumn('status');
+		$grid->removeColumn('city');
+		$grid->removeColumn('created_by');
+		$grid->removeColumn('installation_assign_to');
+		$grid->removeColumn('installed_narration');
+		$grid->removeColumn('organization');
+		$grid->removeAttachment();
+
+		$grid->addQuickSearch(['name','contacts_str','emails_str','address','city']);
+		$grid->addPaginator(25);
 	}
 
 	function alllead(){

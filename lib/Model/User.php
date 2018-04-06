@@ -6,11 +6,11 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	// public $table = "isp_user";
 	public $status = ['Active','InActive','Installation','Installed','Won'];
 	public $actions = [
-				'Won'=>['view','print_caf','personal_info','edit','delete','assign_for_installation','documents'],
-				'Installation'=>['view','print_caf','personal_info','edit','delete','installed','payment_receive','documents'],
-				'Installed'=>['view','print_caf','personal_info','assign_for_installation','documents','edit','delete','active'],
-				'Active'=>['view','print_caf','personal_info','edit','delete','AddTopups','CurrentConditions','documents','radius_attributes','deactivate','Reset_Current_Plan_Condition'],
-				'InActive'=>['view','print_caf','personal_info','edit','delete','active','documents']
+				'Won'=>['view','assign_for_installation','documents','print_caf','personal_info','communication','edit','delete'],
+				'Installation'=>['view','print_caf','personal_info','communication','edit','delete','installed','payment_receive','documents'],
+				'Installed'=>['view','print_caf','personal_info','assign_for_installation','documents','communication','edit','delete','active'],
+				'Active'=>['view','print_caf','personal_info','communication','edit','delete','AddTopups','CurrentConditions','documents','radius_attributes','deactivate','Reset_Current_Plan_Condition'],
+				'InActive'=>['view','print_caf','personal_info','communication','edit','delete','active','documents']
 			];
 
 	public $acl_type= "ispmanager_user";
@@ -1527,11 +1527,14 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$employee = $this->add('xavoc\ispmanager\Model_Employee');
 		$employee->load($this['installation_assign_to_id']);
 
-		// $this->app->employee
-		// 		->addActivity("Lead '".$this['code']."' assign to employee '".$employee['name']." for installation"."'",null, $this['installation_assign_to_id'] /*Related Contact ID*/,null,null,null)
-		// 		->notifyWhoCan('installed','Installation')
-		// 		->notifyTo([$this['installation_assign_to_id'],$this['created_by_id']],"Lead '" . $this['code'] ."' Assign to Employee '".$employee['name']." for installation '")
-		// 		;
+		$this->app->employee
+				->addActivity("Lead '".$this['code']."' assign to employee '".$employee['name']." for installation"."'",null, $this['installation_assign_to_id'] /*Related Contact ID*/,null,null,null)
+				->notifyWhoCan('installed','Installation')
+				->notifyTo([$this['installation_assign_to_id'],$this['created_by_id']],"Lead '" . $this['code'] ."' Assign to Employee '".$employee['name']." for installation '")
+				;
+
+		$this->add('xepan\communication\Model_Communication_Comment')
+			->createNew($this->app->employee,$this,"Lead Assign for Installation to ".$employee['name']." by ".$this->app->employee['name'],"Lead Assign for Installation",$on_date=$this->app->now);
 		return $this;
 	}
 	
@@ -1889,4 +1892,54 @@ class Model_User extends \xepan\commerce\Model_Customer{
 				))->execute();
 	}
 
+	function page_lost($page){
+
+		$config = $this->add('xepan\base\Model_ConfigJsonModel',
+			[
+				'fields'=>[
+							'lead_lost_region'=>'text'
+						],
+					'config_key'=>'ISPMANAGER_MISC',
+					'application'=>'ispmanager'
+			]);
+		// $config->add('xepan\hr\Controller_ACL');
+		$config->tryLoadAny();
+		$temp = explode(",", $config['lead_lost_region']);
+		$regions = [];
+		foreach ($temp as $key => $value) {
+			$regions[$value] = $value;
+		}
+
+		$form = $page->add('Form');
+		$region_field = $form->addField('xepan\base\DropDown','region')->validate('required');
+		$region_field->setValueList($regions);
+		$region_field->setEmptyText('Please Select');
+
+		$form->addField('text','narration');
+		$form->addSubmit('Save');
+		if($form->isSubmitted()){
+			$region = $form['region'];
+			if($form['narration'])
+				$region .= "::".$form['narration'];
+			
+			$this->lost($region);
+
+			// delete isp user entry
+			$query = "delete from isp_user where customer_id =".$this->id;
+			$this->app->db->dsql()->expr($query)->execute();
+
+			return $this->app->page_action_result = $this->app->js(true,$page->js()->univ()->closeDialog())->univ()->errorMessage('Lead Lost');	
+		}
+	}
+
+	function lost($remark){
+		if(!$this->loaded()) throw new \Exception("lead model must loaded");
+
+		$this['remark'] = $this['remark']." ".$remark;
+		$this['status'] = "Lost";
+		$this->save();
+
+		$this->add('xepan\communication\Model_Communication_Comment')
+			->createNew($this->app->employee,$this,"Lead Lost by ".$this->app->employee['name'],$remark,$on_date=$this->app->now);
+	}
 }

@@ -1923,9 +1923,10 @@ class Model_User extends \xepan\commerce\Model_Customer{
 				$region .= "::".$form['narration'];
 			
 			$this->lost($region);
-
 			// delete isp user entry
-			$query = "delete from isp_user where customer_id =".$this->id;
+			$query = "delete from isp_user where customer_id =".$this->id.";";
+			$query .= "delete from customer where contact_id =".$this->id.";";
+			$query .= "update contact set type='Contact' where id=".$this->id.";";
 			$this->app->db->dsql()->expr($query)->execute();
 
 			return $this->app->page_action_result = $this->app->js(true,$page->js()->univ()->closeDialog())->univ()->errorMessage('Lead Lost');	

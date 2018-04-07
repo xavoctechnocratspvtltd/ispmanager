@@ -8,7 +8,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	public $actions = [
 				'Won'=>['view','assign_for_installation','documents','print_caf','personal_info','communication','edit','delete'],
 				'Installation'=>['view','print_caf','personal_info','communication','edit','delete','installed','payment_receive','documents','assign_for_installation'],
-				'Installed'=>['view','print_caf','personal_info','assign_for_installation','documents','communication','edit','delete','active'],
+				'Installed'=>['view','active','print_caf','personal_info','assign_for_installation','documents','communication','edit','delete'],
 				'Active'=>['view','print_caf','personal_info','communication','edit','delete','AddTopups','CurrentConditions','documents','radius_attributes','deactivate','Reset_Current_Plan_Condition'],
 				'InActive'=>['view','print_caf','personal_info','communication','edit','delete','active','documents']
 			];
@@ -1673,6 +1673,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	
 	function installed(){
 		$this['status'] = "Installed";
+		$this['installed_at'] = $this->app->now;
 		$this->save();
 		
 		$employee = $this->add('xavoc\ispmanager\Model_Employee');
@@ -1689,14 +1690,32 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	function page_active($page){
 
 		$mandatory_field = [
+						'first_name'=>'required',
+						'last_name'=>'required',
+						'customer_type'=>'required',
+						'shipping_country_id'=>'required',
+						'shipping_state_id'=>'required',
+						'shipping_city'=>'required',
+						'shipping_address'=>'required',
+						'shipping_pincode'=>'required',
+
 						'radius_username'=>'required',
 						'radius_password'=>'required',
+						'grace_period_in_days'=>'required',
 						'plan_id'=>'required',
+
+
 					];
-		$form = $page->add('xavoc\ispmanager\Form_CAF',['model'=>$this,'mandatory_field'=>$mandatory_field]);
+		$form = $page->add('xavoc\ispmanager\Form_CAF',['model'=>$this,'mandatory_field'=>$mandatory_field,'manage_consumption'=>false,'show_consumption_detail'=>true,'validate_values'=>true]);
 
 		if(!$this['radius_username'])
 			$form->getElement('radius_username')->set($this['code']);
+
+		$form->addHook('CAF_AfterSave',function($form)use($page){
+			$this->active();
+			return $this->app->page_action_result = $this->app->js(true,$page->js()->univ()->closeDialog())->univ()->successMessage('User Activated');
+		});
+
 		$form->addHook('CAF_AfterSave',function($form)use($page){
 			$this->active();
 			return $this->app->page_action_result = $this->app->js(true,$page->js()->univ()->closeDialog())->univ()->successMessage('User Activated');

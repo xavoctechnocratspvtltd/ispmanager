@@ -23,8 +23,9 @@ class Model_Attachment extends \xepan\base\Model_Attachment{
 		$temp = explode(',', $config['attachment_type']);
 		$type = [];
 		foreach ($temp as $key => $value) {
-			$type[$value] = $value;
+			$type[trim($value)] = trim($value);
 		}
+
 		$this->getElement('title')->setValueList($type);
 	}
 }

@@ -41,7 +41,6 @@ class Model_PaymentTransaction extends \xepan\base\Model_Table{
 	}
 
 	function beforeSave(){
-
 		if($this['payment_mode'] === 'Cheque'){
 			if(!$this['cheque_no'])
 				throw $this->Exception("Cheque no must be required",'ValidityCheck')->setField('cheque_no');
@@ -60,6 +59,5 @@ class Model_PaymentTransaction extends \xepan\base\Model_Table{
 			if(!$this['amount'])
 				throw $this->Exception("amount must be required",'ValidityCheck')->setField('amount');
 		}
-
 	}
 }

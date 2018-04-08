@@ -555,6 +555,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$this['last_dl_limit']=null;
 		$this['last_ul_limit']=null;
 		$this->save();
+		
 		return $plan_model;
 	}
 
@@ -1468,6 +1469,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$items = $invoice_model->Items()->getRows();
 		$items_ids = array_column($items, 'item_id');
 		$plan = $this->add('xavoc\ispmanager\Model_Plan')->addCondition('id',$items_ids)->tryLoadAny();
+
 		if($plan->loaded()){
 			$oi = $invoice_model->Items()->tryLoadBy('item_id',$plan->id);
 
@@ -1771,7 +1773,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$this->save();
 
 		// $this->updateUserConditon();
-		$return_data = $this->createInvoice($this);		
+		$return_data = $this->createInvoice($this,null,null,$this->app->now);		
 		$this->updateNASCredential();
 		$this->updateWebsiteUser();
 

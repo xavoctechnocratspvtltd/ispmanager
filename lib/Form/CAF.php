@@ -9,6 +9,8 @@ class Form_CAF extends \Form{
 	public $manage_consumption=true;
 	public $show_consumption_detail=false;
 	public $session_item;
+	public $allow_invoice=false;
+	public $invoice_items=false;
 
 	function init(){
 		parent::init();
@@ -36,15 +38,17 @@ class Form_CAF extends \Form{
 		// }
 
 		$model_layout_fields = [
-					'first_name'=>'Basic Detail~c1~3',
-					'last_name'=>'c2~3',
-					'organization'=>'c3~3',
-					'customer_type'=>'c4~3',
-					'image_id~Photo'=>'c5~3',
+					'first_name'=>'Basic Detail~c1~4',
+					'last_name'=>'c2~4',
+					'organization'=>'c3~4',
+
 					'tin_no'=>'c6~3',
 					'pan_no'=>'c7~3',
 					'gstin'=>'c8~3',
 					'website'=>'c9~3',
+					'connection_type'=>'c10~3',
+					'image_id~Photo'=>'c11~3',
+					'customer_type'=>'c12~3',
 
 					'shipping_country_id~Country'=>'Service Installation Address~b1~6',
 					'shipping_state_id~State'=>'b1~6',
@@ -62,24 +66,33 @@ class Form_CAF extends \Form{
 					'plan'=>'Plan/ Radius Information~c1~4',
 					'radius_username'=>'c2~4',
 					'radius_password'=>'c3~4',
-					'mac_address'=>'c4~6',
-					'simultaneous_use'=>'c4~6',
-					'grace_period_in_days'=>'c4~6',
-					'custom_radius_attributes'=>'c5~6',
-					'create_invoice~'=>'c8~4',
-					'is_invoice_date_first_to_first~'=>'c9~4',
-					'include_pro_data_basis'=>'c10~4',
+					'mac_address'=>'c4~4',
+					'simultaneous_use'=>'c5~4',
+					'grace_period_in_days'=>'c6~4',
+
 					'consumptions~'=>'Consumptions~c1-12',
 					'documents~'=>'Documents~c1-12',
 				];
-		$layout_array = array_merge($model_layout_fields);
+
+		$invoice_array = [];
+		if($this->allow_invoice){
+			$invoice_array = [
+				'create_invoice~'=>'Invoice~c1~4',
+				'is_invoice_date_first_to_first~'=>'c2~4',
+				'include_pro_data_basis'=>'c3~4',
+				'invoice_items~'=>'c4~12'
+			];
+		}
+
+		$layout_array = array_merge($model_layout_fields,$invoice_array);
+
 
 		$this->add('xepan\base\Controller_FLC')
 				->addContentSpot()
 				->makePanelsCoppalsible()
 				->layout($layout_array);
 
-		$this->setModel($this->model,['first_name','last_name','organization','customer_type','image_id','tin_no','pan_no','gstin','website','shipping_country_id','shipping_state_id','shipping_city','shipping_address','shipping_pincode','same_as_billing_address','billing_country_id','billing_state_id','billing_city','billing_pincode','billing_address','plan','plan_id','radius_username','radius_password','mac_address','simultaneous_use','grace_period_in_days','custom_radius_attributes','create_invoice','is_invoice_date_first_to_first','include_pro_data_basis']);
+		$this->setModel($this->model,['first_name','last_name','organization','customer_type','image_id','tin_no','pan_no','gstin','website','shipping_country_id','shipping_state_id','shipping_city','shipping_address','shipping_pincode','same_as_billing_address','billing_country_id','billing_state_id','billing_city','billing_pincode','billing_address','plan','plan_id','radius_username','radius_password','mac_address','simultaneous_use','grace_period_in_days','create_invoice','is_invoice_date_first_to_first','include_pro_data_basis','connection_type']);
 
 		// foreach ($attachment_type as $key => $value) {
 		// 	$attachment_name = $this->app->normalizeName($value);
@@ -163,10 +176,33 @@ class Form_CAF extends \Form{
 
 		$attachment_model = $this->add('xavoc\ispmanager\Model_Attachment');
 		$attachment_model->addCondition('contact_id',$this->model->id);
+
 		$crud = $this->layout->add('CRUD',null,'documents');
 		$crud->setModel($attachment_model,['title','file_id','thumb_url'],['title','thumb_url']);
-		$crud->grid->addFormatter('thumb_url','image');
 
+		$crud->grid->addHook('formatRow',function($g){
+			$g->current_row_html['thumb_url'] = "<img style='width:150px;' src='".$g->model['thumb_url']."'>";
+		});
+
+
+		if($this->allow_invoice){
+			$this->invoice_items = $this->add('Model');
+			$this->invoice_items->setSource('Session');
+
+			$item_model = $this->add('xepan\commerce\Model_Item')
+				->addCondition('is_saleable',true)
+				->addCondition('is_renewable',false);
+			
+			$this->invoice_items->addField('item')->display(['form'=>'DropDown'])
+				->setModel($item_model);
+			$this->invoice_items->addField('item_name');
+			$this->invoice_items->addHook('afterLoad',function($m){$m['item_name'] = $this->add('xepan\commerce\Model_Item')->load($m['item'])->get('name'); });
+		
+			$this->invoice_items->addField('amount')->type('number');
+			$this->invoice_items->addField('narration')->type('text');
+			$crud = $this->layout->add('CRUD',['entity_name'=>'Invoice item'],'invoice_items');
+			$crud->setModel($this->invoice_items,['item','amount','narration'],['item_name','amount','narration']);
+		}
 		$this->addSubmit('Save')->addClass('btn btn-primary btn-block');
 		
 	}
@@ -176,25 +212,42 @@ class Form_CAF extends \Form{
 		if($this->isSubmitted()){
 
 			if($this->validate_values){
-				$attachment_model = $this->add('xavoc\ispmanager\Model_Attachment');
-				$attachment_model->addCondition('contact_id',$this->model->id);
-				$all_titles_uploaded = array_column($attachment_model->getRows(), 'title');
-
-				foreach ($this->getValidation($this->model['customer_type']) as $rf) {
-					if(!in_array($rf, $all_titles_uploaded)) {
-						$this->js()->univ()->errorMessage('Required document '. $rf.' not found, cannot proceed');
-					}
+				
+				$validity_model = $this->add('xavoc\ispmanager\Model_Config_Mendatory');
+				$validity_data = $validity_model->getFields('customer_type',$this['customer_type']);
+				
+				// mandatory fields 
+				foreach ($validity_data['mendatory_fields'] as $field) {
+					if(!$this[$field]) $this->displayError($field,'value must not be empty');
 				}
+
+
+				foreach ($validity_data['mendatory_documents'] as $field) {
+					$attach = $this->add('xavoc\ispmanager\Model_Attachment')
+						->addCondition('contact_id',$this->model->id)
+						->addCondition('title',$field)
+						->tryLoadAny();
+					if(!$attach->loaded()) $this->js()->univ()->errorMessage('Document '.$field." required")->execute();
+				}
+				// $attachment_model->addCondition('contact_id',$this->model->id);
+				// $all_titles_uploaded = array_column($attachment_model->getRows(), 'title');
+				// foreach ($this->getValidation($this->model['customer_type']) as $rf) {
+				// 	if(!in_array($rf, $all_titles_uploaded)) {
+				// 		$this->js()->univ()->errorMessage('Required document '. $rf.' not found, cannot proceed');
+				// 	}
+				// }
 
 			}
 
+			
 			try{
 				$this->app->db->beginTransaction();	
 				$this->hook('CAF_BeforeSave',[$this]);
 				$this->save();
 
 				//consumption entry
-				if(!$this->manage_consumption){
+				if($this->manage_consumption == true){
+					
 					if(!$this->session_item->count()){
 						$this->js()->univ()->errorMessage('please add consumption items')->execute();
 					}

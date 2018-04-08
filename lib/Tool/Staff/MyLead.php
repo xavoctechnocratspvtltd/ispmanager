@@ -36,6 +36,9 @@ class Tool_Staff_MyLead extends \xepan\cms\View_Tool{
 			case 'leads':
 				$this->allLead();
 				break;
+			case 'paymentcollection':
+				$this->paymentCollection();
+				break;
 		}
 	}
 
@@ -196,5 +199,40 @@ class Tool_Staff_MyLead extends \xepan\cms\View_Tool{
 
 		$grid->addQuickSearch(['name','contacts_str','emails_str','address','city']);
 		$grid->addPaginator(25);
+	}
+
+	function paymentCollection(){
+
+		$payment_tra = $this->add('xavoc\ispmanager\Model_PaymentTransaction');
+		$payment_tra->getElement('payment_mode')->caption('Payment Detail');
+		$payment_tra->addCondition('employee_id',$this->staff->id);
+		$payment_tra->setOrder('id','desc');
+
+		$crud = $this->add('xepan\hr\CRUD',['pass_acl'=>true,'allow_edit'=>false,'allow_del'=>false]);
+		$crud->setModel($payment_tra,['employee','contact_id','created_at','amount','payment_mode','narration'],['contact','created_at','amount','payment_mode','narration','is_submitted_to_company']);
+
+		$crud->grid->addHook('formatRow',function($g){
+			$phtml = "";
+			if($g->model['payment_mode'] == "Cash"){
+				$phtml = "Payment Mode: CASH";
+			}elseif($g->model['payment_mode'] == "Cheque"){
+				$phtml = "Payment Mode: Cheque"."<br/>";
+				$phtml .= "Cheque No: ".$g->model['cheque_no']."<br/>";
+				$phtml .= "Cheque Date: ".$g->model['cheque_date']."<br/>";
+				$phtml .= "Bank Detail: ".$g->model['bank_detail']."<br/>";
+
+			}elseif($g->model['payment_mode'] == "DD"){
+				$phtml = "Payment Mode: DD <br/>";
+				$phtml .= "DD No: ".$g->model['dd_no']."<br/>";
+				$phtml .= "dd_date: ".$g->model['dd_date']."<br/>";
+				$phtml .= "Bank Detail: ".$g->model['bank_detail']."<br/>";
+			}
+
+			$g->current_row_html['payment_mode'] = $phtml;
+		});
+
+		$crud->grid->addPaginator(25);
+		$crud->grid->addQuickSearch(['contact','amount']);
+
 	}
 }

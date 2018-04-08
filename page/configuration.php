@@ -18,6 +18,7 @@ class page_configuration extends \xepan\base\Page {
 		$tab->addTabURL('./otpexpired','OTP Expired Time');
 		$tab->addTabURL('./syslogconfig','SysLog DB Config');
 		$tab->addTabURL('./misc','MISC');
+		$tab->addTabURL('./mandatory','Mandatory');
 		$tab->addTabURL('./caf_layout','CAF Layout');
 		$tab->addTabURL('xepan_marketing_leadsource','Lead source');
 		
@@ -68,6 +69,24 @@ class page_configuration extends \xepan\base\Page {
 			$form->save();
 			$form->js(null,$form->js()->reload())->univ()->successMessage('Saved Successfully')->execute();
 		}
+	}
+
+	function page_mandatory(){
+		$tabs= $this->add('Tabs');
+		$conn_tab = $tabs->addTab('Connection Type');
+		$comm_tab = $tabs->addTab('Customer Type');
+
+		$model = $this->add('xavoc\ispmanager\Model_Config_Mendatory');
+		$model->addCondition('customer_type',null);
+
+		$crud = $conn_tab->add('xepan\base\CRUD');
+		$crud->setModel($model,['connection_type','mendatory_fields','mendatory_documents','other_documents']);
+
+		$model = $this->add('xavoc\ispmanager\Model_Config_Mendatory');
+		$model->addCondition('connection_type',null);
+
+		$crud = $comm_tab->add('xepan\base\CRUD');
+		$crud->setModel($model,['customer_type','mendatory_fields','mendatory_documents','other_documents']);
 	}
 
 	function page_location(){

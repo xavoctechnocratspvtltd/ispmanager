@@ -24,7 +24,10 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 		// destroy extra fields
 		// $cust_fields = $this->add('xepan\commerce\Model_Customer')->getActualFields();
+		
 		$this->getElement('created_at')->sortable(true);
+
+		$this->getElement('customer_type')->enum($this->add('xavoc\ispmanager\Model_Config_Mendatory')->getCompanyTypes());
 
 		$destroy_field = ['assign_to_id','scope','is_designer','score','freelancer_type','related_with','related_id','assign_to','created_by_id','source'];
 		foreach ($destroy_field as $key => $field) {
@@ -55,6 +58,8 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$user_j->addField('last_accounting_dl_ratio')->defaultValue(100);
 		$user_j->addField('last_accounting_ul_ratio')->defaultValue(100);
 		$user_j->addField('is_active')->type('boolean')->defaultValue(0);
+
+		$user_j->addField('connection_type')->enum($this->add('xavoc\ispmanager\Model_Config_Mendatory')->getConnctionTypes());
 
 		$user_j->hasMany('xavoc\ispmanager\UserPlanAndTopup','user_id',null,'PlanConditions');
 		$user_j->hasMany('xepan\hr\Employee_Document','customer_id',null,'CustomerDocuments');
@@ -218,12 +223,14 @@ class Model_User extends \xepan\commerce\Model_Customer{
 					'application'=>'ispmanager'
 			]);
 		$config->tryLoadAny();
+
 		if($config['invoice_default_status'] == "Due"){
 			$invoice_model = $this->add('xepan\commerce\Model_SalesInvoice')
 				->load($invoice_data['master_detail']['id']);
 			$invoice_model->approve();
 			$invoice_data['master_detail'] = $invoice_model->data;
 		}
+
 		return $invoice_data;
 	}
 
@@ -1650,7 +1657,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	}
 
 	function page_installed($page){
-		$mandatory_field = [];
+		$mandatory_field = ['connection_type'=>'required','customer_type'=>'required'];
 		$form = $page->add('xavoc\ispmanager\Form_CAF',['model'=>$this,'mandatory_field'=>$mandatory_field]);
 		if(!$this['radius_username'])
 			$form->getElement('radius_username')->set($this['code']);
@@ -1663,6 +1670,8 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			if($t=$form->process()){
 				$this->installed();
 				$this->app->db->commit();
+
+				$form->session_item->deleteAll();
 				return $this->app->page_action_result = $t;
 			}
 		}catch(\Exception $e){
@@ -1704,36 +1713,69 @@ class Model_User extends \xepan\commerce\Model_Customer{
 						'grace_period_in_days'=>'required',
 						'plan_id'=>'required',
 
-
 					];
-		$form = $page->add('xavoc\ispmanager\Form_CAF',['model'=>$this,'mandatory_field'=>$mandatory_field,'manage_consumption'=>false,'show_consumption_detail'=>true,'validate_values'=>true]);
+		$form = $page->add('xavoc\ispmanager\Form_CAF',['model'=>$this,'mandatory_field'=>$mandatory_field,'manage_consumption'=>false,'show_consumption_detail'=>true,'validate_values'=>true,'allow_invoice'=>true]);
 
 		if(!$this['radius_username'])
 			$form->getElement('radius_username')->set($this['code']);
 
 		$form->addHook('CAF_AfterSave',function($form)use($page){
-			$this->active();
-			return $this->app->page_action_result = $this->app->js(true,$page->js()->univ()->closeDialog())->univ()->successMessage('User Activated');
-		});
 
-		$form->addHook('CAF_AfterSave',function($form)use($page){
-			$this->active();
+			$invoice_data = $this->active();
+			
+			if($form->allow_invoice && $form->invoice_items->count() && $form['create_invoice']){
+				$master_model = $invoice_data['master_model'];
+				$temp = [];
+				foreach ($form->invoice_items as $i_item) {
+
+					$item = $this->add('xepan\commerce\Model_Item')->load($i_item['item']);
+					$taxation = $item->applicableTaxation($master_model['shipping_country_id'],$master_model['shipping_state_id']);
+
+					$taxation_id = 0;
+					$tax_percentage = 0;
+					if($taxation){
+						$taxation_id = $taxation['taxation_id'];
+						$tax_percentage = $taxation['percentage'];
+					}
+
+					$temp[] = [
+						'item_id'=>$i_item['item'],
+						'price'=>$i_item['amount'],
+						'quantity'=>1,
+						'taxation_id'=>$taxation_id,
+						'tax_percentage'=>$tax_percentage,
+						'shipping_charge'=>0,
+						'shipping_duration'=>"",
+						'express_shipping_charge'=>0,
+						'express_shipping_duration'=>"",
+						'qty_unit_id'=>$item['qty_unit_id'],
+						'discount'=>0,
+						'narration'=>$i_item['narration']
+
+					];
+				}
+				$master_model->addQSPDetail($temp,$master_model);
+			}
+			
+			$form->invoice_items->deleteAll();
 			return $this->app->page_action_result = $this->app->js(true,$page->js()->univ()->closeDialog())->univ()->successMessage('User Activated');
 		});
 		$form->process();
 	}
 
 	function active(){
-		
-		// $this->setPlan($this['plan_id']);
+
+		$this->setPlan($this['plan_id']);
 		$this['status'] = 'Active';
 		$this['is_active'] = true;
 		$this->save();
 
 		// $this->updateUserConditon();
-		$this->createInvoice($this);
+		$return_data = $this->createInvoice($this);		
 		$this->updateNASCredential();
 		$this->updateWebsiteUser();
+
+		return $return_data;
 	}
 
 	function page_Reset_Current_Plan_Condition($page){

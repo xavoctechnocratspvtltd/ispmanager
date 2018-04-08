@@ -1,43 +1,27 @@
-Done
-	city wise filteration
-	invoice location wise
-	user add Attachment Action and contact or email id add
-	staff panel me add show address column
 
-Due
-	MAC Address bind according to configuration
-	lead channel wise
-	channel managemnt plan and franchises with plan approval permission
-	channel lead and customer wise invoice create
+Serial no when auto invoice crate from
+T&C
+Narration me auto start date and end date
 
+Staff panel add category option
+Assign lead to show in staff panel
+Product add facility in staff panel
 
-	Device Activation
-	Customer Surrendor
-	issue submitted with device number with manager approval
+Contract Period 
 
-	radiususer_name mandatory
-	data status with GB and color of users.
-	User info with Rad Acct ip without.
-	
-	
-	all fields are mandatory
-	log date time filter
-	auto email for renewal
-	support ticket filter advanced
-	email general search full text search
-	country and state de active
-	Plan History
+CAF installed menu add column organizaion
+Close action (billing contract : months)
 
 
-	mrtg
-	cache
-	digital marketing seo/smo
-	server redundancy
-	nms
-	simultaneous use and mac address
-	advertise management
-	
+ARC(Anuual Recurring Charges): numeric INR
+OTC(One time Charges) : INR
+Last Mile : RF/Fiber/RF+Fiber
+
+Email Draft: from and to record is not showing
+
+User me action connection disconnet or connection
 
 
 
-
+DB Fields
+	isp_user : connection_type

@@ -25,3 +25,4 @@ User me action connection disconnet or connection
 
 DB Fields
 	isp_user : connection_type
+	plan: free_tenure,free_tenure_unit

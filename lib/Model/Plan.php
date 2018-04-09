@@ -6,8 +6,8 @@ class Model_Plan extends \xepan\commerce\Model_Item{
 	// public $table = "isp_plan";
 	public $status = ['Published','UnPublished'];
 	public $actions = [
-				'Published'=>['view','edit','delete','condition'],
-				'UnPublished'=>['view','edit','delete','publish','condition']
+				'Published'=>['view','edit','delete','condition','unpublish'],
+				'UnPublished'=>['view','edit','delete','publish','condition','publish']
 			];
 	
 	public $acl_type="ispmanager_plan";
@@ -40,7 +40,9 @@ class Model_Plan extends \xepan\commerce\Model_Item{
 		$plan_j->addField('is_topup')->type('boolean')->defaultValue(false);
 		$plan_j->addField('is_auto_renew')->type('boolean')->defaultValue(0);
 		$plan_j->addField('available_in_user_control_panel')->type('boolean');
-		$plan_j->addField('plan_validity_value')->type('int')->defaultValue(1);
+		$plan_j->addField('plan_validity_value')->type('int')->defaultValue(1)->hint('Including free tenure at end');
+		$plan_j->addField('free_tenure')->type('number')->defaultValue(0)->hint('Including free tenure at end');
+		$plan_j->addField('free_tenure_unit')->setValueList(['DAYS'=>'Day','WEEKS'=>'Week','MONTHS'=>'Month','YEARS'=>'Year']);
 
 		$this->hasMany('xavoc\ispmanager\Condition','plan_id',null,'conditions');
 

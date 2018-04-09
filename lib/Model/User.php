@@ -532,6 +532,8 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			$this->deactivate();
 		}
 
+		$query = "UPDATE isp_user_plan_and_topup SET is_expired = '1' WHERE user_id = ".$this->id;
+		$this->app->db->dsql()->expr($query)->execute();
 		return true;
 	}
 
@@ -2237,8 +2239,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	}
 
 	function close_session(){
-
-		$query = "UPDATE radacct SET acctstoptime = acctupdatetime WHERE username = '".$this['radius_username']."' AND acctstoptime is null;";
+		$query = "UPDATE radacct SET acctstoptime = acctupdatetime, acctterminatecause='Session-closed manually' WHERE username = '".$this['radius_username']."' AND acctstoptime is null;";
 		$this->app->db->dsql()->expr($query)->execute();
 		return $this->app->js()->univ()->successMessage('Session Closed Successfully');
 	}

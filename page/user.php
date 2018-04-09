@@ -111,7 +111,7 @@ class page_user extends \xepan\base\Page {
 			// $form->setLayout('form/user');
 		}
 
-		$crud->setModel($model,['net_data_limit','radius_username','radius_password','plan_id','simultaneous_use','grace_period_in_days','custom_radius_attributes','first_name','last_name','create_invoice','is_invoice_date_first_to_first','include_pro_data_basis','country_id','state_id','city','address','pin_code','qty_unit_id','mac_address'],['name','radius_username','plan','radius_login_response','contacts_str','emails_str','created_at','last_login','is_online','active_condition_data','framed_ip_address','last_logout','name']);
+		$crud->setModel($model,['net_data_limit','radius_username','radius_password','plan_id','simultaneous_use','grace_period_in_days','custom_radius_attributes','first_name','last_name','create_invoice','is_invoice_date_first_to_first','include_pro_data_basis','country_id','state_id','city','address','pin_code','qty_unit_id','mac_address'],['name','radius_username','plan','radius_login_response','contacts_str','emails_str','created_at','last_login','is_online','active_condition_data','framed_ip_address','last_logout','name','created_by']);
 
 		$crud->grid->removeColumn('attachment_icon');
 		$crud->grid->removeColumn('framed_ip_address');
@@ -196,7 +196,7 @@ class page_user extends \xepan\base\Page {
 
 			$g->setTDParam('radius_username','class',$status_class);
 
-			$g->current_row_html['created_at'] = str_replace(" ", "<br/>", $g->model['created_at']);
+			$g->current_row_html['created_at'] = str_replace(" ", "<br/>", $g->model['created_at'])."<br/>".$g->model['created_by'];
 			$g->current_row_html['last_login'] = "<small>last login </small><br/>".str_replace(" ", "<br/>", $g->model['last_login']).'<br/><small>last logout </small><br/>'.str_replace(" ", "<br/>", $g->model['last_logout']);
 			$g->current_row_html['contacts_str'] = $g->model['contacts_str']."<br/>".$g->model['emails_str'];
 		});
@@ -207,6 +207,7 @@ class page_user extends \xepan\base\Page {
 		$crud->grid->addFormatter('radius_login_response','Wrap');
 		$crud->grid->removeColumn('active_condition_data');
 		$crud->grid->removeColumn('is_online');
+		$crud->grid->removeColumn('created_by');
 		// $g->addMethod('format_redgreen',function($g,$f){
 		// 	if($g->model['status']=='Red'){
 		// 		$g->setTDParam($f,'style/color','red');

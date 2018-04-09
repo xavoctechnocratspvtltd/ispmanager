@@ -1984,6 +1984,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$sip_tab = $tab->addTab('Static IP');
 		$mac_tab = $tab->addTab('MAC Address Bind');
 		$udc_tab = $tab->addTab('User Data Consumed');
+		$ippool_tab = $tab->addTab('IP Pool');
 
 		$model = $this->add('xavoc\ispmanager\Model_RadReply');
 		$model->addCondition('username',$this['radius_username']);
@@ -2064,6 +2065,14 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 
 		$udc_tab->add('xavoc\ispmanager\View_UserDataConsumption',['username'=>$this['radius_username']]);
+			
+		// ip pool
+		$pool_model = $this->add('xavoc\ispmanager\Model_RadReply');
+		$pool_model->addCondition('username',$this['radius_username']);
+		$pool_model->addCondition('attribute','Framed-Pool');
+		$pool_model->addCondition('op',':=');
+		$crud = $ippool_tab->add('xepan\base\CRUD',['entity_name'=>'IP Pool']);
+		$crud->setModel($pool_model);
 	}
 
 	function bindMacAddress($mac_address){

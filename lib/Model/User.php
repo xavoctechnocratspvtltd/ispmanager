@@ -9,7 +9,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 				'Won'=>['view','assign_for_installation','documents','print_caf','personal_info','communication','edit','delete'],
 				'Installation'=>['view','print_caf','personal_info','communication','edit','delete','installed','payment_receive','documents','assign_for_installation'],
 				'Installed'=>['view','active','print_caf','personal_info','assign_for_installation','documents','communication','edit','delete'],
-				'Active'=>['view','print_caf','personal_info','communication','edit','delete','AddTopups','CurrentConditions','documents','radius_attributes','deactivate','Reset_Current_Plan_Condition'],
+				'Active'=>['view','print_caf','challan','personal_info','communication','edit','delete','AddTopups','CurrentConditions','documents','radius_attributes','deactivate','Reset_Current_Plan_Condition','surrenderPlan'],
 				'InActive'=>['view','print_caf','personal_info','communication','edit','delete','active','documents']
 			];
 
@@ -382,6 +382,154 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 	function addTopup($topup_id,$date=null,$remove_old_topups=false){
 		$this->setPlan($topup_id,$date,false,true,$remove_old_topups);
+	}
+
+	function surrenderRefundValue($in_days=true,$refund_tax_value=false){
+
+		$refund_value = 0;
+		$qsp_detail_model = $this->add('xepan\commerce\Model_QSP_Detail')
+					->addCondition('item_id',$this['plan_id'])
+					->addCondition('customer_id',$this->id)
+					->setOrder('created_at','desc')
+					->tryLoadAny()
+					;
+		if(!$qsp_detail_model->loaded()){
+			return $refund_value;
+		} 
+		
+		$effective_start_date = $last_invoice_date = $qsp_detail_model['created_at'];
+		$plan_model = $this->add('xavoc\ispmanager\Model_Plan')->load($this['plan_id']);
+
+		$effective_end_date = date("Y-m-d", strtotime("+".$plan_model['plan_validity_value']." ".$plan_model['qty_unit'],strtotime($effective_start_date)));
+
+		if($plan_model['free_tenure'] AND $plan_model['free_tenure_unit']){
+			$effective_end_date = date("Y-m-d", strtotime("-".$plan_model['free_tenure']." ".$plan_model['free_tenure_unit'],strtotime($effective_end_date)));
+		}
+
+		$effective_start_time = strtotime($effective_start_date);
+		$effective_end_time = strtotime($effective_end_date);
+		$on_time = strtotime($this->app->now);
+
+		$actual_differance = $this->app->my_date_diff($effective_end_date,$effective_start_date);
+
+		if($on_time < $effective_end_time){
+			$date_diff = $this->app->my_date_diff($this->app->now,$effective_end_date);
+			$amount = $refund_tax_value?$qsp_detail_model['total_amount']:$qsp_detail_model['amount_excluding_tax'];
+
+			if($in_days){
+				$actual_days = $actual_differance['days_total'];
+				$refund_days = $date_diff['days_total'];
+				$refund_value =  $amount*($refund_days/$actual_days);
+			}
+
+			$round_standard_name = $this->add('xepan\base\Model_ConfigJsonModel',
+					[
+						'fields'=>[
+									'round_amount_standard'=>'DropDown'
+									],
+							'config_key'=>'COMMERCE_TAX_AND_ROUND_AMOUNT_CONFIG',
+							'application'=>'commerce'
+					]);
+			$round_standard_name->tryLoadAny();
+			$round_standard = $round_standard_name['round_amount_standard'];
+
+
+			switch ($round_standard) {
+				case 'Standard':
+					$refund_value = round($refund_value);
+					break;
+				case 'Up':
+					$refund_value = ceil($refund_value);
+					break;
+				case 'Down':
+					$refund_value = floor($refund_value);
+					break;
+			}
+		}
+
+		return $refund_value;
+	}
+
+	function page_surrenderPlan($page){
+		$qsp_detail_model = $this->add('xepan\commerce\Model_QSP_Detail')
+					->addCondition('item_id',$this['plan_id'])
+					->addCondition('customer_id',$this->id)
+					->setOrder('created_at','desc')
+					->tryLoadAny()
+					;
+		if(!$qsp_detail_model->loaded()){
+			$this->add('View')->set("No last invoice found, cannot proceed please deactivate user and adjust amount manually")->addClass('alert alert-danger');
+			return;
+		} 
+
+		$refund_tax_value = false;
+		$in_days = true;
+		$refund_value = $this->surrenderRefundValue($in_days,$refund_tax_value);
+		
+
+		$page->add('View')->addClass('alert alert-info')
+				->set('Refund Amount: '.$refund_value." ".$this->app->epan->default_currency['name']);
+		$form = $page->add('Form');
+		$form->addSubmit('Surrender Now')->addClass('btn btn-primary');
+		if($form->isSubmitted()){
+
+			$this->surrenderPlan($refund_value,true,true,$qsp_detail_model['qsp_master_id']);
+			return $this->app->page_action_result = $this->app->js(null,$page->js()->univ()->closeDialog())->univ()->successMessage('User Plan Deactivated');
+		}
+
+	}
+
+	function surrenderPlan($deactivate_user=true,$in_days=true,$refund_tax_value=false,$invoice_id=null){
+
+		if($refund_value = $this->surrenderRefundValue($in_days,$refund_tax_value)){
+			// Do accounts entry for this customer
+			$entry_template =$this->add('xepan\accounts\Model_EntryTemplate')->loadBy('unique_trnasaction_template_code','jv');
+			$transaction = $entry_template->ref('xepan\accounts\EntryTemplateTransaction')->tryLoadAny(); 
+
+			// $new_transaction->createNewTransaction($transaction['type'],null,date('Y-m-d',strtotime($transaction['transaction_date'])),$transaction['narration'],$transaction['currency'],$transaction['exchange_rate'],null,null,null,$transaction['entry_template_id']);
+			$entry_template->executeSave([
+				$transaction->id => [
+					// 'entry_template_transaction_id'=>$transaction->id,
+					'entry_template_id'=>$entry_template->id,
+					// 'name'=>$transaction['name'],
+					'type'=>$transaction['type'],
+					'transaction_date'=>$this->app->now,
+					'narration'=> "Plan Surrender Payment Refund",
+					'currency'=>$this->app->epan->default_currency->id,
+					'related_id'=>$invoice_id?:0,
+					'related_type'=>'xepan\commerce\Model_SalesInvoice',
+					'exchange_rate'=>1,
+					'rows'=>[
+								[
+									'data-code'=>'',
+									'currency'=>$this->app->epan->default_currency->id,
+									'exchange_rate'=>1,
+									'data-side'=>'DR',
+									'data-ledger'=> $this->add('xepan\accounts\Model_Ledger')->tryLoadBy('name','Sales Account')->get('id'),
+									'data-amount'=> $refund_value
+								],
+								[
+									'data-code'=>'',
+									'currency'=>$this->app->epan->default_currency->id,
+									'exchange_rate'=>1,
+									'data-side'=>'CR',
+									'data-ledger'=> $this->ledger()->get('id'),
+									'data-amount'=>$refund_value
+								]
+							]
+
+				]
+			]);
+		}
+
+		$this->add('xepan\communication\Model_Communication_Comment')
+			->createNew($this->app->employee,$this,"User Plan Surrender","Plan Surrender",$on_date=$this->app->now);
+
+		if($deactivate_user){
+			$this->deactivate();
+		}
+
+		return true;
 	}
 
 	function setPlan($plan, $on_date=null, $remove_old=false,$is_topup=false,$remove_old_topups=false,$expire_all_plan=false,$expire_all_topup=false,$work_on_pro_data=true,$as_grace = true,$force_plan_end_date=null){
@@ -1968,6 +2116,39 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	function print_caf(){
 		$js = $this->app->js()->univ()->newWindow($this->app->url('xavoc_ispmanager_cafprint',['contact_id'=>$this->id]),'PrintCAF'.$this->id);
 		$this->app->js(null,$js)->univ()->execute();
+	}
+
+	function page_challan($page){
+
+		$grid = $page->add('xepan\hr\Grid');
+		$issue_model = $this->add('xepan\commerce\Model_Store_TransactionAbstract')
+					->addCondition('type','Issue')
+					->addCondition('to_warehouse_id',$this->id)
+					;
+		$issue_model->getElement('from_warehouse')->caption('From');
+		$issue_model->getElement('to_contact_name')->caption('To');
+
+		$grid->setModel($issue_model,['to_contact_name','from_warehouse','item_quantity','created_at']);
+		$grid->addPaginator($ipp=25);
+		$grid->addSno();
+		$print_btn = $grid->addColumn('Button','Print_Document');
+
+		if($transaction_id = $_GET['Print_Document']){
+			$this->app->js(true)->univ()->newWindow($this->app->url('xepan_commerce_printstoretransaction',['transaction_id'=>$transaction_id]),'PrintIssueChallan')->execute();
+		}
+
+		// details
+		$grid->add('VirtualPage')
+		->addColumn('Details')
+		->set(function($page){
+			$id = $_GET[$page->short_name.'_id'];
+			$detail_model = $page->add('xepan\commerce\Model_Store_TransactionRow');
+			$detail_model->addCondition('store_transaction_id',$id);
+
+			$grid = $page->add('xepan\hr\Grid');
+			$grid->setModel($detail_model,['item_name','quantity','extra_info','serial_nos','transaction_narration','item_qty_unit']);
+			$grid->addPaginator(10);
+		});
 	}
 
 	function personal_info(){

@@ -8,10 +8,11 @@ class page_user extends \xepan\base\Page {
 
 	function page_index(){
 		// parent::init();
-
+		
 		$model = $this->add('xavoc\ispmanager\Model_UserData');
 		$model->getElement('country_id')->getModel('status','Active');
 		$model->getElement('state_id')->getModel('status','Active');
+		$model->addCondition('status',['Active','InActive']);
 
 		// return net_data_limit, data_consumed
 		$model->addExpression('active_condition_data')->set(function($m,$q){
@@ -118,7 +119,7 @@ class page_user extends \xepan\base\Page {
 
 		$crud->grid->addPaginator($ipp=10);
 		$filter_form = $crud->grid->addQuickSearch(['radius_username','plan']);
-		$crud->grid->addSno(null,true);
+		$crud->grid->addSno();
 
 		if($crud->isEditing()){
 			$form = $crud->form;

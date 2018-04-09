@@ -47,9 +47,11 @@ class page_plan extends \xepan\base\Page {
 					'renewable_value'=>'c22~4~0,1,2,4',
 					'renewable_unit'=>'c23~4',
 					'hint_renew~'=>'c24~12',
-					'plan_validity_value'=>'Plan Validity~c11~4~0,1,2,4',
+					'plan_validity_value'=>'Plan Validity~c11~4~0,1,2,4 (Including free tenure)',
 					'qty_unit_id~plan validity unit'=>'c12~4',
 					'hint_valid~'=>'c21~12',
+					'free_tenure'=>'c25~6',
+					'free_tenure_unit'=>'c26~6',
 				]);
 			// $form->setLayout('form/plan');
 			$form->layout->add('View',null,'hint_renew')
@@ -63,7 +65,7 @@ class page_plan extends \xepan\base\Page {
 		}
 
 		$crud->setModel($plan,
-				['name','sku','description','sale_price','original_price','status','document_id','id','created_by','updated_by','created_at','updated_at','type','qty_unit_id','qty_unit','renewable_unit','renewable_value','tax_id','tax','plan_validity_value','available_in_user_control_panel','is_renewable'],
+				['name','sku','description','sale_price','original_price','status','document_id','id','created_by','updated_by','created_at','updated_at','type','qty_unit_id','qty_unit','renewable_unit','renewable_value','tax_id','tax','plan_validity_value','available_in_user_control_panel','is_renewable','free_tenure','free_tenure_unit'],
 				['name','code','sale_price','is_renewable','renew_invoice','validity','created_at','created_by','users']
 			);
 

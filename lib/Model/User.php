@@ -8,9 +8,9 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	public $actions = [
 				'Won'=>['view','assign_for_installation','documents','print_caf','personal_info','communication','edit','delete'],
 				'Installation'=>['view','print_caf','personal_info','communication','edit','delete','installed','payment_receive','documents','assign_for_installation'],
-				'Installed'=>['view','active','print_caf','personal_info','assign_for_installation','documents','communication','edit','delete'],
-				'Active'=>['view','print_caf','challan','personal_info','communication','edit','delete','AddTopups','CurrentConditions','documents','radius_attributes','deactivate','Reset_Current_Plan_Condition','surrenderPlan'],
-				'InActive'=>['view','print_caf','personal_info','communication','edit','delete','active','documents']
+				'Installed'=>['view','active_and_change_plan','print_caf','personal_info','assign_for_installation','documents','communication','edit','delete'],
+				'Active'=>['view','active_and_change_plan','print_caf','challan','personal_info','communication','edit','delete','AddTopups','CurrentConditions','documents','radius_attributes','deactivate','Reset_Current_Plan_Condition','surrenderPlan','close_session'],
+				'InActive'=>['view','print_caf','personal_info','communication','edit','delete','active_and_change_plan','documents']
 			];
 
 	public $acl_type= "ispmanager_user";
@@ -37,7 +37,10 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 		$user_j = $this->join('isp_user.customer_id');
 
-		$user_j->hasOne('xavoc\ispmanager\Plan','plan_id')->display(['form'=>'autocomplete/Basic']);
+		$user_j->hasOne('xavoc\ispmanager\Plan','plan_id')
+				->display(['form'=>'autocomplete/Basic']);
+		$user_j->hasOne('xavoc\ispmanager\Plan','demo_plan_id')
+				->display(['form'=>'autocomplete/Basic']);
 
 		$user_j->addField('customer_id'); // added field why not before
 		$user_j->addField('radius_username')->caption('Username')->sortable(true);
@@ -1651,6 +1654,17 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		return $attach_arry;
 	}
 
+	function currentRunningPlan(){
+		$upt = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup');
+		$upt->addCondition('user_id',$this->id);
+		$upt->addCondition('is_expired',false);
+		$upt->setOrder('id','desc');
+		$upt->setOrder('is_topup',false);
+		$upt->tryLoadAny();
+
+		return $upt->ref('plan_id');
+	}
+
 	function getCurrentCondition(){
 		if(!$this->loaded())  return ['status'=>'no record found'];
 
@@ -1808,7 +1822,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 	function page_installed($page){
 		$mandatory_field = ['connection_type'=>'required','customer_type'=>'required'];
-		$form = $page->add('xavoc\ispmanager\Form_CAF',['model'=>$this,'mandatory_field'=>$mandatory_field]);
+		$form = $page->add('xavoc\ispmanager\Form_CAF',['model'=>$this,'mandatory_field'=>$mandatory_field,'show_demoplan'=>true]);
 		if(!$this['radius_username'])
 			$form->getElement('radius_username')->set($this['code']);
 		// $form->addHook('CAF_AfterSave',function($form)use($page){
@@ -1821,7 +1835,8 @@ class Model_User extends \xepan\commerce\Model_Customer{
 				$this->installed();
 				$this->app->db->commit();
 
-				$form->session_item->deleteAll();
+				if(isset($form->session_item))
+					$form->session_item->deleteAll();
 				return $this->app->page_action_result = $t;
 			}
 		}catch(\Exception $e){
@@ -1846,7 +1861,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		return $this;
 	} 
 
-	function page_active($page){
+	function page_active_and_change_plan($page){
 
 		$mandatory_field = [
 						'first_name'=>'required',
@@ -1864,14 +1879,14 @@ class Model_User extends \xepan\commerce\Model_Customer{
 						'plan_id'=>'required',
 
 					];
-		$form = $page->add('xavoc\ispmanager\Form_CAF',['model'=>$this,'mandatory_field'=>$mandatory_field,'manage_consumption'=>false,'show_consumption_detail'=>true,'validate_values'=>true,'allow_invoice'=>true]);
+		$form = $page->add('xavoc\ispmanager\Form_CAF',['model'=>$this,'mandatory_field'=>$mandatory_field,'manage_consumption'=>false,'show_consumption_detail'=>true,'validate_values'=>true,'allow_invoice'=>true,'show_demoplan'=>true]);
 
 		if(!$this['radius_username'])
 			$form->getElement('radius_username')->set($this['code']);
 
 		$form->addHook('CAF_AfterSave',function($form)use($page){
 
-			$invoice_data = $this->active();
+			$invoice_data = $this->active_and_change_plan();
 			
 			if($form->allow_invoice && $form->invoice_items->count() && $form['create_invoice']){
 				$master_model = $invoice_data['master_model'];
@@ -1913,9 +1928,20 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$form->process();
 	}
 
-	function active(){
+	function active_and_change_plan(){
+		// set demo plan id
+		if($this['demo_plan_id']){
+			$plan_id = $this['demo_plan_id'];
+			$this['demo_plan_id']  = null;
+		}else{
+			$plan_id = $this['plan_id'];
+		}
 
-		$this->setPlan($this['plan_id']);
+		
+		if(($p = $this->currentRunningPlan())&& $p->id != $plan_id){
+			$this->setPlan($this['plan_id'],null,null,null,null,true);
+		}
+
 		$this['status'] = 'Active';
 		$this['is_active'] = true;
 		$this->save();
@@ -2208,5 +2234,12 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 		$this->add('xepan\communication\Model_Communication_Comment')
 			->createNew($this->app->employee,$this,"Lead Lost by ".$this->app->employee['name'],$remark,$on_date=$this->app->now);
+	}
+
+	function close_session(){
+
+		$query = "UPDATE radacct SET acctstoptime = acctupdatetime WHERE username = '".$this['radius_username']."' AND acctstoptime is null;";
+		$this->app->db->dsql()->expr($query)->execute();
+		return $this->app->js()->univ()->successMessage('Session Closed Successfully');
 	}
 }

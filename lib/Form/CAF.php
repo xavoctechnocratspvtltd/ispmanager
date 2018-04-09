@@ -11,6 +11,7 @@ class Form_CAF extends \Form{
 	public $session_item;
 	public $allow_invoice=false;
 	public $invoice_items=false;
+	public $show_demoplan=false;
 
 	function init(){
 		parent::init();
@@ -69,10 +70,14 @@ class Form_CAF extends \Form{
 					'mac_address'=>'c4~4',
 					'simultaneous_use'=>'c5~4',
 					'grace_period_in_days'=>'c6~4',
+					'demo_plan~Demo Plan'=>'c7~4',
 
 					'consumptions~'=>'Consumptions~c1-12',
 					'documents~'=>'Documents~c1-12',
 				];
+
+		$field_array = ['first_name','last_name','organization','customer_type','image_id','tin_no','pan_no','gstin','website','shipping_country_id','shipping_state_id','shipping_city','shipping_address','shipping_pincode','same_as_billing_address','billing_country_id','billing_state_id','billing_city','billing_pincode','billing_address','plan','plan_id','radius_username','radius_password','mac_address','simultaneous_use','grace_period_in_days','create_invoice','is_invoice_date_first_to_first','include_pro_data_basis','connection_type','demo_plan_id'];
+		$field_array = array_combine($field_array,$field_array);
 
 		$invoice_array = [];
 		if($this->allow_invoice){
@@ -82,18 +87,33 @@ class Form_CAF extends \Form{
 				'include_pro_data_basis'=>'c3~4',
 				'invoice_items~'=>'c4~12'
 			];
+		}else{
+			unset($field_array['create_invoice']);
+			unset($field_array['is_invoice_date_first_to_first']);
+			unset($field_array['include_pro_data_basis']);
+			unset($field_array['invoice_items']);
 		}
 
 		$layout_array = array_merge($model_layout_fields,$invoice_array);
 
+		if(!$this->show_demoplan){
+			unset($layout_array['demo_plan~Demo Plan']);
+			unset($field_array['demo_plan_id']);
+		}
 
 		$this->add('xepan\base\Controller_FLC')
 				->addContentSpot()
 				->makePanelsCoppalsible()
 				->layout($layout_array);
 
-		$this->setModel($this->model,['first_name','last_name','organization','customer_type','image_id','tin_no','pan_no','gstin','website','shipping_country_id','shipping_state_id','shipping_city','shipping_address','shipping_pincode','same_as_billing_address','billing_country_id','billing_state_id','billing_city','billing_pincode','billing_address','plan','plan_id','radius_username','radius_password','mac_address','simultaneous_use','grace_period_in_days','create_invoice','is_invoice_date_first_to_first','include_pro_data_basis','connection_type']);
+
+		$this->setModel($this->model,$field_array);
 		$this->getElement('plan_id')->getModel()->addCondition('status','Published');
+		if($this->allow_invoice){
+			$this->getElement('create_invoice')->set(0);
+			$this->getElement('is_invoice_date_first_to_first')->set(0);
+			$this->getElement('include_pro_data_basis')->set('none');
+		}
 		// foreach ($attachment_type as $key => $value) {
 		// 	$attachment_name = $this->app->normalizeName($value);
 

@@ -24,5 +24,6 @@ User me action connection disconnet or connection
 
 
 DB Fields
-	isp_user : connection_type
+	isp_user : connection_type, demo_plan_id
+
 	plan: free_tenure,free_tenure_unit

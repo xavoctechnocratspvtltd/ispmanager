@@ -509,7 +509,7 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 			// 	$this->app->db->rollback();
 			// 	throw $e;
 			// }
-			return $this->app->page_action_result = $this->app->js(true,$page->js()->univ()->closeDialog())->univ()->successMessage('user created successfully');
+			return $this->app->page_action_result = $this->app->js(true,$page->js()->univ()->closeDialog())->univ()->successMessage('Updated successfully');
 		}
 	}
 

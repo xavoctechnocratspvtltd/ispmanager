@@ -33,7 +33,7 @@ class Initiator extends \Controller_Addon {
                 
             $m = $this->app->top_menu->addMenu('ISP MANAGER');
             // $m->addItem(['Leads','icon'=>'fa fa-users'],'xavoc_ispmanager_lead');
-            $m->addItem(['Users','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_user');
+            $m->addItem(['Users','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_user&status=Active');
             $m->addItem(['Plans','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_plan');
             $m->addItem(['Topups','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_topup');
             $m->addItem(['Invoices','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_invoice');
@@ -73,6 +73,9 @@ class Initiator extends \Controller_Addon {
 
         $this->app->addHook('entity_collection',[$this,'exportEntities']);
 
+        // status icon
+        $this->app->status_icon["xavoc\ispmanager\Model_BasicPlan"] = ['All'=>' fa fa-globe','Published'=>"fa fa-file-text-o text-success",'UnPublished'=>'fa fa-file-o text-success'];
+        $this->app->status_icon["xavoc\ispmanager\Model_UserData"] = ['All'=>' fa fa-globe','Active'=>"fa fa-file-text-o text-success",'InActive'=>'fa fa-file-o text-red'];
         return $this;
     }
 

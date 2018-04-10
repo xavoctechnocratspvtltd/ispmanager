@@ -26,7 +26,13 @@ class page_plan extends \xepan\base\Page {
 				->count();
 		});
 
+		if($s = $_GET['status']){
+			$plan->addCondition('status',$s);
+		}
 
+
+		$plan->add('xepan\base\Controller_SideBarStatusFilter');
+		
 		$crud = $this->add('xepan\hr\CRUD');
 		if($crud->isEditing()){
 			$form = $crud->form;

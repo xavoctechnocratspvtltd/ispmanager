@@ -55,6 +55,11 @@ class page_user extends \xepan\base\Page {
 			return $q->expr('IFNULL([0],"")',[$acc->fieldQuery('framedipaddress')]);
 		});
 
+		if($s = $_GET['status']){
+			$model->addCondition('status',$s);
+		}
+		$model->add('xepan\base\Controller_SideBarStatusFilter',['add_status_to_sidebar'=>['Active','InActive']]);
+
 		$model->is([
 				'radius_username|to_trim|required',
 				'radius_password|to_trim|required',

@@ -7,7 +7,7 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 	public $status = ['Active','InActive','Open','Won','Lost'];
 	public $actions = [
 					'Active'=>['view','assign','print_caf','deactivate','communication','edit','delete'],
-					'Open'=>['view','assign','print_caf','close','lost','communication','edit','delete'],
+					'Open'=>['view','assign','print_caf','won','lost','communication','edit','delete'],
 					'Won'=>['view','edit','print_caf','delete','communication'],
 					'Lost'=>['view','open','print_caf','communication','edit','delete'],
 					'InActive'=>['view','print_caf','edit','delete','activate','communication']
@@ -220,7 +220,6 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 				->addClass('alert alert-danger')
 				->set('isp user '.$isp_user['radius_username'].' already exists')
 			;
-			// return;
 		}
 
 		$plan = $page->add('xavoc\ispmanager\Model_Plan');
@@ -259,7 +258,8 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 						'dd_date'=>'c5~3',
 						'bank_detail'=>'c6~3',
 						'amount'=>'c7~3',
-						'narration'=>'c8~12'
+						'narration'=>'c8~12',
+						'documents'=>'Documents~c1~12'
 					]);
 		// $form->setLayout('form/createuser');
 
@@ -330,25 +330,33 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 		$form->addField('shipping_city');
 		$form->addField('shipping_pincode');
 
-		$config = $this->add('xepan\base\Model_ConfigJsonModel',
-			[
-				'fields'=>[
-							'attachment_type'=>'text'
-						],
-					'config_key'=>'ISPMANAGER_MISC',
-					'application'=>'ispmanager'
-			]);
-		$config->add('xepan\hr\Controller_ACL',['permissive_acl'=>true]);
-		$config->tryLoadAny();
+		// $config = $this->add('xepan\base\Model_ConfigJsonModel',
+		// 	[
+		// 		'fields'=>[
+		// 					'attachment_type'=>'text'
+		// 				],
+		// 			'config_key'=>'ISPMANAGER_MISC',
+		// 			'application'=>'ispmanager'
+		// 	]);
+		// $config->add('xepan\hr\Controller_ACL',['permissive_acl'=>true]);
+		// $config->tryLoadAny();
 		
-		if($config['attachment_type']){
-			$attachment_type = explode(",", $config['attachment_type']);
+		// if($config['attachment_type']){
+		// 	$attachment_type = explode(",", $config['attachment_type']);
 
-			foreach ($attachment_type as $key => $value) {
-				$field = $form->addField('xepan\base\Upload',$this->app->normalizeName($value),$value);
-				$field->setModel('xepan\filestore\Image');
-			}
-		}
+		// 	foreach ($attachment_type as $key => $value) {
+		// 		$field = $form->addField('xepan\base\Upload',$this->app->normalizeName($value),$value);
+		// 		$field->setModel('xepan\filestore\Image');
+		// 	}
+		// }
+		$attachment_model = $this->add('xavoc\ispmanager\Model_Attachment');
+		$attachment_model->addCondition('contact_id',$this->id);
+		
+		$crud = $form->layout->add('CRUD',null,'documents');
+		$crud->setModel($attachment_model,['title','file_id','thumb_url'],['title','thumb_url']);
+		$crud->grid->addHook('formatRow',function($g){
+			$g->current_row_html['thumb_url'] = "<img style='width:150px;' src='".$g->model['thumb_url']."'>";
+		});
 
 		// $form->addField('checkbox','create_invoice');
 		// $form->addField('checkbox','is_invoice_date_first_to_first');

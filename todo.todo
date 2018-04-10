@@ -24,6 +24,8 @@ User me action connection disconnet or connection
 
 
 DB Fields
-	isp_user : connection_type, demo_plan_id
+	ALTER TABLE `isp_user` ADD `connection_type` VARCHAR(255) NULL DEFAULT NULL , ADD `demo_plan_id` INT(11) NOT NULL DEFAULT '0';
+	ALTER TABLE `isp_plan` DROP `status`;
 
-	plan: free_tenure,free_tenure_unit
+	ALTER TABLE `isp_plan` ADD `free_tenure` INT(11) NOT NULL DEFAULT '0', ADD `free_tenure_unit` VARCHAR(255) NOT NULL; 
+	ALTER TABLE `isp_user` DROP `status`;

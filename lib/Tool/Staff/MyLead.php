@@ -39,6 +39,9 @@ class Tool_Staff_MyLead extends \xepan\cms\View_Tool{
 			case 'paymentcollection':
 				$this->paymentCollection();
 				break;
+			case 'managestock':
+				$this->manageStock();
+				break;
 		}
 	}
 
@@ -143,7 +146,7 @@ class Tool_Staff_MyLead extends \xepan\cms\View_Tool{
  		
  		$lead->actions = [
 				'Won'=>['view','assign_for_installation'],
-				'Installation'=>['view','payment_receive','installed','lost'],
+				'Installation'=>['view','installed','lost'],
 				'Installed'=>['view'],
 				'Active'=>['view'],
 				'InActive'=>['view','active']
@@ -234,5 +237,38 @@ class Tool_Staff_MyLead extends \xepan\cms\View_Tool{
 		$crud->grid->addPaginator(25);
 		$crud->grid->addQuickSearch(['contact','amount']);
 
+	}
+
+	function manageStock(){
+		$tabs = $this->add('Tabs');
+		$stock_tab = $tabs->addtab('My Stocks');
+		$to_receive_tab = $tabs->addtab('My To Receive');
+		$receive_tab = $tabs->addtab('Received');
+
+		$stock_model=$this->add('xepan\commerce\Model_Item_Stock',['warehouse_id'=>$this->staff->id]);
+		$stock_model->addCondition('maintain_inventory',true);
+		$grid= $stock_tab->add('xepan\base\Grid',['fixed_header'=>false]);
+		$grid->setModel($stock_model,['name','net_stock','qty_unit']);
+		$grid->addPaginator(10);
+		
+		$to_rec_model = $to_receive_tab->add('xepan\commerce\Model_Store_Transaction');
+		$to_rec_model->actions=[
+				'ToReceived'=>['view','receive']
+			];
+		$to_rec_model->addCondition('to_warehouse_id',$this->staff->id);
+		$to_rec_model->addCondition('status','ToReceived');
+		$to_rec_model->addCondition('item_quantity','>',0);
+
+		$grid =$to_receive_tab->add('xepan\hr\CRUD',['allow_add'=>false, 'allow_del'=>false ,'allow_edit'=>false,'actionsWithoutACL'=>true,['grid_options'=>['fixed_header'=>false]]]);
+		$grid->setModel($to_rec_model,['from_warehouse','created_by','type','status','item_quantity','toreceived','received']);
+		$grid->removeAttachment();
+
+		$to_rec_model = $receive_tab->add('xepan\commerce\Model_Store_TransactionRow');
+		$to_rec_model->addCondition('to_warehouse_id',$this->app->employee->id);
+		$to_rec_model->addCondition('status','Received');
+		
+		$grid = $receive_tab->add('xepan\hr\CRUD',['allow_add'=>false, 'allow_del'=>false ,'allow_edit'=>false,'actionsWithoutACL'=>true,['grid_options'=>['fixed_header'=>false]]]);
+		$grid->setModel($to_rec_model,['item_name','quantity','extra_info','serial_nos','narration','from_warehouse','created_at']);
+		$grid->removeAttachment();
 	}
 }

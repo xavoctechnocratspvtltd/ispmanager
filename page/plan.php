@@ -45,9 +45,10 @@ class page_plan extends \xepan\base\Page {
 					'sku~Code'=>'c2~4',
 					'available_in_user_control_panel~'=>'c3~4~<br/>display in customer panel',
 					'description'=>'c4~12',
-					'original_price'=>'Invoicing~c11~4~used for marketing purpose',
-					'sale_price'=>'c12~4~actual billed/selling amount',
-					'tax_id~Tax'=>'c13~4~taxation',
+					'original_price'=>'Invoicing~c11~3~used for marketing purpose',
+					'sale_price'=>'c12~3~actual billed/selling amount',
+					'treat_sale_price_as_amount'=>'c13~3',
+					'tax_id~Tax'=>'c14~3~taxation',
 					'is_renewable~'=>'c21~4~<br/>if checked this invoice will be show in upcoming invoices',
 					// 'is_auto_renew~'=>'c21~4',
 					'renewable_value'=>'c22~4~0,1,2,4',
@@ -71,7 +72,7 @@ class page_plan extends \xepan\base\Page {
 		}
 
 		$crud->setModel($plan,
-				['name','sku','description','sale_price','original_price','status','document_id','id','created_by','updated_by','created_at','updated_at','type','qty_unit_id','qty_unit','renewable_unit','renewable_value','tax_id','tax','plan_validity_value','available_in_user_control_panel','is_renewable','free_tenure','free_tenure_unit'],
+				['name','sku','description','sale_price','original_price','status','document_id','id','created_by','updated_by','created_at','updated_at','type','qty_unit_id','qty_unit','renewable_unit','renewable_value','tax_id','tax','plan_validity_value','available_in_user_control_panel','is_renewable','free_tenure','free_tenure_unit','treat_sale_price_as_amount'],
 				['name','code','sale_price','is_renewable','renew_invoice','validity','created_at','created_by','users']
 			);
 

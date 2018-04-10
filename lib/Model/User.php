@@ -1788,9 +1788,10 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		}
 		
 		$payment_model = $this->add('xavoc\ispmanager\Model_PaymentTransaction');
+		$payment_model->getElement('employee')->caption('Received By');
 		$payment_model->addCondition('contact_id',$this->id);
 		$pay_grid = $page->add('xepan\base\Grid');
-		$pay_grid->setModel($payment_model,['contact','payment_mode','amount','narration','is_submitted_to_company']);
+		$pay_grid->setModel($payment_model,['contact','payment_mode','amount','narration','employee','is_submitted_to_company']);
 
 	}
 
@@ -1832,17 +1833,17 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		// 	return $this->app->page_action_result = $this->app->js(true,$page->js()->univ()->closeDialog())->univ()->successMessage('User Activated');
 		// });
 		try{
-			$this->app->db->beginTransaction();
+			// $this->app->db->beginTransaction();
 			if($t=$form->process()){
 				$this->installed();
-				$this->app->db->commit();
+				// $this->app->db->commit();
 
 				if(isset($form->session_item))
 					$form->session_item->deleteAll();
 				return $this->app->page_action_result = $t;
 			}
 		}catch(\Exception $e){
-			$this->app->db->rollback();
+			// $this->app->db->rollback();
 			throw $e;
 		}
 	}
@@ -1941,7 +1942,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 		
 		if(($p = $this->currentRunningPlan())&& $p->id != $plan_id){
-			$this->setPlan($this['plan_id'],null,null,null,null,true);
+			$this->setPlan($plan_id,null,null,null,null,true);
 		}
 
 		$this['status'] = 'Active';

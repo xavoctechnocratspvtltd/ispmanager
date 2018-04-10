@@ -141,16 +141,19 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 	}
 
 	function createInvoice(){
+		$user_plan_id = $this->ref('user_id')->get('plan_id');
+		if(!$user_plan_id) throw new \Exception("User dose not have any plan");
 
-		$plan_model = $this->add('xavoc\ispmanager\Model_Plan')->load($this['plan_id']);
+		$plan_model = $this->add('xavoc\ispmanager\Model_Plan')->load($user_plan_id);
 		$plan_amount = $plan_model->getAmount([], 1);
 		
 		$detail_data = [];
 		$invoice_recurring_date = $this['end_date'];
 		$item = [
-				'item_id'=>$this['plan_id'],
+				'item_id'=>$user_plan_id,
 				'price'=>$plan_amount['sale_amount'],
 				'quantity'=>$plan_model['renewable_value'],
+				'treat_sale_price_as_amount'=>$plan_model['treat_sale_price_as_amount'],
 				'taxation_id'=>$plan_model['tax_id'],
 				'shipping_charge'=>$plan_amount['shipping_charge'],
 				'shipping_duration'=>$plan_amount['shipping_duration'],

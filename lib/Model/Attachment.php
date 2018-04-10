@@ -11,7 +11,7 @@ class Model_Attachment extends \xepan\base\Model_Attachment{
 
 		$m = $this->add('xavoc\ispmanager\Model_Config_Mendatory');
 		$type = $m->getFields()['documents'];
-
+		
 		$this->getElement('title')->enum($type);
 	}
 }

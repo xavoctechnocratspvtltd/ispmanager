@@ -51,6 +51,9 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 					->setLimit(1);
 			return $q->expr('IFNULL([0],0)',[$act->fieldQuery('created_at')]);
 		});
+		$model->addExpression('user_status')->set($model->refSQL('user_id')->fieldQuery('status'));
+		
+		$model->addCondition('user_status','Active');
 
 		if($to_date)
 			$model->addCondition('end_date','<=',$to_date);
@@ -60,6 +63,7 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 		if($user_name){
 			$model->addCondition('user_id',$user_name);
 		}
+
 		// ['from_date'=>$from_date,'to_date'=>$to_date,'customer_id'=>$user_name]
 		// if($user_name){
 		// 	$model->addCondition('customer_id',$user_name);
@@ -79,7 +83,7 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 		$crud->grid->addHook('formatRow',function($g){
 
 			if($g->current_customer != $g->model['user_id']){
-				$g->current_row_html['user'] = $g->model['user']."<br/>( ".$g->model['organization']." )";
+				$g->current_row_html['user'] = $g->model['user']."<br/>( ".$g->model['organization']." )"."<br/> <p class='label label-info'>".$g->model['user_status']."</p>";
 				$g->current_row['action'] = $g->model['action'];
 				$g->current_customer = $g->model['user_id'];
 				$g->skip_sno = false;
@@ -117,7 +121,7 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 		$crud->grid->current_customer = null;
 		$crud->grid->current_invoice = null;
 
-		$crud->setModel($model,['user_id','user','radius_username','customer','plan','sale_price','start_date','end_date','expire_date','last_invoice_date','organization']);
+		$crud->setModel($model,['user_id','user','radius_username','customer','plan','sale_price','start_date','end_date','expire_date','last_invoice_date','organization','user_status']);
 		$crud->grid->removeColumn('organization');
 		$grid = $crud->grid;
 		$grid->add('VirtualPage')

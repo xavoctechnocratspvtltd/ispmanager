@@ -44,6 +44,15 @@ class page_user extends \xepan\base\Page {
 			return $upt->fieldQuery('end_date');
 		});
 
+		$model->addExpression('active_plan_expire_date')->set(function($m,$q){
+			$upt = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup');
+			$upt->addCondition('plan_id',$m->getElement('plan_id'));
+			$upt->addCondition('user_id',$m->getElement('id'));
+			$upt->addCondition('is_effective',true);
+
+			return $upt->fieldQuery('expire_date');
+		});
+
 		$model->addExpression('framed_ip_address')->set(function($m,$q){
 			$acc = $this->add('xavoc\ispmanager\Model_RadAcct');
 			$acc->addCondition('username',$m->getElement('radius_username'));
@@ -118,7 +127,7 @@ class page_user extends \xepan\base\Page {
 			// $form->setLayout('form/user');
 		}
 
-		$crud->setModel($model,['net_data_limit','radius_username','radius_password','plan_id','simultaneous_use','grace_period_in_days','custom_radius_attributes','first_name','last_name','create_invoice','is_invoice_date_first_to_first','include_pro_data_basis','country_id','state_id','city','address','pin_code','qty_unit_id','mac_address'],['name','radius_username','plan','radius_login_response','contacts_str','emails_str','created_at','last_login','is_online','active_condition_data','framed_ip_address','last_logout','name','created_by']);
+		$crud->setModel($model,['net_data_limit','radius_username','radius_password','plan_id','simultaneous_use','grace_period_in_days','custom_radius_attributes','first_name','last_name','create_invoice','is_invoice_date_first_to_first','include_pro_data_basis','country_id','state_id','city','address','pin_code','qty_unit_id','mac_address'],['name','radius_username','plan','radius_login_response','contacts_str','emails_str','created_at','last_login','is_online','active_condition_data','framed_ip_address','last_logout','name','created_by','active_plan_expire_date']);
 
 		$crud->grid->removeColumn('attachment_icon');
 		$crud->grid->removeColumn('framed_ip_address');
@@ -171,7 +180,7 @@ class page_user extends \xepan\base\Page {
 				if($g->model['is_expired'] || strtotime($this->app->now) > strtotime($g->model['active_plan_end_date'])) $access=" Plan Expired / Ended : Authentication Failed ";
 			}
 
-			$g->current_row_html['radius_login_response'] = 'Access: <br/>'.($data[0]?'yes':'<span class="label label-danger" style="font-size:8px;">'.$access.'</span>').'<br/>'.'COA: '.($data[1]?'yes':'no').'<br/>UL / DL: '.$data[2].'<br/>Burst: '.$data['3'];
+			$g->current_row_html['radius_login_response'] = 'Access: '.($data[0]?'<span class="label label-success">yes</span>':'<br/><span class="label label-danger" style="font-size:8px;">'.$access.'</span>').'<br/>'.'COA: '.($data[1]?'yes':'no').'<br/>UL / DL: '.$data[2].'<br/>Burst: '.$data['3']."<br/>Expire Date: ".($g->model['active_plan_expire_date']?date('d-M-Y',strtotime($g->model['active_plan_expire_date'])):"");
 			
 			// add online /offline
 			$status = ($g->model['is_online'] && $data[0]) ? "Online":"Offline";
@@ -215,6 +224,7 @@ class page_user extends \xepan\base\Page {
 		$crud->grid->removeColumn('active_condition_data');
 		$crud->grid->removeColumn('is_online');
 		$crud->grid->removeColumn('created_by');
+		$crud->grid->removeColumn('active_plan_expire_date');
 		// $g->addMethod('format_redgreen',function($g,$f){
 		// 	if($g->model['status']=='Red'){
 		// 		$g->setTDParam($f,'style/color','red');
@@ -245,14 +255,25 @@ class page_user extends \xepan\base\Page {
 		$city_field->setValueList($city_list);
 		$city_field->setEmptyText('Select City to filter');
 
+		$connection_status_field = $filter_form->addField('DropDown','user_connection_status');
+		$connection_status_field->setValueList(['Online'=>'Online','Offline'=>'Offline']);
+		$connection_status_field->setEmptyText('Select Connection Status');		
+
 		$filter_form->addHook('applyFilter',function($f,$m){
 			if($f['filter_city']){
 				$m->addCondition('city',$f['filter_city']);
 			}
+
+			if($status = $f['user_connection_status']){
+				if($status == "Online")
+					$m->addCondition('is_online',true);
+				if($status == "Offline")
+					$m->addCondition('is_online',false);
+			}
 		});
 
 		$city_field->js('change',$filter_form->js()->submit());
-
+		$connection_status_field->js('change',$filter_form->js()->submit());
 	}
 
 	function page_import(){

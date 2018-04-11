@@ -6,11 +6,11 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 	
 	public $status = ['Active','InActive','Open','Won','Lost'];
 	public $actions = [
-					'Active'=>['view','assign','print_caf','deactivate','communication','edit','delete'],
-					'Open'=>['view','assign','print_caf','won','lost','communication','edit','delete'],
-					'Won'=>['view','edit','print_caf','delete','communication'],
-					'Lost'=>['view','open','print_caf','communication','edit','delete'],
-					'InActive'=>['view','print_caf','edit','delete','activate','communication']
+					'Active'=>['view','assign','print_caf','deactivate','communication','append_remark','edit','delete'],
+					'Open'=>['view','assign','print_caf','won','lost','communication','append_remark','edit','delete'],
+					'Won'=>['view','edit','print_caf','delete','communication','append_remark'],
+					'Lost'=>['view','open','print_caf','communication','edit','delete','append_remark'],
+					'InActive'=>['view','print_caf','edit','delete','activate','communication','append_remark']
 				];
 
 	// public $acl_type = "ispmanager_Lead";
@@ -557,5 +557,22 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 	function print_caf(){
 		$js = $this->app->js()->univ()->newWindow($this->app->url('xavoc_ispmanager_cafprint',['contact_id'=>$this->id]),'PrintCAF'.$this->id);
 		$this->app->js(null,$js)->univ()->execute();
+	}
+
+	function page_append_remark($page){
+		if($this['remark'])
+			$page->add('View')->setHtml('Previous Remark: '.'<br/><div class="alert alert-info">'.$this['remark'].'</div>');
+		$form = $page->add('Form');
+		$form->addField('text','remark')->validate('required');
+		$form->addSubmit('submit')->addClass('btn btn-primary');
+		if($form->isSubmitted()){				
+			$this->appendRemark($form['remark']);
+			return $this->app->page_action_result = $this->app->js(true,$page->js()->univ()->closeDialog())->univ()->successMessage('Remark Added');
+		}
+	}
+
+	function appendRemark($remark){
+		$this['remark'] .=  " ".$remark;
+		return $this->save();
 	}
 }

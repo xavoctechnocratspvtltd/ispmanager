@@ -53,11 +53,11 @@ class Tool_Staff_MyLead extends \xepan\cms\View_Tool{
 
  		$lead->addCondition('status','Open');
  		$lead->actions = [
-					'Active'=>['view','assign'],
-					'Open'=>['view','assign','won','lost'],
-					'Won'=>['view'],
-					'Lost'=>['view','open'],
-					'InActive'=>['view','activate']
+					'Active'=>['view','assign','append_remark'],
+					'Open'=>['view','assign','won','lost','append_remark'],
+					'Won'=>['view','append_remark'],
+					'Lost'=>['view','open','append_remark'],
+					'InActive'=>['view','activate','append_remark']
 				];
 
 		$crud = $this->add('xepan\hr\CRUD',['allow_edit'=>false,'permissive_acl'=>true]);
@@ -134,6 +134,8 @@ class Tool_Staff_MyLead extends \xepan\cms\View_Tool{
 		$crud->grid->removeColumn('state');
 		$crud->grid->removeColumn('city');
 		$crud->grid->removeColumn('organization');
+		$crud->grid->removeColumn('created_by');
+		$crud->grid->removeColumn('assign_to');
 		$crud->grid->removeAttachment();
 
 	}

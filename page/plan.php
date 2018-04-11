@@ -24,7 +24,7 @@ class page_plan extends \xepan\base\Page {
 				->addCondition('plan_id',$m->getElement('id'))
 				->addCondition('is_expired',false)
 				->count();
-		});
+		})->sortable(true);
 
 		if($s = $_GET['status']){
 			$plan->addCondition('status',$s);

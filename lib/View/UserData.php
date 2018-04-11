@@ -86,7 +86,7 @@ class View_UserData extends \View {
 				if($g->model['is_expired'] || strtotime($this->app->now) > strtotime($g->model['active_plan_end_date'])) $access=" Plan Expired / Ended : Authentication Failed ";
 			}
 
-			$g->current_row_html['radius_login_response'] = 'Access: <br/>'.($data[0]?'yes':'<span class="label label-danger" style="font-size:8px;">'.$access.'</span>').'<br/>'.'COA: '.($data[1]?'yes':'no').'<br/>UL / DL: '.$data[2].'<br/>Burst: '.$data['3'];
+			$g->current_row_html['radius_login_response'] = 'Access: '.($data[0]?'yes':'<span class="label label-danger" style="font-size:8px;">'.$access.'</span>').'<br/>UL/ DL Upto: '.$data[2];
 			
 			// add online /offline
 			$status = ($g->model['is_online'] && $data[0]) ? "Online":"Offline";
@@ -152,7 +152,7 @@ class View_UserData extends \View {
 			// data detail
 			$speed = "UP/DL Limit: ".$g->model['upload_limit']."/".$g->model['download_limit']."<br/>";
 			$speed .= "FUP UP/DL Limit: ".$g->model['fup_upload_limit']."/".$g->model['fup_download_limit']."<br/>";
-			$speed .= "Accounting UP/DL Limit: ".$g->model['accounting_upload_ratio']."%/".$g->model['accounting_download_ratio']."%<br/>";
+			// $speed .= "Accounting UP/DL Limit: ".$g->model['accounting_upload_ratio']."%/".$g->model['accounting_download_ratio']."%<br/>";
 			$speed .= "start/end time: ".$g->model['start_time']."/".$g->model['end_time']."<br/>";
 			if($g->model['treat_fup_as_dl_for_last_limit_row'])
 				$speed .= "<strong style='color:red;'>FUP as DL for last limit row</strong><br/>";
@@ -222,7 +222,6 @@ class View_UserData extends \View {
 
 		// session uses
 		$this->add('View')->setElement('h3')->set('Session Uses');
-
 		$radacct = $this->add('xavoc\ispmanager\Model_RadAcct');
 		$radacct->addCondition('username',$this->isp_user_model['radius_username']);
 		$radacct->setOrder('radacctid','desc');
@@ -231,7 +230,11 @@ class View_UserData extends \View {
 				'acctinputoctets',
 				'acctoutputoctets'
 			]);
-
+		$radacct->getElement('acctoutputoctets')->caption('Download Data');
+		$radacct->getElement('acctinputoctets')->caption('Upload Data');
+		$radacct->getElement('acctstarttime')->caption('Start Time');
+		$radacct->getElement('acctstoptime')->caption('Stop Time');
+		$radacct->getElement('acctupdatetime')->caption('Last Update Time');
 		$grid = $this->add('Grid');
 		$grid->setModel($radacct,['acctstarttime','acctstoptime','acctupdatetime','acctinputoctets','acctoutputoctets','framedipaddress']);
 		$grid->addPaginator(5);

@@ -43,6 +43,7 @@ class Model_Plan extends \xepan\commerce\Model_Item{
 		$plan_j->addField('plan_validity_value')->type('int')->defaultValue(1)->hint('Including free tenure at end');
 		$plan_j->addField('free_tenure')->type('number')->defaultValue(0)->hint('Including free tenure at end');
 		$plan_j->addField('free_tenure_unit')->setValueList(['DAYS'=>'Day','WEEKS'=>'Week','MONTHS'=>'Month','YEARS'=>'Year']);
+		$plan_j->addField('is_surrenderable')->type('boolean')->defaultValue(false);
 
 		$this->hasMany('xavoc\ispmanager\Condition','plan_id',null,'conditions');
 

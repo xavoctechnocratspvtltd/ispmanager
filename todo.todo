@@ -28,4 +28,5 @@ DB Fields
 	ALTER TABLE `isp_plan` DROP `status`;
 
 	ALTER TABLE `isp_plan` ADD `free_tenure` INT(11) NOT NULL DEFAULT '0', ADD `free_tenure_unit` VARCHAR(255) NOT NULL; 
+	ALTER TABLE `isp_plan` ADD `is_surrenderable` tinyint(4) NOT NULL DEFAULT '0'; 
 	ALTER TABLE `isp_user` DROP `status`;

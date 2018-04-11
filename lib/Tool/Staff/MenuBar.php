@@ -76,7 +76,8 @@ class Tool_Staff_MenuBar extends \xepan\cms\View_Tool{
 		});
 		
 		$this->js(true)->_selector('.dropdown-toggle')->dropdown();
-
-		$this->template->trySet('staff_dp',($staff['image']?:"shared/apps/xavoc/ispmanager/templates/img/profile.png"));
+		
+		$cl->template->trySet('staff_name',$staff['name']);
+		$cl->template->trySet('staff_dp',($staff['image']?:"shared/apps/xavoc/ispmanager/templates/img/profile.png"));
 	}
 }

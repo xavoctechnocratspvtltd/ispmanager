@@ -4,12 +4,13 @@ namespace xavoc\ispmanager;
 
 class Model_User extends \xepan\commerce\Model_Customer{
 	// public $table = "isp_user";
-	public $status = ['Active','InActive','Installation','Installed','Won'];
+	public $status = ['Active','InActive','Installation','Installed','InDemo','Won'];
 	public $actions = [
 				'Won'=>['view','assign_for_installation','documents','print_caf','personal_info','communication','edit','delete'],
 				'Installation'=>['view','print_caf','personal_info','communication','edit','delete','installed','payment_receive','documents','assign_for_installation'],
 				'Installed'=>['view','active_and_change_plan','print_caf','personal_info','assign_for_installation','documents','communication','edit','delete'],
 				'Active'=>['view','active_and_change_plan','print_caf','challan','personal_info','communication','edit','delete','AddTopups','CurrentConditions','documents','radius_attributes','deactivate','Reset_Current_Plan_Condition','surrenderPlan','close_session'],
+				'InDemo'=>['view','active_and_change_plan','print_caf','challan','personal_info','communication','edit','delete','AddTopups','CurrentConditions','documents','radius_attributes','deactivate','Reset_Current_Plan_Condition','surrenderPlan','close_session'],
 				'InActive'=>['view','print_caf','personal_info','communication','edit','delete','active_and_change_plan','documents']
 			];
 
@@ -1936,16 +1937,18 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		if($this['demo_plan_id']){
 			$plan_id = $this['demo_plan_id'];
 			$this['demo_plan_id']  = null;
+			$status = 'InDemo';
 		}else{
 			$plan_id = $this['plan_id'];
+			$status = 'Active';
 		}
 
 		
 		if(($p = $this->currentRunningPlan())&& $p->id != $plan_id){
 			$this->setPlan($plan_id,null,null,null,null,true);
 		}
-
-		$this['status'] = 'Active';
+		
+		$this['status'] = $status;
 		$this['is_active'] = true;
 		$this->save();
 

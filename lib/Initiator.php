@@ -27,6 +27,7 @@ class Initiator extends \Controller_Addon {
                 $m->addItem(['Installation Due','icon'=>'fa fa-users'],'xavoc_ispmanager_lead_installation');
                 $m->addItem(['Installation Assigned','icon'=>'fa fa-users'],'xavoc_ispmanager_lead_installationassigned');
                 $m->addItem(['Installed','icon'=>'fa fa-users'],'xavoc_ispmanager_lead_installed');
+                $m->addItem(['InDemo','icon'=>'fa fa-users'],'xavoc_ispmanager_user&status=InDemo');
                 $m->addItem(['Active User','icon'=>'fa fa-users'],'xavoc_ispmanager_user');
                 $m->addItem(['All Lead','icon'=>'fa fa-users'],'xavoc_ispmanager_lead_all');
                 $m->addItem(['Convert Customer to ISP User','icon'=>'fa fa-users'],'xavoc_ispmanager_convertcustomertoispuser');

@@ -9,8 +9,8 @@ class Model_User extends \xepan\commerce\Model_Customer{
 				'Won'=>['view','assign_for_installation','documents','print_caf','personal_info','communication','edit','delete'],
 				'Installation'=>['view','print_caf','personal_info','communication','edit','delete','installed','payment_receive','documents','assign_for_installation'],
 				'Installed'=>['view','active_and_change_plan','print_caf','personal_info','assign_for_installation','documents','communication','edit','delete'],
-				'Active'=>['view','active_and_change_plan','print_caf','challan','personal_info','communication','edit','delete','AddTopups','CurrentConditions','documents','radius_attributes','deactivate','Reset_Current_Plan_Condition','surrenderPlan','close_session'],
-				'InDemo'=>['view','active_and_change_plan','print_caf','challan','personal_info','communication','edit','delete','AddTopups','CurrentConditions','documents','radius_attributes','deactivate','Reset_Current_Plan_Condition','surrenderPlan','close_session'],
+				'Active'=>['view','active_and_change_plan','print_caf','challan','personal_info','communication','edit','delete','AddTopups','CurrentConditions','documents','radius_attributes','deactivate','Reset_Current_Plan_Condition','surrenderPlan','force_surrender','close_session'],
+				'InDemo'=>['view','active_and_change_plan','print_caf','challan','personal_info','communication','edit','delete','AddTopups','CurrentConditions','documents','radius_attributes','deactivate','Reset_Current_Plan_Condition','surrenderPlan','force_surrender','close_session'],
 				'InActive'=>['view','print_caf','personal_info','communication','edit','delete','active_and_change_plan','documents']
 			];
 
@@ -454,7 +454,12 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		return $refund_value;
 	}
 
-	function page_surrenderPlan($page){
+	function page_force_surrender($page){
+		$this->page_surrenderPlan($page,$force_surrender=true);
+	}
+
+	function page_surrenderPlan($page,$force_surrender = false){
+
 		$qsp_detail_model = $this->add('xepan\commerce\Model_QSP_Detail')
 					->addCondition('item_id',$this['plan_id'])
 					->addCondition('customer_id',$this->id)
@@ -462,21 +467,27 @@ class Model_User extends \xepan\commerce\Model_Customer{
 					->tryLoadAny()
 					;
 		if(!$qsp_detail_model->loaded()){
-			$this->add('View')->set("No last invoice found, cannot proceed please deactivate user and adjust amount manually")->addClass('alert alert-danger');
+			$page->add('View')->set("No last invoice found, cannot proceed please deactivate user and adjust amount manually")->addClass('alert alert-danger');
 			return;
 		} 
 
+		if(!$force_surrender){
+			$plan = $this->add('xavoc\ispmanager\Model_Plan')->load($this['plan_id']);
+			if(!$plan['is_surrenderable']){
+				$page->add('View')->set("Plan is not surrenderable")->addClass('alert alert-danger');
+				return;
+			}
+		}
+		
 		$refund_tax_value = false;
 		$in_days = true;
 		$refund_value = $this->surrenderRefundValue($in_days,$refund_tax_value);
 		
-
 		$page->add('View')->addClass('alert alert-info')
 				->set('Refund Amount: '.$refund_value." ".$this->app->epan->default_currency['name']);
 		$form = $page->add('Form');
 		$form->addSubmit('Surrender Now')->addClass('btn btn-primary');
 		if($form->isSubmitted()){
-
 			$this->surrenderPlan($refund_value,true,true,$qsp_detail_model['qsp_master_id']);
 			return $this->app->page_action_result = $this->app->js(null,$page->js()->univ()->closeDialog())->univ()->successMessage('User Plan Deactivated');
 		}

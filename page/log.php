@@ -60,7 +60,7 @@ class page_log extends \xepan\base\Page{
 							)
 					)->sortable(true);
 
-		$user_name_field = $f->addField('xepan\base\Basic','username');
+		$user_name_field = $f->addField('xepan\base\Basic','username')->validate('required');
 		$user_name_field->setModel($user);
 		$user_name_field->set($_GET['username']);
 

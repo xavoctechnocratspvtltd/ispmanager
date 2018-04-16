@@ -22,7 +22,6 @@ Email Draft: from and to record is not showing
 User me action connection disconnet or connection
 
 
-
 DB Fields
 	ALTER TABLE `isp_user` ADD `connection_type` VARCHAR(255) NULL DEFAULT NULL , ADD `demo_plan_id` INT(11) NOT NULL DEFAULT '0';
 	ALTER TABLE `isp_plan` DROP `status`;
@@ -32,4 +31,5 @@ DB Fields
 	ALTER TABLE `isp_user` DROP `status`;
 
 Payment : installement
-at install plan change facility not given
+	at install plan change facility not given
+	at active time item price from item 

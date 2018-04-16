@@ -8,7 +8,7 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 	public $actions = [
 					'Active'=>['view','assign','print_caf','deactivate','communication','append_remark','edit','delete'],
 					'Open'=>['view','assign','print_caf','won','lost','communication','append_remark','edit','delete'],
-					'Won'=>['view','edit','print_caf','delete','communication','append_remark'],
+					'Won'=>['view','Open','edit','print_caf','delete','communication','append_remark'],
 					'Lost'=>['view','open','print_caf','communication','edit','delete','append_remark'],
 					'InActive'=>['view','print_caf','edit','delete','activate','communication','append_remark']
 				];

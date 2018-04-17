@@ -63,6 +63,18 @@ class page_user extends \xepan\base\Page {
 			return $q->expr('IFNULL([0],"")',[$acc->fieldQuery('framedipaddress')]);
 		});
 
+		$model->addExpression('due_date')->set(function($m,$q){
+			$up = $m->add('xavoc\ispmanager\Model_UserPlanAndTopup');
+			$up->addCondition('user_id',$m->getElement('id'));
+			$up->addCondition('plan_id',$m->getElement('plan_id'));
+			$up->addCondition('is_effective',true);
+			$up->addCondition([['is_expired',false],['is_expired',null]]);
+			$up->setOrder('id','desc');
+			$up->setLimit(1);
+			return $q->expr('IFNULL([0],NULL)',[$up->fieldQuery('end_date')]);
+		})->type('date');
+
+
 		if($s = $_GET['status']){
 			$model->addCondition('status',$s);
 		}else{
@@ -127,7 +139,7 @@ class page_user extends \xepan\base\Page {
 			// $form->setLayout('form/user');
 		}
 
-		$crud->setModel($model,['net_data_limit','radius_username','radius_password','plan_id','simultaneous_use','grace_period_in_days','custom_radius_attributes','first_name','last_name','create_invoice','is_invoice_date_first_to_first','include_pro_data_basis','country_id','state_id','city','address','pin_code','qty_unit_id','mac_address'],['name','radius_username','plan','radius_login_response','contacts_str','emails_str','created_at','last_login','is_online','active_condition_data','framed_ip_address','last_logout','name','created_by','active_plan_expire_date']);
+		$crud->setModel($model,['net_data_limit','radius_username','radius_password','plan_id','simultaneous_use','grace_period_in_days','custom_radius_attributes','first_name','last_name','create_invoice','is_invoice_date_first_to_first','include_pro_data_basis','country_id','state_id','city','address','pin_code','qty_unit_id','mac_address'],['name','radius_username','plan','radius_login_response','contacts_str','emails_str','created_at','last_login','is_online','active_condition_data','framed_ip_address','last_logout','name','created_by','active_plan_expire_date','due_date']);
 
 		$crud->grid->removeColumn('attachment_icon');
 		$crud->grid->removeColumn('framed_ip_address');

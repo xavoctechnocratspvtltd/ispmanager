@@ -38,7 +38,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 		$user_j = $this->join('isp_user.customer_id');
 
-		$user_j->hasOne('xavoc\ispmanager\Plan','plan_id')
+		$user_j->hasOne('xavoc\ispmanager\Plan','plan_id','plan_name_with_code')
 				->display(['form'=>'autocomplete/Basic']);
 		$user_j->hasOne('xavoc\ispmanager\Plan','demo_plan_id')
 				->display(['form'=>'autocomplete/Basic']);

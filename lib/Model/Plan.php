@@ -45,6 +45,10 @@ class Model_Plan extends \xepan\commerce\Model_Item{
 		$plan_j->addField('free_tenure_unit')->setValueList(['DAYS'=>'Day','WEEKS'=>'Week','MONTHS'=>'Month','YEARS'=>'Year']);
 		$plan_j->addField('is_surrenderable')->type('boolean')->defaultValue(false);
 
+		$this->addExpression('plan_name_with_code')->set(function($m,$q){
+			return $q->expr('CONCAT([0],"-",[1])',[$m->getElement('name'),$m->getElement('sku')]);
+		});
+
 		$this->hasMany('xavoc\ispmanager\Condition','plan_id',null,'conditions');
 
 		$this->addHook('beforeSave',$this,[],4);

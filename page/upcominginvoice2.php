@@ -28,7 +28,7 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 		$user_model = $this->add('xavoc\ispmanager\Model_User');
 		$user_model->title_field = "username";
 		$user_model->addExpression('username')
-			->set($user_model->dsql()->expr('CONCAT([0]," :: ",[1]," :: ",[2])',[$user_model->getElement('radius_username'),$user_model->getElement('name'),$user_model->getElement('organization')]));
+			->set($user_model->dsql()->expr('CONCAT( IFNULL([0],"")," :: ",IFNULL([1],"")," :: ",IFNULL([2],""))',[$user_model->getElement('radius_username'),$user_model->getElement('name'),$user_model->getElement('organization')]));
 
 		$field_user_name = $form->addField('xepan\base\Basic','user_name');
 		$field_user_name->setModel($user_model);

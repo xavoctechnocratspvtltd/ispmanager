@@ -40,9 +40,10 @@ Payment : installement
 
 	Product detail in QSP add item
 	plan condition spped with upto text
+
+	next renewal with date time ex created_at 12-march-2018 10:50 AM then plan expire 
+	add default narrtion of start and end date in aactive and plan changed
 	
-
-
 	Action Taken
 		All Old Invoice are Deleted and All Account data
 		All Plan Name Change to Broad band

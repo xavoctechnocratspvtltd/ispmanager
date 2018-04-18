@@ -74,11 +74,11 @@ class page_plan extends \xepan\base\Page {
 
 		$crud->setModel($plan,
 				['name','sku','description','sale_price','original_price','status','document_id','id','created_by','updated_by','created_at','updated_at','type','qty_unit_id','qty_unit','renewable_unit','renewable_value','tax_id','tax','plan_validity_value','available_in_user_control_panel','is_renewable','free_tenure','free_tenure_unit','treat_sale_price_as_amount','is_surrenderable'],
-				['name','code','sale_price','is_renewable','renew_invoice','validity','created_at','created_by','users']
+				['name','sku','sale_price','is_renewable','renew_invoice','validity','created_at','created_by','users']
 			);
 
 		$crud->grid->removeColumn('attachment_icon');
-		$crud->grid->addQuickSearch(['name']);
+		$crud->grid->addQuickSearch(['name','sku']);
 		$crud->grid->addPaginator($ipp=50);
 
 		$grid = $crud->grid;

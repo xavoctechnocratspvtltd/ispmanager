@@ -332,6 +332,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 						'express_shipping_charge'=>0,
 						'express_shipping_duration'=>"",
 						'qty_unit_id'=>$plan_model['qty_unit_id'],
+						'treat_sale_price_as_amount'=>$plan_model['treat_sale_price_as_amount'],
 						'discount'=>0
 					];
 			
@@ -1952,6 +1953,8 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		}else{
 			$plan_id = $this['plan_id'];
 			$status = 'Active';
+
+
 		}
 
 		

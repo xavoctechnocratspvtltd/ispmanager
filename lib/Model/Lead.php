@@ -379,7 +379,7 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 				'DD'=>['dd_no','dd_date','bank_detail','amount','narration'],
 			],'div[class*="col-md-"]');
 
-		$form->addSubmit('create user')->addClass('btn btn-primary');
+		$form->addSubmit('Submit')->addClass('btn btn-primary');
 		
 		if($form->isSubmitted()){	
 

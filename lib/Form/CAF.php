@@ -12,7 +12,7 @@ class Form_CAF extends \Form{
 	public $allow_invoice=false;
 	public $invoice_items=false;
 	public $show_demoplan=false;
-
+	public $change_plan=true;
 	function init(){
 		parent::init();
 		
@@ -164,6 +164,7 @@ class Form_CAF extends \Form{
 			$session_item->addField('item_name');
 			$session_item->addHook('afterLoad',function($m){$m['item_name'] = $this->add('xepan\commerce\Model_Store_Item')->load($m['item'])->get('name'); });
 		
+			$session_item->addField('unit');
 			$session_item->addField('quantity')->type('number');
 			$session_item->addField('extra_info')->type('text');
 			$session_item->addField('narration')->type('text');
@@ -179,10 +180,11 @@ class Form_CAF extends \Form{
 		          if($serial_no_array[0] == "" || $m['quantity'] != count($serial_no_array))
 		          	throw $this->exception('count of serial nos must be equal to receive quantity','ValidityCheck')->setField('serial_nos');
 		        }
+		        $m['unit'] = $oi['qty_unit'];
 			});
 
 			$crud = $this->layout->add('CRUD',['entity_name'=>'Consumed Item'],'consumptions');
-			$crud->setModel($session_item,['item','quantity','extra_info','narration','serial_nos'],['item_name','quantity','extra_info','narration','serial_nos']);
+			$crud->setModel($session_item,['item','quantity','extra_info','narration','serial_nos'],['item_name','quantity','unit','extra_info','narration','serial_nos']);
 		}
 
 		if($this->show_consumption_detail){
@@ -223,6 +225,11 @@ class Form_CAF extends \Form{
 			$crud = $this->layout->add('CRUD',['entity_name'=>'Invoice item'],'invoice_items');
 			$crud->setModel($this->invoice_items,['item','amount','narration'],['item_name','amount','narration']);
 		}
+
+		if(!$this->change_plan){
+			$this->getElement('plan')->setAttr('disabled');
+		}
+		
 		$this->addSubmit('Save')->addClass('btn btn-primary btn-block');
 		
 	}

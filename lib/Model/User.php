@@ -1837,7 +1837,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 	function page_installed($page){
 		$mandatory_field = ['connection_type'=>'required','customer_type'=>'required'];
-		$form = $page->add('xavoc\ispmanager\Form_CAF',['model'=>$this,'mandatory_field'=>$mandatory_field,'show_demoplan'=>true]);
+		$form = $page->add('xavoc\ispmanager\Form_CAF',['model'=>$this,'mandatory_field'=>$mandatory_field,'show_demoplan'=>true,'change_plan'=>false]);
 		if(!$this['radius_username'])
 			$form->getElement('radius_username')->set($this['code']);
 		// $form->addHook('CAF_AfterSave',function($form)use($page){

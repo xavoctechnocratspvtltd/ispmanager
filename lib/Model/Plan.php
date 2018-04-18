@@ -11,7 +11,7 @@ class Model_Plan extends \xepan\commerce\Model_Item{
 			];
 	
 	public $acl_type="ispmanager_plan";
-
+	public $title_field = "plan_name_with_code";
 	function init(){
 		parent::init();
 

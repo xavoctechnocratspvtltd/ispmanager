@@ -43,7 +43,10 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 			->set($model->refSQL("user_id")->fieldQuery('radius_username'));
 		$model->addExpression('organization')
 			->set($model->refSQL("user_id")->fieldQuery('organization'));
+
 		$model->addExpression('sale_price')->set($model->refSQL('plan_id')->fieldQuery('sale_price'));
+		$model->addExpression('plan_code')->set($model->refSQL('plan_id')->fieldQuery('sku'));
+
 		$model->addExpression('last_invoice_date')->set(function($m,$q){
 			$act = $m->add('xavoc\ispmanager\Model_Invoice')
 					->addCondition('contact_id',$m->getElement('user_id'))
@@ -101,6 +104,7 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 				
 
 			$g->current_row_html['end_date'] = "<div class='alert alert-danger'><strong>".date('d-M-Y',strtotime($g->model['end_date']))."</strong></div>";
+			$g->current_row_html['plan'] = $g->model['plan']."<br/>".$g->model['plan_code'];
 				
 		// 	if($g->current_invoice != $g->model['qsp_master_id']){
 
@@ -121,7 +125,7 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 		$crud->grid->current_customer = null;
 		$crud->grid->current_invoice = null;
 
-		$crud->setModel($model,['user_id','user','radius_username','customer','plan','sale_price','start_date','end_date','expire_date','last_invoice_date','organization','user_status']);
+		$crud->setModel($model,['user_id','user','radius_username','customer','plan','plan_code','sale_price','start_date','end_date','expire_date','last_invoice_date','organization','user_status']);
 		$crud->grid->removeColumn('organization');
 		$grid = $crud->grid;
 		$grid->add('VirtualPage')
@@ -169,7 +173,7 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 		// $order->now();
 
 		$grid->addPaginator($ipp=25);
-		$removeColumn = ['edit','delete','action','attachment_icon','user_id'];
+		$removeColumn = ['edit','delete','action','attachment_icon','user_id','plan_code'];
 		foreach ($removeColumn as $key => $field_name) {
 			$grid->removeColumn($field_name);
 		}

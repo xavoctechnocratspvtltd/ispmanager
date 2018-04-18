@@ -58,12 +58,12 @@ class Model_Plan extends \xepan\commerce\Model_Item{
 
 		// plan name must not be same
 		$old_model = $this->add("xavoc\ispmanager\Model_Plan");
-		$old_model->addCondition('name',$this['name']);
+		$old_model->addCondition('sku',$this['sku']);
 		if($this->loaded())
 			$old_model->addCondition('id','<>',$this->id);
 		$old_model->tryLoadAny();
 		if($old_model->loaded())
-			throw $this->Exception("(".$this['name'].') plan name is already exist ','ValidityCheck')->setField('name');
+			throw $this->Exception("(".$this['sku'].') plan code is already exist ','ValidityCheck')->setField('sku');
 	}
 
 	function page_condition($page){

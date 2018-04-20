@@ -2009,7 +2009,10 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$model->addCondition('attribute','Framed-IP-Address');
 		$model->addCondition('op',':=');
 
-		$crud = $sip_tab->add('xepan\base\CRUD',['entity_name'=>'Static IP']);
+		$crud = $sip_tab->add('xepan\base\CRUD',['entity_name'=>'Static IP','allow_edit'=>false]);
+		if($model->count()->getOne() >= 1){
+			$crud->allow_add = false;
+		}
 		$crud->setModel($model);
 
 		$mac_address = $this['mac_address'];

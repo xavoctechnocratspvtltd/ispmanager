@@ -235,22 +235,23 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 				->makePanelsCoppalsible(true)
 				->layout([
 						'plan~Plan'=>'User Plan Information~c1~4',
-						'first_name'=>'c2~3',
-						'last_name'=>'c3~3',
+						'first_name'=>'c2~4',
+						'last_name'=>'c3~4',
 						'mobile_no'=>'c4~4',
 						'email_id'=>'c5~4',
 						'customer_type'=>'c61~4',
+						'demo_plan'=>'c1~4',
 						'billing_country'=>'Billing Address~c1~3',
 						'billing_state'=>'c2~3',
 						'billing_city'=>'c3~3',
 						'billing_pincode'=>'c4~3',
 						'billing_address'=>'c5~3',
-						'shipping_address_same_as_billing_address~'=>'c6~6',
-						'shipping_country'=>'Connection Address~c1~3~closed',
-						'shipping_state'=>'c2~3',
-						'shipping_city'=>'c3~3',
-						'shipping_pincode'=>'c4~3',
-						'shipping_address'=>'c5~3',
+						'shipping_address_same_as_billing_address~Installation address same as billing address'=>'c6~6',
+						'shipping_country~Installation country'=>'Installation Address~c1~3~closed',
+						'shipping_state~Installation state'=>'c2~3',
+						'shipping_city~Installation city'=>'c3~3',
+						'shipping_pincode~Installation pincode'=>'c4~3',
+						'shipping_address~Installation address'=>'c5~3',
 						'payment_mode'=>'Payment Mode~c1~12',
 						'cheque_no'=>'c2~3',
 						'cheque_date'=>'c3~3',
@@ -266,6 +267,11 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 		$plan_field = $form->addField('xepan\base\DropDown','plan')->validate('required');
 		$plan_field->setModel($plan);
 		$plan_field->setEmptyText('Please Select');
+
+		$demo_plan_field = $form->addField('xepan\base\DropDown','demo_plan')
+				->validate('required');
+		$demo_plan_field->setModel($plan);
+		$demo_plan_field->setEmptyText('Please Select Demo Plan');
 		
 		$form->addField('mobile_no')->validate('required')->set($this->getPhones()[0]);
 		$form->addField('email_id')->validate('required')->set($this->getEmails()[0]);
@@ -478,6 +484,7 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 				
 				if($user->loaded()){
 					$user['plan_id'] = $form['plan'];
+					$user['demo_plan_id'] = $form['demo_plan'];
 					$user['create_invoice'] = 0;
 					// $user['create_invoice'] = $form['create_invoice'];
 					// $user['is_invoice_date_first_to_first'] = $form['is_invoice_date_first_to_first'];

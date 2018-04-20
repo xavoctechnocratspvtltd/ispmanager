@@ -48,3 +48,16 @@ Payment : installement
 		All Old Invoice are Deleted and All Account data
 		All Plan Name Change to Broad band
 
+
+caf form at won shipping address to installation address;
+install resign region mandatory fields.
+for install action remove demo plan id.
+install time demo plan non editable  and lead won ke time pe demo plan also feed.
+
+
+Support tocket filter employee, from -to date status,
+user filter based on created_at, install_at, activate date employee
+user session time difference
+
+
+

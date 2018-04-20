@@ -96,18 +96,19 @@ class Form_CAF extends \Form{
 
 		$layout_array = array_merge($model_layout_fields,$invoice_array);
 
-		if(!$this->show_demoplan){
-			unset($layout_array['demo_plan~Demo Plan']);
-			unset($field_array['demo_plan_id']);
-		}
 
 		$this->add('xepan\base\Controller_FLC')
 				->addContentSpot()
 				->makePanelsCoppalsible()
 				->layout($layout_array);
 
-
 		$this->setModel($this->model,$field_array);
+
+		if(!$this->show_demoplan){
+			$this->getElement('demo_plan')->setAttr('disabled');
+			// unset($layout_array['demo_plan~Demo Plan']);
+			// unset($field_array['demo_plan_id']);
+		}
 		$this->getElement('plan_id')->getModel()->addCondition('status','Published');
 		if($this->allow_invoice){
 			$this->getElement('create_invoice')->set(0);

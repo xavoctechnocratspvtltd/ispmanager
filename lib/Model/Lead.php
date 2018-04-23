@@ -268,8 +268,7 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 		$plan_field->setModel($plan);
 		$plan_field->setEmptyText('Please Select');
 
-		$demo_plan_field = $form->addField('xepan\base\DropDown','demo_plan')
-				->validate('required');
+		$demo_plan_field = $form->addField('xepan\base\DropDown','demo_plan');
 		$demo_plan_field->setModel($plan);
 		$demo_plan_field->setEmptyText('Please Select Demo Plan');
 		

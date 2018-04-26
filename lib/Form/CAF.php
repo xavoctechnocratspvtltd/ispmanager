@@ -6,7 +6,7 @@ class Form_CAF extends \Form{
 	public $model;
 	public $mandatory_field = [];  // field_name => validation rule
 	public $validate_values = false;  // field_name => validation rule
-	public $manage_consumption=true;
+	public $manage_consumption = true;
 	public $show_consumption_detail=false;
 	public $session_item;
 	public $allow_invoice=false;
@@ -275,7 +275,7 @@ class Form_CAF extends \Form{
 
 				//consumption entry
 				if($this->manage_consumption == true){
-					
+					// temporary removed .. to do uncomment
 					// if(!$this->session_item->count()){
 					// 	$this->js()->univ()->errorMessage('please add consumption items')->execute();
 					// }

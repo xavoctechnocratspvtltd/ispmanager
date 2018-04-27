@@ -721,7 +721,10 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$this['last_dl_limit']=null;
 		$this['last_ul_limit']=null;
 		$this->save();
-		
+			
+		$this->add('xepan\communication\Model_Communication_Comment')
+			->createNew($this->app->employee,$this,"New Plan (".$plan_model['name']." ".$plan_model['sku'].") Implemented by employee ".$this->app->employee['name'],"Plan (".$plan_model['name']." ".$plan_model['sku'].") Implemented by employee ".$this->app->employee['name'],$on_date=$this->app->now);
+
 		return $plan_model;
 	}
 

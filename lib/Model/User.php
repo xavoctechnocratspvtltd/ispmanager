@@ -196,10 +196,10 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		}
 	}
 
-	function updateUserConditon($expire_all_plan=false,$expire_all_topup=false,$as_grace=true,$on_date=null){
+	function updateUserConditon($expire_all_plan=false,$expire_all_topup=false,$as_grace=true,$on_date=null,$force_plan_end_date=null){
 		if(!$this->plan_dirty OR !$this['plan_id']) return;
 		
-		$this->setPlan($this['plan_id'],$on_date, $remove_old=false,$is_topup=false,$remove_old_topups=false,$expire_all_plan,$expire_all_topup,null,$as_grace);
+		$this->setPlan($this['plan_id'],$on_date, $remove_old=false,$is_topup=false,$remove_old_topups=false,$expire_all_plan,$expire_all_topup,null,$as_grace,$force_plan_end_date);
 	}
 
 	function createInvoice($m,$detail_data=null,$false_condition=false,$master_created_at=null,$force_create=false){
@@ -1369,13 +1369,13 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	function import($data){
 		// get all plan list
 		$plan_list = [];
-		if($this->app->recall('isp_user_import_plan',false) == false){
+		// if($this->app->recall('isp_user_import_plan',false) == false){
 			foreach ($this->add('xavoc\ispmanager\Model_Plan')->getRows() as $key => $plan) {
-				$plan_list[strtolower(trim($plan['name']))] = $plan['id'];
+				$plan_list[strtolower(trim($plan['sku']))] = $plan['id'];
 			}
-			$this->app->memorize('isp_user_import_plan',$plan_list);
-		}
-		$plan_list = $this->app->recall('isp_user_import_plan');
+			// $this->app->memorize('isp_user_import_plan',$plan_list);
+		// }
+		// $plan_list = $this->app->recall('isp_user_import_plan');
 
 		
 		// get all country list
@@ -1410,7 +1410,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			$this->api->db->beginTransaction();
 			$imported_user_count = 1;
 			foreach ($data as $key => $record) {
-
+				
 				if(!trim($record['RADIUS_USERNAME'])) continue;
 				
 				$user = $this->add('xavoc\ispmanager\Model_User');
@@ -1422,9 +1422,9 @@ class Model_User extends \xepan\commerce\Model_Customer{
 				$user->addCondition('radius_username',trim($record['RADIUS_USERNAME']));
 				$user->tryLoadAny();
 
-				if($user->loaded()){
-					throw new \Exception("user ".$record['RADIUS_USERNAME']." already added ");
-				}
+				// if($user->loaded()){
+				// 	throw new \Exception("user ".$record['RADIUS_USERNAME']." already added ");
+				// }
 
 				$plan_name = strtolower(trim($record['PLAN']));
 				$plan_id = isset($plan_list[$plan_name])?$plan_list[$plan_name]:0;
@@ -1489,7 +1489,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 					$user->setPlan($user['plan_id'],$record['INVOICE_DATE'], $remove_old=false,$is_topup=false,$remove_old_topups=false,$expire_all_plan=false,$expire_all_topup=false,null,$as_grace=true,$force_plan_end_date=$record['PLAN_END_DATE']);
 					$user->createInvoice(null,$detail_data=null,$false_condition=false,$master_created_at=$record['INVOICE_DATE'],$force_create=false);
 				}else{
-					$user->updateUserConditon();
+					$user->updateUserConditon($expire_all_plan=false,$expire_all_topup=false,$as_grace=true,$on_date=$record['CREATED_AT'],$force_plan_end_date=$record['PLAN_END_DATE']);
 					$user->createInvoice(null);
 				}
 				
@@ -1503,8 +1503,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 					foreach ($condition_consumed_list as $key => $c_c) {
 						$consumed_condition = explode("/", $c_c);
 						if(count($consumed_condition) != 3 ) continue;
-
-
+						
 						$dl_data_remaining =  $this->app->human2byte($consumed_condition[0]);
 						$up_data_remaining =  $this->app->human2byte($consumed_condition[1]);
 						$remark = trim($consumed_condition[2]);
@@ -1514,8 +1513,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 						$plan_condition->addCondition('remark',$remark);
 						$plan_condition->tryLoadAny();
 
-						if(!$plan_condition->loaded()) throw new \Exception("Plan Condition not found of plan ".$plan_name);
-						
+						if(!$plan_condition->loaded()) throw new \Exception("Plan Condition not found of plan ".$plan_name." & remark = ".$remark);
 
 						$dl_data_consumed = $this->app->human2byte($plan_condition['data_limit']) - ($dl_data_remaining + $up_data_remaining);
 

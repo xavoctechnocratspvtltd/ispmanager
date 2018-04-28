@@ -1368,36 +1368,36 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 	function import($data){
 		// get all plan list
-		// $plan_list = [];
-		// if($this->app->recall('isp_user_import_plan',false) == false){
-		// 	foreach ($this->add('xavoc\ispmanager\Model_Plan')->getRows() as $key => $plan) {
-		// 		$plan_list[strtolower(trim($plan['name']))] = $plan['id'];
-		// 	}
-		// 	$this->app->memorize('isp_user_import_plan',$plan_list);
-		// }
-		// $plan_list = $this->app->recall('isp_user_import_plan');
+		$plan_list = [];
+		if($this->app->recall('isp_user_import_plan',false) == false){
+			foreach ($this->add('xavoc\ispmanager\Model_Plan')->getRows() as $key => $plan) {
+				$plan_list[strtolower(trim($plan['name']))] = $plan['id'];
+			}
+			$this->app->memorize('isp_user_import_plan',$plan_list);
+		}
+		$plan_list = $this->app->recall('isp_user_import_plan');
 
 		
-		// // get all country list
-		// $country_list = [];
-		// if($this->app->recall('isp_user_import_country',false) == false){
-		// 	foreach($this->add('xepan\base\Model_Country') as $key => $country){
-		// 		$country_list[strtolower(trim($country['name']))] = $country['id'];
-		// 	}
-		// 	$this->app->memorize('isp_user_import_country',$country_list);
-		// }
-		// $country_list = $this->app->recall('isp_user_import_country');
+		// get all country list
+		$country_list = [];
+		if($this->app->recall('isp_user_import_country',false) == false){
+			foreach($this->add('xepan\base\Model_Country') as $key => $country){
+				$country_list[strtolower(trim($country['name']))] = $country['id'];
+			}
+			$this->app->memorize('isp_user_import_country',$country_list);
+		}
+		$country_list = $this->app->recall('isp_user_import_country');
 
-		// $state_list = [];
-		// if($this->app->recall('isp_user_import_state',false) == false){
-		// 	$state_model = $this->add('xepan\base\Model_State');
-		// 	foreach ($state_model as $key => $state) {
-		// 		$state_list[strtolower(trim($state['name']))] = $state['id'];
-		// 	}
+		$state_list = [];
+		if($this->app->recall('isp_user_import_state',false) == false){
+			$state_model = $this->add('xepan\base\Model_State');
+			foreach ($state_model as $key => $state) {
+				$state_list[strtolower(trim($state['name']))] = $state['id'];
+			}
 
-		// 	$this->app->memorize('isp_user_import_state',$state_list);
-		// }
-		// $state_list = $this->app->recall('isp_user_import_state');
+			$this->app->memorize('isp_user_import_state',$state_list);
+		}
+		$state_list = $this->app->recall('isp_user_import_state');
 		// echo "<pre>";
 		// print_r($plan_list);
 		// print_r($country_list);
@@ -1419,156 +1419,160 @@ class Model_User extends \xepan\commerce\Model_Customer{
 				// $user->addHook('afterSave',[$user,'createInvoice']);
 				// $user->addHook('afterSave',[$user,'updateNASCredential']);
 				// $user->addHook('afterSave',[$user,'updateWebsiteUser']);
-
 				$user->addCondition('radius_username',trim($record['RADIUS_USERNAME']));
 				$user->tryLoadAny();
-				// $plan_name = strtolower(trim($record['PLAN']));
-				// $plan_id = isset($plan_list[$plan_name])?$plan_list[$plan_name]:0;
-				// if($plan_id == 0){
-				// 	throw new \Exception("User Plan not found".$record['RADIUS_USERNAME'], 1);
-				// }
 
-				// $user['plan_id'] = $plan_id;
-				
-				// $country_name = strtolower(trim($record['COUNTRY']));
-				// $country_id = isset($country_list[$country_name])?$country_list[$country_name]:0;
-				// $user['country_id'] = $country_id;
+				if($user->loaded()){
+					throw new \Exception("user ".$record['RADIUS_USERNAME']." already added ");
+				}
 
-				// $state_name = strtolower(trim($record['STATE']));
-				// $state_id = isset($state_list[$state_name])?$state_list[$state_name]:0;
-				// $user['state_id'] = $state_id;
+				$plan_name = strtolower(trim($record['PLAN']));
+				$plan_id = isset($plan_list[$plan_name])?$plan_list[$plan_name]:0;
+				if($plan_id == 0){
+					throw new \Exception("User Plan not found".$record['RADIUS_USERNAME'], 1);
+				}
+
+				$user['plan_id'] = $plan_id;
 				
-				// foreach ($record as $field => $value) {
-				// 	$field_name = strtolower(trim($field));
-				// 	$user[$field_name] = $value;
-				// }
+				$country_name = strtolower(trim($record['COUNTRY']));
+				$country_id = isset($country_list[$country_name])?$country_list[$country_name]:0;
+				$user['country_id'] = $country_id;
+
+				$state_name = strtolower(trim($record['STATE']));
+				$state_id = isset($state_list[$state_name])?$state_list[$state_name]:0;
+				$user['state_id'] = $state_id;
+				
+				foreach ($record as $field => $value) {
+					$field_name = strtolower(trim($field));
+					$user[$field_name] = $value;
+				}
 				if($record['GSTIN']){
 					$user['gstin'] = $record['GSTIN'];
 				}
 				if($record['ORGANIZATION']){
 					$user['organization'] = $record['ORGANIZATION'];
 				}
-				// $user['created_at'] = date('Y-m-d H:i:s',strtotime($record['CREATED_AT']))?:$this->app->now;
-				// // $user['created_at'] = date('Y-m-d H:i:s',strtotime($record['INVOICE_DATE']))?:$this->app->now;
-				// if(!strlen(trim($user['first_name'])))
-				// 	$user['first_name'] = $user['radius_username'];
+				$user['created_at'] = date('Y-m-d H:i:s',strtotime($record['CREATED_AT']))?:$this->app->now;
+				// $user['created_at'] = date('Y-m-d H:i:s',strtotime($record['INVOICE_DATE']))?:$this->app->now;
+				if(!strlen(trim($user['first_name'])))
+					$user['first_name'] = $user['radius_username'];
 				
 				$user->save();
 
 				// update email and phone number
-				// if($record['MOBILE']){
-				// 	$cp = $this->add('xepan\base\Model_Contact_Phone');
-				// 	$cp['head'] = 'Official';
-				// 	$cp['contact_id'] = $user->id;
-				// 	$cp['value'] = $record['MOBILE'];
-				// 	$cp->save();
-				// }
-				// if($record['PHONE']){
-				// 	$cp = $this->add('xepan\base\Model_Contact_Phone');
-				// 	$cp['head'] = 'Official';
-				// 	$cp['contact_id'] = $user->id;
-				// 	$cp['value'] = $record['PHONE'];
-				// 	$cp->save();
-				// }
+				if($record['MOBILE']){
+					$cp = $this->add('xepan\base\Model_Contact_Phone');
+					$cp['head'] = 'Official';
+					$cp['contact_id'] = $user->id;
+					$cp['value'] = $record['MOBILE'];
+					$cp->save();
+				}
+				if($record['PHONE']){
+					$cp = $this->add('xepan\base\Model_Contact_Phone');
+					$cp['head'] = 'Official';
+					$cp['contact_id'] = $user->id;
+					$cp['value'] = $record['PHONE'];
+					$cp->save();
+				}
 
-				// if($record['EMAIL'] AND filter_var($record['EMAIL'],FILTER_VALIDATE_EMAIL)){
-				// 	$ce = $this->add('xepan\base\Model_Contact_Email');
-				// 	$ce['head'] = 'Official';
-				// 	$ce['contact_id'] = $user->id;
-				// 	$ce['value'] = $record['EMAIL'];
-				// 	$ce->save();
-				// }
+				if($record['EMAIL'] AND filter_var($record['EMAIL'],FILTER_VALIDATE_EMAIL)){
+					$ce = $this->add('xepan\base\Model_Contact_Email');
+					$ce['head'] = 'Official';
+					$ce['contact_id'] = $user->id;
+					$ce['value'] = $record['EMAIL'];
+					$ce->save();
+				}
 
 
-				// if(trim($record['INVOICE_DATE'])){
-				// 	// $user->updateUserConditon($expire_all_plan=false,$expire_all_topup=false,$as_grace=true,$record['INVOICE_DATE']);
-				// 	$user->setPlan($user['plan_id'],$record['INVOICE_DATE'], $remove_old=false,$is_topup=false,$remove_old_topups=false,$expire_all_plan=false,$expire_all_topup=false,null,$as_grace=true,$force_plan_end_date=$record['PLAN_END_DATE']);
-				// 	$user->createInvoice(null,$detail_data=null,$false_condition=false,$master_created_at=$record['INVOICE_DATE'],$force_create=false);
-				// }else{
-				// 	$user->updateUserConditon();
-				// 	$user->createInvoice(null);
-				// }
+				if(trim($record['INVOICE_DATE'])){
+					// $user->updateUserConditon($expire_all_plan=false,$expire_all_topup=false,$as_grace=true,$record['INVOICE_DATE']);
+					$user->setPlan($user['plan_id'],$record['INVOICE_DATE'], $remove_old=false,$is_topup=false,$remove_old_topups=false,$expire_all_plan=false,$expire_all_topup=false,null,$as_grace=true,$force_plan_end_date=$record['PLAN_END_DATE']);
+					$user->createInvoice(null,$detail_data=null,$false_condition=false,$master_created_at=$record['INVOICE_DATE'],$force_create=false);
+				}else{
+					$user->updateUserConditon();
+					$user->createInvoice(null);
+				}
 				
-				// $user->updateNASCredential();
-				// $user->updateWebsiteUser();
+				$user->updateNASCredential();
+				$user->updateWebsiteUser();
 
 				// data_Remark: eg.dl/up/remark, 1039/209/MainPlan,3089/Topupplan
-				// if($record['DATA_CONSUMED']){
-					// $condition_consumed_list = explode(",", $record['DATA_CONSUMED']);
+				if($record['DATA_CONSUMED']){
+					$condition_consumed_list = explode(",", $record['DATA_CONSUMED']);
 
-					// foreach ($condition_consumed_list as $key => $c_c) {
-					// 	$consumed_condition = explode("/", $c_c);
-					// 	if(count($consumed_condition) != 3 ) continue;
+					foreach ($condition_consumed_list as $key => $c_c) {
+						$consumed_condition = explode("/", $c_c);
+						if(count($consumed_condition) != 3 ) continue;
 
 
-						// $dl_data_remaining =  $this->app->human2byte($consumed_condition[0]);
-						// $up_data_remaining =  $this->app->human2byte($consumed_condition[1]);
-						// $remark = trim($consumed_condition[2]);
+						$dl_data_remaining =  $this->app->human2byte($consumed_condition[0]);
+						$up_data_remaining =  $this->app->human2byte($consumed_condition[1]);
+						$remark = trim($consumed_condition[2]);
 
-						// $plan_condition = $this->add('xavoc\ispmanager\Model_Condition');
-						// $plan_condition->addCondition('plan_id',$plan_id);
-						// $plan_condition->addCondition('remark',$remark);
-						// $plan_condition->tryLoadAny();
+						$plan_condition = $this->add('xavoc\ispmanager\Model_Condition');
+						$plan_condition->addCondition('plan_id',$plan_id);
+						$plan_condition->addCondition('remark',$remark);
+						$plan_condition->tryLoadAny();
 
-						// if(!$plan_condition->loaded()) throw new \Exception("Plan Condition not found of plan ".$plan_name);
+						if(!$plan_condition->loaded()) throw new \Exception("Plan Condition not found of plan ".$plan_name);
 						
 
-						// $dl_data_consumed = $this->app->human2byte($plan_condition['data_limit']) - ($dl_data_remaining + $up_data_remaining) ;
+						$dl_data_consumed = $this->app->human2byte($plan_condition['data_limit']) - ($dl_data_remaining + $up_data_remaining);
 
 						// echo "data limit = ".$this->app->human2byte($plan_condition['data_limit'])."<br/>";
 						// echo "dl_data_remaining = ".$dl_data_remaining."<br/>";
 						// echo "up_data_remaining = ".$up_data_remaining."<br/>";
 						// echo "dl_data_consumed = ".$dl_data_consumed."<br/>";
 
-						// $up_data_consumed = 0;
+						$up_data_consumed = 0;
 
 						$upt = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup');
-						// $upt->add('xavoc\ispmanager\Controller_HumanByte')
-						// 	->handleFields([
-						// 		'download_data_consumed',
-						// 		'upload_data_consumed'
-						// 	]);
+						$upt->add('xavoc\ispmanager\Controller_HumanByte')
+							->handleFields([
+								'download_data_consumed',
+								'upload_data_consumed'
+							]);
 						
 						$upt->addCondition('user_id',$user->id);
 						// $upt->addCondition('plan_id',$plan_id);
 						$upt->setOrder('id','desc');
 						$upt->tryLoadAny();
 						
-						// $upt->addCondition('remark',$remark);
-						// if(!$upt->loaded()){
-						// 	echo "<div style='color:red;'> condition not loaded user ".$user['radius_username']."</div><br/>";
-						// 	continue;
-						// }
+						$upt->addCondition('remark',$remark);
+						if(!$upt->loaded()){
+							echo "<div style='color:red;'> condition not loaded user ".$user['radius_username']."</div><br/>";
+							continue;
+						}
 
-						// $upt['download_data_consumed'] = $dl_data_consumed;
-						// $upt['upload_data_consumed'] = $up_data_consumed;
+						$upt['download_data_consumed'] = $dl_data_consumed;
+						$upt['upload_data_consumed'] = $up_data_consumed;
 						if($record['PLAN_END_DATE']){
 							$upt['end_date'] = $record['PLAN_END_DATE'];
 							$upt->save();
 						}
-					// }
-				// }
+					}
+				}
 
 				// // Static IP 
-				// if(trim($record['STATIC_IP'])){
-				// 	$model = $this->add('xavoc\ispmanager\Model_RadReply');
-				// 	$model->addCondition('username',$user['radius_username']);
-				// 	$model->addCondition('attribute','Framed-IP-Address');
-				// 	$model->addCondition('op',':=');
-				// 	$model->tryLoadAny();
-				// 	$model['value'] = $record['STATIC_IP'];
-				// 	$model->save();
-				// }
+				if(trim($record['STATIC_IP'])){
+					$model = $this->add('xavoc\ispmanager\Model_RadReply');
+					$model->addCondition('username',$user['radius_username']);
+					$model->addCondition('attribute','Framed-IP-Address');
+					$model->addCondition('op',':=');
+					$model->tryLoadAny();
+					$model['value'] = $record['STATIC_IP'];
+					$model->save();
+				}
 
-				// if(trim($record['MAC_ADDRESS'])){
-				// 	$radcheck = $this->add('xavoc\ispmanager\Model_RadCheck');
-				// 	$radcheck->addCondition('value',$record['MAC_ADDRESS']);
-				// 	$radcheck->addCondition('username', $user['radius_username']);
-				// 	$radcheck->addCondition('attribute',"Calling-Station-Id");
-				// 	$radcheck->addCondition('op',":=");
-				// 	$radcheck->tryLoadAny();
-				// 	$radcheck->save();
-				// }
+				if(trim($record['MAC_ADDRESS'])){
+					$radcheck = $this->add('xavoc\ispmanager\Model_RadCheck');
+					$radcheck->addCondition('value',$record['MAC_ADDRESS']);
+					$radcheck->addCondition('username', $user['radius_username']);
+					$radcheck->addCondition('attribute',"Calling-Station-Id");
+					$radcheck->addCondition('op',":=");
+					$radcheck->tryLoadAny();
+					$radcheck->save();
+				}
 
 				echo $imported_user_count." user : ".$user['radius_username']." : $user->id <br/>";
 				$imported_user_count++;

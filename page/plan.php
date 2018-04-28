@@ -20,9 +20,9 @@ class page_plan extends \xepan\base\Page {
 		});
 
 		$plan->addExpression('users')->set(function($m,$q){
-			return $m->add('xavoc\ispmanager\Model_UserPlanAndTopup')
+			return $m->add('xavoc\ispmanager\Model_User')
 				->addCondition('plan_id',$m->getElement('id'))
-				->addCondition('is_expired',false)
+				->addCondition('is_active',true)
 				->count();
 		})->sortable(true);
 
@@ -91,6 +91,10 @@ class page_plan extends \xepan\base\Page {
 			}
 		});
 
+		$crud->grid->addFormatter('users','template')->settemplate('<a class="users_col" data-planid="{$id}" href="#{$id}">{$users}</a>','users');
+
+		$crud->grid->js('click')->_selector('.users_col')->univ()->frameURL([$this->app->url('./planusers'),'planid'=>$this->js()->_selectorThis()->data('planid')]);
+
 		$import_btn = $grid->addButton('Import CSV')->addClass('btn btn-primary');
 		$import_btn->setIcon('fa fa fa-arrow-up');
 
@@ -100,6 +104,21 @@ class page_plan extends \xepan\base\Page {
 					'Import CSV',
 					$this->app->url('./import')
 					);		
+	}
+
+	function page_planusers(){
+		$plan_id = $this->app->stickyGET('planid');
+
+		$plan_users = $this->add('xavoc\ispmanager\Model_User');
+
+		$plan_users->addCondition('plan_id',$plan_id);
+		$plan_users->addCondition('is_active',true);
+
+		$grid = $this->add('xepan\base\Grid');
+		$grid->setModel($plan_users,['name','radius_username','state','city']);
+		$grid->addQuickSearch(['name','radius_username']);
+
+		$grid->addPaginator(50);
 	}
 
 	function page_import(){

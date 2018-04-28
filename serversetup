@@ -47,6 +47,7 @@ apt-get install -y freeradius-mysql
 cp /tmp/ispmanager/radius-conf/policy.d.xavoc /etc/freeradius/3.0/policy.d/xavoc
 cp /tmp/ispmanager/radius-conf/site-enabled.default /etc/freeradius/3.0/sites-enabled/default
 cp /etc/freeradius/3.0/mods-available/sql /etc/freeradius/3.0/mods-enabled/sql
+cp /etc/freeradius/3.0/sites-available/control-socket /etc/freeradius/3.0/sites-enabled/control-socket
 
 
 sed -i 's/driver = "rlm_sql_null"/driver = "rlm_sql_mysql"/g' /etc/freeradius/3.0/mods-enabled/sql
@@ -56,6 +57,7 @@ sed -i 's/#\tport = 3306/port = 3306/g' /etc/freeradius/3.0/mods-enabled/sql
 sed -i 's/#\tlogin = "radius"/login = "root"/g' /etc/freeradius/3.0/mods-enabled/sql
 sed -i "s/#\tpassword = \"radpass\"/password = \"$mysqlpassword\"/g" /etc/freeradius/3.0/mods-enabled/sql
 sed -i "s/radius_db = \"radius\"/radius_db = \"$xepan_db_name\"/g" /etc/freeradius/3.0/mods-enabled/sql
+sed -i "s/#\tmode = rw/\tmode = rw/g" /etc/freeradius/3.0/sites-enabled/control-socket
 
 service freeradius restart
 

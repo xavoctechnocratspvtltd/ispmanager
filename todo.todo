@@ -1,5 +1,4 @@
-
-Serial no when auto invoice crate from
+serial no when auto invoice crate from
 T&C
 Narration me auto start date and end date
 
@@ -48,16 +47,16 @@ Payment : installement
 		All Old Invoice are Deleted and All Account data
 		All Plan Name Change to Broad band
 
+Done:   caf form at won shipping address to installation address;
+		install time demo plan non editable  and lead won ke time pe demo plan also feed.
+		for install action remove demo plan id.
 
-caf form at won shipping address to installation address;
 install resign region mandatory fields.
-for install action remove demo plan id.
-install time demo plan non editable  and lead won ke time pe demo plan also feed.
-
 
 Support tocket filter employee, from -to date status,
 user filter based on created_at, install_at, activate date employee
 user session time difference
 
-
+Stock transaction edit facility
+Invoice item first invoice compulsion
 

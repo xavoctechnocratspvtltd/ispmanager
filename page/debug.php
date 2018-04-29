@@ -51,12 +51,20 @@ class page_debug extends \xepan\base\Page {
 	}
 
 	function showRadDebug($page){
-		$cmd = 'raddebug -u '. $_GET['radius_username'].' -t '. $_GET['accounting_gap']  .' 2>&1';
 
-		$v = $page->add('View');
-		$output = shell_exec($cmd);
+		$this->app->stickyGET('radius_username');
+		$this->app->stickyGET('accounting_gap');
 
-		$v->setHTML('<h3>'.$cmd.'</h3><pre>'.$output.'</pre>');
-		ob_flush();
+		$vc = $page->add('View_Console');
+		$vc->set(function($c){
+
+			$cmd = 'sudo raddebug -u '. $_GET['radius_username'].' -t '. $_GET['accounting_gap']  .' 2>&1';
+			$c->out("executing <h3>$cmd</h3>");
+			$c->out("Wait ".$_GET['accounting_gap'].' Seconds at least');
+
+			$output = shell_exec($cmd);
+			$c->out("<pre>$output</pre>");
+		});
+
 	}
 }

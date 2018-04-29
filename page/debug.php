@@ -50,6 +50,16 @@ class page_debug extends \xepan\base\Page {
 		ob_flush();
 	}
 
+
+/*
+
+/etc/sudoers.d/* (in any file add following line)
+
+www-data ALL=(ALL) NOPASSWD: ALL
+
+to let www-data run freeradius commands being sudo
+*/
+
 	function showRadDebug($page){
 
 		$this->app->stickyGET('radius_username');

@@ -14,8 +14,6 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 		$this->hasOne('xavoc\ispmanager\Plan','plan_id');
 		$this->hasOne('xavoc\ispmanager\Condition','condition_id')->system(true);
 
-		$this->hasOne('xepan\base\Contact','created_by_id')->system(true);
-
 		$this->addField('remark');
 		$this->addField('is_topup')->type('boolean')->defaultValue(0)->caption('TopUp');
 

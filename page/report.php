@@ -9,6 +9,7 @@ class page_report extends \xepan\base\Page {
 	function page_index(){
 		$tab = $this->add('Tabs');
 		$tab->addTabUrl('./user','User');
+		$tab->addTabUrl('./usercondition','UserCondition');
 	}
 
 	function page_user(){
@@ -27,5 +28,13 @@ class page_report extends \xepan\base\Page {
 		$grid->setModel($m,['user','plan','remark','reset_date','net_data_limit','data_consumed','user_status']);
 		$grid->addPaginator($ipp=50);
 
+	}
+
+	function page_usercondition(){
+		$m = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup');
+		$crud = $this->add('CRUD');
+		$crud->setModel($m,['user','plan','remark','reset_date','net_data_limit','data_consumed','user_status']);
+		$crud->grid->addQuickSearch(['user','plan']);
+		$crud->grid->addPaginator(50);
 	}
 }

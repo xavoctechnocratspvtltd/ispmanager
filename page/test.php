@@ -10,6 +10,13 @@ class page_test extends \xepan\base\Page {
 	function init(){
 		parent::init();
 
+		if($_GET['update_invoice']){
+			$m = $this->add('xepan\commerce\Model_SalesInvoice');
+			foreach ($m as $temp) {
+				$temp['serial']  = "PIPLB/2018-19/";
+				$temp->save();
+			}
+		}
 		// $this->add('CRUD')->setModel($this->add('xavoc\ispmanager\Model_UserPlanAndTopup'));
 
 		// $form = $this->add('Form');

@@ -93,7 +93,7 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 		$crud->grid->addHook('formatRow',function($g){
 
 			if($g->current_customer != $g->model['user_id']){
-				$g->current_row_html['user'] = $g->model['user']."<br/>( ".$g->model['organization']." )"."<br/> <p class='label label-info'>".$g->model['user_status']."</p>";
+				$g->current_row_html['user'] = $g->model['user']."<br/>( ".$g->model['organization']." )"."<br/> <p class='label label-info'>".$g->model['user_status']."</p>"."<br/>radius_username = ".$g->model['radius_username'];
 				$g->current_row['action'] = $g->model['action'];
 				$g->current_customer = $g->model['user_id'];
 				$g->skip_sno = false;
@@ -111,7 +111,7 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 				
 
 			$g->current_row_html['end_date'] = "<div class='alert alert-danger'><strong>".date('d-M-Y',strtotime($g->model['end_date']))."</strong></div>";
-			$g->current_row_html['plan'] = $g->model['plan']."<br/>".$g->model['plan_code'];
+			$g->current_row_html['plan'] = $g->model['plan']."<br/>".$g->model['plan_code']."<br/>"."Sale Price: ".$g->model['sale_price'];
 				
 		// 	if($g->current_invoice != $g->model['qsp_master_id']){
 
@@ -167,8 +167,8 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 						->set('Edit Invoice')
 						->js("click")
 						->redirect($this->api->url('xepan_commerce_quickqsp', array("document_type" => 'SalesInvoice','action'=>'edit','document_id'=>$return_data['master_detail']['id'])));
-				$v= $page->add('View');
-				$v->add('xepan\commerce\page_quickqsp',['document_id'=>$invoice_model->id,'document_type'=>'SalesInvoice','readmode'=>true]);		
+				$v = $page->add('View');
+				$v->add('xepan\commerce\page_quickqsp',['document_id'=>$invoice_model->id,'document_type'=>'SalesInvoice','readmode'=>true]);
 				// $page->add('xepan\commerce\View_QSP',['qsp_model'=>$invoice_model]);
 			});
 
@@ -195,7 +195,7 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 
 		}
 		$grid->addPaginator($ipp=25);
-		$removeColumn = ['edit','delete','action','attachment_icon','user_id','plan_code','last_invoice_no'];
+		$removeColumn = ['edit','delete','action','attachment_icon','user_id','plan_code','last_invoice_no','sale_price','user_status','radius_username'];
 		foreach ($removeColumn as $key => $field_name) {
 			$grid->removeColumn($field_name);
 		}

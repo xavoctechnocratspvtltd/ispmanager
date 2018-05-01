@@ -40,6 +40,7 @@ class Initiator extends \Controller_Addon {
             $m->addItem(['Invoices','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_invoice');
             $m->addItem(['Up-Coming Invoice','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_upcominginvoice2');
             $m->addItem(['Microtik Routers','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_client');
+            $m->addItem(['Reports','icon'=>'fa fa-cog'],'xavoc_ispmanager_report');
             $m->addItem(['Configuration','icon'=>'fa fa-cog'],'xavoc_ispmanager_configuration');
             $m->addItem(['Log','icon'=>'fa fa-user'],'xavoc_ispmanager_log');
             $m->addItem(['Device Management','icon'=>'fa fa-user'],'xavoc_ispmanager_device');

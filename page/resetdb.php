@@ -35,7 +35,11 @@ class page_resetdb extends \xepan\base\Page {
 					'delete_lead'=>'c23~4',
 					'delete_leadger'=>'c24~4',
 					'delete_employee_attendance'=>'c25~4',
-					'delete_employee_movement'=>'c26~4'
+					'delete_employee_movement'=>'c26~4',
+					'set_all_burst_limit_to_null_in_plan_and_user_condition'=>'c27~4',
+					'set_is_pro_data_effected_yes_in_plan_and_user_condition'=>'c28~4',
+					'set_fup_limits_to_null_if_value_is_zero_in_plan_and_user_condition'=>'c29~4',
+					'set_is_recurring_yes_in_all_user_condition'=>'c30~4'
 				]);
 
 		$form->addField('DatePicker','contact_created_at');
@@ -58,7 +62,10 @@ class page_resetdb extends \xepan\base\Page {
 		$form->addField('checkbox','delete_leadger');
 		$form->addField('checkbox','delete_employee_attendance');
 		$form->addField('checkbox','delete_employee_movement');
-
+		$form->addField('checkbox','set_all_burst_limit_to_null_in_plan_and_user_condition');
+		$form->addField('checkbox','set_is_pro_data_effected_yes_in_plan_and_user_condition');
+		$form->addField('checkbox','set_fup_limits_to_null_if_value_is_zero_in_plan_and_user_condition');
+		$form->addField('checkbox','set_is_recurring_yes_in_all_user_condition');
 
 		$form->addSubmit('Reset DB Now');
 		if($form->isSubmitted()){
@@ -80,6 +87,10 @@ class page_resetdb extends \xepan\base\Page {
 					'delete_leadger'=>$form['delete_leadger'],
 					'delete_employee_movement'=>$form['delete_employee_movement'],
 					'delete_employee_attendance'=>$form['delete_employee_attendance'],
+					'set_all_burst_limit_to_null_in_plan_and_user_condition'=>$form['set_all_burst_limit_to_null_in_plan_and_user_condition'],
+					'set_is_pro_data_effected_yes_in_plan_and_user_condition'=>$form['set_is_pro_data_effected_yes_in_plan_and_user_condition'],
+					'set_fup_limits_to_null_if_value_is_zero_in_plan_and_user_condition'=>$form['set_fup_limits_to_null_if_value_is_zero_in_plan_and_user_condition'],
+					'set_is_recurring_yes_in_all_user_condition'=>$form['set_is_recurring_yes_in_all_user_condition']					
 
 				]))->execute();
 		}
@@ -103,6 +114,11 @@ class page_resetdb extends \xepan\base\Page {
 		$this->app->stickyGET('delete_leadger');
 		$this->app->stickyGET('delete_employee_attendance');
 		$this->app->stickyGET('delete_employee_movement');
+
+		$this->app->stickyGET('set_all_burst_limit_to_null_in_plan_and_user_condition');
+		$this->app->stickyGET('set_is_pro_data_effected_yes_in_plan_and_user_condition');
+		$this->app->stickyGET('set_fup_limits_to_null_if_value_is_zero_in_plan_and_user_condition');
+		$this->app->stickyGET('set_is_recurring_yes_in_all_user_condition');
 
 		$page->add('View_Console')->set(function($c){
 			$c->out('--------*** (-_-) Reset Started  (-_-) ***--------');
@@ -390,9 +406,59 @@ class page_resetdb extends \xepan\base\Page {
 				$c->out('--------*** Deleted Employee Movement Successfully: ***--------');
 			}
 
+			if($_GET['set_all_burst_limit_to_null_in_plan_and_user_condition']){
+				$c->out('--------*** setting Burst Limit to null in plan condition ***--------');
+				$query = 'UPDATE `isp_condition` SET `burst_dl_limit`=NULL,`burst_ul_limit`=NULL, `burst_threshold_dl_limit`=NULL,`burst_threshold_ul_limit`=NULL,`burst_dl_time`=NULL,`burst_ul_time`=NULL,`priority`=NULL';
+				$this->app->db->dsql()->expr($query)->execute();
+				$c->out('--------*** Burst Limit Updated in plan condition ***--------');
+
+				$c->out('--------*** setting Burst Limit to null in User condition ***--------');
+				$query = 'UPDATE `isp_user_plan_and_topup` SET `burst_dl_limit`=NULL,`burst_ul_limit`=NULL, `burst_threshold_dl_limit`=NULL,`burst_threshold_ul_limit`=NULL,`burst_dl_time`=NULL,`burst_ul_time`=NULL,`priority`=NULL';
+				$this->app->db->dsql()->expr($query)->execute();
+				$c->out('--------*** Burst Limit Updated in User condition ***--------');
+			}
+
+			if($_GET['set_is_pro_data_effected_yes_in_plan_and_user_condition']){
+				$c->out('--------*** setting Pro Data Affected to Yes in plan condition ***--------');
+				$query = 'UPDATE `isp_condition` SET `is_pro_data_affected`=1';
+				$this->app->db->dsql()->expr($query)->execute();
+				$c->out('--------*** Updated in plan condition ***--------');
+
+				$c->out('--------*** setting Pro Data Affected to Yes in User condition ***--------');
+				$query = 'UPDATE `isp_user_plan_and_topup` SET `is_pro_data_affected`=1';
+				$this->app->db->dsql()->expr($query)->execute();
+				$c->out('--------*** Updated in User condition ***--------');
+			}
+
+			if($_GET['set_fup_limits_to_null_if_value_is_zero_in_plan_and_user_condition']){
+				$c->out('--------*** Updating FUP Limits in Plan Condition***--------');
+				$query = 'UPDATE `isp_condition` SET `fup_download_limit`=NULL where fup_download_limit = 0';
+				$this->app->db->dsql()->expr($query)->execute();
+
+				$query = 'UPDATE `isp_condition` SET `fup_upload_limit`=NULL where fup_upload_limit = 0';
+				$this->app->db->dsql()->expr($query)->execute();
+
+				$c->out('--------*** Updated in plan condition ***--------');
+
+				
+				$c->out('--------*** Updating FUP Limits in User Condition***--------');
+				$query = 'UPDATE `isp_user_plan_and_topup` SET `fup_download_limit`=NULL where fup_download_limit = 0';
+				$this->app->db->dsql()->expr($query)->execute();
+
+				$query = 'UPDATE `isp_user_plan_and_topup` SET `fup_upload_limit`=NULL where fup_upload_limit = 0';
+				$this->app->db->dsql()->expr($query)->execute();
+				$c->out('--------*** Updated in User Condition ***--------');
+			}
+
+			if($_GET['set_is_recurring_yes_in_all_user_condition']){
+				$c->out('--------*** Updating Is Recurring in User Condition***--------');
+				$query = 'UPDATE `isp_user_plan_and_topup` SET `is_recurring`=1';
+				$this->app->db->dsql()->expr($query)->execute();
+				$c->out('--------*** Updated in User Condition ***--------');
+			}
 
 			$c->out('-----------------------------****----------------------------');
-			$c->out('All Data Deleted Successfully ...| (-_-) ----- ');
+			$c->out('Complete ...| (-_-) ----- ');
 		});
 
 	}

@@ -32,8 +32,9 @@ class Controller_ResetUserPlanAndTopup extends \AbstractController {
 				$this->testDebug('Data Reset Required',null, ['Reset Date ' => $model['reset_date'] , 'Data Carry Mode'=>$model['is_data_carry_forward'], 'carry_data'=> $model['carry_data']]);
 			
 				// RESET TO ZERO OF download_data_consumed AND UPLOAD_data_consumed
-				$model['download_data_consumed'] = 0;
-				$model['upload_data_consumed'] = 0;
+				// temporary commented
+				// $model['download_data_consumed'] = 0;
+				// $model['upload_data_consumed'] = 0;
 
 				if($model['data_reset_value']){
 					// $model['start_date'] = date("Y-m-d H:i:s", strtotime("+".$model['data_reset_value']." ".$model['data_reset_mode'],strtotime($model['start_date'])));

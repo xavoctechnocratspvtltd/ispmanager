@@ -54,6 +54,13 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 					->setLimit(1);
 			return $q->expr('IFNULL([0],0)',[$act->fieldQuery('created_at')]);
 		});
+		$model->addExpression('last_invoice_no')->set(function($m,$q){
+			$act = $m->add('xavoc\ispmanager\Model_Invoice')
+					->addCondition('contact_id',$m->getElement('user_id'))
+					->setOrder('id','desc')
+					->setLimit(1);
+			return $q->expr('CONCAT([0],[1])',[$act->fieldQuery('serial'),$act->fieldQuery('document_no')]);
+		});
 		$model->addExpression('user_status')->set($model->refSQL('user_id')->fieldQuery('status'));
 		
 		$model->addCondition('user_status','Active');
@@ -98,9 +105,9 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 
 
 			if(strtotime($g->model['end_date']) == strtotime(date('Y-m-d',strtotime($g->model['last_invoice_date']))))
-				$g->current_row_html['last_invoice_date'] = "<div class='alert alert-success'>Yes, Invoice created <br/><strong>".date('d-M-Y',strtotime($g->model['last_invoice_date']))."</strong></div>";
+				$g->current_row_html['last_invoice_date'] = "<div class='alert alert-success'>Yes, Invoice created <br/>Invoice No.".$g->model['last_invoice_no']."<br/><strong>".date('d-M-Y',strtotime($g->model['last_invoice_date']))."</strong></div>";
 			else
-				$g->current_row_html['last_invoice_date'] = "<div class='alert alert-danger'>No, Last Invoice Date: <br/><strong>".$g->model['last_invoice_date']."</strong></div>";
+				$g->current_row_html['last_invoice_date'] = "<div class='alert alert-danger'>No, Last Invoice Date: <br/>Invoice No.".$g->model['last_invoice_no']."<br/><strong>".$g->model['last_invoice_date']."</strong></div>";
 				
 
 			$g->current_row_html['end_date'] = "<div class='alert alert-danger'><strong>".date('d-M-Y',strtotime($g->model['end_date']))."</strong></div>";
@@ -125,7 +132,7 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 		$crud->grid->current_customer = null;
 		$crud->grid->current_invoice = null;
 
-		$crud->setModel($model,['user_id','user','radius_username','customer','plan','plan_code','sale_price','start_date','end_date','expire_date','last_invoice_date','organization','user_status']);
+		$crud->setModel($model,['user_id','user','radius_username','customer','plan','plan_code','sale_price','start_date','end_date','expire_date','last_invoice_date','organization','user_status','last_invoice_no']);
 		$crud->grid->removeColumn('organization');
 		$grid = $crud->grid;
 		$grid->add('VirtualPage')
@@ -171,11 +178,27 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 		// $order->move('tax_percentage','after','qty_unit');
 		// $order->move('new_invoice_price','after','price');
 		// $order->now();
+		$grid->addColumn('Button','set_end_date_to_invoice');
+		if( $uid = $_GET['set_end_date_to_invoice']){
+			$model->load($uid);
+			$inv = $this->add('xavoc\ispmanager\Model_Invoice')
+					->addCondition('contact_id',$model['user_id'])
+					->setOrder('id','desc')
+					->tryLoadAny();
+			if(!$inv->loaded()){
+				$grid->js(null,$grid->js()->univ()->errorMessage('first create invoice'))->reload()->execute();
+			}else{
+				$inv['created_at'] = $model['end_date'];
+				$inv->save();
+				$grid->js(null,$grid->js()->univ()->successMessage('updated'))->reload()->execute();
+			}
 
+		}
 		$grid->addPaginator($ipp=25);
-		$removeColumn = ['edit','delete','action','attachment_icon','user_id','plan_code'];
+		$removeColumn = ['edit','delete','action','attachment_icon','user_id','plan_code','last_invoice_no'];
 		foreach ($removeColumn as $key => $field_name) {
 			$grid->removeColumn($field_name);
 		}
+
 	}
 }

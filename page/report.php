@@ -31,10 +31,207 @@ class page_report extends \xepan\base\Page {
 	}
 
 	function page_usercondition(){
-		$m = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup');
-		$crud = $this->add('CRUD');
-		$crud->setModel($m,['user','plan','remark','reset_date','net_data_limit','data_consumed','user_status']);
-		$crud->grid->addQuickSearch(['user','plan']);
+
+		$crud = $this->add('CRUD',['allow_add'=>false]);
+
+		if($crud->isEditing()){
+			$form = $crud->form;
+			$form->add('xepan\base\Controller_FLC')
+				->addContentSpot()
+				// ->makePanelsCoppalsible()
+				->layout([
+						'plan_id'=>'About Plan~c1~3',
+						// 'condition_id'=>'c11~3',
+						'remark'=>'c2~2',
+						'is_topup'=>'c3~2',
+						'data_limit'=>'c4~3',
+						'carry_data'=>'c5~2',
+						'download_limit'=>'DL/UL Limit~c1~3~in KBps',
+						'upload_limit'=>'c11~3~in KBps',
+						'fup_download_limit'=>'c12~3~in KBps',
+						'fup_upload_limit'=>'c13~3~in KBps',
+						'accounting_download_ratio'=>'c2~6~Ratio in %',
+						'accounting_upload_ratio'=>'c21~6~Ratio in %',
+						'start_date'=>'Dates~c1~3',
+						'end_date'=>'c11~3',
+						'expire_date'=>'c12~3',
+						'is_expired'=>'c13~3',
+						'is_recurring'=>'c2~3',
+						'is_effective'=>'c21~3',
+						'download_data_consumed'=>'Data Consumed~c1~6~in MB',
+						'upload_data_consumed'=>'c2~6~in MB',
+						'time_limit'=>'Time Limit~c1~3',
+						'data_limit_row'=>'c11~3',
+						'duplicated_from_record_id'=>'c12~3',
+						'is_data_carry_forward'=>'c13~3',
+						'start_time'=>'Time~c1~6',
+						'end_time'=>'c2~6',
+						'reset_date'=>'Reset Box~c1~3',
+						'data_reset_value'=>'c2~3',
+						'data_reset_mode'=>'c3~6',
+						'sun'=>'Week~c1~1',
+						'mon'=>'c2~1',
+						'tue'=>'c3~1',
+						'wed'=>'c4~1',
+						'thu'=>'c5~1',
+						'fri'=>'c6~1',
+						'sat'=>'c7~1',
+						'd01'=>'Days~c1~1',
+						'd02'=>'c2~1',
+						'd03'=>'c3~1',
+						'd04'=>'c4~1',
+						'd05'=>'c5~1',
+						'd06'=>'c6~1',
+						'd07'=>'c7~1',
+						'd08'=>'c8~1',
+						'd09'=>'c9~1',
+						'd10'=>'c10~1',
+						'd11'=>'c11~1',
+						'd12'=>'c12~1',
+						'd13'=>'c13~1',
+						'd14'=>'c14~1',
+						'd15'=>'c15~1',
+						'd16'=>'c16~1',
+						'd17'=>'c17~1',
+						'd18'=>'c18~1',
+						'd19'=>'c19~1',
+						'd20'=>'c20~1',
+						'd21'=>'c21~1',
+						'd22'=>'c22~1',
+						'd23'=>'c23~1',
+						'd24'=>'c24~1',
+						'd25'=>'c25~1',
+						'd26'=>'c26~1',
+						'd27'=>'c27~1',
+						'd28'=>'c28~1',
+						'd29'=>'c29~1',
+						'd30'=>'c30~1',
+						'd31'=>'c31~1',
+						'treat_fup_as_dl_for_last_limit_row'=>'MISC~c1~6',
+						'explanation'=>'c1~6',
+						'is_pro_data_affected'=>'c2~6',
+						'burst_dl_limit'=>'Burst~c1~3~limit per second',
+						'burst_ul_limit'=>'c11~3~limit per second',
+						'burst_threshold_dl_limit'=>'c12~3~limit per second',
+						'burst_threshold_ul_limit'=>'c13~3~limit per second',
+						'burst_dl_time'=>'c2~3~time in second',
+						'burst_ul_time'=>'c21~3~time in second',
+						'priority'=>'c22~6',
+				]);
+			
+			$b = $form->layout->add('Button',null,'explanation')
+				->set('explanation');
+			$b->add('VirtualPage')
+			->bindEvent('Explanation of treat fup as dl for last limit row','click')
+			->set([$this,"explanation"]);
+
+		}
+		$model = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup');
+		$model->addExpression('radius_username')->set($model->refSQL('user_id')->fieldQuery('radius_username'));
+		// $model->addCondition('user_id',$this->id);
+		$crud->setModel($model);
+		$model->setOrder(['id desc','is_expired desc']);
+		// if($crud->isEditing()){
+		// 	$form = $crud->form;
+		// 	$form->getElement('start_time')
+		// 		->setOption('showMeridian',false)
+		// 		->setOption('defaultTime',0)
+		// 		->setOption('minuteStep',1)
+		// 		->setOption('showSeconds',true)
+		// 		;
+		// 	$form->getElement('end_time')
+		// 		->setOption('showMeridian',false)
+		// 		->setOption('defaultTime',0)
+		// 		->setOption('minuteStep',1)
+		// 		->setOption('showSeconds',true)
+		// 		;
+		// }
+
+		$crud->grid->addColumn('validity');
+		$crud->grid->addColumn('detail');
+		$crud->grid->addColumn('week_days');
+		$crud->grid->addColumn('off_dates');
+		$crud->grid->addColumn('burst_detail');
 		$crud->grid->addPaginator(50);
+		$crud->grid->addQuickSearch(['user','plan']);
+
+		$crud->grid->addHook('formatRow',function($g){
+			// data detail
+			$speed = "UP/DL Limit: ".$g->model['upload_limit']."/".$g->model['download_limit']."<br/>";
+			$speed .= "FUP UP/DL Limit: ".$g->model['fup_upload_limit']."/".$g->model['fup_download_limit']."<br/>";
+			$speed .= "Accounting UP/DL Limit: ".$g->model['accounting_upload_ratio']."%/".$g->model['accounting_download_ratio']."%<br/>";
+			$speed .= "start/end time: ".$g->model['start_time']."/".$g->model['end_time']."<br/>";
+			if($g->model['treat_fup_as_dl_for_last_limit_row'])
+				$speed .= "<strong style='color:red;'>FUP as DL for last limit row</strong><br/>";
+
+			$speed .= "Time Limit: ".($g->model['time_limit']>0?($g->model['time_limit']." minutes"):"");
+			$g->current_row_html['detail'] = $speed;
+			
+			$week_days = '';
+			foreach (['sun','mon','tue','wed','thu','fri','sat'] as $name) {
+				if($g->model[$name])
+  					$week_days .= "<span style='color:green;'>".strtoupper(substr($name,0,1))."&nbsp;</span>";
+  				else
+  					$week_days .= "<span style='color:red;'>".strtoupper(substr($name,0,1))."&nbsp;</span>";
+			}
+			$g->current_row_html['week_days'] = $week_days;
+			
+			$week_days .= '</div>';
+
+			$off_dates = "";
+			foreach (['d01','d02','d03','d04','d05','d06','d07','d08','d09','d10','d11','d12','d13','d14','d15','d16','d17','d18','d19','d20','d21','d22','d23','d24','d25','d26','d27','d28','d29','d30','d31'] as $name) {
+				if(!$g->model[$name])
+					$off_dates .= trim($name,'d').",";
+			}
+			$g->current_row_html['off_dates'] = trim($off_dates,',');
+			
+			// burts detail
+			$bt = "UL\DL Limit: ".$g->model['burst_ul_limit']."/".$g->model['burst_dl_limit']."<br/>";
+			$bt .= "UL\DL Time: ".$g->model['burst_ul_time']."/".$g->model['burst_dl_time']."<br/>";
+			$bt .= "Threshold UL\DL Time: ".$g->model['burst_threshold_ul_limit']."/".$g->model['burst_threshold_dl_limit']."<br/>";
+			$bt .= "Priority: ".$g->model['priority'];
+			$g->current_row_html['burst_detail'] = $bt;
+
+			$detail = "Carry Data: ".$g->model['carry_data']."<br/>Condition Data: ".$g->model['data_limit']."<br/>Net Data: ".$g->model['net_data_limit']."<br/>"."Reset Every: ".($g->model['data_reset_value']." ".$g->model['data_reset_mode'])."<br/> Carried: ".$g->model['is_data_carry_forward']."<br/>";
+			if(!$g->model['is_pro_data_affected'])
+				$detail .= "<strong style='color:red;'>Pro Data Not Affected</strong>";
+			else
+				$detail .= "Pro Data Affected";
+
+			$g->current_row_html['data_limit'] = $detail;
+
+			// validity
+			$g->current_row_html['validity'] = "Start Date: ".$g->model['start_date']."<br/>End Date: ".$g->model['end_date']."<br/>Expire Date: ".$g->model['expire_date']."<br/>Next Reset Date: ".$g->model['reset_date'];
+			$g->current_row_html['remark'] = "<strong style='font-size:14px;'>".$g->model['plan']."</strong><br/>".$g->model['remark'].($g->model['is_topup']?"<strong style='color:red;'>TopUp</strong>":"").($g->model['is_expired']?('<br/><div class="label label-danger">Expired</div>'):"");
+			// $g->current_row_html['data_consumed'] = $g->model['data_consumed'];
+
+			if($g->model['is_effective']){
+				$g->setTDParam('remark','class',"green-bg");
+			}else
+				$g->setTDParam('remark','class'," ");
+
+			$g->current_row_html['user'] = $g->model['user']."<br/>".$g->model['radius_username'];
+		});
+		$removeColumn_list = [
+					'condition','plan','upload_limit','download_limit','fup_download_limit','fup_upload_limit','accounting_upload_ratio','accounting_download_ratio',
+					'sun','mon','tue','wed','thu','fri','sat','d01','d02','d03','d04','d05','d06','d07','d08','d09','d10','d11','d12','d13','d14','d15','d16','d17','d18','d19','d20','d21','d22','d23','d24','d25','d26','d27','d28','d29','d30','d31',
+					'start_time','end_time','net_data_limit','carry_data',
+					'data_reset_mode','data_reset_value','is_data_carry_forward',
+					'burst_ul_limit','burst_dl_limit','burst_ul_time','burst_dl_time','burst_threshold_ul_limit','burst_threshold_dl_limit','priority',
+					'treat_fup_as_dl_for_last_limit_row','is_pro_data_affected','action',
+					'start_date','end_date','expire_date','is_topup','reset_date',
+					'download_data_consumed','upload_data_consumed','time_limit','data_limit_row','duplicated_from_record_id',
+					'is_recurring','is_effective','is_expired',
+					'burst_detail','off_dates','radius_username'
+				];
+		foreach ($removeColumn_list as $field) {
+			$crud->grid->removeColumn($field);
+		}		
+		// $crud->grid->removeAttachment();
+		$o = $crud->grid->addOrder();
+		$o->move('edit','first');
+		$o->now();
+		// $o->move('Delete','first')->now();
+
 	}
 }

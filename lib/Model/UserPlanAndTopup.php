@@ -150,7 +150,7 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 		
 		$detail_data = [];
 		$invoice_recurring_date = $this['end_date'];
-		$next_end_date = date("Y-m-d H:i:s", strtotime("-1 Day", strtotime("+".$plan_model['plan_validity_value']." ".$plan_model['qty_unit'],strtotime($this['start_date']))));
+		$next_end_date = date("Y-m-d H:i:s", strtotime("-1 Day", strtotime("+".$plan_model['plan_validity_value']." ".$plan_model['qty_unit'],strtotime($this['end_date']))));
 		
 		$item = [
 				'item_id'=>$user_plan_id,
@@ -164,7 +164,7 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 				'express_shipping_duration'=>$plan_amount['express_shipping_duration'],
 				'qty_unit_id'=>$plan_model['qty_unit_id'],
 				'discount'=>0,
-				'narration'=>'Start Date: '.date('Y-m-d',strtotime($this['start_date']))." End Date: ".date('Y-m-d', strtotime($next_end_date))
+				'narration'=>'Start Date: '.date('Y-m-d',strtotime($this['end_date']))." End Date: ".date('Y-m-d', strtotime($next_end_date))
 			];
 		array_push($detail_data, $item);
 

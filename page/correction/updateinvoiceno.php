@@ -9,6 +9,7 @@ class page_correction_updateinvoiceno extends \xepan\base\Page {
 	function init(){
 		parent::init();
 
+		set_time_limit(0);
 		$inv = $this->add('xavoc\ispmanager\Model_Invoice');
 		$inv->setOrder('created_at','asc');
 		if($_GET['do']){

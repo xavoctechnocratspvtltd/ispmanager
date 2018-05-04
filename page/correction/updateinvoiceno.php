@@ -15,7 +15,7 @@ class page_correction_updateinvoiceno extends \xepan\base\Page {
 		if($_GET['do']){
 			$i = 1;
 			foreach ($inv as $model) {
-				
+
 				if($i == 7) $i = 8;
 				if($i == 10) $i = 11;
 				if($i == 16) $i = 20; // 16 to 19
@@ -30,7 +30,8 @@ class page_correction_updateinvoiceno extends \xepan\base\Page {
 				if($i == 131) $i = 139; // 131 to 138
 				if($i == 380) $i = 382; // 380, 381
 				if($i == 359) $i = 361; // 359, 360
-				if($i == 421) $i = 431; // 421 to 430
+				if($i == 389) $i = 471;
+				// if($i == 421) $i = 431; // 421 to 430
 
 				$last_inv = $model['document_no'];
 				$model['document_no'] = $i;

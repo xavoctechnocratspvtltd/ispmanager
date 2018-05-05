@@ -169,6 +169,16 @@ class Model_User extends \xepan\commerce\Model_Customer{
 				$m['username'] = $this['radius_username'];
 				$m->saveAndUnload();
 			}
+
+			$user = $this->add('xepan\base\Model_User');
+			$user->addCondition('scope','WebsiteUser');
+			$user->addCondition('username',$old_user);
+			$user->tryLoadAny();
+
+			$user['username'] = $this['radius_username'];
+			$user->saveAndUnload();
+
+
 		}
 
 		if($this->isDirty('radius_password')){

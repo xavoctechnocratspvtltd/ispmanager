@@ -154,6 +154,23 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			$this->plan_dirty = $this->dirty['plan_id'];
 		}
 
+		if($this->loaded() && $this->isDirty('radius_username')){
+			$old_user = $this->newInstance()->load($this->id)->get('radius_username');
+			$radcheck_model = $this->add('xavoc\ispmanager\Model_RadCheck');
+			$radcheck_model->addCondition('username',$old_user);
+			foreach ($radcheck_model as $m) {
+				$m['username'] = $this['radius_username'];
+				$m->saveAndUnload();
+			}
+
+			$radreply = $this->add('xavoc\ispmanager\Model_RadReply');
+			$radreply->addCondition('username',$old_user);
+			foreach ($radreply as $m) {
+				$m['username'] = $this['radius_username'];
+				$m->saveAndUnload();
+			}
+		}
+
 		if($this->isDirty('radius_password')){
 			$this->radius_password_dirty = 	$this->dirty['radius_password'];
 		}

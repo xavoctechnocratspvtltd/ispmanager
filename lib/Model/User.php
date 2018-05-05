@@ -2280,6 +2280,14 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		}
 	}
 
+	function beforeQspDocumentGenerate($app,&$qsp_model){
+		$isp_user = $this->newInstance()->tryLoad($qsp_model['contact_id']);
+		foreach ($isp_user->getActualFields() as $field) {
+			$qsp_model['isp_'.$field]= $isp_user[$field];
+		}
+
+	}
+
 	function lost($remark){
 		if(!$this->loaded()) throw new \Exception("lead model must loaded");
 

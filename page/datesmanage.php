@@ -9,6 +9,11 @@ class page_datesmanage extends \xepan\base\Page {
 	function init(){
 		parent::init();
 
+		if(!$this->app->model->isSuperUser()){
+			$this->add('View')->set('You are not authorised to view the page');
+			return;
+		}
+
 		$look_for = $this->app->stickyGET('look_for');
 		$from_date = $this->app->stickyGET('from_date');
 		$to_date = $this->app->stickyGET('to_date');

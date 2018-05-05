@@ -47,6 +47,7 @@ class Initiator extends \Controller_Addon {
             $m->addItem(['Employee Payment Collection','icon'=>'fa fa-users'],'xavoc_ispmanager_employeepaymentcollection');
             $m->addItem(['Up coming Invoice Correction','icon'=>'fa fa-users'],'xavoc_ispmanager_invoicecorrection');
             $m->addItem(['Debug RADIUS','icon'=>'fa fa-users'],'xavoc_ispmanager_debug');
+            $m->addItem(['Dates Management','icon'=>'fa fa-users'],'xavoc_ispmanager_datesmanage');
 
             $m = $this->app->top_menu->addMenu('Channel');
             $m->addItem(['channel Mgnt','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_channel');

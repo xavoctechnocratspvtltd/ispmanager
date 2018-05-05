@@ -9,7 +9,7 @@ class page_datesmanage extends \xepan\base\Page {
 	function init(){
 		parent::init();
 
-		if(!$this->app->model->isSuperUser()){
+		if(!$this->app->auth->model->isSuperUser()){
 			$this->add('View')->set('You are not authorised to view the page');
 			return;
 		}

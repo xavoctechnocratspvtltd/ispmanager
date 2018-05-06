@@ -6,8 +6,7 @@ class page_datesmanage extends \xepan\base\Page {
 	
 	public $title = "Dates Management";
 	
-	function init(){
-		parent::init();
+	function page_index(){
 
 		if(!$this->app->auth->model->isSuperUser()){
 			$this->add('View')->set('You are not authorised to view the page');
@@ -37,22 +36,21 @@ class page_datesmanage extends \xepan\base\Page {
 
 		$v= $this->add('View');
 		$v1=$v->add('View');
-		$crud = $v1->add('xepan\base\CRUD',['allow_add'=>false,'allow_del'=>false]);
+		$crud = $v1->add('xepan\base\CRUD',['allow_add'=>false,'allow_del'=>false,'allow_edit'=>false]);
 
 		$m = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup');
 
+		$m->addExpression('organization')->set(function($m,$q){
+			return $m->refSQL('user_id')->fieldQuery('organization');
+		});
+
 		if($look_for){
-			$m->addCondition($look_for,'>=',$from_date);
-			$m->addCondition($look_for,'<',$this->app->nextDate($to_date));
+			if($from_date)
+				$m->addCondition($look_for,'>=',$from_date);
+			if($to_date)
+				$m->addCondition($look_for,'<',$this->app->nextDate($to_date));
 			$m->setOrder($look_for.',user_id');
 			
-			if( $id= $_GET['extend_5_days']){
-				$m->load($id);
-				$m[$look_for] = date('Y-m-d H:i:s',strtotime("+ 5 days",strtotime($m[$look_for])));
-				$m->saveAndUnload();
-				$crud->js()->reload()->execute();
-			}
-
 			$v->setHTML('<h3>Filter based on <b>'. $look_for.'</b></h3>');
 
 		}else{
@@ -61,19 +59,31 @@ class page_datesmanage extends \xepan\base\Page {
 
 
 
-		$crud->setModel($m,['user','plan','start_date','end_date','expire_date','is_expired','reset_date']);
+		$crud->setModel($m,['user','organization','plan','start_date','end_date','expire_date','is_expired','reset_date']);
 		$crud->grid->removeColumn('attachement');
+		$crud->grid->removeColumn('organization');
 		$crud->grid->addPaginator(100);
 
 		if($form->isSubmitted()){
 			if(!$form['look_for']) $form->displayError('look_for','Please specify field');
-			if(!$form['from_date']) $form->displayError('from_date','Please specify field');
-			if(!$form['to_date']) $form->displayError('to_date','Please specify field');
 			
-			$v->js()->reload($form->get())->execute();
+			$v->js()->reload(['look_for'=>$form['look_for'],'from_date'=>$form['from_date']?:0,'to_date'=>$form['to_date']?:0])->execute();
 		}
 
-		$crud->grid->addColumn('Button','extend_5_days', 'Extend '. $look_for.' 5 days');
+		$crud->grid->addHook('formatRow',function($g){
+			$g->current_row_html['user']=$g->model['user'].'<br/> '.$g->model['organization'];
+		});
 
+		$crud->grid->js('click')->univ()->frameURL('User Details',[$this->app->url('./details'),'user_plan_condition_id'=>$this->js()->_selectorThis()->data('id')])->_selector('tr');
+		$this->app->template->appendHTML('js_include',
+                '<style> table tr:hover {cursor: pointer;}'."</style>\n");
+	}
+
+	function page_details(){
+		$user_plan_condition_id = $this->app->stickyGET('user_plan_condition_id');
+		$user_plan_condition = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup')->load($user_plan_condition_id);
+		$user = $user_plan_condition->ref('user_id');
+
+		$this->add('xavoc\ispmanager\View_UserDetails',['user'=>$user,'allow_edit'=>true]);
 	}
 }

@@ -15,30 +15,42 @@
 					reset_date = today + reset duration
 				}
 			}
-
 			expire_date = end_date + garce period <== will be problem when invoice will be approved
-
 	}
 
 	if(create invoice) {
 		create invoice - as on today (in draft/due )
-		// (##) or manually set status to due to avoide approve activity if invoice created from here
-		// on set status = due and save will update Trnsaction from afterSave hook in invoice
+		//- (##) or manually set status to due to avoide approve activity if invoice created from here (new idea)
+		//- on set status = due and save will update Trnsaction from afterSave hook in invoice (new idea)
 		// if miss this, create manually invoice as per 4*
 	}
 
-
 2* Upcoming Invoices Create invoice: - shows user plan conditions order by user and end_date
-	check if any previous invoice of this user is still to be approved ? just to be safe -- should be in user->createInvoice ??
+	//- check if any previous invoice of this user is still to be approved ?  (new idea)
+	//- just to be safe -- should be in user->createInvoice ??  (new idea)
 	create invoice of same plan on the end_date of user_plan_condition  (in draft) [Plan details as per new data in plan]
-
 
 3* Invoice Approved: 
 	update end_date (non expired conditions of same plan in invoice) = current_end_date  + plan validity
 	// (should end_date be start date when applied ?)
 	update expire_date = new end_date + grace period
-	// accounts entry
-
+	// accounts entry happens when save by afterSave Hook
+	//- override page_approve to ask if they wish to change/extend end_date, reset_date and expire date (new idea)
 
 4* Created Manual Invoice
 	On Approve ???
+	//- override page_approve to ask if they wish to change/extend end_date, reset_date and expire date (new idea)
+
+
+//- ================ TO GET SPEEDED WHAT NEEDS TO BE UPDATED IN WHAT FASION ==========================
+
+User
+	current plan
+		start_date
+		end_date
+		expire_date - is_expired
+		reset_date - data
+		Previous Invoices
+			Date: item: price: total-amount: status : mark due
+			Date: item: price: total-amount: status : mark next_status
+	plans history

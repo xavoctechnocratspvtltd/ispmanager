@@ -13,6 +13,7 @@ class Form_CAF extends \Form{
 	public $invoice_items=false;
 	public $show_demoplan=false;
 	public $change_plan=true;
+	public $show_reset_plan_detail = true;
 	function init(){
 		parent::init();
 		
@@ -71,6 +72,8 @@ class Form_CAF extends \Form{
 					'simultaneous_use'=>'c5~4',
 					'grace_period_in_days'=>'c6~4',
 					'demo_plan~Demo Plan'=>'c7~4',
+					'reset_same_plan_again'=>'c8~4',
+					'reset_same_plan_again_on_date'=>'c9~4',
 
 					'consumptions~'=>'Consumptions~c1-12',
 					'documents~'=>'Documents~c1-12',
@@ -94,6 +97,11 @@ class Form_CAF extends \Form{
 			unset($field_array['invoice_items']);
 		}
 
+		if(!$this->show_reset_plan_detail){
+			unset($model_layout_fields['reset_same_plan_again']);
+			unset($model_layout_fields['reset_same_plan_again_on_date']);
+		}
+
 		$layout_array = array_merge($model_layout_fields,$invoice_array);
 
 
@@ -115,6 +123,16 @@ class Form_CAF extends \Form{
 			$this->getElement('is_invoice_date_first_to_first')->set(0);
 			$this->getElement('include_pro_data_basis')->set('none');
 		}
+
+		if($this->show_reset_plan_detail){
+			$is_reset_field = $this->addField('checkbox','reset_same_plan_again');
+			$this->addField('DatePicker','reset_same_plan_again_on_date');
+			$is_reset_field->js(true)->univ()->bindConditionalShow([
+				'1'=>['reset_same_plan_again_on_date']
+			],'div.col-md-4');
+
+		}
+
 		// foreach ($attachment_type as $key => $value) {
 		// 	$attachment_name = $this->app->normalizeName($value);
 
@@ -267,7 +285,11 @@ class Form_CAF extends \Form{
 
 			}
 
-			
+			if($this->show_reset_plan_detail){
+				$this->app->reset_same_plan_again = $this['reset_same_plan_again'];
+				$this->app->reset_same_plan_again_on_date = $this['reset_same_plan_again_on_date'];
+			}
+
 			try{
 				$this->app->db->beginTransaction();	
 				$this->hook('CAF_BeforeSave',[$this]);

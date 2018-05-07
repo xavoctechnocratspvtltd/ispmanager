@@ -350,6 +350,9 @@ class Model_User extends \xepan\commerce\Model_Customer{
 				$plan_model = $this->add('xavoc\ispmanager\Model_Plan')->load($plan_id);
 			else
 				$plan_model = $this->add('xavoc\ispmanager\Model_Plan')->load($this['plan_id']);
+
+			$next_end_date = date("Y-m-d H:i:s", strtotime("-1 Day", strtotime("+".$plan_model['plan_validity_value']." ".$plan_model['qty_unit'],strtotime($created_at))));
+
 			$item = [
 						'item_id'=>$plan_model->id,
 						'price'=>$plan_model['sale_price'],
@@ -361,9 +364,10 @@ class Model_User extends \xepan\commerce\Model_Customer{
 						'express_shipping_duration'=>"",
 						'qty_unit_id'=>$plan_model['qty_unit_id'],
 						'treat_sale_price_as_amount'=>$plan_model['treat_sale_price_as_amount'],
-						'discount'=>0
+						'discount'=>0,
+						'narration'=>'Start Date: '.date('Y-m-d',strtotime($created_at))." End Date: ".date('Y-m-d', strtotime($next_end_date))
 					];
-			
+
 			if( date('d',strtotime($this->app->today)) != 1 && $this['is_invoice_date_first_to_first'] && in_array($this['include_pro_data_basis'], ['invoice_only','invoice_and_data_both'])){
 				if($plan_model['renewable_unit'] && $plan_model['renewable_value']){
 					$item_renew_date = date("Y-m-01", strtotime("+".$plan_model['renewable_value']." ".$plan_model['renewable_unit'],strtotime($this->app->today)));
@@ -578,7 +582,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		return true;
 	}
 
-	function setPlan($plan, $on_date=null, $remove_old=false,$is_topup=false,$remove_old_topups=false,$expire_all_plan=false,$expire_all_topup=false,$work_on_pro_data=true,$as_grace = true,$force_plan_end_date=null){
+	function setPlan($plan, $on_date=null, $remove_old=false,$is_topup=false,$remove_old_topups=false,$expire_all_plan=false,$expire_all_topup=false,$work_on_pro_data=true,$as_grace = true,$force_plan_end_date=null,$force_set_plan=false){
 		
 		if(!$on_date) $on_date = isset($this->app->isptoday)? $this->app->isptoday : $this->app->today;
 		if(is_numeric($plan)){
@@ -619,6 +623,10 @@ class Model_User extends \xepan\commerce\Model_Customer{
 									->setLimit(1)
 									->addCondition('is_topup',false)
 									->tryLoadAny()->get('plan_id') == $plan_model->id;
+
+		// as per logic.jade if force set plan then update it's start date in a new condition
+		if($force_set_plan)
+			$is_same_plan_continued = 0;
 
 		// expire 
 		if($expire_all_plan){
@@ -2005,14 +2013,18 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		}else{
 			$plan_id = $this['plan_id'];
 			$status = 'Active';
-
-
 		}
-
 		
-		if(($p = $this->currentRunningPlan())&& $p->id != $plan_id){
-				  // setPlan($plan, $on_date=null, $remove_old=false,$is_topup=false,$remove_old_topups=false,$expire_all_plan=false,$expire_all_topup=false,$work_on_pro_data=true,$as_grace = true,$force_plan_end_date=null)
-			$this->setPlan($plan_id,null,null,null,null,$expire_all_plan=true,null,null,$as_grace=false);
+		// current plan id not same as new plan id
+		//  and if reset_same_plan_again is define then reset the plan agian on reset date if define else 
+		if((($p = $this->currentRunningPlan())&& $p->id != $plan_id) OR $this->app->reset_same_plan_again){
+			$on_date = null;
+			if($this->app->reset_same_plan_again_on_date){
+				$on_date = $this->app->reset_same_plan_again_on_date;
+			}
+
+				 //setPlan($plan, $on_date=null, $remove_old=false,$is_topup=false,$remove_old_topups=false,$expire_all_plan=false,$expire_all_topup=false,$work_on_pro_data=true,$as_grace = true,$force_plan_end_date=null,$force_set_plan=false)
+			$this->setPlan($plan_id,$on_date,null,null,null,$expire_all_plan=true,null,null,$as_grace=false,null,$force_set_plan=true);
 		}
 		
 		$this['status'] = $status;
@@ -2021,10 +2033,14 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 		// $this->updateUserConditon();
 		$return_data = $this->createInvoice($this,null,null,$this->app->now);
-		$master_model = $return_data['master_model'];
-		// as per logic.jade it is due in status here by default
-		$master_model['status']='due';
-		$master_model->save();
+
+		if(isset($return_data['master_detail'])){
+			$invoice_model = $this->add('xepan\commerce\Model_SalesInvoice')
+					->load($return_data['master_detail']['id']);
+			// as per logic.jade it is due in status here by default
+			$invoice_model['status'] = 'Due';
+			$invoice_model->save();
+		}
 
 		$this->updateNASCredential();
 		$this->updateWebsiteUser();

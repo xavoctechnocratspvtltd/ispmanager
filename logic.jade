@@ -27,11 +27,13 @@
 
 2* Upcoming Invoices Create invoice: - shows user plan conditions order by user and end_date
 	//- check if any previous invoice of this user is still to be approved ?  (new idea)
+	//- if needs plan change (from demo to actual ??)
 	//- just to be safe -- should be in user->createInvoice ??  (new idea)
-	create invoice of same plan on the end_date of user_plan_condition  (in draft) [Plan details as per new data in plan]
+	create invoice of same plan on the end_date of user_plan_condition  (in draft) [Plan details as per new data in plan table price etc]
 
 3* Invoice Approved: 
-	update end_date (non expired conditions of same plan in invoice) = current_end_date  + plan validity
+	//- if user plan is same as current condition update or set new plan Demo to Actual plan jump
+	update end_date (non expired conditions of same plan in invoice) = current_end_date  + plan validity (plan in user ?)
 	// (should end_date be start date when applied ?)
 	update expire_date = new end_date + grace period
 	// accounts entry happens when save by afterSave Hook

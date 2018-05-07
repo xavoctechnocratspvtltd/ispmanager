@@ -1653,7 +1653,6 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	// online invoice paid check / then associated plan with it
 	// invoicePaid functionality shifted to invoiceApproved
 	function invoiceApproved($app,$invoice_model){
-		throw new \Exception("Invoice Approved");
 
 		$customer = $this->add('xavoc\ispmanager\Model_User');
 		$customer->addCondition('id',$invoice_model['contact_id']);
@@ -2012,7 +2011,8 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 		
 		if(($p = $this->currentRunningPlan())&& $p->id != $plan_id){
-			$this->setPlan($plan_id,null,null,null,null,true);
+				  // setPlan($plan, $on_date=null, $remove_old=false,$is_topup=false,$remove_old_topups=false,$expire_all_plan=false,$expire_all_topup=false,$work_on_pro_data=true,$as_grace = true,$force_plan_end_date=null)
+			$this->setPlan($plan_id,null,null,null,null,$expire_all_plan=true,null,null,$as_grace=false);
 		}
 		
 		$this['status'] = $status;
@@ -2020,7 +2020,12 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$this->save();
 
 		// $this->updateUserConditon();
-		$return_data = $this->createInvoice($this,null,null,$this->app->now);		
+		$return_data = $this->createInvoice($this,null,null,$this->app->now);
+		$master_model = $return_data['master_model'];
+		// as per logic.jade it is due in status here by default
+		$master_model['status']='due';
+		$master_model->save();
+
 		$this->updateNASCredential();
 		$this->updateWebsiteUser();
 

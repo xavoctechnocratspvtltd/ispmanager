@@ -1,12 +1,13 @@
+//- setPlan($plan, $on_date=null, $remove_old=false,$is_topup=false,$remove_old_topups=false,$expire_all_plan=false,$expire_all_topup=false,$work_on_pro_data=true,$as_grace = true,$force_plan_end_date=null)
 
 1* Active_and_change_plan:
 	Plan = demo ? : original
 	If ( selected plan is different then setted one) {
-		Set plan - expire all previous plans
+		Set plan - expire all previous plans and set plan in grace()
 			end_date = today + plan validity 
 			if(invoice first to first){
 				end_date = last_date of current month 
-				// if we keep end_date = start_date then on invoice approve.. how to get it was 1st to 1st (##) or
+				//- if we keep end_date = start_date then on invoice approve.. how to get it was 1st to 1st (##) or
 			}
 			if(data reset value){
 				if(first to first){
@@ -15,25 +16,30 @@
 					reset_date = today + reset duration
 				}
 			}
-			expire_date = end_date + garce period <== will be problem when invoice will be approved
+			//- old due to as_grace --> expire_date = on_date + garce period
+			expire_date = end_date + grace_period
 	}
 
 	if(create invoice) {
-		create invoice - as on today (in draft/due )
+		create invoice - as on today 
 		//- (##) or manually set status to due to avoide approve activity if invoice created from here (new idea)
 		//- on set status = due and save will update Trnsaction from afterSave hook in invoice (new idea)
-		// if miss this, create manually invoice as per 4*
+		status='due' and save (in due by changing status only , no approve call to avoid hook)
+		//- if miss this, create manually invoice as per 4*
 	}
 
 2* Upcoming Invoices Create invoice: - shows user plan conditions order by user and end_date
 	//- check if any previous invoice of this user is still to be approved ?  (new idea)
 	//- if needs plan change (from demo to actual ??)
 	//- just to be safe -- should be in user->createInvoice ??  (new idea)
-	create invoice of same plan on the end_date of user_plan_condition  (in draft) [Plan details as per new data in plan table price etc]
+	create invoice of plan defined in user on the end_date of this user_plan_condition  (in draft) [Plan details as per new data in plan table price etc]
 
-3* Invoice Approved: 
+3* Invoice Approved:
+	//- => page_approve  
 	//- if user plan is same as current condition update or set new plan Demo to Actual plan jump
-	update end_date (non expired conditions of same plan in invoice) = current_end_date  + plan validity (plan in user ?)
+	search for any plan in invoice
+		set that plan on lastCondition end_date (any plan.. may not be same one)
+			update end_date (non expired conditions of same plan in invoice) = current_end_date  + plan validity (plan in invoice)
 	// (should end_date be start date when applied ?)
 	update expire_date = new end_date + grace period
 	// accounts entry happens when save by afterSave Hook

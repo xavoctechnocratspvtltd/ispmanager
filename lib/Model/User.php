@@ -757,9 +757,14 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$this['last_dl_limit']=null;
 		$this['last_ul_limit']=null;
 		$this->save();
-			
+	
+		$title = "New Plan (".$plan_model['name']." ".$plan_model['sku'].") Implemented by employee ".$this->app->employee['name'];
+		if($force_set_plan){
+			$title .= " reset plan forcely on date ".$this->app->reset_same_plan_again_on_date;
+		}
+
 		$this->add('xepan\communication\Model_Communication_Comment')
-			->createNew($this->app->employee,$this,"New Plan (".$plan_model['name']." ".$plan_model['sku'].") Implemented by employee ".$this->app->employee['name'],"Plan (".$plan_model['name']." ".$plan_model['sku'].") Implemented by employee ".$this->app->employee['name'],$on_date=$this->app->now);
+			->createNew($this->app->employee,$this,$title,"Plan (".$plan_model['name']." ".$plan_model['sku'].") Implemented by employee ".$this->app->employee['name'],$on_date=$this->app->now);
 
 		return $plan_model;
 	}

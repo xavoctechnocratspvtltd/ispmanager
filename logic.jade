@@ -2,7 +2,7 @@
 
 1* Active_and_change_plan:
 	Plan = demo ? : original
-	If ( selected plan is different then setted one) {
+	If ( selected plan is different then setted one OR setFored defined) {
 		Set plan - expire all previous plans and set plan in grace()
 			end_date = today + plan validity 
 			if(invoice first to first){

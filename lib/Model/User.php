@@ -169,16 +169,17 @@ class Model_User extends \xepan\commerce\Model_Customer{
 				$m['username'] = $this['radius_username'];
 				$m->saveAndUnload();
 			}
+			
+			// update website user condition only when user status is active or InDemo
+			if($this['status'] == "Active" OR $this['status'] == "InDemo"){
+				$user = $this->add('xepan\base\Model_User');
+				$user->addCondition('scope','WebsiteUser');
+				$user->addCondition('username',$old_user);
+				$user->tryLoadAny();
 
-			$user = $this->add('xepan\base\Model_User');
-			$user->addCondition('scope','WebsiteUser');
-			$user->addCondition('username',$old_user);
-			$user->tryLoadAny();
-
-			$user['username'] = $this['radius_username'];
-			$user->saveAndUnload();
-
-
+				$user['username'] = $this['radius_username'];
+				$user->saveAndUnload();
+			}
 		}
 
 		if($this->isDirty('radius_password')){
@@ -1615,13 +1616,13 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 	function updateWebsiteUser(){
 		if(!$this['radius_username']) return;
-		
+
 		$username = trim($this['radius_username']);
 		if($this->app->getConfig('username_is_email',true)){
 			if(!filter_var($username, FILTER_VALIDATE_EMAIL)){
 				$username .= "@isp-fake.com";
 			}
-		}	
+		}
 
 		$user = $this->add('xepan\base\Model_User');
 		$user->addCondition('scope','WebsiteUser');
@@ -1634,9 +1635,9 @@ class Model_User extends \xepan\commerce\Model_Customer{
 						->load($this['id']);
 			$user_id = $r_user['user_id'];
 		}
-
+		
 		if($user->loaded() && $user->id != $user_id)
-			throw new \Exception("(".$user->id."=".$username." = ".$this->id.") user name already use with other isp user ");
+			throw new \Exception("(".$user->id."= ".$username." = ".$this->id.") user name already use with other isp user ");
 		
 		// $user=$this->add('xepan\base\Model_User');
 		$this->add('BasicAuth')
@@ -1650,8 +1651,10 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	}
 
 	// online invoice paid check / then associated plan with it
-	function invoicePaid($app,$invoice_model){
-		
+	// invoicePaid functionality shifted to invoiceApproved
+	function invoiceApproved($app,$invoice_model){
+		throw new \Exception("Invoice Approved");
+
 		$customer = $this->add('xavoc\ispmanager\Model_User');
 		$customer->addCondition('id',$invoice_model['contact_id']);
 		$customer->tryLoadAny();
@@ -1666,13 +1669,19 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		
 		$items = $invoice_model->Items()->getRows();
 		$items_ids = array_column($items, 'item_id');
-		$plan = $this->add('xavoc\ispmanager\Model_Plan')->addCondition('id',$items_ids)->tryLoadAny();
+		$plan = $this->add('xavoc\ispmanager\Model_Plan')
+					->addCondition('is_topup',false)
+					->addCondition('id',$items_ids)->tryLoadAny();
 
 		if($plan->loaded()){
 			$oi = $invoice_model->Items()->tryLoadBy('item_id',$plan->id);
-
-			$user->setPlan($plan->id,$invoice_model['created_at'],$remove_old=false,$is_topup=false,$remove_old_topups=false,$expire_all_plan=true,$expire_all_topup=false,!$oi['recurring_qsp_detail_id'],$as_grace= false);
-																
+			// code updated on date : 5-May-2018
+			// set plan from last plan and condition end date.
+			// if not then invoice created at
+			$condition_model = $this->getLastCondition();
+			if(!$condition_model->loaded()) throw new \Exception("Plan Not Implemented On User ".$this['radius_username']." do it manually");
+			$on_date = $condition_model['end_date'];
+			$user->setPlan($plan->id,$on_date,$remove_old=false,$is_topup=false,$remove_old_topups=false,$expire_all_plan=true,$expire_all_topup=false,!$oi['recurring_qsp_detail_id'],$as_grace= false);
 		}		
 	}
 
@@ -1710,6 +1719,17 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$upt->tryLoadAny();
 
 		return $upt->ref('plan_id');
+	}
+
+	function getLastCondition($only_plan=true){
+
+		$upt = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup');
+		$upt->addCondition('user_id',$this->id);
+		if($only_plan)
+			$upt->addCondition('is_topup',false);
+		$upt->setOrder('id','desc');
+		return $upt->tryLoadAny();
+
 	}
 
 	function getCurrentCondition(){

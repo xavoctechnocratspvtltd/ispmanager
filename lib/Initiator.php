@@ -64,8 +64,10 @@ class Initiator extends \Controller_Addon {
         $this->addAppFunctions();
 
         $user = $this->add('xavoc\ispmanager\Model_User');
+
         // $this->app->addHook('beforeQSPSave',[$user,'updateQSPBeforeSave']);
-        $this->app->addHook('invoice_paid',[$user,'invoicePaid']);
+        $this->app->addHook('invoice_approved',[$user,'invoiceApproved']);
+        // $this->app->addHook('invoice_paid',[$user,'invoicePaid']);
         $this->app->addHook('beforeQspDocumentGenerate',[$user,'beforeQspDocumentGenerate']);
 
         $this->app->addHook('new_lead_added',function($app,$model){

@@ -1,0 +1,58 @@
+
+1* Active_and_change_plan:
+	Plan = demo ? : original
+	If ( selected plan is different then setted one) {
+		Set plan - expire all previous plans
+			end_date = today + plan validity 
+			if(invoice first to first){
+				end_date = last_date of current month 
+				// if we keep end_date = start_date then on invoice approve.. how to get it was 1st to 1st (##) or
+			}
+			if(data reset value){
+				if(first to first){
+					reset_date = 1st of (today + reset duration)
+				}else{
+					reset_date = today + reset duration
+				}
+			}
+			expire_date = end_date + garce period <== will be problem when invoice will be approved
+	}
+
+	if(create invoice) {
+		create invoice - as on today (in draft/due )
+		//- (##) or manually set status to due to avoide approve activity if invoice created from here (new idea)
+		//- on set status = due and save will update Trnsaction from afterSave hook in invoice (new idea)
+		// if miss this, create manually invoice as per 4*
+	}
+
+2* Upcoming Invoices Create invoice: - shows user plan conditions order by user and end_date
+	//- check if any previous invoice of this user is still to be approved ?  (new idea)
+	//- if needs plan change (from demo to actual ??)
+	//- just to be safe -- should be in user->createInvoice ??  (new idea)
+	create invoice of same plan on the end_date of user_plan_condition  (in draft) [Plan details as per new data in plan table price etc]
+
+3* Invoice Approved: 
+	//- if user plan is same as current condition update or set new plan Demo to Actual plan jump
+	update end_date (non expired conditions of same plan in invoice) = current_end_date  + plan validity (plan in user ?)
+	// (should end_date be start date when applied ?)
+	update expire_date = new end_date + grace period
+	// accounts entry happens when save by afterSave Hook
+	//- override page_approve to ask if they wish to change/extend end_date, reset_date and expire date (new idea)
+
+4* Created Manual Invoice
+	On Approve ???
+	//- override page_approve to ask if they wish to change/extend end_date, reset_date and expire date (new idea)
+
+
+//- ================ TO GET SPEEDED WHAT NEEDS TO BE UPDATED IN WHAT FASION ==========================
+
+User
+	current plan
+		start_date
+		end_date
+		expire_date - is_expired
+		reset_date - data
+		Previous Invoices
+			Date: item: price: total-amount: status : mark due
+			Date: item: price: total-amount: status : mark next_status
+	plans history

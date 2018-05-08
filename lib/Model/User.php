@@ -1667,6 +1667,10 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	// invoicePaid functionality shifted to invoiceApproved
 	function invoiceApproved($app,$invoice_model){
 
+		if($this->app->isp_invoice_approved_function_not_run){
+			return;
+		}
+
 		$customer = $this->add('xavoc\ispmanager\Model_User');
 		$customer->addCondition('id',$invoice_model['contact_id']);
 		$customer->tryLoadAny();
@@ -1690,7 +1694,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			// code updated on date : 5-May-2018
 			// set plan from last plan and condition end date.
 			// if not then invoice created at
-			$condition_model = $this->getLastCondition();
+			$condition_model = $user->getLastCondition();
 			if(!$condition_model->loaded()) throw new \Exception("Plan Not Implemented On User ".$this['radius_username']." do it manually");
 			$on_date = $condition_model['end_date'];
 			$user->setPlan($plan->id,$on_date,$remove_old=false,$is_topup=false,$remove_old_topups=false,$expire_all_plan=true,$expire_all_topup=false,!$oi['recurring_qsp_detail_id'],$as_grace= false);

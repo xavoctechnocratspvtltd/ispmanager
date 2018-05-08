@@ -28,7 +28,7 @@ class page_datesmanage extends \xepan\base\Page {
 				'FormButtons'=>'c4~3'
 			]);
 
-		$form->addField('DropDown','look_for')->setValueList([0=>'Please Select','start_date'=>'start_date','end_date'=>'end_date','expire_date'=>'expire_date']);
+		$form->addField('DropDown','look_for')->setValueList([0=>'Please Select','start_date'=>'start_date','end_date'=>'end_date','expire_date'=>'expire_date','reset_date'=>'reset_date']);
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
 

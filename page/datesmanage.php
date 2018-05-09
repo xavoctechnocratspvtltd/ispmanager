@@ -58,11 +58,33 @@ class page_datesmanage extends \xepan\base\Page {
 		}
 
 
+		if($look_for == "reset_date"){
+			$btn = $crud->addButton('Reset all data of not expired users')->addClass('btn btn-danger');
+			if($btn->isClicked()){
+				if(!$from_date) throw new \Exception("From Date must not be empty");
+				if(strtotime($from_date) != strtotime($to_date))
+					throw new \Exception("from date (".$from_date.") and to date(".$to_date.") must be same");
+
+				if($m->count()->getOne()){
+					$this->add('xavoc\ispmanager\Controller_ResetUserPlanAndTopup')->run($from_date);
+					$this->app->employee
+						->addActivity("manually data reset called on date ".$this->app->now,null, null,null,null,null)
+						;
+					$this->js(null,$crud->js()->reload())->univ()->successMessage('Data Reset Sucessfully')->execute();
+				}else{
+					$this->app->employee
+						->addActivity("manually data reset called on date ".$this->app->now." but user count is zero",null, null,null,null,null)
+						;
+					$this->js()->univ()->errorMessage()->execute();
+				}
+			}
+		}
 
 		$crud->setModel($m,['user','organization','plan','start_date','end_date','expire_date','is_expired','reset_date']);
 		$crud->grid->removeColumn('attachement');
 		$crud->grid->removeColumn('organization');
 		$crud->grid->addPaginator(100);
+
 
 		if($form->isSubmitted()){
 			if(!$form['look_for']) $form->displayError('look_for','Please specify field');
@@ -77,6 +99,7 @@ class page_datesmanage extends \xepan\base\Page {
 		$crud->grid->js('click')->univ()->frameURL('User Details',[$this->app->url('./details'),'user_plan_condition_id'=>$this->js()->_selectorThis()->data('id')])->_selector('tr');
 		$this->app->template->appendHTML('js_include',
                 '<style> table tr:hover {cursor: pointer;}'."</style>\n");
+
 	}
 
 	function page_details(){

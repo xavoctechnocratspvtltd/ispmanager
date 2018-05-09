@@ -8,7 +8,7 @@ class Controller_ResetUserPlanAndTopup extends \AbstractController {
 	public $testDebug_object=null;
 
 	function run($date = null,$test_user=null, $testDebug_object=null){
-		if(!$date) $date = $this->app->now;
+		if(!$date) $date = $this->app->today;
 		if($testDebug_object) $this->testDebug_object = $testDebug_object;
 
 		// $this->app->db->dsql()->expr('UPDATE isp_user_plan_and_topup SET is_expired =1 WHERE expire_date < "'.$date.'" ')->execute();
@@ -21,7 +21,7 @@ class Controller_ResetUserPlanAndTopup extends \AbstractController {
 		foreach ($upt_model as $key => $model) {
 			$this->testDebug('Checking non expired',$model['remark'],['existing_reset_date'=>$model['reset_date'],'on_date'=>$date]);
 			// IF TODAY IS RESET DATE
-			if($model['reset_date'] && strtotime($model['reset_date']) <= strtotime($date)){
+			if($model['reset_date'] && strtotime($model['reset_date']) == strtotime($date)){
 				//IF DATA IS CARRY FORWARD THEN UPDATE THE DATA LIMIT = (PLAN DATA LIMIT + REMAINING DATA LIMIT OF LAST PERIOD)
 				if($model['is_data_carry_forward'] == 'once'){
 					$model['carry_data'] = ($model['data_limit'] - $model['data_consumed'])>0?$model['data_limit'] - $model['data_consumed']:0;

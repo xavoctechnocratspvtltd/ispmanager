@@ -26,6 +26,7 @@ class Model_Device extends \xepan\base\Model_Table{
 		$this->addField('failed_action')->type('text')->system(false)->defaultValue('exec "/usr/bin/wget -q \'http://{xepan_host}/?page=xavoc_ispmanager_devicedown --post-data \'failed_device_id={device_id}\' "');
 		$this->addField('secret')->system(true)->defaultValue(md5(uniqid()));
 
+		$this->add('xepan\base\Controller_AuditLog');
 		// $this->add('dynamic_model/Controller_AutoCreator');
 	}
 

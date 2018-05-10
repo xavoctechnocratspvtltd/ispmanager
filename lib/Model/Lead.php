@@ -20,6 +20,7 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 	function init(){
 		parent::init();
 		
+		$this->add('xepan\base\Controller_AuditLog');	
 		// $this->addHook('beforeSave',$this);
 	}
 

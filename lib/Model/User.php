@@ -103,6 +103,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			return $q->expr('[0]',[$act->fieldQuery('acctstoptime')]);
 		})->sortable(true);
 
+		$this->add('xepan\base\Controller_AuditLog');
 		$this->addHook('beforeSave',$this);
 		$this->addHook('afterSave',[$this,'updateNASCredentialHook']);
 		// $this->addHook('afterSave',[$this,'updateUserConditon']);

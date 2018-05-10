@@ -87,7 +87,9 @@ class Model_Condition extends \xepan\base\Model_Table{
 		$this->addHook('beforeSave',$this);
 
 		$this->setOrder('id','asc');
-
+		
+		$this->add('xepan\base\Controller_AuditLog');
+		
 		$this->add('xavoc\ispmanager\Controller_HumanByte')
 			->handleFields([
 					'data_limit',
@@ -101,6 +103,7 @@ class Model_Condition extends \xepan\base\Model_Table{
 					'burst_threshold_ul_limit'
 				]);
 		// $this->add('dynamic_model/Controller_AutoCreator');
+
 	}
 
 	function beforeSave(){

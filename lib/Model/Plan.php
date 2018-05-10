@@ -53,6 +53,7 @@ class Model_Plan extends \xepan\commerce\Model_Item{
 
 		$this->addHook('beforeSave',$this,[],4);
 
+		$this->add('xepan\base\Controller_AuditLog');
 		// $this->add('dynamic_model/Controller_AutoCreator');
 	}
 

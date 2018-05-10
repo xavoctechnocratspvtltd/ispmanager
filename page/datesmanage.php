@@ -44,6 +44,7 @@ class page_datesmanage extends \xepan\base\Page {
 			return $m->refSQL('user_id')->fieldQuery('organization');
 		});
 
+
 		if($look_for){
 			if($from_date)
 				$m->addCondition($look_for,'>=',$from_date);
@@ -86,6 +87,13 @@ class page_datesmanage extends \xepan\base\Page {
 		$crud->grid->addPaginator(100);
 
 
+		if( $id= $_GET['extend_5_days']){
+			$m->load($id);
+			$m[$look_for] = date('Y-m-d H:i:s',strtotime("+ 5 days",strtotime($m[$look_for])));
+			$m->saveAndUnload();
+			$crud->js()->reload()->execute();
+		}
+
 		if($form->isSubmitted()){
 			if(!$form['look_for']) $form->displayError('look_for','Please specify field');
 			
@@ -93,12 +101,14 @@ class page_datesmanage extends \xepan\base\Page {
 		}
 
 		$crud->grid->addHook('formatRow',function($g){
-			$g->current_row_html['user']=$g->model['user'].'<br/> '.$g->model['organization'];
+			$g->current_row_html['user']='<a href="#" class="do-user-details" data-id="'.$g->model->id.'">'.$g->model['user'].'</a><br/> '.$g->model['organization'];
 		});
 
-		$crud->grid->js('click')->univ()->frameURL('User Details',[$this->app->url('./details'),'user_plan_condition_id'=>$this->js()->_selectorThis()->data('id')])->_selector('tr');
-		$this->app->template->appendHTML('js_include',
-                '<style> table tr:hover {cursor: pointer;}'."</style>\n");
+		$crud->grid->addColumn('Button','extend_5_days', 'Extend '. $look_for.' 5 days');
+
+		$crud->grid->js('click')->univ()->frameURL('User Details',[$this->app->url('./details'),'user_plan_condition_id'=>$this->js()->_selectorThis()->data('id')])->_selector('.do-user-details');
+		// $this->app->template->appendHTML('js_include',
+  //               '<style> table tr:hover {cursor: pointer;}'."</style>\n");
 
 	}
 

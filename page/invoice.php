@@ -30,7 +30,20 @@
 			if($f['filter_city']){
 				$m->addCondition('city',$f['filter_city']);
 			}
+			if($f['filter_invoice_send'] == "y"){
+				$m->addCondition('qsp_sent_date','<>',0);
+			}
+			if($f['filter_invoice_send'] == "n"){
+				$m->addCondition('qsp_sent_date',0);
+			}
+
 		});
 		$city_field->js('change',$this->filter_form->js()->submit());
+
+		// filter based on email send or not
+		$email_field = $this->filter_form->addField('DropDown','filter_invoice_send');
+		$email_field->setValueList(['y'=>'Invoice Sent','n'=>'Not Sent']);
+		$email_field->setEmptyText(' Sent Invoice');
+		$email_field->js('change',$this->filter_form->js()->submit());
 	}
 }

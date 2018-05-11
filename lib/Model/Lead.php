@@ -274,7 +274,7 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 		$demo_plan_field->setEmptyText('Please Select Demo Plan');
 		
 		$form->addField('mobile_no')->validate('required')->set($this->getPhones()[0]);
-		$form->addField('email_id')->validate('required')->set($this->getEmails()[0]);
+		$form->addField('email_id')->set($this->getEmails()[0]);
 
 		$form->addField('first_name')->set($this['first_name']);
 		$form->addField('last_name')->set($this['last_name']);
@@ -504,6 +504,28 @@ class Model_Lead extends \xepan\marketing\Model_Lead{
 								$attachment['file_id'] = $form[$attachment_name];
 								$attachment->save();
 							}
+						}
+					}
+
+					if($form['email_id']){
+						foreach (explode(",", $form['email_id']) as $key=>$email_id) {
+							$email = $this->add('xepan\base\Model_Contact_Email',['bypass_hook'=>true]);
+							$email->addCondition('contact_id',$user->id);
+							$email->addCondition('value',$email_id);
+							$email->tryLoadAny();
+							$email['head'] = "Official";
+							$email->save();
+						}
+					}
+
+					if($form['mobile_no']){
+						foreach (explode(",", $form['mobile_no']) as $key=>$mobile_no) {
+							$phone = $this->add('xepan\base\Model_Contact_Phone',['bypass_hook'=>true]);
+							$phone->addCondition('contact_id',$user->id);
+							$phone->addCondition('value',$mobile_no);
+							$phone->tryLoadAny();
+							$phone['head'] = "Official";
+							$phone->save();
 						}
 					}
 				}

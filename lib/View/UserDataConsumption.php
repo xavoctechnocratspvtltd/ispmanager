@@ -27,7 +27,7 @@ class View_UserDataConsumption extends \View{
 		$rad_model->setOrder('radacctid','desc');
 		$rad_model->_dsql()->group('year');
 		$grid = $this->add('xepan\base\Grid');
-		$grid->setModel($rad_model,['year','total_data_consumed','total_upload','total_download']);
+		$grid->setModel($rad_model,['year','total_data_consumed','total_upload','total_download','total_duration_in_sec','total_duration_in_hms']);
 		$grid->addColumn('total_data_consumed');
 
 		$grid->add('View',null,'Pannel')->setElement('h3')->set('User Data Consumption');
@@ -46,7 +46,7 @@ class View_UserDataConsumption extends \View{
 				$rad_model->_dsql()->group('month_year');
 
 				$grid = $page->add('xepan\base\Grid');
-				$grid->setModel($rad_model,['month_year','total_data_consumed','total_upload','total_download']);
+				$grid->setModel($rad_model,['month_year','total_data_consumed','total_upload','total_download','total_duration_in_sec','total_duration_in_hms']);
 				$grid->addColumn('total_data_consumed');
 				// $grid->addTotals(['total_upload','total_download']);
 				$grid->add('VirtualPage')
@@ -65,7 +65,7 @@ class View_UserDataConsumption extends \View{
 						$rad_model->_dsql()->group('date');
 
 						$grid = $day_page->add('xepan\base\Grid');
-						$grid->setModel($rad_model,['date','total_data_consumed','total_upload','total_download']);
+						$grid->setModel($rad_model,['date','total_data_consumed','total_upload','total_download','total_duration_in_sec','total_duration_in_hms']);
 						$grid->addColumn('total_data_consumed');
 						// $grid->addTotals(['total_upload','total_download']);
 
@@ -92,7 +92,7 @@ class View_UserDataConsumption extends \View{
 								$rad_model->getElement('framedipaddress')->caption('IP Address');
 
 								$grid = $session_page->add('xepan\base\Grid');
-								$grid->setModel($rad_model,['acctsessionid','acctinputoctets','acctoutputoctets','callingstationid','framedipaddress','acctstarttime','acctupdatetime','acctstoptime']);
+								$grid->setModel($rad_model,['acctsessionid','acctinputoctets','acctoutputoctets','callingstationid','framedipaddress','acctstarttime','acctupdatetime','acctstoptime','duration_in_sec','duration_in_hms']);
 								$grid->addSno('');
 								// $grid->addTotals(['total_upload','total_download']);
 					 			$grid->addHook('formatRow',function($g){
@@ -100,13 +100,19 @@ class View_UserDataConsumption extends \View{
 									$g->current_row_html['acctinputoctets'] = $this->app->byte2human($g->model['acctinputoctets']);
 									$g->current_row_html['acctoutputoctets'] = $this->app->byte2human($g->model['acctoutputoctets']);
 								});
+
+								$grid->removeColumn('duration_in_sec');
+								$grid->addFormatter('acctstarttime','Wrap');
+								$grid->addFormatter('acctstoptime','Wrap');
+								$grid->addFormatter('acctupdatetime','Wrap');
 				 			});
 						
 						$grid->addHook('formatRow',function($g){
 							$g->current_row_html['total_data_consumed'] = $this->app->byte2human($g->model['total_upload'] + $g->model['total_download']);
 							$g->current_row_html['total_upload'] = $this->app->byte2human($g->model['total_upload']);
 							$g->current_row_html['total_download'] = $this->app->byte2human($g->model['total_download']);
-						});		 			
+						});
+						$grid->removeColumn('total_duration_in_sec');
 		 			});
 
 		 		$grid->addHook('formatRow',function($g){
@@ -114,6 +120,7 @@ class View_UserDataConsumption extends \View{
 					$g->current_row_html['total_upload'] = $this->app->byte2human($g->model['total_upload']);
 					$g->current_row_html['total_download'] = $this->app->byte2human($g->model['total_download']);
 				});
+				$grid->removeColumn('total_duration_in_sec');
 		});
 
  		$grid->addHook('formatRow',function($g){
@@ -123,6 +130,7 @@ class View_UserDataConsumption extends \View{
 		});
 
  		$grid->addPaginator(10);
+ 		$grid->removeColumn('total_duration_in_sec');
  		// $grid->addTotals(['total_data_consumed','total_upload','total_download']);
  		// $grid->addHook('formatTotalsRow',function($g){
 		// 	$g->current_row_html['total_data_consumed'] = $this->app->byte2human($g->model['total_data_consumed']);

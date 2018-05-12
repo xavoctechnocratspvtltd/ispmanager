@@ -9,25 +9,163 @@ class page_report extends \xepan\base\Page {
 	function page_index(){
 		$tab = $this->add('Tabs');
 		$tab->addTabUrl('./user','User');
+		$tab->addTabUrl('./fupuser','User Under Fup');
 		$tab->addTabUrl('./usercondition','UserCondition');
 	}
 
 	function page_user(){
 
-		$date = $this->app->today;
-		$this->add('View')->set('User Under FUP on date: '.$date);
+		$filter = $this->app->stickyGET('filter');
+		$from_date = $this->app->stickyGET('from_date');
+		$to_date = $this->app->stickyGET('to_date');
+		$user_id = $this->app->stickyGET('user_id');
+		$look_according_to = $this->app->stickyGET('look_according_to');
+		$employee = $this->app->stickyGET('employee');
+
+		$form = $this->add('Form');
+		$form->add('xepan\base\Controller_FLC')
+			->showLables(true)
+			->makePanelsCoppalsible(true)
+			->layout([
+					'from_date'=>'Filter~c1~2',
+					'to_date'=>'c2~2',
+					'look_according_to'=>'c3~2',
+					'user~Radius User'=>'c4~3',
+					'employee~User Created By Employee'=>'c5~3',
+					'FormButtons~&nbsp;'=>'c6~3'
+				]);
+		$form->addField('DatePicker','from_date');
+		$form->addField('DatePicker','to_date');
+
+		$user_model = $this->add('xavoc\ispmanager\Model_User');
+		$user_model->title_field = "radius_effective_name";
+		$form->addField('autocomplete\Basic','user')
+				->setModel($user_model);
+		$look_field = $form->addField('DropDown','look_according_to')
+				->setValueList(
+					[
+					'radius_user_created_at'=>'Created Date',
+					'installation_assign_at'=>'Installation Assign Date',
+					'installed_at'=>'Installed Date'
+				]);
+		$look_field->setEmptyText('select date variable');
+
+		$form->addField('autocomplete\Basic','employee')->setModel('xepan\hr\Model_Employee');
+
+		$submit_btn = $form->addSubmit('Filter');
+		$clear_btn = $form->addSubmit('clear');
+
+		$v = $this->add('View');
+		if($form->isSubmitted()){
+			if($form->isClicked($clear_btn)){
+				$form->js(null,$v->js()->reload(['filter'=>0]))->univ()->reload()->execute();
+			}
+
+			$form->js(null,$v->js()->reload([
+					'filter'=>1,
+					'from_date'=>$form['from_date'],
+					'to_date'=>$form['to_date'],
+					'user_id'=>$form['user'],
+					'look_according_to'=>$form['look_according_to'],
+					'employee'=>$form['employee']
+				]))->execute();
+		}
+
+
+		$model = $this->add('xavoc\ispmanager\Model_User');
+		if($filter){
+			if($user_id){
+				$model->addCondition('id',$user_id);
+			}else{
+				if($from_date && $look_according_to){
+					$model->addCondition($look_according_to,'>=',$from_date);
+				}
+				if($to_date && $look_according_to){
+					$model->addCondition($look_according_to,'<',$this->app->nextDate($to_date));
+				}
+
+				if($look_according_to){
+					$model->setOrder($look_according_to,'desc');
+				}else{
+					$model->setOrder('created_at','desc');
+				}
+
+				if($employee)
+					$model->addCondition('created_by_id',$employee);
+			}
+
+
+
+		}else
+			$model->addCondition('id','-1');
+
+		$col = $v->add('Columns');
+		$col1 = $col->addColumn(13);
+		$col1->add('View')->addClass('alert alert-info')->set('Total Record: '.$model->count()->getOne());
+
+		$grid = $v->add('xepan\base\Grid',['fixed_header'=>false]);
+		$grid->setModel($model,['radius_effective_name','plan','created_at','installation_assign_at','installed_at','radius_user_created_at']);
+		$grid->addPaginator(50);
+		$grid->template->tryDel('quick_search_wrapper');
+		$grid->addFormatter('radius_effective_name','Wrap');
+		$grid->add('misc/Export');
+	}
+
+	function page_fupuser(){
+		$to_date = $from_date = $this->app->today;
+
+		$this->app->stickyGET('from_date');
+		$this->app->stickyGET('to_date');
+		$this->app->stickyGET('user_id');
+
+		if($_GET['from_date'])
+			$from_date = $_GET['from_date'];
+		if($_GET['to_date'])
+			$to_date = $_GET['to_date'];
+
+		$form = $this->add('Form');
+		$form->add('xepan\base\Controller_FLC')
+			->showLables(true)
+			->makePanelsCoppalsible(true)
+			->layout([
+					'from_date'=>'Filter~c1~2',
+					'to_date'=>'c2~2',
+					'user'=>'c4~3',
+					'FormButtons~&nbsp;'=>'c5~3'
+				]);
+		$form->addField('DatePicker','from_date')->set($from_date);
+		$form->addField('DatePicker','to_date')->set($to_date);
+
+		$user_model = $this->add('xavoc\ispmanager\Model_User');
+		$user_model->title_field = "radius_effective_name";
+		$form->addField('autocomplete\Basic','user')
+				->setModel($user_model);
+		$form->addSubmit('Filter');
+
+		$v = $this->add('View');
+		if($form->isSubmitted()){
+			$form->js(null,$v->js()->reload(['from_date'=>$form['from_date'],'to_date'=>$form['to_date'],'user_id'=>$form['user'] ]))->execute();
+		}
+
+		$v->add('View')->set('User Under FUP From date: '.$from_date." To date".$to_date)->addClass('alert alert-info');
 
 		$m = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup');
 		$m->addExpression('user_status')->set($m->refSql('user_id')->fieldQuery('status'));
 		$m->addCondition('data_consumed','>=',$m->getElement('net_data_limit'));
 		$m->addCondition('net_data_limit','>',0);
-		$m->addCondition('reset_date',$date);
-		$m->addCondition([['is_expired',false],['is_expired',null]]);
+		$m->addCondition('reset_date','>=',$from_date);
+		$m->addCondition('reset_date','<',$this->app->nextDate($to_date));
+		if($uid = $_GET['user_id'])
+			$m->addCondition('user_id',$uid);
 
-		$grid = $this->add('xepan\hr\Grid');
+		$m->addCondition([['is_expired',false],['is_expired',null]]);
+		$m->setOrder('reset_date','desc');
+
+		$grid = $v->add('xepan\hr\Grid');
 		$grid->setModel($m,['user','plan','remark','reset_date','net_data_limit','data_consumed','user_status']);
 		$grid->addPaginator($ipp=50);
-
+		$grid->template->tryDel('quick_search_wrapper');
+		$grid->add('misc/Export');
 	}
 
 	function page_usercondition(){

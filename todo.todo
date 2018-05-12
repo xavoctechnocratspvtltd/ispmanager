@@ -1,17 +1,10 @@
 serial no when auto invoice crate from
 T&C
 Narration me auto start date and end date
-
-Staff panel add category option
 Assign lead to show in staff panel
-Product add facility in staff panel
-
-Contract Period 
 
 CAF installed menu add column organizaion
-Close action (billing contract : months)
-
-
+	Close action (billing contract : months)
 ARC(Anuual Recurring Charges): numeric INR
 OTC(One time Charges) : INR
 Last Mile : RF/Fiber/RF+Fiber
@@ -59,4 +52,7 @@ user session time difference
 
 Stock transaction edit facility
 Invoice item first invoice compulsion
+
+
+
 

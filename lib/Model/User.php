@@ -83,8 +83,8 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		// $this->addExpression('consumed_limit');
 
 		$user_j->hasOne('xepan\hr\Employee','installation_assign_to_id');
-		$user_j->addField('installation_assign_at')->type('date');
-		$user_j->addField('installed_at')->type('date');
+		$user_j->addField('installation_assign_at')->type('DateTime');
+		$user_j->addField('installed_at')->type('DateTime');
 		$user_j->addField('installed_narration')->type('text');
 
 		$this->addExpression('last_login')->set(function($m,$q){
@@ -102,6 +102,25 @@ class Model_User extends \xepan\commerce\Model_Customer{
 					->setLimit(1);
 			return $q->expr('[0]',[$act->fieldQuery('acctstoptime')]);
 		})->sortable(true);
+
+		$this->addExpression('radius_effective_name',function($m,$q){
+			return $q->expr('CONCAT_WS(" :: ",[radius_username],[name],[code],[organization])',
+						[
+							'radius_username'=>$m->getElement('radius_username'),
+							'name'=>$m->getElement('name'),
+							'organization'=>$m->getElement('organization'),
+							'code'=>$m->getElement('code')
+						]
+					);
+		});
+
+		$this->addExpression('radius_user_created_at')->set(function($m,$q){
+			$model = $m->add('xavoc\ispmanager\Model_UserPlanAndTopup');
+			$model->addCondition('user_id',$m->getElement('id'));
+			$model->setOrder('id','asc');
+			$model->setLimit(1);
+			return $q->expr('IFNULL([0],0)',[$model->fieldQuery('start_date')]);
+		})->caption("Radius User Created At")->type('DateTime');
 
 		$this->add('xepan\base\Controller_AuditLog');
 		$this->addHook('beforeSave',$this);

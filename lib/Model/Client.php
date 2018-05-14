@@ -27,6 +27,7 @@ class Model_Client extends \xepan\base\Model_Table{
 			'secret|to_trim|required'
 			]);
 
+		$this->add('xepan\base\Controller_AuditLog');
 		$this->addHook('beforeSave',$this);
 		$this->add('dynamic_model/Controller_AutoCreator');
 	}

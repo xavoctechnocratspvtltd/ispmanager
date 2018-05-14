@@ -105,6 +105,7 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 		$this->addField('burst_ul_time')->hint('time in second');
 		$this->addField('priority');
 
+		$this->add('xepan\base\Controller_AuditLog');
 		$this->addHook('beforeSave',$this);
 
 		$this->add('xavoc\ispmanager\Controller_HumanByte')

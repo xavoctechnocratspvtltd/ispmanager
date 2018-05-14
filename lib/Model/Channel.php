@@ -18,7 +18,8 @@ class Model_Channel extends \xepan\base\Model_Contact{
 		
 		$channel_j = $this->join('isp_channel.contact_id');
 		$channel_j->addField('permitted_bandwidth');
-
+		
+		$this->add('xepan\base\Controller_AuditLog');
 		$this->is(
 			['permitted_bandwidth|to_trim|required']
 		);

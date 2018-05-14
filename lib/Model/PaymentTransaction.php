@@ -31,6 +31,7 @@ class Model_PaymentTransaction extends \xepan\base\Model_Table{
 		$this->addField('submitted_at')->type('date')->system(true);
 		$this->addField('narration')->type('text');
 
+		$this->add('xepan\base\Controller_AuditLog');
 		$this->addHook('beforeSave',$this);
 		$this->addHook('afterSave',$this);
 

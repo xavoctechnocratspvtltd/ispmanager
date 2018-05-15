@@ -88,7 +88,7 @@ class page_test extends \xepan\base\Page {
 		// }
 		
 		if($_GET['reset']){
-			$date = $_GET['date']?:$this->app->now;
+			$date = $_GET['date']?:$this->app->today;
 			$this->add('xavoc\ispmanager\Controller_ResetUserPlanAndTopup')->run($date);
 		}
 

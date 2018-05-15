@@ -19,6 +19,8 @@ class page_user extends \xepan\base\Page {
 			$upt->addCondition('plan_id',$m->getElement('plan_id'));
 			$upt->addCondition('user_id',$m->getElement('id'));
 			$upt->addCondition('is_effective',true);
+			$upt->setOrder('id','desc');
+			$upt->setLimit(1);
 
 			return $q->expr('CONCAT(IFNULL([0],0),",",IFNULL([1],0))',[
 					$upt->fieldQuery('net_data_limit'),
@@ -31,6 +33,8 @@ class page_user extends \xepan\base\Page {
 			$upt->addCondition('plan_id',$m->getElement('plan_id'));
 			$upt->addCondition('user_id',$m->getElement('id'));
 			$upt->addCondition('is_effective',true);
+			$upt->setOrder('id','desc');
+			$upt->setLimit(1);
 
 			return $upt->fieldQuery('is_expired');
 		});
@@ -40,6 +44,8 @@ class page_user extends \xepan\base\Page {
 			$upt->addCondition('plan_id',$m->getElement('plan_id'));
 			$upt->addCondition('user_id',$m->getElement('id'));
 			$upt->addCondition('is_effective',true);
+			$upt->setOrder('id','desc');
+			$upt->setLimit(1);
 
 			return $upt->fieldQuery('end_date');
 		});
@@ -49,6 +55,8 @@ class page_user extends \xepan\base\Page {
 			$upt->addCondition('plan_id',$m->getElement('plan_id'));
 			$upt->addCondition('user_id',$m->getElement('id'));
 			$upt->addCondition('is_effective',true);
+			$upt->setOrder('id','desc');
+			$upt->setLimit(1);
 
 			return $upt->fieldQuery('expire_date');
 		});

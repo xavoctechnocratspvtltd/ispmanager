@@ -49,14 +49,17 @@ class Controller_ResetUserPlanAndTopup extends \AbstractController {
 						$this->testDebug('Next reset not set as it is topup ',$model['remark']);
 					}
 				}
+			
+				$model->save();
+
 			}
 			
 			// is expire
 			if(strtotime($model['expire_date']) <= strtotime($date)){
 				$this->testDebug('Marked Expired',null,['Expire Date as per Model' => $model['expire_date']]);
 				$model['is_expired'] = true;
+				$model->saveAndUnload();
 			}
-			$model->saveAndUnload();
 		}
 		
 		// IF TODAY IS EXPIRE DATE

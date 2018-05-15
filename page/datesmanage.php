@@ -88,9 +88,10 @@ class page_datesmanage extends \xepan\base\Page {
 
 
 		if( $id= $_GET['extend_5_days']){
-			$m->load($id);
-			$m[$look_for] = date('Y-m-d H:i:s',strtotime("+ 5 days",strtotime($m[$look_for])));
-			$m->saveAndUnload();
+			$m1 = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup')->load($id);
+
+			$m1[$look_for] = date('Y-m-d H:i:s',strtotime("+ 5 days",strtotime($m1[$look_for])));
+			$m1->saveAndUnload();
 			$crud->js()->reload()->execute();
 		}
 

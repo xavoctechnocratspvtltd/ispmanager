@@ -48,3 +48,14 @@ DB Fields
 	ALTER TABLE `isp_plan` ADD `free_tenure` INT(11) NOT NULL DEFAULT '0', ADD `free_tenure_unit` VARCHAR(255) NOT NULL; 
 	ALTER TABLE `isp_plan` ADD `is_surrenderable` tinyint(4) NOT NULL DEFAULT '0'; 
 	ALTER TABLE `isp_user` DROP `status`;
+
+
+
+
+
+Add Advance Tab in Invoice
+update 1 day earlier in End date,e.g. In our view if Plan Expire on 2 then ERP will require it 3rd but after approval it update second, Kindly check it.
+Provide me details of ammendments & reuired desolution of issues provided till date
+In invoice No. 84 Discount is not showing , Kindly Check.
+
+There is mismatch in actual data used & data shown in users.e.g.Payorite

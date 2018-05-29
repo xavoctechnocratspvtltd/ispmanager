@@ -65,6 +65,8 @@ class page_report extends \xepan\base\Page {
 
 		$model->setOrder('user_id');
 		$grid = $v->add('xepan\base\Grid');
+		$grid->add('View',null,'Pannel')->set('Report is under testing')->addClass('alert alert-info');
+
 		$grid->setModel($model,['radius_username','user_status','plan','sale_price','plan_renewable_value','plan_renewable_unit','days_count','weeks_count','months_count','years_count','end_date','calculate_on_diff_var','total_upcoming_invoice','upcoming_invoice_amount','is_expired']);
 		$grid->addPaginator(50);
 

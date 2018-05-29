@@ -11,7 +11,7 @@ class page_report extends \xepan\base\Page {
 		$tab->addTabUrl('./user','User');
 		$tab->addTabUrl('./fupuser','User Under Fup');
 		$tab->addTabUrl('./usercondition','UserCondition');
-		$tab->addTabUrl('./fundprojection','Fund Projection');
+		$tab->addTabUrl('./fundprojection','Recurring Income Forcasting');
 
 	}
 

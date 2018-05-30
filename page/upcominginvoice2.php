@@ -11,7 +11,8 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 		parent::init();
 
 		$this->app->stickyGET('filter');
-		$from_date = $this->app->stickyGET('from_date')?:(date('Y-m-01',strtotime($this->app->today)));
+		$from_date = $this->app->stickyGET('from_date')?:$this->app->today;
+		// $from_date = $this->app->stickyGET('from_date')?:(date('Y-m-01',strtotime($this->app->today)));
 		$to_date = $this->app->stickyGET('to_date')?:$this->app->today;
 		$user_name = $this->app->stickyGET('user_name');
 		$include_expired = $this->app->stickyGET('show_expired');
@@ -69,30 +70,27 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 		
 		$model->addCondition('user_status','Active');
 
-		if($_GET['filter']){
-			if($to_date)
-				$model->addCondition('end_date','<=',$to_date);
-			if($from_date)
-				$model->addCondition('end_date','>=',$from_date);
+		if($to_date)
+			$model->addCondition('end_date','<=',$to_date);
+		if($from_date)
+			$model->addCondition('end_date','>=',$from_date);
 
-			if($user_name){
-				$model->addCondition('user_id',$user_name);
-			}
-
-			$new_model = clone($model);
-			if($_GET['show_expired'] != "true"){
-				$model->addCondition('is_expired','<>',true);
-			}
+		$new_model = clone($model);
+		if($user_name){
+			$model->addCondition('user_id',$user_name);
+		}
+		if($include_expired != "true"){
+			$model->addCondition('is_expired','<>',true);
 		}
 
 		$crud = $this->add('xepan\hr\CRUD',['allow_add'=>false,'fixed_header'=>false]);
 		$crud->grid->fixed_header = false;
 		$crud->grid->add('misc\Export');
 
-		if($_GET['filter']){
-			$new_model->addCondition('is_expired',true);
-			$crud->grid->add('View',null,'quick_search')->set('Expired Plan Count: '.$new_model->count()->getOne())->addClass('label label-info');
-		}
+		// if($_GET['filter']){
+		$new_model->addCondition('is_expired',true);
+		$crud->grid->add('View',null,'quick_search')->set('Expired Plan Count: '.$new_model->count()->getOne())->addClass('label label-info');
+		// }
 		// $crud->grid->addColumn('customer');
 		// filter form submission
 		if($form->isSubmitted()){
@@ -129,21 +127,7 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 			}else{
 				$g->setTDParam('plan','class',"");
 			}
-				
-		// 	if($g->current_invoice != $g->model['qsp_master_id']){
-
-		// 		$g->current_row_html['qsp_master'] = $g->model['qsp_master']."<br/>".$g->model['qsp_status'];
-		// 		$g->current_row['action'] = $g->model['action'];
-
-		// 		$g->current_invoice = $g->model['qsp_master_id'];
-		// 		$g->skip_sno = false;
-		// 	}else{
-		// 		$g->current_row['qsp_master'] = "";
-		// 		$g->skip_sno = true;
-		// 		$g->current_row_html['action'] = "";
-		// 	}
-			// $other_columns = ['plan'=>'<button>Create Invoice</button>','customer'=>''];
-			// $g->insertBefore($other_columns);
+			
 		});
 
 		$crud->grid->current_customer = null;
@@ -190,11 +174,7 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 			});
 
 		$order = $grid->addOrder();
-		// $order->move('name','after','customer');
-		// $order->move('qty_unit','after','quantity');
-		// $order->move('tax_percentage','after','qty_unit');
-		// $order->move('new_invoice_price','after','price');
-		// $order->now();
+
 		$grid->addColumn('Button','set_end_date_to_invoice');
 		if( $uid = $_GET['set_end_date_to_invoice']){
 			$model->load($uid);

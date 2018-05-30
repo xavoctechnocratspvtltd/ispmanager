@@ -2,18 +2,45 @@ serial no when auto invoice crate from
 T&C
 Narration me auto start date and end date
 Assign lead to show in staff panel
-
+User me action connection disconnet or connection
 CAF installed menu add column organizaion
-	Close action (billing contract : months)
+Payment : installement
+	at install plan change facility not given
+	at active time item price from item
+
+18-march
+	Product detail in QSP add item : done
+	plan condition spped with upto text : done
+
+	next renewal with date time ex created_at 12-march-2018 10:50 AM then plan expire 
+	add default narrtion of start and end date in aactive and plan changed : done
+
+Done:   caf form at won shipping address to installation address;
+		install time demo plan non editable  and lead won ke time pe demo plan also feed.
+		for install action remove demo plan id.
+
+Support ticket filter employee, from -to date status : done
+install resign region mandatory fields.: todo check
+
+user filter based on created_at, install_at, activate date employee: done
+user session time difference: done
+Invoice item first invoice compulsion : done
+
+Stock transaction edit facility
+
+============ Extra ================
+18 March
+	Action Taken
+		All Old Invoice are Deleted and All Account data
+		All Plan Name Change to Broad band
+
+end of 18 March==========================
+
+Close action (billing contract : months)
 ARC(Anuual Recurring Charges): numeric INR
 OTC(One time Charges) : INR
 Last Mile : RF/Fiber/RF+Fiber
-
 Email Draft: from and to record is not showing
-
-User me action connection disconnet or connection
-
-
 DB Fields
 	ALTER TABLE `isp_user` ADD `connection_type` VARCHAR(255) NULL DEFAULT NULL , ADD `demo_plan_id` INT(11) NOT NULL DEFAULT '0';
 	ALTER TABLE `isp_plan` DROP `status`;
@@ -22,37 +49,16 @@ DB Fields
 	ALTER TABLE `isp_plan` ADD `is_surrenderable` tinyint(4) NOT NULL DEFAULT '0'; 
 	ALTER TABLE `isp_user` DROP `status`;
 
-Payment : installement
-	at install plan change facility not given
-	at active time item price from item
-
-
-
-18-march
-
-	Product detail in QSP add item
-	plan condition spped with upto text
-
-	next renewal with date time ex created_at 12-march-2018 10:50 AM then plan expire 
-	add default narrtion of start and end date in aactive and plan changed
-	
-	Action Taken
-		All Old Invoice are Deleted and All Account data
-		All Plan Name Change to Broad band
-
-Done:   caf form at won shipping address to installation address;
-		install time demo plan non editable  and lead won ke time pe demo plan also feed.
-		for install action remove demo plan id.
-
-install resign region mandatory fields.
-
-Support tocket filter employee, from -to date status,
-user filter based on created_at, install_at, activate date employee
-user session time difference
-
-Stock transaction edit facility
-Invoice item first invoice compulsion
 
 
 
 
+Add Advance Tab in Invoice
+update 1 day earlier in End date,e.g. In our view if Plan Expire on 2 then ERP will require it 3rd but after approval it update second, Kindly check it.
+Provide me details of ammendments & reuired desolution of issues provided till date
+In invoice No. 84 Discount is not showing , Kindly Check.
+
+There is mismatch in actual data used & data shown in users.e.g.Payorite
+
+Date: 29/05/
+Report activity click not working 

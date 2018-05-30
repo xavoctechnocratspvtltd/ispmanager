@@ -11,7 +11,79 @@ class page_report extends \xepan\base\Page {
 		$tab->addTabUrl('./user','User');
 		$tab->addTabUrl('./fupuser','User Under Fup');
 		$tab->addTabUrl('./usercondition','UserCondition');
+		$tab->addTabUrl('./fundprojection','Recurring Income Forcasting');
+
 	}
+
+	function page_fundprojection(){
+		$filter = $this->app->stickyGET('filter');
+		// $from_date = $this->app->stickyGET('from_date');
+		$to_date = $this->app->stickyGET('to_date');
+
+		$form = $this->add('Form');
+		$form->add('xepan\base\Controller_FLC')
+			->showLables(true)
+			->makePanelsCoppalsible(true)
+			->layout([
+					'to_date~Till Date'=>'Filter~c1~2',
+					'FormButtons~&nbsp;'=>'c6~3'
+				]);
+		// $form->addField('DatePicker','from_date');
+		$form->addField('DatePicker','to_date');
+		$form->addSubmit('Filter');
+		$v = $this->add('View');
+
+		if($form->isSubmitted()){
+			$form->js(null,$v->js()->reload([
+					'filter'=>1,
+					// 'from_date'=>$form['from_date'],
+					'to_date'=>$form['to_date']
+				]))->execute();
+		}
+
+		// logic
+			// not expired
+			// expression for diff day, month, week, year from end_date and to_date
+			// expression on repeat_count based on plan_renewale value and unit
+			// expression for multiple repeat_count * plan_amount
+		$model = $this->add('xavoc\ispmanager\Model_UpcomingInvoices');
+		$model->addCondition('is_expired','<>',true);
+		if($filter){
+			// if($from_date){
+				// $model->addCondition('end_date','>=',$from_date);
+			// }
+			if($to_date){
+				$model->to_date = $to_date;
+				$model->addCondition('end_date','<=',$to_date);
+			}
+		}else
+			$model->addCondition('id','-1');
+
+		// $model->addCondition('days_count','>=',0);
+		$model->addCondition('total_upcoming_invoice','>',0);
+		$model->addCondition('is_topup',false);
+
+		$model->setOrder('user_id');
+		$grid = $v->add('xepan\base\Grid');
+		$grid->add('View',null,'Pannel')->set('Report is under testing')->addClass('alert alert-info');
+
+		$grid->setModel($model,['radius_username','user_status','plan','sale_price','plan_renewable_value','plan_renewable_unit','days_count','weeks_count','months_count','years_count','end_date','calculate_on_diff_var','total_upcoming_invoice','upcoming_invoice_amount','is_expired']);
+		$grid->addPaginator(50);
+
+		if($model->count()->getOne())
+			$grid->addTotals(['s_no','total_upcoming_invoice','upcoming_invoice_amount']);
+
+		$grid->addHook('formatRow',function($g){
+			$g->current_row_html['plan'] = $g->model['plan']."<br/> Plan End Date: <b>".date('d-M-Y',strtotime($g->model['end_date']))."</b>";
+			$g->totals['s_no'] = "Totals";
+		});
+
+		$removeColumn = ['is_expired','user_status','days_count','weeks_count','months_count','years_count','end_date'];
+		foreach ($removeColumn as $key => $field_name) {
+			$grid->removeColumn($field_name);
+		}
+	}
+
 
 	function page_user(){
 

@@ -10,10 +10,13 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 	function init(){
 		parent::init();
 
-		$from_date = $this->app->stickyGET('from_date')?:(date('Y-m-01',strtotime($this->app->today)));
+		$this->app->stickyGET('filter');
+		$from_date = $this->app->stickyGET('from_date')?:$this->app->today;
+		// $from_date = $this->app->stickyGET('from_date')?:(date('Y-m-01',strtotime($this->app->today)));
 		$to_date = $this->app->stickyGET('to_date')?:$this->app->today;
 		$user_name = $this->app->stickyGET('user_name');
-
+		$include_expired = $this->app->stickyGET('show_expired');
+		
 		$form = $this->add('Form');
 		$form->add('xepan\base\Controller_FLC')
 				->addContentSpot()
@@ -22,7 +25,8 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 						'user_name'=>'Filter~c1~4',
 						'from_date'=>'c2~2',
 						'to_date'=>'c3~2',
-						'FormButtons~'=>'c4~3'
+						'include_expired'=>'c4~2',
+						'FormButtons~'=>'c5~2'
 					]);
 
 		$user_model = $this->add('xavoc\ispmanager\Model_User');
@@ -36,6 +40,7 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 
 		$form->addField('DatePicker','from_date')->set($from_date);
 		$form->addField('DatePicker','to_date')->set($to_date);
+		$form->addField('checkbox','include_expired')->set($include_expired);
 		$form->addSubmit("Filter")->addClass('btn btn-primary btn-block');
 
 		$model = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup');
@@ -70,24 +75,28 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 		if($from_date)
 			$model->addCondition('end_date','>=',$from_date);
 
+		$new_model = clone($model);
 		if($user_name){
 			$model->addCondition('user_id',$user_name);
 		}
-
-		// ['from_date'=>$from_date,'to_date'=>$to_date,'customer_id'=>$user_name]
-		// if($user_name){
-		// 	$model->addCondition('customer_id',$user_name);
-		// 	// $model->addCondition([['customer',$user_name],['radius_username',$user_name]]);
-		// }
+		if($include_expired != "true"){
+			$model->addCondition('is_expired','<>',true);
+		}
 
 		$crud = $this->add('xepan\hr\CRUD',['allow_add'=>false,'fixed_header'=>false]);
 		$crud->grid->fixed_header = false;
 		$crud->grid->add('misc\Export');
+
+		// if($_GET['filter']){
+		$new_model->addCondition('is_expired',true);
+		$crud->grid->add('View',null,'quick_search')->set('Expired Plan Count: '.$new_model->count()->getOne())->addClass('label label-info');
+		// }
 		// $crud->grid->addColumn('customer');
 		// filter form submission
 		if($form->isSubmitted()){
-			$form->js(null,$crud->js()->reload(['from_date'=>$form['from_date'],'to_date'=>$form['to_date'],'user_name'=>$form['user_name']]))->univ()->execute();
+			$form->js(null,$crud->js()->reload(['filter'=>1,'from_date'=>$form['from_date'],'to_date'=>$form['to_date'],'user_name'=>$form['user_name'],'show_expired'=>$form['include_expired']]))->univ()->execute();
 		}
+
 
 
 		$crud->grid->addHook('formatRow',function($g){
@@ -111,28 +120,20 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 				
 
 			$g->current_row_html['end_date'] = "<div class='alert alert-danger'><strong>".date('d-M-Y',strtotime($g->model['end_date']))."</strong></div>";
+			
 			$g->current_row_html['plan'] = $g->model['plan']."<br/>".$g->model['plan_code']."<br/>"."Sale Price: ".$g->model['sale_price'];
-				
-		// 	if($g->current_invoice != $g->model['qsp_master_id']){
-
-		// 		$g->current_row_html['qsp_master'] = $g->model['qsp_master']."<br/>".$g->model['qsp_status'];
-		// 		$g->current_row['action'] = $g->model['action'];
-
-		// 		$g->current_invoice = $g->model['qsp_master_id'];
-		// 		$g->skip_sno = false;
-		// 	}else{
-		// 		$g->current_row['qsp_master'] = "";
-		// 		$g->skip_sno = true;
-		// 		$g->current_row_html['action'] = "";
-		// 	}
-			// $other_columns = ['plan'=>'<button>Create Invoice</button>','customer'=>''];
-			// $g->insertBefore($other_columns);
+			if($g->model['is_expired']){
+				$g->setTDParam('plan','class',"red-bg");
+			}else{
+				$g->setTDParam('plan','class',"");
+			}
+			
 		});
 
 		$crud->grid->current_customer = null;
 		$crud->grid->current_invoice = null;
 
-		$crud->setModel($model,['user_id','user','radius_username','customer','plan','plan_code','sale_price','start_date','end_date','expire_date','last_invoice_date','organization','user_status','last_invoice_no']);
+		$crud->setModel($model,['user_id','user','radius_username','customer','plan','plan_code','sale_price','start_date','end_date','expire_date','last_invoice_date','organization','user_status','last_invoice_no','is_expired']);
 		$crud->grid->removeColumn('organization');
 		$grid = $crud->grid;
 		$grid->add('VirtualPage')
@@ -173,11 +174,7 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 			});
 
 		$order = $grid->addOrder();
-		// $order->move('name','after','customer');
-		// $order->move('qty_unit','after','quantity');
-		// $order->move('tax_percentage','after','qty_unit');
-		// $order->move('new_invoice_price','after','price');
-		// $order->now();
+
 		$grid->addColumn('Button','set_end_date_to_invoice');
 		if( $uid = $_GET['set_end_date_to_invoice']){
 			$model->load($uid);

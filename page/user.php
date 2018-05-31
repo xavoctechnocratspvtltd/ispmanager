@@ -277,7 +277,12 @@ class page_user extends \xepan\base\Page {
 
 		$connection_status_field = $filter_form->addField('DropDown','user_connection_status');
 		$connection_status_field->setValueList(['Online'=>'Online','Offline'=>'Offline']);
-		$connection_status_field->setEmptyText('Select Connection Status');		
+		$connection_status_field->setEmptyText('Select Connection Status');
+
+		// tag filter
+		$alltag = $this->add('xepan\base\Model_Contact_Tag')->getAllTag();
+		$tag_field = $filter_form->addField('DropDown','tag');
+		$tag_field->setValueList($alltag)->setEmptyText('Select Tags');
 
 		$filter_form->addHook('applyFilter',function($f,$m){
 			if($f['filter_city']){
@@ -290,10 +295,16 @@ class page_user extends \xepan\base\Page {
 				if($status == "Offline")
 					$m->addCondition('is_online',false);
 			}
+
+			if($f['tag']){
+				$m->addCondition('tag','like','%'.$f['tag'].'%');
+			}
+
 		});
 
 		$city_field->js('change',$filter_form->js()->submit());
 		$connection_status_field->js('change',$filter_form->js()->submit());
+		$tag_field->js('change',$filter_form->js()->submit());
 	}
 
 	function page_import(){

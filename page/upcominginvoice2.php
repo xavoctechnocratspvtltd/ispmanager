@@ -25,7 +25,7 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 						'user_name'=>'Filter~c1~4',
 						'from_date'=>'c2~2',
 						'to_date'=>'c3~2',
-						'include_expired'=>'c4~2',
+						// 'include_expired'=>'c4~2',
 						'FormButtons~'=>'c5~2'
 					]);
 
@@ -40,7 +40,7 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 
 		$form->addField('DatePicker','from_date')->set($from_date);
 		$form->addField('DatePicker','to_date')->set($to_date);
-		$form->addField('checkbox','include_expired')->set($include_expired);
+		// $form->addField('checkbox','include_expired')->set($include_expired);
 		$form->addSubmit("Filter")->addClass('btn btn-primary btn-block');
 
 		$model = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup');
@@ -75,7 +75,7 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 		if($from_date)
 			$model->addCondition('end_date','>=',$from_date);
 
-		$new_model = clone($model);
+		// $new_model = clone($model);
 		if($user_name){
 			$model->addCondition('user_id',$user_name);
 		}
@@ -83,13 +83,15 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 			$model->addCondition('is_expired','<>',true);
 		}
 
+		$model->_dsql()->where('id in ( select max(id) from isp_user_plan_and_topup group by user_id)');
+
 		$crud = $this->add('xepan\hr\CRUD',['allow_add'=>false,'fixed_header'=>false]);
 		$crud->grid->fixed_header = false;
 		$crud->grid->add('misc\Export');
 
 		// if($_GET['filter']){
-		$new_model->addCondition('is_expired',true);
-		$crud->grid->add('View',null,'quick_search')->set('Expired Plan Count: '.$new_model->count()->getOne())->addClass('label label-info');
+		// $new_model->addCondition('is_expired',true);
+		// $crud->grid->add('View',null,'quick_search')->set('Expired Plan Count: '.$new_model->count()->getOne())->addClass('label label-info');
 		// }
 		// $crud->grid->addColumn('customer');
 		// filter form submission

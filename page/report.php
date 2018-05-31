@@ -12,7 +12,12 @@ class page_report extends \xepan\base\Page {
 		$tab->addTabUrl('./fupuser','User Under Fup');
 		$tab->addTabUrl('./usercondition','UserCondition');
 		$tab->addTabUrl('./fundprojection','Recurring Income Forcasting');
+		$tab->addTabUrl('./missinginvoiceno','Missing Invoice No');
 
+	}
+
+	function page_missinginvoiceno(){
+		$this->add('xepan\commerce\View_QSPMissingNo');
 	}
 
 	function page_fundprojection(){

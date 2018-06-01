@@ -28,6 +28,7 @@ class page_report extends \xepan\base\Page {
 					// ->where('actual_plan_condition','<>',$model->getElement('active_condition'))
 					->where($model->getElement('is_last_condition_based_on_user_plan'),false)
 					->where($model->getElement('active_condition'),'>',$model->getElement('actual_plan_condition'))
+					->where($model->getElement('not_having_data_reset_value_count'),'>',0)
 					->where(
 						$model->dsql()->andExpr()
 							->where($model->getElement('is_last_condition_active'),false)
@@ -36,7 +37,7 @@ class page_report extends \xepan\base\Page {
 		);
 		$model->getElement('plan')->caption('User Current Plan');
 		$crud = $this->add('xepan\hr\CRUD',['allow_add'=>false]);
-		$crud->setModel($model,null,['radius_username','plan','actual_plan_condition','active_condition','plan_last_condition_record_id','is_last_condition_based_on_user_plan','is_last_condition_active']);
+		$crud->setModel($model,null,['radius_username','plan','actual_plan_condition','active_condition','plan_last_condition_record_id','is_last_condition_based_on_user_plan','is_last_condition_active','not_having_data_reset_value_count']);
 		$crud->grid->addPaginator(25);
 		$crud->grid->removeAttachment();
 

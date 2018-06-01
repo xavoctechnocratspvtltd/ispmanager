@@ -13,7 +13,7 @@ class Model_UserAudit  extends Model_UserData {
 					->set($this->refSQL('PlanConditions')
 						->addCondition('is_expired','<>',true)
 						->count()
-					);
+					)->caption('Active Condition Count');
 		// $this->addExpression('plan_last_condition_record_id')
 		// 	->set(
 		// 		$this->refSQL('PlanConditions')
@@ -43,7 +43,7 @@ class Model_UserAudit  extends Model_UserData {
 				->addCondition('plan_id',$m->getElement('plan_id'))
 				;
 			return $q->expr('[0]',[$cm->count()]);
-		});
+		})->caption('Actual Plan Condition Count');
 		
 	}
 }

@@ -50,10 +50,9 @@ DB Fields
 	ALTER TABLE `isp_user` DROP `status`;
 
 
+// cross check
 
-
-
-Add Advance Tab in Invoice
+Add Advance Deposite Amount in Invoice
 update 1 day earlier in End date,e.g. In our view if Plan Expire on 2 then ERP will require it 3rd but after approval it update second, Kindly check it.
 Provide me details of ammendments & reuired desolution of issues provided till date
 In invoice No. 84 Discount is not showing , Kindly Check.
@@ -61,4 +60,28 @@ In invoice No. 84 Discount is not showing , Kindly Check.
 There is mismatch in actual data used & data shown in users.e.g.Payorite
 
 Date: 29/05/
-Report activity click not working 
+Report activity click not working
+
+
+User Session history in admin panel in report format => TODO
+User customer panel session digging. =>TODO
+Support Escalation => Part of standard ERP and will only rollout when they release this feature.
+
+Same stain IP Pe Error : already allotted => TODO
+
+DHCP from software : under discussion : Solution : FramedPool from radreply =>TODO (We will only return pool name and that pool must be available in router or connection will not be done.
+Online users ka filter =>TODO
+user filter: 
+
+Plan change => existing money settlement => TODO (Free tenure period is new to us in process, we are implementing it. )
+
+On surrender => existing money settlement  => TODO
+
+due invoice show on customer panel  => TODO (It is there in standard ERP as E-Commerce but we need to make separate tool, so customers only get what they need to see)
+
+customer panel report correction => Beautifications and digging will be done once the process gets approved.
+
+speed up to in customer panel => TODO, will do
+
+burst limit not show in customer panel => TODO
+created by id in user panel or all list record =>TODO

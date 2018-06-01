@@ -44,6 +44,14 @@ class Model_UserAudit  extends Model_UserData {
 				;
 			return $q->expr('[0]',[$cm->count()]);
 		})->caption('Actual Plan Condition Count');
+
+		$this->addExpression('not_having_data_reset_value_count')
+				->set(
+					$this->refSQL('PlanConditions')
+						->addCondition('is_expired','<>',true)
+						->addCondition([['data_reset_value',null],['data_reset_value',""]])
+						->count()
+				);
 		
 	}
 }

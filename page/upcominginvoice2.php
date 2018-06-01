@@ -134,11 +134,13 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 				$g->setTDParam('plan','class',"");
 			}
 			
+			$g->current_row_html['start_date'] = "Start Date: ".date('Y-m-d',strtotime($g->model['start_date']))."<br/> Expire Date: ".date('Y-m-d',strtotime($g->model['expire_date']));
 		});
 
 		$crud->grid->current_customer = null;
 		$crud->grid->current_invoice = null;
 
+		$model->getElement('start_date')->caption('Date');
 		$crud->setModel($model,['user_id','user','radius_username','customer','plan','plan_code','sale_price','start_date','end_date','expire_date','last_invoice_date','organization','user_status','last_invoice_no','is_expired']);
 		$crud->grid->removeColumn('organization');
 		$grid = $crud->grid;
@@ -198,7 +200,7 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 
 		}
 		$grid->addPaginator($ipp=25);
-		$removeColumn = ['edit','delete','action','attachment_icon','user_id','plan_code','last_invoice_no','sale_price','user_status','radius_username'];
+		$removeColumn = ['edit','delete','action','attachment_icon','user_id','plan_code','last_invoice_no','sale_price','user_status','radius_username','expire_date'];
 		foreach ($removeColumn as $key => $field_name) {
 			$grid->removeColumn($field_name);
 		}

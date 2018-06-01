@@ -10,6 +10,8 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 	function init(){
 		parent::init();
 
+		$run_group =  $_GET['run_group']?:"yes";
+
 		$this->app->stickyGET('filter');
 		$from_date = $this->app->stickyGET('from_date')?:$this->app->today;
 		// $from_date = $this->app->stickyGET('from_date')?:(date('Y-m-01',strtotime($this->app->today)));
@@ -79,11 +81,13 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 		if($user_name){
 			$model->addCondition('user_id',$user_name);
 		}
-		if($include_expired != "true"){
-			$model->addCondition('is_expired','<>',true);
-		}
+		// if($include_expired != "true"){
+		// 	$model->addCondition('is_expired','<>',true);
+		// }
 
-		$model->_dsql()->where('id in ( select max(id) from isp_user_plan_and_topup group by user_id)');
+		if($run_group == "yes"){
+			$model->_dsql()->where('id in ( select max(id) from isp_user_plan_and_topup group by user_id)');
+		}
 
 		$crud = $this->add('xepan\hr\CRUD',['allow_add'=>false,'fixed_header'=>false]);
 		$crud->grid->fixed_header = false;

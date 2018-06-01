@@ -38,8 +38,8 @@ class Controller_ResetUserPlanAndTopup extends \AbstractController {
 				
 					// RESET TO ZERO OF download_data_consumed AND UPLOAD_data_consumed
 					// temporary commented
-					// $model['download_data_consumed'] = 0;
-					// $model['upload_data_consumed'] = 0;
+					$model['download_data_consumed'] = 0;
+					$model['upload_data_consumed'] = 0;
 
 					if($model['data_reset_value']){
 						// $model['start_date'] = date("Y-m-d H:i:s", strtotime("+".$model['data_reset_value']." ".$model['data_reset_mode'],strtotime($model['start_date'])));

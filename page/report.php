@@ -27,6 +27,7 @@ class page_report extends \xepan\base\Page {
 			$model->dsql()->orExpr()
 					// ->where('actual_plan_condition','<>',$model->getElement('active_condition'))
 					->where($model->getElement('is_last_condition_based_on_user_plan'),false)
+					->where($model->getElement('active_condition'),'>',$model->getElement('actual_plan_condition'))
 					->where(
 						$model->dsql()->andExpr()
 							->where($model->getElement('is_last_condition_active'),false)
@@ -39,6 +40,12 @@ class page_report extends \xepan\base\Page {
 		$crud->grid->addPaginator(25);
 		$crud->grid->removeAttachment();
 
+		$crud->grid->addHook('formatRow',function($g){
+			$g->current_row_html['is_last_condition_based_on_user_plan'] = $g->model['is_last_condition_based_on_user_plan']?'<b class="text-success">Yes</b>':'<b class="text-danger">No</b>';
+			$g->current_row_html['is_last_condition_active'] = $g->model['is_last_condition_active']?'<b class="text-success">Yes</b>':'<b class="text-danger">No</b>';
+		});
+
+		// $crud->grid->add('View',null,'grid_heading_left')->setHtml('<b>Hint: in </b>');
 	}
 
 

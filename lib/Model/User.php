@@ -1227,8 +1227,8 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 	function page_CurrentConditions($page){
 		$crud = $page->add('xepan\hr\CRUD');
-		$crud->grid->add('View',null,'grid_heading_left')->setHtml("<b>Current Plan ".$this['plan']."</b>")->addClass('alert alert-info');
-
+		$crud->grid->add('View',null,'grid_heading_left')->setHtml("User: <b>".$this['radius_effective_name']."</b><br/>Current Plan: <b>".$this['plan']."</b>")->addClass('alert alert-info');
+		
 		if($crud->isEditing()){
 			$form = $crud->form;
 			$form->add('xepan\base\Controller_FLC')

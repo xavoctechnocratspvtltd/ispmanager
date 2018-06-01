@@ -31,7 +31,7 @@ class page_report extends \xepan\base\Page {
 						)
 		);
 
-		$crud = $this->add('xepan\base\CRUD');
+		$crud = $this->add('xepan\hr\CRUD');
 		$crud->setModel($model,null,['user_name','radius_username','actual_plan_condition','active_condition','plan_last_condition_record_id','is_last_condition_based_on_user_plan','is_last_condition_active']);
 		$crud->grid->addPaginator(25);
 

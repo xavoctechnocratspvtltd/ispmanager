@@ -1345,6 +1345,10 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$crud->grid->addColumn('week_days');
 		$crud->grid->addColumn('off_dates');
 		$crud->grid->addColumn('burst_detail');
+		
+		$crud->grid->plan_changed = false;
+		$crud->grid->current_plan_id = 0;
+		$crud->grid->edit_html = "";
 
 		$crud->grid->addHook('formatRow',function($g){
 			// data detail
@@ -1400,6 +1404,20 @@ class Model_User extends \xepan\commerce\Model_Customer{
 				$g->setTDParam('remark','class',"green-bg");
 			}else
 				$g->setTDParam('remark','class'," ");
+
+			// if(!$g->current_plan_id){
+			// 	$g->current_plan_id = $g->model['plan_id'];
+			// 	$g->edit_html .= "Current Plan id = ".$g->current_plan_id." name = ".$g->model['plan'];
+			// } 
+
+			// if(!$g->plan_changed AND $g->model['plan_id'] != $g->current_plan_id){
+			// 	$g->plan_changed = true;
+			// 	$g->edit_html .= "Plan Changed = ".$g->plan_changed;
+			// }
+
+			// if($g->plan_changed){
+			// 	$g->current_row_html['edit'] = ' ';
+			// }
 
 		});
 		$removeColumn_list = [

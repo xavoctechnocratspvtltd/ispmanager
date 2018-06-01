@@ -13,8 +13,30 @@ class page_report extends \xepan\base\Page {
 		$tab->addTabUrl('./usercondition','UserCondition');
 		$tab->addTabUrl('./fundprojection','Recurring Income Forcasting');
 		$tab->addTabUrl('./missingno','Missing QSP No');
+		$tab->addTabUrl('./useraudit','User Audit');
 
 	}
+
+	function page_useraudit(){
+		$model = $this->add('xavoc\ispmanager\Model_UserAudit');
+		$model->addCondition('status','Active');
+		$model->addCondition(
+			$model->dsql()->orExpr()
+					// ->where('actual_plan_condition','<>',$model->getElement('active_condition'))
+					->where($model->getElement('is_last_condition_based_on_user_plan'),false)
+					->where(
+						$model->dsql()->andExpr()
+							->where($model->getElement('is_last_condition_active'),false)
+							->where($model->getElement('active_condition'),'>=',$model->getElement('actual_plan_condition'))
+						)
+		);
+
+		$crud = $this->add('xepan\base\CRUD');
+		$crud->setModel($model,null,['user_name','radius_username','actual_plan_condition','active_condition','plan_last_condition_record_id','is_last_condition_based_on_user_plan','is_last_condition_active']);
+		$crud->grid->addPaginator(25);
+
+	}
+
 
 	function page_missingno(){
 		$this->add('xepan\commerce\View_QSPMissingNo');

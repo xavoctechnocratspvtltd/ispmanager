@@ -66,6 +66,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$user_j->addField('connection_type')->enum($this->add('xavoc\ispmanager\Model_Config_Mendatory')->getConnctionTypes());
 
 		$user_j->hasMany('xavoc\ispmanager\UserPlanAndTopup','user_id',null,'PlanConditions');
+		$user_j->hasMany('xavoc\ispmanager\Condition','user_id',null,'ActualConditions');
 		$user_j->hasMany('xepan\hr\Employee_Document','customer_id',null,'CustomerDocuments');
 		// $user_j->hasMany('xavoc\ispmanager\TopUp','user_id',null,'topups');
 

@@ -7,7 +7,7 @@ class Controller_ResetUserPlanAndTopup extends \AbstractController {
 	function run($date = null,$test_user=null){
 
 		if(!$date) $date = $this->app->today;
-		if($testDebug_object) $this->testDebug_object = $testDebug_object;
+		// if($testDebug_object) $this->testDebug_object = $testDebug_object;
 
 		// $this->app->db->dsql()->expr('UPDATE isp_user_plan_and_topup SET is_expired =1 WHERE expire_date < "'.$date.'" ')->execute();
 

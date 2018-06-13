@@ -5,11 +5,16 @@ namespace xavoc\ispmanager;
 class View_UserDataConsumption extends \View{
 	public $username;
 
+	public $start_date;
+	public $end_date;
 	function init(){
 		parent::init();
 
-		$this->user = $user = $this->add('xavoc\ispmanager\Model_User');
+		$filter = $this->app->stickyGET('filter');
+		$this->start_date = $this->app->stickyGET('start_date');
+		$this->end_date = $this->app->stickyGET('end_date');
 
+		$this->user = $user = $this->add('xavoc\ispmanager\Model_User');
 		if($this->username){
 			$this->user->addCondition('radius_username',$this->username);
 			$this->user->tryLoadAny();
@@ -22,13 +27,42 @@ class View_UserDataConsumption extends \View{
 			return;
 		}
 
+		$form = $this->add('Form');
+		$form->add('xepan\base\Controller_FLC')
+			->showLables(true)
+			->makePanelsCoppalsible(true)
+			->layout([
+					'date_range'=>'Filter~c1~6',
+					'FormButtons~&nbsp;'=>'c2~6'
+				]);
+
+		$dr_fld = $form->addField('DateRangePicker','date_range')
+                // ->showTimer(15)
+                ->getBackDatesSet() // or set to false to remove
+                // ->getFutureDatesSet() // or skip to not include
+                ;
+        $form->addSubmit('Filter')->addClass('btn btn-primary');
+
 		$rad_model = $this->add('xavoc\ispmanager\Model_RadAcctData');
 		$rad_model->addCondition('username',$this->user['radius_username']);
+		if($this->start_date)
+			$rad_model->addCondition('acctstarttime','>=',$this->start_date);
+		if($this->end_date)
+			$rad_model->addCondition('acctupdatetime','<',$this->app->nextDate($this->end_date));
+
 		$rad_model->setOrder('radacctid','desc');
 		$rad_model->_dsql()->group('year');
+
+
 		$grid = $this->add('xepan\base\Grid');
 		$grid->setModel($rad_model,['year','total_data_consumed','total_upload','total_download','total_duration_in_sec','total_duration_in_hms']);
 		$grid->addColumn('total_data_consumed');
+
+		// filter form
+        if($form->isSubmitted()){
+        	$grid->js()->reload(['filter'=>1,'start_date'=>$dr_fld->getStartDate(),'end_date'=>$dr_fld->getEndDate()])->execute();
+        	// throw new \Exception($dr_fld->getStartDate()." = ".$dr_fld->getEndDate());
+        }
 
 		$grid->add('View',null,'Pannel')->setElement('h3')->set('User Data Consumption');
 		$grid->add('VirtualPage')
@@ -42,6 +76,12 @@ class View_UserDataConsumption extends \View{
 				$rad_model = $this->add('xavoc\ispmanager\Model_RadAcctData');
 				$rad_model->addCondition('year',$selected_row['year']);
 				$rad_model->addCondition('username',$this->user['radius_username']);
+
+				if($this->start_date)
+					$rad_model->addCondition('acctstarttime','>=',$this->start_date);
+				if($this->end_date)
+					$rad_model->addCondition('acctupdatetime','<',$this->app->nextDate($this->end_date));
+
 				$rad_model->setOrder('radacctid','desc');
 				$rad_model->_dsql()->group('month_year');
 
@@ -61,6 +101,12 @@ class View_UserDataConsumption extends \View{
 						$rad_model->addCondition('year',$temp['year']);
 						$rad_model->addCondition('month_year',$temp['month_year']);
 						$rad_model->addCondition('username',$this->user['radius_username']);
+
+						if($this->start_date)
+							$rad_model->addCondition('acctstarttime','>=',$this->start_date);
+						if($this->end_date)
+							$rad_model->addCondition('acctupdatetime','<',$this->app->nextDate($this->end_date));
+
 						$rad_model->setOrder('radacctid','desc');
 						$rad_model->_dsql()->group('date');
 
@@ -80,6 +126,12 @@ class View_UserDataConsumption extends \View{
 				 				$rad_model = $this->add('xavoc\ispmanager\Model_RadAcctData');
 								$rad_model->addCondition('date',$temp['date']);
 								$rad_model->addCondition('username',$this->user['radius_username']);
+
+								if($this->start_date)
+									$rad_model->addCondition('acctstarttime','>=',$this->start_date);
+								if($this->end_date)
+									$rad_model->addCondition('acctupdatetime','<',$this->app->nextDate($this->end_date));
+								
 								$rad_model->setOrder('radacctid','desc');
 
 								$rad_model->getElement('acctinputoctets')->caption('Upload Data');

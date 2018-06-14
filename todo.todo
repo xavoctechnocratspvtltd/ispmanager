@@ -60,10 +60,9 @@ In invoice No. 84 Discount is not showing , Kindly Check.
 There is mismatch in actual data used & data shown in users.e.g.Payorite
 
 Date: 29/05/
-Report activity click not working
+Report activity support ticket click not working : Done
+User Session History in admin panel in report format => Done (Action : Radius Attributes -> user data consumption)
 
-
-User Session history in admin panel in report format => TODO
 User customer panel session digging. =>TODO
 Support Escalation => Part of standard ERP and will only rollout when they release this feature.
 
@@ -85,3 +84,16 @@ speed up to in customer panel => TODO, will do
 
 burst limit not show in customer panel => TODO
 created by id in user panel or all list record =>TODO
+
+sms integration on task assign and invoice paid also
+collection report 
+send invoice on whatsup
+
+
+check value is seeted null or 0 difference
+time limit: 0 
+duplicate from id : 0,
+burst : 0 
+
+901 to 941
+960 to 977

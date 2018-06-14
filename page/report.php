@@ -20,7 +20,7 @@ class page_report extends \xepan\base\Page {
 	function page_useraudit(){
 		$model = $this->add('xavoc\ispmanager\Model_UserAudit');
 		$model->actions = [
-				'Active'=>['view','CurrentConditions','personal_info','edit','delete'],
+				'Active'=>['view','CurrentConditions','personal_info','move_to_first','edit','delete'],
 			];
 		$model->addCondition('status','Active');
 		$model->addCondition(

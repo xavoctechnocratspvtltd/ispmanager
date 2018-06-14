@@ -54,4 +54,34 @@ class Model_UserAudit  extends Model_UserData {
 				);
 		
 	}
+
+	function move_to_first(){
+		if($this['is_last_condition_active']){
+			return $this->app->js(true)->univ()->errorMessage('no need to move first, already in first position');
+		} 
+		
+		$user_plan = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup')
+					->addCondition('is_effective',true)
+					->addCondition('is_topup',false)
+					->addCondition('is_expired',false)
+					->addCondition('user_id',$this->id)
+					;
+		$done = 0;
+		foreach ($user_plan as $condition) {
+			$old_id = $condition->id;
+			$new_id = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup')->setOrder('id','desc')->tryLoadAny()->id;
+
+			$q = 'Update isp_user_plan_and_topup set id = '.($new_id+1).' where id='.$old_id.";";
+			$this->app->db->dsql()->expr($q)->execute();
+
+			$done = 1;
+		}
+
+		if($done)
+			return $this->app->js(true)->univ()->successMessage('moved to first successfully');
+		else
+			return $this->app->js(true)->univ()->errorMessage('getting some error, do it manually');
+
+	}
+
 }

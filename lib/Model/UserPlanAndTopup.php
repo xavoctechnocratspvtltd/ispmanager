@@ -25,6 +25,9 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 		$this->addField('upload_limit')->hint('in KBps');
 		$this->addField('session_download_data_consumed')->system(true);
 		$this->addField('session_upload_data_consumed')->system(true);
+		$this->addField('session_download_data_consumed_on_reset')->system(true);
+		$this->addField('session_upload_data_consumed_on_reset')->system(true);
+		
 		$this->addField('session_time_consumed')->system(true);
 
 		$this->addField('fup_download_limit')->hint('in KBps')->caption('FUP DL');
@@ -42,7 +45,7 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 		$this->addField('time_limit');
 		$this->addField('time_consumed')->system(true);
 
-		$this->addExpression('data_consumed')->set('IFNULL(download_data_consumed,0)+IFNULL(upload_data_consumed,0)+IFNULL(session_download_data_consumed,0)+IFNULL(session_upload_data_consumed,0)');
+		$this->addExpression('data_consumed')->set('IFNULL(download_data_consumed,0)+IFNULL(upload_data_consumed,0)+IFNULL(session_download_data_consumed,0)+IFNULL(session_upload_data_consumed,0)-(IFNULL(session_download_data_consumed_on_reset,0) + IFNULL(session_upload_data_consumed_on_reset,0))');
 		
 		// row in which consumptin data value to be stored
 		$this->addField('data_limit_row');

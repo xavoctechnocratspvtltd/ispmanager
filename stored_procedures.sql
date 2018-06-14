@@ -93,8 +93,8 @@ SELECT
 	isp_user_plan_and_topup.time_limit,
 	isp_user_plan_and_topup.time_consumed,
 	`treat_fup_as_dl_for_last_limit_row`,
-	IFNULL( isp_user_plan_and_topup.session_download_data_consumed , 0 ) SessionInputOctets ,
-	IFNULL( isp_user_plan_and_topup.session_upload_data_consumed, 0 ) SessionOutputOctets ,
+	(IFNULL( isp_user_plan_and_topup.session_download_data_consumed , 0 ) - IFNULL( isp_user_plan_and_topup.session_download_data_consumed_on_reset , 0 )) SessionInputOctets ,
+	(IFNULL( isp_user_plan_and_topup.session_upload_data_consumed, 0 ) - IFNULL( isp_user_plan_and_topup.session_upload_data_consumed_on_reset), 0 )) SessionOutputOctets ,
 	IFNULL( isp_user_plan_and_topup.session_time_consumed, 0 ) SessionTime
 	into @t_applicable_row_id,@t_applicable_row_name, @t_net_data_limit, @t_last_dl_limit, @t_last_ul_limit, @t_last_accounting_dl_ratio, @t_last_accounting_ul_ratio,@t_download_data_consumed, @t_upload_data_consumed, @t_download_limit, @t_upload_limit, @t_fup_download_limit, @t_fup_upload_limit, @t_accounting_download_ratio, @t_accounting_upload_ratio, @t_burst_dl_limit, @t_burst_ul_limit, @t_burst_threshold_dl_limit, @t_burst_threshold_ul_limit, @t_burst_dl_time, @t_burst_ul_time, @t_priority, @t_time_limit, @t_time_consumed, @t_treat_fup_as_dl_for_last_limit_row,@t_SessionInputOctate, @t_SessionOutputOctate, @t_SessionTime
 FROM
@@ -715,11 +715,13 @@ BEGIN
 	UPDATE 
 		isp_user_plan_and_topup 	
 	SET
-		download_data_consumed = IFNULL(download_data_consumed,0) + IFNULL(session_download_data_consumed,0),
-		upload_data_consumed = IFNULL(upload_data_consumed,0) + IFNULL(session_upload_data_consumed,0),
+		download_data_consumed = IFNULL(download_data_consumed,0) + IFNULL(session_download_data_consumed,0) - IFNULL(session_download_data_consumed_on_reset,0),
+		upload_data_consumed = IFNULL(upload_data_consumed,0) + IFNULL(session_upload_data_consumed,0) - IFNULL(session_upload_data_consumed_on_reset,0),
 		time_consumed = IFNULL(time_consumed,0) + IFNULL(session_time_consumed,0),
 		session_download_data_consumed=0,
 		session_upload_data_consumed=0,
+		session_download_data_consumed_on_reset = 0,
+		session_upload_data_consumed_on_reset = 0,
 		session_time_consumed=0
 	WHERE
 		user_id = (SELECT customer_id from isp_user where radius_username = username);

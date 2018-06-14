@@ -20,6 +20,10 @@ xavocauth {
 					Mikrotik-Rate-Limit = "%{3}"
 				}
 			}
+
+			#update reply {
+			#	Session-Timeout = "%{sql-select TIME_TO_SEC(TIMEDIFF(reset_date,NOW())) session_time_out from isp_user_plan_and_topup join isp_user on isp_user_plan_and_topup.user_id = isp_user.customer_id where radius_username = '%{User-Name}' and is_effective = 1 limit 1 }"
+			#}
 		}
 	} 
 }

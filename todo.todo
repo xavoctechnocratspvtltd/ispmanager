@@ -10,7 +10,7 @@ Payment : installement
 
 18-march
 	Product detail in QSP add item : done
-	plan condition spped with upto text : done
+	Plan condition spped with upto text : done
 
 	next renewal with date time ex created_at 12-march-2018 10:50 AM then plan expire 
 	add default narrtion of start and end date in aactive and plan changed : done
@@ -51,7 +51,6 @@ DB Fields
 
 
 // cross check
-
 Add Advance Deposite Amount in Invoice
 update 1 day earlier in End date,e.g. In our view if Plan Expire on 2 then ERP will require it 3rd but after approval it update second, Kindly check it.
 Provide me details of ammendments & reuired desolution of issues provided till date
@@ -63,16 +62,16 @@ Date: 29/05/
 Report activity support ticket click not working : Done
 User Session History in admin panel in report format => Done (Action : Radius Attributes -> user data consumption)
 
-User customer panel session digging. =>TODO
+User customer panel session digging. => Done
 Support Escalation => Part of standard ERP and will only rollout when they release this feature.
 
-Same stain IP Pe Error : already allotted => TODO
+Same static IP Pe Error : already allotted => Done
 
 DHCP from software : under discussion : Solution : FramedPool from radreply =>TODO (We will only return pool name and that pool must be available in router or connection will not be done.
-Online users ka filter =>TODO
+Online users ka filter => Done
 user filter: 
 
-Plan change => existing money settlement => TODO (Free tenure period is new to us in process, we are implementing it. )
+Plan change => existing money settlement => Done (Free tenure period is new to us in process, we are implementing it. )
 
 On surrender => existing money settlement  => TODO
 

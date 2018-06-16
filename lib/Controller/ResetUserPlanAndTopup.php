@@ -4,7 +4,7 @@ namespace xavoc\ispmanager;
 
 class Controller_ResetUserPlanAndTopup extends \AbstractController {
 
-	function run($date = null,$test_user=null){
+	function run($date = null,$test_user=null,$debug=false){
 
 		if(!$date) $date = $this->app->today;
 		// if($testDebug_object) $this->testDebug_object = $testDebug_object;
@@ -21,6 +21,33 @@ class Controller_ResetUserPlanAndTopup extends \AbstractController {
 
 		foreach ($upt_model as $key => $model) {
 			try{
+
+				if($debug){
+					$mid = $model->id;
+					$echo_html = " <br/> ------------ Data Reset User: ".$model['user'];
+					$echo_html .= "<table border='1' align='center'>";
+					$echo_html .= "<tr>
+									<th></th>
+									<th>Down Data</th>
+									<th>Upload Data</th>
+									<th>Session Down Data</th>
+									<th>Session Upload Data</th>
+									<th>Reset Session Down Data</th>
+									<th>Reset Session Upload Data</th>
+								</tr>";
+
+					$echo_html .= "<tr><td>Old</td>
+									<td>".$model['download_data_consumed']."</td>".
+									"<td>".$model['upload_data_consumed']."</td>".
+									"<td>".$model['session_download_data_consumed']."</td>".
+									"<td>".$model['session_upload_data_consumed']."</td>".
+									"<td>".$model['session_download_data_consumed_on_reset']."</td>".
+									"<td>".$model['session_upload_data_consumed_on_reset']."</td>".
+								"</tr>";
+				}
+
+				
+
 				// IF TODAY IS RESET DATE
 				// if($model['reset_date'] && strtotime($model['reset_date']) == strtotime($date)){
 					//IF DATA IS CARRY FORWARD THEN UPDATE THE DATA LIMIT = (PLAN DATA LIMIT + REMAINING DATA LIMIT OF LAST PERIOD)
@@ -34,9 +61,9 @@ class Controller_ResetUserPlanAndTopup extends \AbstractController {
 				// temporary commented
 				$model['download_data_consumed'] = 0;
 				$model['upload_data_consumed'] = 0;
-				$model['session_download_data_consumed_on_reset'] = $model['session_download_data_consumed'];
-				$model['session_upload_data_consumed_on_reset'] = $model['session_upload_data_consumed'];
-				
+				$model['session_download_data_consumed_on_reset'] = $this->app->human2byte($model['session_download_data_consumed']);
+				$model['session_upload_data_consumed_on_reset'] = $this->app->human2byte($model['session_upload_data_consumed']);
+								
 				if($model['data_reset_value']){
 					// $model['start_date'] = date("Y-m-d H:i:s", strtotime("+".$model['data_reset_value']." ".$model['data_reset_mode'],strtotime($model['start_date'])));
 					// $model['end_date'] = date("Y-m-d H:i:s", strtotime("+".$model['data_reset_value']." ".$model['data_reset_mode'],strtotime($model['end_date'])));
@@ -60,6 +87,22 @@ class Controller_ResetUserPlanAndTopup extends \AbstractController {
 				}
 
 				$model->saveAndUnload();
+
+				if($debug){
+					$rmodel = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup')->load($mid);
+					$echo_html .= "<tr>
+									<td>NeW</td>
+									<td>".$rmodel['download_data_consumed']."</td>".
+									"<td>".$rmodel['upload_data_consumed']."</td>".
+									"<td>".$rmodel['session_download_data_consumed']."</td>".
+									"<td>".$rmodel['session_upload_data_consumed']."</td>".
+									"<td>".$rmodel['session_download_data_consumed_on_reset']."</td>".
+									"<td>".$rmodel['session_upload_data_consumed_on_reset']."</td>".
+									"</tr>";
+					$echo_html .= "</table>";
+					
+					echo $echo_html;
+				}
 			// }
 				
 			// if(strtotime($model['expire_date']) <= strtotime($date)){

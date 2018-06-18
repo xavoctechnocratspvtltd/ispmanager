@@ -61,8 +61,8 @@ class Controller_ResetUserPlanAndTopup extends \AbstractController {
 				// temporary commented
 				$model['download_data_consumed'] = 0;
 				$model['upload_data_consumed'] = 0;
-				$model['session_download_data_consumed_on_reset'] = $this->app->human2byte($model['session_download_data_consumed']);
-				$model['session_upload_data_consumed_on_reset'] = $this->app->human2byte($model['session_upload_data_consumed']);
+				$model['session_download_data_consumed_on_reset'] = $model['session_download_data_consumed'];
+				$model['session_upload_data_consumed_on_reset'] = $model['session_upload_data_consumed'];
 								
 				if($model['data_reset_value']){
 					// $model['start_date'] = date("Y-m-d H:i:s", strtotime("+".$model['data_reset_value']." ".$model['data_reset_mode'],strtotime($model['start_date'])));

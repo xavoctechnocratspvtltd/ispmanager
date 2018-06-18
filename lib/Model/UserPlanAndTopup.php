@@ -123,7 +123,9 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 					'download_data_consumed',
 					'upload_data_consumed',
 					'session_download_data_consumed',
-					'session_upload_data_consumed'
+					'session_upload_data_consumed',
+					'session_download_data_consumed_on_reset',
+					'session_upload_data_consumed_on_reset'
 				]);
 
 		$this->setOrder('id');

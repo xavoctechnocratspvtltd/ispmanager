@@ -114,7 +114,7 @@ class Initiator extends \Controller_Addon {
         });
 
         $this->app->addMethod('human2byte',function($app,$value){
-              return preg_replace_callback('/^\s*(\d*\.?\d+)\s*(?:([kmgtpy]?)b?)?\s*$/i', function ($m) {
+              $result =  preg_replace_callback('/^\s*(\d*\.?\d+)\s*(?:([kmgtpy]?)b?)?\s*$/i', function ($m) {
                 switch (strtolower($m[2])) {
                   case 'y': $m[1] *= 1024;
                   case 'p': $m[1] *= 1024;
@@ -125,6 +125,8 @@ class Initiator extends \Controller_Addon {
                 }
                 return $m[1];
               }, $value);
+
+              return round($result,0);
         });
     }
 

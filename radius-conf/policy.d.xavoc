@@ -34,7 +34,7 @@ xavocacct {
 	# send coa accordingly if needed
 	if(&Acct-Status-Type == Interim-Update){
 		update control { 
-	    	Tmp-String-0 := "%{sql:select updateAccountingData(%{Acct-Input-Octets},%{Acct-Output-Octets},null,'%{User-Name}',%{Acct-Session-Time})}"
+	    	Tmp-String-0 := "%{sql:select updateAccountingData(%{Acct-Input-Octets},%{Acct-Output-Octets},%{%{Acct-Input-Gigawords}:-0},%{%{Acct-Output-Gigawords}:-0},null,'%{User-Name}',%{Acct-Session-Time})}"
 	   	}
 
 	   	if ( &control:Tmp-String-0 =~ /(.*),(.*),(.*),(.*)/ ) {

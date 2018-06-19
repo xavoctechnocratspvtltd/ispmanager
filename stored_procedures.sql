@@ -735,7 +735,7 @@ delimiter ;
 -- ----------------------------
 DROP FUNCTION IF EXISTS `updateAccountingData`;
 delimiter ;;
-CREATE DEFINER=`root`@`localhost` FUNCTION `updateAccountingData`(dl_data bigint, ul_data bigint, now datetime, username varchar(255), session_time_consumed bigint) RETURNS text CHARSET utf8mb4
+CREATE DEFINER=`root`@`localhost` FUNCTION `updateAccountingData`(dl_data bigint, ul_data bigint,input_gigawords int, output_gigawords int, now datetime, username varchar(255), session_time_consumed bigint) RETURNS text CHARSET utf8mb4
     MODIFIES SQL DATA
 BEGIN
 
@@ -748,8 +748,8 @@ BEGIN
 	UPDATE 
 		isp_user_plan_and_topup 
 	SET 
-		isp_user_plan_and_topup.session_download_data_consumed = ((dl_data*@last_accounting_dl_ratio) /100) ,
-		isp_user_plan_and_topup.session_upload_data_consumed = ((ul_data*@last_accounting_ul_ratio) /100),
+		isp_user_plan_and_topup.session_download_data_consumed = (((input_gigawords << 32 | dl_data)*@last_accounting_dl_ratio) /100) ,
+		isp_user_plan_and_topup.session_upload_data_consumed = (((output_gigawords << 32 | ul_data)*@last_accounting_ul_ratio) /100),
 		isp_user_plan_and_topup.session_time_consumed = session_time_consumed
 	WHERE 
 		is_effective = 1 AND user_id = (SELECT customer_id from isp_user where radius_username = username)

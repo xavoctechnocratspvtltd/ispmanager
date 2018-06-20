@@ -160,7 +160,7 @@ class Initiator extends \Controller_Addon {
             
             $now = \DateTime::createFromFormat('Y-m-d', $this->app->today);
             $job = new \Cron\Job\ShellJob();
-            $job->setSchedule(new \Cron\Schedule\CrontabSchedule('0 * * * *'));
+            $job->setSchedule(new \Cron\Schedule\CrontabSchedule('0-10 0 * * *'));
             if(!$job->getSchedule() || $job->getSchedule()->valid($now)){
                 echo " Executing Condition Reset<br/>";
                 $this->add('xavoc\ispmanager\Controller_ResetUserPlanAndTopup')->run();

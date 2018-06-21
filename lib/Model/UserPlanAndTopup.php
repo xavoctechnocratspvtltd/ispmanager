@@ -6,7 +6,7 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 	public $table = "isp_user_plan_and_topup";
 	// public $acl_type="ispmanager_user_plan_and_topup";
 	public $acl = false;
-
+	
 	function init(){
 		parent::init();
 
@@ -179,6 +179,31 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 
 		$data = $user->createInvoice($detail_data,null,true,$invoice_recurring_date,$force_create=true);
 		return $data;
+	}
+
+
+	function resetData(){
+		if(!$this->loaded()){
+			throw new \Exception("user plan condition must be loaded");
+		}
+		if(!$this['data_reset_value'] OR !$this['data_reset_mode']){
+			throw new \Exception("data reset mode or value is not defined");
+		}
+
+		if($this['is_data_carry_forward'] == 'once'){
+			$this['carry_data'] = ($this['data_limit'] - $this['data_consumed'])>0?$this['data_limit'] - $this['data_consumed']:0;
+		}elseif($this['is_data_carry_forward'] == "allways"){
+			$this['carry_data'] = ($this['net_data_limit'] - $this['data_consumed'])>0?($this['net_data_limit'] - $this['data_consumed']):0;
+		}
+
+		$this['download_data_consumed'] = 0;
+		$this['upload_data_consumed'] = 0;
+		$this['session_download_data_consumed_on_reset'] = $this['session_download_data_consumed'];
+		$this['session_upload_data_consumed_on_reset'] = $this['session_upload_data_consumed'];
+
+		$reset_date = date("Y-m-d H:i:s", strtotime("+".$this['data_reset_value']." ".$this['data_reset_mode'],strtotime($this['reset_date'])));
+		$this['reset_date'] = $reset_date;
+		return $this->save();
 	}
 
 }

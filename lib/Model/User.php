@@ -1227,6 +1227,9 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 	function page_CurrentConditions($page){
 		$crud = $page->add('xepan\hr\CRUD');
+		$crud->addClass('current-condition');
+		$crud->js('reload')->reload();
+
 		$crud->grid->add('View',null,'grid_heading_left')->setHtml("User: <b>".$this['radius_effective_name']."</b><br/>Current Plan: <b>".$this['plan']."</b>")->addClass('alert alert-info');
 		
 		if($crud->isEditing()){
@@ -1436,6 +1439,26 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			$crud->grid->removeColumn($field);
 		}		
 		$crud->grid->removeAttachment();
+
+		$crud->grid->add('VirtualPage')
+			->addColumn('reset_data')
+			->set(function($page){
+
+				$id = $_GET[$page->short_name.'_id'];
+
+				$page->add('View_Warning')->set('Are you sure you want to continue ?');
+
+				$form = $page->add('Form');
+				$form->addSubmit('Reset Data')->addClass('btn btn-danger');
+				if($form->isSubmitted()){
+					$model = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup');
+					$model->load($id)->resetData();
+
+					$js = [$page->js()->_selector('.current-condition')->trigger('reload'),$page->js()->univ()->closeDialog()];
+					$form->js(null,$js)->univ()->successMessage('Data Reset Successfully')->execute();
+				}
+
+			});
 	}
 
 	// function updateQSPBeforeSave($app,$master_data,$detail_data,$type){

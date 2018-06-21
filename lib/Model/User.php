@@ -774,6 +774,9 @@ class Model_User extends \xepan\commerce\Model_Customer{
 				}
 			}
 
+			$u_p['session_download_data_consumed_on_reset'] = $up['session_download_data_consumed'];
+			$u_p['session_upload_data_consumed_on_reset'] = $up['session_upload_data_consumed'];
+			
 			$u_p->save();
 		}
 		

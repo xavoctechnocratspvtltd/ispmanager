@@ -603,7 +603,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		return true;
 	}
 
-	function setPlan($plan, $on_date=null, $remove_old=false,$is_topup=false,$remove_old_topups=false,$expire_all_plan=false,$expire_all_topup=false,$work_on_pro_data=true,$as_grace = true,$force_plan_end_date=null,$force_set_plan=false){
+	function setPlan($plan, $on_date=null, $remove_old=false,$is_topup=false,$remove_old_topups=false,$expire_all_plan=false,$expire_all_topup=false,$work_on_pro_data=true,$as_grace = true,$force_plan_end_date=null,$force_set_plan=false,$set_reset_date=true){
 		
 		if(!$on_date) $on_date = isset($this->app->isptoday)? $this->app->isptoday : $this->app->today;
 		if(is_numeric($plan)){
@@ -703,7 +703,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 				$end_date = date("Y-m-t H:i:s", strtotime($on_date));
 			}
 
-			if($condition['data_reset_value']){
+			if($condition['data_reset_value'] AND $set_reset_date){
 
 				$reset_date = date("Y-m-d H:i:s", strtotime("+".$condition['data_reset_value']." ".$condition['data_reset_mode'],strtotime($on_date)));
 
@@ -716,7 +716,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 				}elseif ($condition['data_reset_mode'] == "years") {
 					if($this['is_invoice_date_first_to_first'])
 						$reset_date = date('Y-m-01 00:00:00', strtotime($reset_date));
-					else					
+					else
 						$reset_date = date('Y-m-d 00:00:00', strtotime($reset_date));
 				}elseif ($condition['data_reset_mode'] == "days") {
 					$reset_date = date('Y-m-d 00:00:00', strtotime($reset_date));
@@ -726,6 +726,8 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			}else{
 				$reset_date = null;
 			}
+
+			if(!$set_reset_date) $reset_date = $u_p['reset_date'];
 
 			// factor based on implemention
 			if($force_plan_end_date){
@@ -1766,7 +1768,8 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			$condition_model = $user->getLastCondition();
 			if(!$condition_model->loaded()) throw new \Exception("Plan Not Implemented On User ".$this['radius_username']." do it manually");
 			$on_date = $condition_model['end_date'];
-			$user->setPlan($plan->id,$on_date,$remove_old=false,$is_topup=false,$remove_old_topups=false,$expire_all_plan=true,$expire_all_topup=false,!$oi['recurring_qsp_detail_id'],$as_grace= false);
+					// setPlan($plan, $on_date=null, $remove_old=false,$is_topup=false,$remove_old_topups=false,$expire_all_plan=false,$expire_all_topup=false,$work_on_pro_data=true,$as_grace = true,$force_plan_end_date=null,$force_set_plan=false,$set_reset_date=true)
+			$user->setPlan($plan->id,$on_date,$remove_old=false,$is_topup=false,$remove_old_topups=false,$expire_all_plan=true,$expire_all_topup=false,!$oi['recurring_qsp_detail_id'],$as_grace= false,null,false,$set_reset_date=false);
 		}		
 	}
 

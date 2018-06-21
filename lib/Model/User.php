@@ -1445,14 +1445,20 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			->set(function($page){
 
 				$id = $_GET[$page->short_name.'_id'];
+				$model = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup');
+				$model->load($id);
 
 				$page->add('View_Warning')->set('Are you sure you want to continue ?');
+				
+				$reset_date = date("Y-m-d H:i:s", strtotime("+".$model['data_reset_value']." ".$model['data_reset_mode'],strtotime($model['reset_date'])));
+				$current_reset_date = "Current Reset Date: <b>".$model['reset_date']."</b><br/> After Including reset date it become: <b>".$reset_date."</b>";
 
 				$form = $page->add('Form');
+				$form->addField('CheckBox','include_reset_date_also')->set(0);
+				$form->add('View_Info')->setHtml($current_reset_date);
 				$form->addSubmit('Reset Data')->addClass('btn btn-danger');
 				if($form->isSubmitted()){
-					$model = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup');
-					$model->load($id)->resetData();
+					$model->resetData($form['include_reset_date_also']);
 
 					$js = [$page->js()->_selector('.current-condition')->trigger('reload'),$page->js()->univ()->closeDialog()];
 					$form->js(null,$js)->univ()->successMessage('Data Reset Successfully')->execute();

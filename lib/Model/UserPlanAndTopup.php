@@ -6,7 +6,7 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 	public $table = "isp_user_plan_and_topup";
 	// public $acl_type="ispmanager_user_plan_and_topup";
 	public $acl = false;
-	
+
 	function init(){
 		parent::init();
 
@@ -182,7 +182,7 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 	}
 
 
-	function resetData(){
+	function resetData($include_reset_date=false){
 		if(!$this->loaded()){
 			throw new \Exception("user plan condition must be loaded");
 		}
@@ -201,8 +201,10 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 		$this['session_download_data_consumed_on_reset'] = $this['session_download_data_consumed'];
 		$this['session_upload_data_consumed_on_reset'] = $this['session_upload_data_consumed'];
 
-		$reset_date = date("Y-m-d H:i:s", strtotime("+".$this['data_reset_value']." ".$this['data_reset_mode'],strtotime($this['reset_date'])));
-		$this['reset_date'] = $reset_date;
+		if($include_reset_date){
+			$reset_date = date("Y-m-d H:i:s", strtotime("+".$this['data_reset_value']." ".$this['data_reset_mode'],strtotime($this['reset_date'])));
+			$this['reset_date'] = $reset_date;
+		}
 		return $this->save();
 	}
 

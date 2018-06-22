@@ -723,6 +723,10 @@ class Model_User extends \xepan\commerce\Model_Customer{
 				}elseif($condition['data_reset_mode'] == "hours"){
 					$reset_date = date('Y-m-d H:00:00', strtotime($reset_date));
 				}
+
+				$u_p['session_download_data_consumed_on_reset'] = $u_p['session_download_data_consumed'];
+				$u_p['session_upload_data_consumed_on_reset'] = $u_p['session_upload_data_consumed'];
+				
 			}else{
 				$reset_date = null;
 			}
@@ -773,9 +777,6 @@ class Model_User extends \xepan\commerce\Model_Customer{
 				echo "------------------"."<br/>";
 				}
 			}
-
-			$u_p['session_download_data_consumed_on_reset'] = $up['session_download_data_consumed'];
-			$u_p['session_upload_data_consumed_on_reset'] = $up['session_upload_data_consumed'];
 			
 			$u_p->save();
 		}

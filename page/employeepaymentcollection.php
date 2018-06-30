@@ -12,10 +12,11 @@ class page_employeepaymentcollection extends \xepan\base\Page {
 
 		$payment_tra = $this->add('xavoc\ispmanager\Model_PaymentTransaction');
 		$payment_tra->getElement('payment_mode')->caption('Payment Detail');
-		// $payment_tra->getElement('is_submitted_to_company')->caption('submitted to company');
+		$payment_tra->setOrder('id','desc');
+		$payment_tra->getElement('submitted_by')->caption('Submission Detail');
 
-		$crud = $this->add('xepan\hr\CRUD',['pass_acl'=>true,'allow_add'=>false,'allow_edit'=>false]);
-		$crud->setModel($payment_tra,['employee','contact','created_at','amount','payment_mode','narration','is_submitted_to_company']);
+		$crud = $this->add('xepan\hr\CRUD');
+		$crud->setModel($payment_tra,['employee','contact','created_at','amount','payment_mode','narration','is_submitted_to_company','submitted_by','submitted_at']);
 
 		$crud->grid->addHook('formatRow',function($g){
 			$phtml = "";
@@ -35,20 +36,21 @@ class page_employeepaymentcollection extends \xepan\base\Page {
 			}
 
 			$g->current_row_html['payment_mode'] = $phtml;
+
+			if($g->model['is_submitted_to_company'])
+				$g->current_row_html['submitted_by'] = "Yes,<br/>Submitted to company on ".$g->model['submitted_at']."<br/> Received by: ".$g->model['submitted_by'];
+			else
+				$g->current_row_html['submitted_by'] = "";
 		});
 
-		$received = $crud->grid->addColumn('Button','Received');
-		if($pid = $_GET['Received']){
-			$pt = $this->add('xavoc\ispmanager\Model_PaymentTransaction');
-			$pt->load($pid);
-			if(!$pt['is_submitted_to_company']){
-				$pt['submitted_by_id'] = $this->app->employee->id;
-				$pt['is_submitted_to_company'] = true;
-				$pt->save();
-				$crud->js()->reload()->execute();
-			}else
-				$this->js()->univ()->errorMessage("Payment already submitted to company")->execute();
+		$crud->grid->removeAttachment();
+		$crud->grid->removeColumn('edit');
+		$crud->grid->removeColumn('is_submitted_to_company');
+		$crud->grid->removeColumn('submitted_at');
+		$crud->grid->removeColumn('delete');
+		$crud->grid->addPaginator($ipp=50);
+		$crud->grid->addFormatter('contact','wrap');
+		$crud->grid->addFormatter('submitted_by','wrap');
 
-		}
 	}
 }

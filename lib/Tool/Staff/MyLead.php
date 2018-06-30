@@ -237,7 +237,18 @@ class Tool_Staff_MyLead extends \xepan\cms\View_Tool{
 		});
 
 		$crud->grid->addPaginator(25);
-		$crud->grid->addQuickSearch(['contact','amount']);
+		$filter_form = $crud->grid->addQuickSearch(['contact','amount']);
+
+		$field = $filter_form->addField('DropDown','is_submitted');
+		$field->setValueList(['is_submitted'=>'Submitted to Company','not_submitted'=>'Not Submitted']);
+		$field->setEmptyText('All Record');
+
+		$filter_form->addHook('applyFilter',function($f,$m){
+			if($f['is_submitted'] == "is_submitted"){
+				$m->addCondition('is_submitted_to_company',true);
+			}
+		});
+
 
 	}
 

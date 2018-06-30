@@ -8,6 +8,12 @@ namespace xavoc\ispmanager;
 class Model_PaymentTransaction extends \xepan\base\Model_Table{
 
 	public $table = 'isp_payment_transactions';
+	public $acl_type = "PaymentTransaction";
+	public $status = ["All"];
+	public $actions = [
+			"All"=>['view','submitted_to_company','edit','delete']
+		];
+
 	function init(){
 		parent::init();
 		
@@ -28,8 +34,10 @@ class Model_PaymentTransaction extends \xepan\base\Model_Table{
 		$this->addField('amount')->defaultValue(0);
 
 		$this->addField('is_submitted_to_company')->type('boolean')->defaultValue(false);
-		$this->addField('submitted_at')->type('date')->system(true);
+		$this->addField('submitted_at')->type('datetime')->system(true);
 		$this->addField('narration')->type('text');
+
+		$this->addExpression('status')->set('"All"');
 
 		$this->add('xepan\base\Controller_AuditLog');
 		$this->addHook('beforeSave',$this);
@@ -110,4 +118,23 @@ class Model_PaymentTransaction extends \xepan\base\Model_Table{
 			);
 		}
 	}
+
+	function submitted_to_company(){
+		$pt = $this->add('xavoc\ispmanager\Model_PaymentTransaction');
+		$pt->load($this->id);
+		if(!$pt['is_submitted_to_company']){
+			$pt['submitted_by_id'] = $this->app->employee->id;
+			$pt['is_submitted_to_company'] = true;
+			$pt['submitted_at'] = $this->app->now;
+			$pt->save();
+
+			$msg = "Payment ".$this['amount']." submitted to company, collected by ".$this['employee']." for user ".$this['contact'];
+			$this->app->employee
+				->addActivity($msg, $this->id/* Related Document ID*/, $this['contact_id'] /*Related Contact ID*/,null,null)
+				->notifyWhoCan('submitted_to_company');
+		}else
+			return $result_js = $this->app->js()->univ()->errorMessage("Payment already submitted to company and Submitted by ".$this['submitted_by']);
+				
+	}
+
 }

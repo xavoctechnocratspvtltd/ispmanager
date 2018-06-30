@@ -90,6 +90,7 @@ class Initiator extends \Controller_Addon {
         $array['ispmanager_plan'] = ['caption'=>'Plan','type'=>'DropDown','model'=>'xavoc\ispmanager\Model_Plan'];
         $array['ispmanager_user'] = ['caption'=>'ISP User','type'=>'DropDown','model'=>'xavoc\ispmanager\Model_User'];
         $array['ispmanager_Lead'] = ['caption'=>'ISP User','type'=>'DropDown','model'=>'xavoc\ispmanager\Model_Lead'];
+        $array['PaymentTransaction'] = ['caption'=>'Payment Collection','type'=>'DropDown','model'=>'xavoc\ispmanager\isp_payment_transactions'];
         
         // channel
         $array['Channel'] = ['caption'=>'Channel','type'=>'DropDown','model'=>'xavoc\ispmanager\Model_Channel'];

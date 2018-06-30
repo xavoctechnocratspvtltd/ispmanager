@@ -33,5 +33,7 @@ class Model_RadAcct extends \xepan\base\Model_Table{
 		$this->addField('servicetype');
 		$this->addField('framedprotocol');
 		$this->addField('framedipaddress');
+
+		// $this->add('dynamic_model/Controller_AutoCreator');
 	}
 }

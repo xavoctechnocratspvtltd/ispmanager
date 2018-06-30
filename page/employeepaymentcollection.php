@@ -16,7 +16,7 @@ class page_employeepaymentcollection extends \xepan\base\Page {
 		$payment_tra->getElement('submitted_by')->caption('Submission Detail');
 
 		$crud = $this->add('xepan\hr\CRUD');
-		$crud->setModel($payment_tra,['employee','contact','created_at','amount','payment_mode','narration','is_submitted_to_company','submitted_by','submitted_at']);
+		$crud->setModel($payment_tra,['employee','contact','created_at','amount','payment_mode','narration','is_submitted_to_company','submitted_by','submitted_at','status']);
 
 		$crud->grid->addHook('formatRow',function($g){
 			$phtml = "";
@@ -45,6 +45,7 @@ class page_employeepaymentcollection extends \xepan\base\Page {
 
 		$crud->grid->removeAttachment();
 		$crud->grid->removeColumn('edit');
+		$crud->grid->removeColumn('status');
 		$crud->grid->removeColumn('is_submitted_to_company');
 		$crud->grid->removeColumn('submitted_at');
 		$crud->grid->removeColumn('delete');

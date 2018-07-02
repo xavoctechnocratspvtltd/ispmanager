@@ -214,7 +214,9 @@ class Tool_Staff_MyLead extends \xepan\cms\View_Tool{
 		$payment_tra->setOrder('id','desc');
 
 		$crud = $this->add('xepan\hr\CRUD',['pass_acl'=>true,'allow_edit'=>false,'allow_del'=>false]);
-		$crud->setModel($payment_tra,['employee','contact_id','created_at','amount','payment_mode','narration'],['contact','created_at','amount','payment_mode','narration','is_submitted_to_company']);
+		$crud->setModel($payment_tra,
+			['employee','contact_id','created_at','payment_mode','amount','cheque_no','cheque_date','dd_no','dd_date','bank_detail','narration'],
+			['contact','created_at','amount','payment_mode','cheque_no','cheque_date','dd_no','dd_date','bank_detail','amount','narration','is_submitted_to_company']);
 
 		$crud->grid->addHook('formatRow',function($g){
 			$phtml = "";
@@ -236,7 +238,23 @@ class Tool_Staff_MyLead extends \xepan\cms\View_Tool{
 			$g->current_row_html['payment_mode'] = $phtml;
 		});
 
+		if($crud->isEditing()){
+			$form = $crud->form;
+			$payment_mode_field = $form->getElement('payment_mode');
+
+			$payment_mode_field->js(true)->univ()->bindConditionalShow([
+				'Cash'=>['amount','narration'],
+				'Cheque'=>['cheque_no','cheque_date','bank_detail','amount','narration'],
+				'DD'=>['dd_no','dd_date','bank_detail','amount','narration'],
+			],'div.atk-form-row');
+		}
+
 		$crud->grid->addPaginator(25);
+		$crud->grid->removeColumn('cheque_no');
+		$crud->grid->removeColumn('cheque_date');
+		$crud->grid->removeColumn('dd_no');
+		$crud->grid->removeColumn('dd_date');
+		$crud->grid->removeColumn('bank_detail');
 		$filter_form = $crud->grid->addQuickSearch(['contact','amount']);
 
 		$field = $filter_form->addField('DropDown','is_submitted');

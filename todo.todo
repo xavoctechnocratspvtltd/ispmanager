@@ -1,6 +1,7 @@
-serial no when auto invoice crate from
-T&C
-Narration me auto start date and end date
+Done 
+	serial no when auto invoice crate from
+	T&C
+	Narration me auto start date and end date
 Assign lead to show in staff panel
 User me action connection disconnet or connection
 CAF installed menu add column organizaion
@@ -12,7 +13,7 @@ Payment : installement
 	Product detail in QSP add item : done
 	Plan condition spped with upto text : done
 
-	next renewal with date time ex created_at 12-march-2018 10:50 AM then plan expire 
+	next renewal with date time ex created_at 12-march-2018 10:50 AM then plan expire
 	add default narrtion of start and end date in aactive and plan changed : done
 
 Done:   caf form at won shipping address to installation address;
@@ -99,3 +100,41 @@ burst : 0
 
 
 to do data reset same plan before expired date with date option add 
+
+Dear Tabrez ji,
+
+Here is the list of work done and due. if you have or remember old one that is not mention please revert a mail so that we can work on it.
+
+Done:
+
+    Support ticket assign send email/sms to customer and employee.
+    Employee Payment Collection add button.
+    pos sms and email send
+    at invoice paid page customer name must show.
+    Auto Data Reset
+    Employee Task Report
+    when we update personal info after invoice created on due mode, its not updating.
+    Customer download-Uplaod data and data limit not match.
+    CAF Process
+    Date wise filter at data consumed
+    form upcoming invoices auto narration with start and end date
+    Assign lead to show in staff panel
+    Support Ticket filter employee, from -to date status
+    user filter based on created_at, install_at, activate,Online
+    Report activity support ticket click not working
+    User session time difference and Session History in admin panel in report format => Done (Action : Radius Attributes -> user data consumption)
+    User customer panel session digging
+    Same static IP Pe Error
+    Plan Change => existing money settlement with Free tenure period => Done but recheck it's woking ok or not
+    Sale Invoice ACL issue edit and delete not removed.
+
+
+Due:
+
+    Plan surrender Process => existing money settlement
+    sms shoot before 3,4 etc days before upcoming invoices.
+    import and export button must in acl
+    Add Advance Amount Tab in Invoice
+    Filters and Reports (please provide excel format of reports)
+    due invoice show on customer panel => TODO
+    Escalaion Support System

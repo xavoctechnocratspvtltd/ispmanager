@@ -108,27 +108,32 @@ class Initiator extends \Controller_Addon {
 
     function addAppFunctions(){
         
-        $this->app->addMethod('byte2human',function($app,$bytes, $decimals = 2){
-            $size = array('b','Kb','Mb','Gb','Tb','Pb','Eb','Zb','Yb');
-            $factor = floor((strlen($bytes) - 1) / 3);
-            return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$size[$factor];
-        });
+        if(!$this->app->hasMethod('byte2human')){
+            $this->app->addMethod('byte2human',function($app,$bytes, $decimals = 2){
+                $size = array('b','Kb','Mb','Gb','Tb','Pb','Eb','Zb','Yb');
+                $factor = floor((strlen($bytes) - 1) / 3);
+                return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$size[$factor];
+            });
+        }
 
-        $this->app->addMethod('human2byte',function($app,$value){
-              $result =  preg_replace_callback('/^\s*(\d*\.?\d+)\s*(?:([kmgtpy]?)b?)?\s*$/i', function ($m) {
-                switch (strtolower($m[2])) {
-                  case 'y': $m[1] *= 1024;
-                  case 'p': $m[1] *= 1024;
-                  case 't': $m[1] *= 1024;
-                  case 'g': $m[1] *= 1024;
-                  case 'm': $m[1] *= 1024;
-                  case 'k': $m[1] *= 1024;
-                }
-                return $m[1];
-              }, $value);
+        if(!$this->app->hasMethod('human2byte')){
+            $this->app->addMethod('human2byte',function($app,$value){
+                  $result =  preg_replace_callback('/^\s*(\d*\.?\d+)\s*(?:([kmgtpy]?)b?)?\s*$/i', function ($m) {
+                    switch (strtolower($m[2])) {
+                      case 'y': $m[1] *= 1024;
+                      case 'p': $m[1] *= 1024;
+                      case 't': $m[1] *= 1024;
+                      case 'g': $m[1] *= 1024;
+                      case 'm': $m[1] *= 1024;
+                      case 'k': $m[1] *= 1024;
+                    }
+                    return $m[1];
+                  }, $value);
 
-              return round($result,0);
-        });
+                  return round($result,0);
+            });
+            
+        }
     }
 
     function setup_frontend(){

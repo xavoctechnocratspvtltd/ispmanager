@@ -175,6 +175,7 @@ class page_configuration extends \xepan\base\Page {
 		$renewal_alert_tab = $tab->addTab('Renewal Alert');
 		$account_reactivation_tab = $tab->addTab('Account Reactivation');
 		$plan_changed_tab = $tab->addTab('Plan Changed');
+		$upcoming_invoice_tab = $tab->addTab('Upcoming Invoices');
 
 		$form = $forgot_tab->add('Form');
 		$form->setModel($content_model,['forgot_password_sms_content']);
@@ -246,6 +247,37 @@ class page_configuration extends \xepan\base\Page {
 		if($form->isSubmitted()){
 			$form->save();
 			$form->js(null,$form->js()->reload())->univ()->successMessage("Plan Changed content updated")->execute();
+		}
+
+		// upcoming invoices
+		$upcoming_model = $this->add('xavoc\ispmanager\Model_Config_UpcomingInvoicesReminder');
+		$upcoming_model->tryLoadAny();
+		$form = $upcoming_invoice_tab->add('Form');
+		$form->add('xepan\base\Controller_FLC')
+			->showLables(true)
+			->makePanelsCoppalsible(true)
+			->layout([
+					'days_before_reminder'=>'Send Reminder Before and After End Date~c1~4~comma seperated values ie. 1,2,4,6',
+					'days_after_reminder'=>'c2~4~comma seperated values ie. 1,2,4,6',
+					'send_on_invoice_status~Send on Last Invoice Status'=>'c23~4',
+					'send_reminder'=>'c23~4',
+					'sms_content'=>'SMS Content~c3~8',
+					'sms_send_from'=>'c4~4',
+					'email_subject'=>'Email Content~c5~12',
+					'email_body'=>'c5~12',
+					'email_send_from'=>'c5~12',
+				]);
+		$form->setModel($upcoming_model);
+
+		$in_field = $form->getElement('send_on_invoice_status');
+		$in_field->setValueList(['Draft'=>'Draft','Submitted'=>'Submitted','Redesign'=>'Redesign','Due'=>'Due','Paid'=>'Paid','Canceled'=>'Canceled']);
+		$in_field->enableMultiSelect();
+		$in_field->set(explode(",", $upcoming_model['send_on_invoice_status']));
+
+		$form->addSubmit('save')->addClass('btn btn-primary');
+		if($form->isSubmitted()){
+			$form->save();
+			$form->js(null,$form->js()->reload())->univ()->successMessage("Upcoming Invoices content updated")->execute();
 		}
 	}
 

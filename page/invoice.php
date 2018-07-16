@@ -9,6 +9,8 @@
 	function init(){
 		parent::init();
 
+		$this->app->stickyGET('status');
+		
 		$model = $this->crud->getModel();
 		$model->addExpression('city')->set(function($m,$q){
 			return $q->expr('[0]',[$m->refSQL('contact_id')->fieldQuery('city')]);

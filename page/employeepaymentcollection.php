@@ -16,7 +16,9 @@ class page_employeepaymentcollection extends \xepan\base\Page {
 		$payment_tra->getElement('submitted_by')->caption('Submission Detail');
 
 		$crud = $this->add('xepan\hr\CRUD');
-		$crud->setModel($payment_tra,['employee','contact_id','contact','created_at','payment_mode','amount','cheque_no','cheque_date','dd_no','dd_date','bank_detail','narration','is_submitted_to_company','submitted_by','submitted_at','status']);
+		$crud->setModel($payment_tra,
+			['employee','contact_id','contact','invoice_id','created_at','payment_mode','amount','cheque_no','cheque_date','dd_no','dd_date','bank_detail','narration','submitted_by','submitted_at','status'],
+			['employee','contact_id','contact','invoice_number','created_at','payment_mode','amount','cheque_no','cheque_date','dd_no','dd_date','bank_detail','narration','is_submitted_to_company','submitted_by','submitted_at','status']);
 
 		$crud->grid->addHook('formatRow',function($g){
 			$phtml = "";
@@ -42,6 +44,8 @@ class page_employeepaymentcollection extends \xepan\base\Page {
 			else
 				$g->current_row_html['submitted_by'] = "";
 		});
+
+		$crud->grid->addFormatter('invoice_number','Wrap');
 
 		if($crud->isEditing()){
 			$form = $crud->form;

@@ -20,7 +20,8 @@ class Model_PaymentTransaction extends \xepan\base\Model_Table{
 		$this->hasOne('xepan\commerce\Customer','contact_id','unique_name')->display(['form'=>'xepan\base\Basic'])->caption('Customer');
 
 		$this->hasOne('xepan\hr\Employee','employee_id')->defaultValue($this->app->employee->id);
-		$this->hasOne('xavoc\ispmanager\Invoice','invoice_id');
+		$this->hasOne('xavoc\ispmanager\Invoice','invoice_id','invoice_number')->display(['form'=>'xepan\base\Basic']);
+
 		$this->hasOne('xavoc\ispmanager\SalesOrder','order_id');
 		$this->hasOne('xepan\base\Model_Contact','submitted_by_id');
 		
@@ -38,6 +39,9 @@ class Model_PaymentTransaction extends \xepan\base\Model_Table{
 		$this->addField('narration')->type('text');
 
 		$this->addExpression('status')->set('"All"');
+		$this->addExpression('invoice_number')->set(function($m,$q){
+			return $m->refSQL('invoice_id')->fieldQuery('invoice_number');
+		});
 
 		$this->add('xepan\base\Controller_AuditLog');
 		$this->addHook('beforeSave',$this);

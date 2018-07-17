@@ -18,6 +18,21 @@ class Model_Invoice extends \xepan\commerce\Model_SalesInvoice{
 
 	// }
 
+	function init(){
+		parent::init();
+
+		$this->addExpression('invoice_number')->set(function($m,$q){
+			return $q->expr('concat(IFNULL([0],"")," ",IFNULL([1],"")," :: INR(",IFNULL([2],0),") :: ",IFNULL(date([3]),""))',
+				[
+					$this->getElement('serial'),
+					$this->getElement('document_no'),
+					$this->getElement('net_amount'),
+					$this->getElement('created_at'),
+					// $this->getElement('contact')
+				]);
+		});
+	}
+
 	function page_approve($page){
 
 		$customer = $this->add('xavoc\ispmanager\Model_User');

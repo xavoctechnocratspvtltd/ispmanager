@@ -246,6 +246,24 @@ class page_report extends \xepan\base\Page {
 			return $q->expr('IFNULL([0],0)+IFNULL([1],0)',[$up_model->fieldQuery('upload_data_consumed'),$up_model->fieldQuery('session_upload_data_consumed'),$up_model->fieldQuery('session_upload_data_consumed_on_reset')]);
 		});
 
+		$month_before_date = date("Y-m-d", strtotime($this->app->today." -1 Month"));
+		
+		$model->addExpression('upload_data_used_in_last_month')->set(function($m,$q)use($month_before_date){
+			$rad_model = $this->add('xavoc\ispmanager\Model_RadAcct');
+			$rad_model->addCondition('username',$m->getElement('radius_username'));
+			$rad_model->addCondition('acctstarttime','>=',$month_before_date);
+			$rad_model->addCondition('acctstarttime','<',$this->app->nextDate($this->app->now));
+
+			return $q->expr('([0])',[$rad_model->sum('acctinputoctets')]);
+		});
+
+		$model->addExpression('download_data_used_in_last_month')->set(function($m,$q)use($month_before_date){
+			$rad_model = $this->add('xavoc\ispmanager\Model_RadAcct');
+			$rad_model->addCondition('username',$m->getElement('radius_username'));
+			$rad_model->addCondition('acctstarttime','>=',$month_before_date);
+			$rad_model->addCondition('acctstarttime','<',$this->app->nextDate($this->app->now));
+			return $q->expr('[0]',[$rad_model->sum('acctoutputoctets')]);
+		});
 
 		// $model->getElement('radius_user_created_at')->caption('Activation Date')->type("date");
 		$model->add('xavoc\ispmanager\Controller_HumanByte')
@@ -261,7 +279,7 @@ class page_report extends \xepan\base\Page {
 		$col1->add('View')->addClass('alert alert-info')->set('Total Record: '.$model->count()->getOne());
 
 		$grid = $v->add('xepan\base\Grid',['fixed_header'=>false]);
-		$grid->setModel($model,['radius_effective_name','address','city','state','country','plan','created_at','installation_assign_at','installed_at','radius_user_created_at','customer_type','current_ul_limit','current_dl_limit','current_upload_data_consumed','current_download_data_consumed']);
+		$grid->setModel($model,['radius_effective_name','address','city','state','country','plan','created_at','installation_assign_at','installed_at','radius_user_created_at','customer_type','current_ul_limit','current_dl_limit','current_upload_data_consumed','current_download_data_consumed','upload_data_used_in_last_month','download_data_used_in_last_month']);
 		$grid->addPaginator(50);
 		$grid->template->tryDel('quick_search_wrapper');
 		$grid->addFormatter('radius_effective_name','Wrap');

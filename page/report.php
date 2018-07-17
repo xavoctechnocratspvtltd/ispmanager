@@ -204,18 +204,64 @@ class page_report extends \xepan\base\Page {
 				if($employee)
 					$model->addCondition('created_by_id',$employee);
 			}
-
-
-
 		}else
 			$model->addCondition('id','-1');
+
+		$model->addExpression('current_ul_limit')->set(function($m,$q){
+			$up_model = $m->add('xavoc\ispmanager\Model_UserPlanAndTopup');
+			$up_model->addCondition('user_id',$m->getElement('id'));
+			$up_model->addCondition('plan_id',$m->getElement('plan_id'));
+			$up_model->addCondition('is_effective',true);
+			$up_model->setOrder('id','desc');
+			$up_model->setLimit(1);
+			return $q->expr('IFNULL([0],0)',[$up_model->fieldQuery('upload_limit')]);
+		});
+		$model->addExpression('current_dl_limit')->set(function($m,$q){
+			$up_model = $m->add('xavoc\ispmanager\Model_UserPlanAndTopup');
+			$up_model->addCondition('user_id',$m->getElement('id'));
+			// $up_model->addCondition('plan_id',$m->getElement('plan_id'));
+			$up_model->addCondition('is_effective',true);
+			$up_model->setOrder('id','desc');
+			$up_model->setLimit(1);
+			return $q->expr('IFNULL([0],0)',[$up_model->fieldQuery('download_limit')]);
+		});
+
+		$model->addExpression('current_download_data_consumed')->set(function($m,$q){
+			$up_model = $m->add('xavoc\ispmanager\Model_UserPlanAndTopup');
+			$up_model->addCondition('user_id',$m->getElement('id'));
+			// $up_model->addCondition('plan_id',$m->getElement('plan_id'));
+			$up_model->addCondition('is_effective',true);
+			$up_model->setOrder('id','desc');
+			$up_model->setLimit(1);
+			return $q->expr('IFNULL([0],0)+IFNULL([1],0)-IFNULL([2],0)',[$up_model->fieldQuery('download_data_consumed'),$up_model->fieldQuery('session_download_data_consumed'),$up_model->fieldQuery('session_download_data_consumed_on_reset')]);
+		});
+
+		$model->addExpression('current_upload_data_consumed')->set(function($m,$q){
+			$up_model = $m->add('xavoc\ispmanager\Model_UserPlanAndTopup');
+			$up_model->addCondition('user_id',$m->getElement('id'));
+			// $up_model->addCondition('plan_id',$m->getElement('plan_id'));
+			$up_model->addCondition('is_effective',true);
+			$up_model->setOrder('id','desc');
+			$up_model->setLimit(1);
+			return $q->expr('IFNULL([0],0)+IFNULL([1],0)',[$up_model->fieldQuery('upload_data_consumed'),$up_model->fieldQuery('session_upload_data_consumed'),$up_model->fieldQuery('session_upload_data_consumed_on_reset')]);
+		});
+
+
+		// $model->getElement('radius_user_created_at')->caption('Activation Date')->type("date");
+		$model->add('xavoc\ispmanager\Controller_HumanByte')
+				->handleFields([
+					'current_dl_limit',
+					'current_ul_limit',
+					'current_upload_data_consumed',
+					'current_download_data_consumed',
+				]);
 
 		$col = $v->add('Columns');
 		$col1 = $col->addColumn(13);
 		$col1->add('View')->addClass('alert alert-info')->set('Total Record: '.$model->count()->getOne());
 
 		$grid = $v->add('xepan\base\Grid',['fixed_header'=>false]);
-		$grid->setModel($model,['radius_effective_name','plan','created_at','installation_assign_at','installed_at','radius_user_created_at']);
+		$grid->setModel($model,['radius_effective_name','address','city','state','country','plan','created_at','installation_assign_at','installed_at','radius_user_created_at','customer_type','current_ul_limit','current_dl_limit','current_upload_data_consumed','current_download_data_consumed']);
 		$grid->addPaginator(50);
 		$grid->template->tryDel('quick_search_wrapper');
 		$grid->addFormatter('radius_effective_name','Wrap');

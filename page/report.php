@@ -272,6 +272,8 @@ class page_report extends \xepan\base\Page {
 					'current_ul_limit',
 					'current_upload_data_consumed',
 					'current_download_data_consumed',
+					'upload_data_used_in_last_month',
+					'download_data_used_in_last_month',
 				]);
 
 		$col = $v->add('Columns');

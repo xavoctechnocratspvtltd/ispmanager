@@ -126,6 +126,10 @@ class page_report extends \xepan\base\Page {
 
 	function page_user(){
 
+		// $col = $this->add('Columns');
+		// $col1 = $col->addColumn(6);
+		// $col1->add('View_Info')->set('Total Active User: '.$this->add('xavoc\ispmanager\Model_User')->addCondition('status','Active')->count()->getOne());
+
 		$filter = $this->app->stickyGET('filter');
 		$from_date = $this->app->stickyGET('from_date');
 		$to_date = $this->app->stickyGET('to_date');
@@ -166,24 +170,9 @@ class page_report extends \xepan\base\Page {
 		$submit_btn = $form->addSubmit('Filter');
 		$clear_btn = $form->addSubmit('clear');
 
-		$v = $this->add('View');
-		if($form->isSubmitted()){
-			if($form->isClicked($clear_btn)){
-				$form->js(null,$v->js()->reload(['filter'=>0]))->univ()->reload()->execute();
-			}
-
-			$form->js(null,$v->js()->reload([
-					'filter'=>1,
-					'from_date'=>$form['from_date'],
-					'to_date'=>$form['to_date'],
-					'user_id'=>$form['user'],
-					'look_according_to'=>$form['look_according_to'],
-					'employee'=>$form['employee']
-				]))->execute();
-		}
-
-
 		$model = $this->add('xavoc\ispmanager\Model_User');
+		$model->addCondition('status','Active');
+
 		if($filter){
 			if($user_id){
 				$model->addCondition('id',$user_id);
@@ -265,6 +254,27 @@ class page_report extends \xepan\base\Page {
 			return $q->expr('[0]',[$rad_model->sum('acctoutputoctets')]);
 		});
 
+		$model->addExpression("udp")->set('"N/A"')->caption('UDP');
+		$model->addExpression("mrtg")->set(function($m,$q){
+			return $q->expr('IF(LOCATE("ill",[0]),"Yes","No")',[$m->getElement('plan')]);
+		})->caption('MRTG');
+		$model->addExpression("caf")->set('"Yes"')->caption('CAF');
+
+		$model->addExpression("last_mile_access_provider")->set('"N/A"');
+		$model->addExpression('pop')->set(function($m,$q){
+			return $q->expr('[0]',[$m->getElement('city')]);
+		});
+
+		$model->addExpression('framed_ip_address')->set(function($m,$q){
+			$acc = $this->add('xavoc\ispmanager\Model_RadAcct');
+			$acc->addCondition('username',$m->getElement('radius_username'));
+			$acc->addCondition('acctstoptime',null);
+			$acc->setOrder('radacctid','desc');
+			$acc->setLimit(1);
+			return $q->expr('IFNULL([0],"")',[$acc->fieldQuery('framedipaddress')]);
+		});
+
+		$model->addExpression("bandwidth")->set($model->refSql('plan_id')->fieldQuery('description'))->allowHtml(true);
 		// $model->getElement('radius_user_created_at')->caption('Activation Date')->type("date");
 		$model->add('xavoc\ispmanager\Controller_HumanByte')
 				->handleFields([
@@ -275,17 +285,32 @@ class page_report extends \xepan\base\Page {
 					'upload_data_used_in_last_month',
 					'download_data_used_in_last_month',
 				]);
+		$model->getElement('connection_type')->caption('Transport Media');
 
-		$col = $v->add('Columns');
-		$col1 = $col->addColumn(13);
-		$col1->add('View')->addClass('alert alert-info')->set('Total Record: '.$model->count()->getOne());
+		// $col = $this->add('Columns');
+		// $col1->add('View')->addClass('alert alert-info')->set('Total Record: '.$model->count()->getOne());
 
-		$grid = $v->add('xepan\base\Grid',['fixed_header'=>false]);
-		$grid->setModel($model,['radius_effective_name','address','city','state','country','plan','created_at','installation_assign_at','installed_at','radius_user_created_at','customer_type','current_ul_limit','current_dl_limit','current_upload_data_consumed','current_download_data_consumed','upload_data_used_in_last_month','download_data_used_in_last_month']);
+		$grid = $this->add('xepan\base\Grid',['fixed_header'=>false]);
+		$grid->setModel($model,['radius_effective_name','address','city','state','country','pop','created_at','installation_assign_at','installed_at','radius_user_created_at','customer_type','connection_type','plan','bandwidth','current_ul_limit','current_dl_limit','current_upload_data_consumed','current_download_data_consumed','upload_data_used_in_last_month','download_data_used_in_last_month','udp','mrtg','caf','last_mile_access_provider','framed_ip_address']);
 		$grid->addPaginator(50);
 		$grid->template->tryDel('quick_search_wrapper');
 		$grid->addFormatter('radius_effective_name','Wrap');
 		$grid->add('misc/Export');
+
+		if($form->isSubmitted()){
+			if($form->isClicked($clear_btn)){
+				$form->js(null,$v->js()->reload(['filter'=>0]))->univ()->reload()->execute();
+			}
+
+			$form->js(null,$grid->js()->reload([
+					'filter'=>1,
+					'from_date'=>$form['from_date'],
+					'to_date'=>$form['to_date'],
+					'user_id'=>$form['user'],
+					'look_according_to'=>$form['look_according_to'],
+					'employee'=>$form['employee']
+				]))->execute();
+		}
 	}
 
 	function page_fupuser(){

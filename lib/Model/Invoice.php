@@ -22,13 +22,13 @@ class Model_Invoice extends \xepan\commerce\Model_SalesInvoice{
 		parent::init();
 
 		$this->addExpression('invoice_number')->set(function($m,$q){
-			return $q->expr('concat(IFNULL([0],"")," ",IFNULL([1],"")," :: INR(",IFNULL([2],0),") :: ",IFNULL(date([3]),""))',
+			return $q->expr('concat(IFNULL([0],"")," ",IFNULL([1],"")," :: INR(",IFNULL([2],0),") :: ",IFNULL(date([3]),""), " :: ",[4])',
 				[
 					$this->getElement('serial'),
 					$this->getElement('document_no'),
 					$this->getElement('net_amount'),
 					$this->getElement('created_at'),
-					// $this->getElement('contact')
+					$this->getElement('status')
 				]);
 		});
 	}

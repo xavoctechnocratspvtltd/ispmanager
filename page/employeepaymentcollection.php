@@ -120,7 +120,7 @@ class page_employeepaymentcollection extends \xepan\base\Page {
 			if($customer_id = $_GET['selected_customer_id']){
 				$inv_field->getModel()
 						->addCondition('contact_id',$customer_id)
-						->addCondition('status',"Due")
+						->addCondition('status','<>',"Paid")
 						;
 			}else{
 				$inv_field->getModel()->addCondition('id','-1');

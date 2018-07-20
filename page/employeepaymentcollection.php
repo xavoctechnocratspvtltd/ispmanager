@@ -117,7 +117,7 @@ class page_employeepaymentcollection extends \xepan\base\Page {
 
 			$customer_field = $form->getElement('contact_id');
 			$inv_field = $form->getElement('invoice_id');
-			if($customer_id = $_GET['selected_customer_id']){
+			if($customer_id = $_GET['select_customer_id']){
 				$inv_field->getModel()
 						->addCondition('contact_id',$customer_id)
 						->addCondition('status','<>',"Paid")
@@ -135,7 +135,7 @@ class page_employeepaymentcollection extends \xepan\base\Page {
 			// 					)
 			// 				];
 			// $this->country_field->js('change',);
-			$customer_field->other_field->js('change',[$inv_field->js(null,[$inv_field->js()->select2('destroy')])->reload(null,null,[$this->app->url(null,['cut_object'=>$inv_field->name]),'selected_customer_id'=>$customer_field->js()->val()])]);
+			$customer_field->other_field->js('change',[$inv_field->js(null,[$inv_field->js()->select2('destroy')])->reload(null,null,[$this->app->url(null,['cut_object'=>$inv_field->name]),'select_customer_id'=>$customer_field->js()->val()])]);
 		}
 
 		$crud->grid->removeAttachment();

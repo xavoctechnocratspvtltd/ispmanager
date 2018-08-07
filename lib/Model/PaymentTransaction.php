@@ -24,7 +24,9 @@ class Model_PaymentTransaction extends \xepan\base\Model_Table{
 
 		$this->hasOne('xavoc\ispmanager\SalesOrder','order_id');
 		$this->hasOne('xepan\base\Model_Contact','submitted_by_id');
-		
+		$this->hasOne('xepan\base\Model_Branch','branch_id')->defaultValue(@$this->app->branch->id)->system(true);
+		$this->hasOne('xepan\base\Model_Contact','created_by_id')->defaultValue($this->app->employee->id)->system(true);
+
 		$this->addField('created_at')->type('datetime')->defaultValue($this->app->now)->system(true);
 		$this->addField('payment_mode')->setValueList(['Cash'=>'Cash','Cheque'=>'Cheque','DD'=>'Other/ Online'])->display(['form'=>'xepan\base\DropDownNormal']);
 		$this->addField('cheque_no')->type('Number')->defaultValue(0);

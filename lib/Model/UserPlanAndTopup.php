@@ -10,6 +10,7 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 	function init(){
 		parent::init();
 
+		$this->hasOne('xepan\base\Branch','branch_id')->defaultValue(@$this->app->branch->id)->system(true);
 		$this->hasOne('xavoc\ispmanager\User','user_id');
 		$this->hasOne('xavoc\ispmanager\Plan','plan_id');
 		$this->hasOne('xavoc\ispmanager\Condition','condition_id')->system(true);

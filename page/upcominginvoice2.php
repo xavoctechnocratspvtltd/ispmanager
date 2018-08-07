@@ -30,7 +30,6 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 						// 'include_expired'=>'c4~2',
 						'FormButtons~'=>'c5~2'
 					]);
-
 		$user_model = $this->add('xavoc\ispmanager\Model_User');
 		$user_model->title_field = "username";
 		$user_model->addExpression('username')
@@ -71,6 +70,9 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 		$model->addExpression('user_status')->set($model->refSQL('user_id')->fieldQuery('status'));
 		
 		$model->addCondition('user_status','Active');
+
+		if(@$this->app->branch->id)
+			$model->addCondition('branch_id',$this->app->branch->id);
 
 		if($to_date)
 			$model->addCondition('end_date','<=',$to_date);
@@ -141,8 +143,10 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 		$crud->grid->current_invoice = null;
 
 		$model->getElement('start_date')->caption('Date');
-		$crud->setModel($model,['user_id','user','radius_username','customer','plan','plan_code','sale_price','start_date','end_date','expire_date','last_invoice_date','organization','user_status','last_invoice_no','is_expired']);
+		$crud->setModel($model,['user_id','user','radius_username','customer','plan','plan_code','sale_price','start_date','end_date','expire_date','last_invoice_date','organization','user_status','last_invoice_no','is_expired','branch_id']);
 		$crud->grid->removeColumn('organization');
+		$crud->grid->removeColumn('branch_id');
+
 		$grid = $crud->grid;
 		$grid->add('VirtualPage')
 			->addColumn('create_invoice')

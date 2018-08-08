@@ -10,7 +10,7 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 	function init(){
 		parent::init();
 
-		$this->hasOne('xepan\base\Branch','branch_id')->defaultValue(@$this->app->branch->id)->system(true);
+		// $this->hasOne('xepan\base\Branch','branch_id')->defaultValue(@$this->app->branch->id)->system(true);
 		$this->hasOne('xavoc\ispmanager\User','user_id');
 		$this->hasOne('xavoc\ispmanager\Plan','plan_id');
 		$this->hasOne('xavoc\ispmanager\Condition','condition_id')->system(true);
@@ -111,6 +111,9 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 
 		$this->add('xepan\base\Controller_AuditLog',['extra_info'=>['user','plan']]);
 		$this->addHook('beforeSave',$this);
+
+		$this->addExpression('branch_id')->set($this->refSQL('user_id')->fieldQuery('branch_id'));
+
 
 		$this->add('xavoc\ispmanager\Controller_HumanByte')
 			->handleFields([

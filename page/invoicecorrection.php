@@ -17,6 +17,10 @@ class page_invoicecorrection extends \xepan\base\Page {
 		});
 			
 		$model->addExpression('radius_username')->set($model->refSql('user_id')->fieldQuery('radius_username'));
+
+		if($this->app->branch->id)
+			$model->addCondition('branch_id',$this->app->branch->id);
+
 		$crud = $this->add('CRUD',['allow_add'=>false]);
 		$crud->setModel($model,['user','radius_username','plan','end_date','download_data_consumed','upload_data_consumed','last_invoice_date']);
 		$crud->grid->addPaginator(20);

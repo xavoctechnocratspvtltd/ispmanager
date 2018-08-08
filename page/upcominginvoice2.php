@@ -18,18 +18,25 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 		$to_date = $this->app->stickyGET('to_date')?:$this->app->today;
 		$user_name = $this->app->stickyGET('user_name');
 		$include_expired = $this->app->stickyGET('show_expired');
+		$branch_id = $this->app->stickyGET('branch_id')?:$this->app->branch->id;
 		
+		$layout_array = [
+						'user_name'=>'Filter~c1~4',
+						'from_date'=>'c2~2',
+						'to_date'=>'c3~2'
+					];
+		if(!$this->app->branch->id)
+			$layout_array['branch'] = 'c4~2';
+
+		$layout_array['FormButtons~&nbsp;'] = 'c5~2';
+
+
 		$form = $this->add('Form');
 		$form->add('xepan\base\Controller_FLC')
 				->addContentSpot()
 				->makePanelsCoppalsible()
-				->layout([
-						'user_name'=>'Filter~c1~4',
-						'from_date'=>'c2~2',
-						'to_date'=>'c3~2',
-						// 'include_expired'=>'c4~2',
-						'FormButtons~'=>'c5~2'
-					]);
+				->layout($layout_array);
+
 		$user_model = $this->add('xavoc\ispmanager\Model_User');
 		$user_model->title_field = "username";
 		$user_model->addExpression('username')
@@ -41,6 +48,12 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 
 		$form->addField('DatePicker','from_date')->set($from_date);
 		$form->addField('DatePicker','to_date')->set($to_date);
+
+		if(!$this->app->branch->id){
+			$branch_field = $form->addField('xepan\base\DropDown','branch');
+			$branch_field->setModel($this->add('xepan\base\Model_Branch'));
+			$branch_field->setEmptyText('Please Select');
+		}
 		// $form->addField('checkbox','include_expired')->set($include_expired);
 		$form->addSubmit("Filter")->addClass('btn btn-primary btn-block');
 
@@ -71,8 +84,9 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 		
 		$model->addCondition('user_status','Active');
 
-		if(@$this->app->branch->id)
-			$model->addCondition('branch_id',$this->app->branch->id);
+		if($branch_id){
+			$model->addCondition('branch_id',$branch_id);
+		}
 
 		if($to_date)
 			$model->addCondition('end_date','<=',$to_date);
@@ -102,7 +116,19 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 		// $crud->grid->addColumn('customer');
 		// filter form submission
 		if($form->isSubmitted()){
-			$form->js(null,$crud->js()->reload(['filter'=>1,'from_date'=>$form['from_date'],'to_date'=>$form['to_date'],'user_name'=>$form['user_name'],'show_expired'=>$form['include_expired']]))->univ()->execute();
+
+			$branch_id = $this->app->branch->id;
+			if($form->hasElement('branch'))
+				$branch_id = $form['branch'];
+
+			$form->js(null,$crud->js()->reload([
+				'filter'=>1,
+				'from_date'=>$form['from_date'],
+				'to_date'=>$form['to_date'],
+				'user_name'=>$form['user_name'],
+				'show_expired'=>$form['include_expired'],
+				'branch_id'=>$branch_id
+			]))->univ()->execute();
 		}
 
 

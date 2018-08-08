@@ -5,8 +5,9 @@ namespace xavoc\ispmanager;
 class page_report extends \xepan\base\Page {
 	
 	public $title ="Reports";
-
+	public $branch_id;
 	function page_index(){
+
 		$tab = $this->add('Tabs');
 		$tab->addTabUrl('./user','User');
 		$tab->addTabUrl('./fupuser','User Under Fup');
@@ -37,7 +38,7 @@ class page_report extends \xepan\base\Page {
 		);
 		$model->getElement('plan')->caption('User Current Plan');
 		$crud = $this->add('xepan\hr\CRUD',['allow_add'=>false]);
-		$crud->setModel($model,null,['radius_username','plan','actual_plan_condition','active_condition','plan_last_condition_record_id','is_last_condition_based_on_user_plan','is_last_condition_active','not_having_data_reset_value_count']);
+		$crud->setModel($model,null,['radius_username','plan','actual_plan_condition','active_condition','plan_last_condition_record_id','is_last_condition_based_on_user_plan','is_last_condition_active','not_having_data_reset_value_count','branch_id']);
 		$crud->grid->addPaginator(25);
 		$crud->grid->removeAttachment();
 
@@ -87,6 +88,9 @@ class page_report extends \xepan\base\Page {
 			// expression for multiple repeat_count * plan_amount
 		$model = $this->add('xavoc\ispmanager\Model_UpcomingInvoices');
 		$model->addCondition('is_expired','<>',true);
+		if($this->app->branch->id)
+			$model->addCondition('branch_id',$this->app->branch->id);
+
 		if($filter){
 			// if($from_date){
 				// $model->addCondition('end_date','>=',$from_date);
@@ -290,12 +294,16 @@ class page_report extends \xepan\base\Page {
 		// $col = $this->add('Columns');
 		// $col1->add('View')->addClass('alert alert-info')->set('Total Record: '.$model->count()->getOne());
 
-		$grid = $this->add('xepan\base\Grid',['fixed_header'=>false]);
-		$grid->setModel($model,['radius_effective_name','address','city','state','country','pop','created_at','installation_assign_at','installed_at','radius_user_created_at','customer_type','connection_type','plan','bandwidth','current_ul_limit','current_dl_limit','current_upload_data_consumed','current_download_data_consumed','upload_data_used_in_last_month','download_data_used_in_last_month','udp','mrtg','caf','last_mile_access_provider','framed_ip_address']);
+		$crud  = $this->add('xepan\hr\CRUD',['fixed_header'=>false,'allow_add'=>false,'allow_edit'=>false,'allow_del'=>false]);
+		$crud->setModel($model,['radius_effective_name','address','city','state','country','pop','created_at','installation_assign_at','installed_at','radius_user_created_at','customer_type','connection_type','plan','bandwidth','current_ul_limit','current_dl_limit','current_upload_data_consumed','current_download_data_consumed','upload_data_used_in_last_month','download_data_used_in_last_month','udp','mrtg','caf','last_mile_access_provider','framed_ip_address','branch_id','branch']);
+		$grid = $crud->grid;
 		$grid->addPaginator(50);
 		$grid->template->tryDel('quick_search_wrapper');
 		$grid->addFormatter('radius_effective_name','Wrap');
 		$grid->add('misc/Export');
+		$grid->removeColumn('action');
+		$grid->removeColumn('branch_id');
+		$grid->removeAttachment();
 
 		if($form->isSubmitted()){
 			if($form->isClicked($clear_btn)){
@@ -360,12 +368,17 @@ class page_report extends \xepan\base\Page {
 		if($uid = $_GET['user_id'])
 			$m->addCondition('user_id',$uid);
 
+		if($this->app->branch->id){
+			$m->addCondition('branch_id',$this->app->branch->id);
+		}
+
 		$m->addCondition([['is_expired',false],['is_expired',null]]);
 		$m->setOrder('reset_date','desc');
 
 		$grid = $v->add('xepan\hr\Grid');
-		$grid->setModel($m,['user','plan','remark','reset_date','net_data_limit','data_consumed','user_status']);
+		$grid->setModel($m,['user','plan','remark','reset_date','net_data_limit','data_consumed','user_status','branch_id','branch']);
 		$grid->addPaginator($ipp=50);
+		$grid->removeColumn('branch_id');
 		$grid->template->tryDel('quick_search_wrapper');
 		$grid->add('misc/Export');
 	}
@@ -468,6 +481,9 @@ class page_report extends \xepan\base\Page {
 		}
 		$model = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup');
 		$model->addExpression('radius_username')->set($model->refSQL('user_id')->fieldQuery('radius_username'));
+		if($this->app->branch->id){
+			$model->addCondition('branch_id',$this->app->branch->id);
+		}
 		// $model->addCondition('user_id',$this->id);
 		$crud->setModel($model);
 		$model->setOrder(['id desc','is_expired desc']);

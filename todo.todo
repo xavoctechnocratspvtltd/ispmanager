@@ -27,8 +27,6 @@ user filter based on created_at, install_at, activate date employee: done
 user session time difference: done
 Invoice item first invoice compulsion : done
 
-Stock transaction edit facility
-
 ============ Extra ================
 18 March
 	Action Taken
@@ -64,7 +62,6 @@ Report activity support ticket click not working : Done
 User Session History in admin panel in report format => Done (Action : Radius Attributes -> user data consumption)
 
 User customer panel session digging. => Done
-Support Escalation => Part of standard ERP and will only rollout when they release this feature.
 
 Same static IP Pe Error : already allotted => Done
 
@@ -72,22 +69,17 @@ DHCP from software : under discussion : Solution : FramedPool from radreply =>TO
 Online users ka filter => Done
 user filter: 
 
-Plan change => existing money settlement => Done (Free tenure period is new to us in process, we are implementing it. )
-
-On surrender => existing money settlement  => TODO
-
-due invoice show on customer panel  => TODO (It is there in standard ERP as E-Commerce but we need to make separate tool, so customers only get what they need to see)
+Plan change => existing money settlement => Done (Free tenure period is new to us in process, we are implementing it.
 
 customer panel report correction => Beautifications and digging will be done once the process gets approved.
 
 speed up to in customer panel => TODO, will do
-
 burst limit not show in customer panel => TODO
 created by id in user panel or all list record =>TODO
 
 sms integration on task assign and invoice paid also
 collection report 
-send invoice on whatsup
+send invoice on whatsup: not
 
 
 check value is seeted null or 0 difference
@@ -130,14 +122,22 @@ Done:
 
 
 Due:
-
+    
     Plan surrender Process => existing money settlement
     sms shoot before 3,4 etc days before upcoming invoices.
     import and export button must in acl
     Add Advance Amount Tab in Invoice
     Filters and Reports (please provide excel format of reports)
     due invoice show on customer panel => TODO
-    Escalaion Support System
-
-
     Condition update with validtion todo
+    Stock transaction edit facility
+    Support Escalation => Part of standard ERP and will only rollout when they release this feature.
+    ACL/Franchies system
+
+
+
+Branch ACL:
+
+ALTER TABLE `isp_payment_transactions` ADD COLUMN `branch_id` int(11) DEFAULT NULL;
+ALTER TABLE `isp_payment_transactions` ADD COLUMN `created_by_id` int(11) DEFAULT NULL;
+ALTER TABLE `isp_user_plan_and_topup` ADD COLUMN `branch_id` int(11) DEFAULT NULL;

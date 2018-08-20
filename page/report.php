@@ -15,6 +15,7 @@ class page_report extends \xepan\base\Page {
 		$tab->addTabUrl('./fundprojection','Recurring Income Forcasting');
 		$tab->addTabUrl('./missingno','Missing QSP No');
 		$tab->addTabUrl('./useraudit','User Audit');
+		$tab->addTabUrl('xepan_commerce_reports_gst','GST');
 
 	}
 

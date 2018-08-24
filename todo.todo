@@ -126,18 +126,17 @@ Due:
     Plan surrender Process => existing money settlement
     sms shoot before 3,4 etc days before upcoming invoices.
     import and export button must in acl
-    Add Advance Amount Tab in Invoice
     Filters and Reports (please provide excel format of reports)
     due invoice show on customer panel => TODO
     Condition update with validtion todo
     Stock transaction edit facility
     Support Escalation => Part of standard ERP and will only rollout when they release this feature.
-    ACL/Franchies system
+    Data mismatch issue
 
+    ACL/Franchies system: done
+    Branch ACL:
 
-
-Branch ACL:
-
+SQL for Branch
 ALTER TABLE `isp_payment_transactions` ADD COLUMN `branch_id` int(11) DEFAULT NULL;
 ALTER TABLE `isp_payment_transactions` ADD COLUMN `created_by_id` int(11) DEFAULT NULL;
 ALTER TABLE `isp_user_plan_and_topup` ADD COLUMN `branch_id` int(11) DEFAULT NULL;

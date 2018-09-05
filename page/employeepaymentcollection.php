@@ -62,7 +62,7 @@ class page_employeepaymentcollection extends \xepan\base\Page {
 		->addContentSpot()
 		->makePanelsCoppalsible(true)
 		->layout([
-				'contact~Customer'=>'Payment Collection Detail~c1~6',
+				'contact_id~Customer'=>'Payment Collection Detail~c1~6',
 				// 'contact'=>'c1~6',
 				'invoice_id~Invoice Number'=>'c2~6',
 				'payment_mode'=>'c3~6',
@@ -121,7 +121,7 @@ class page_employeepaymentcollection extends \xepan\base\Page {
 			if($customer_id){
 				$inv_field->getModel()
 						->addCondition('contact_id',$customer_id)
-						->addCondition('status','<>',"Paid")
+						// ->addCondition('status','<>',"Paid")
 						;
 			}else{
 				$inv_field->getModel()->addCondition('id','-1');
@@ -136,8 +136,8 @@ class page_employeepaymentcollection extends \xepan\base\Page {
 			// 					)
 			// 				];
 			// $this->country_field->js('change',);
-			// $customer_field->js('change',[$inv_field->js(null,[$inv_field->js()->select2('destroy')])->reload(null,null,[$this->app->url(null,['cut_object'=>$inv_field->name]),'select_customer_id'=>$customer_field->js()->val()])]);
-			$customer_field->other_field->js('change',[$inv_field->js(null,[$inv_field->js()->select2('destroy')])->reload(null,null,[$this->app->url(null,['cut_object'=>$inv_field->name]),'selectcustomerid'=>$customer_field->js()->val()])]);
+			$customer_field->js('change',[$inv_field->js(null,[$inv_field->js()->select2('destroy')])->reload(null,null,[$this->app->url(null,['cut_object'=>$inv_field->name]),'selectcustomerid'=>$customer_field->js()->val()])]);
+			// $customer_field->other_field->js('change',[$inv_field->js(null,[$inv_field->js()->select2('destroy')])->reload(null,null,[$this->app->url(null,['cut_object'=>$inv_field->name]),'selectcustomerid'=>$customer_field->js()->val()])]);
 		}
 
 		$crud->grid->removeAttachment();

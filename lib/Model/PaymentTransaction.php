@@ -17,7 +17,7 @@ class Model_PaymentTransaction extends \xepan\base\Model_Table{
 	function init(){
 		parent::init();
 		
-		$this->hasOne('xepan\commerce\Customer','contact_id','unique_name')->display(['form'=>'xepan\base\Basic'])->caption('Customer');
+		$this->hasOne('xepan\commerce\Customer','contact_id','unique_name')->display(['form'=>'xepan\base\DropDown'])->caption('Customer');
 
 		$this->hasOne('xepan\hr\Employee','employee_id')->defaultValue($this->app->employee->id);
 		$this->hasOne('xavoc\ispmanager\Invoice','invoice_id','invoice_number');

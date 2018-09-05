@@ -21,43 +21,42 @@ class Initiator extends \Controller_Addon {
             if($x=$this->app->top_menu->getMenuName('Support/Customers',true)) $x->destroy();
             if($x=$this->app->top_menu->getMenuName('Commerce/Customer',true)) $x->destroy();
 
-            $m = $this->app->top_menu->addMenu('CAF');
-                $m->addItem(['Lead Category','icon'=>'fa fa-check-square-o'],'xepan_marketing_marketingcategory');
-                $m->addItem(['Lead','icon'=>'fa fa-users'],'xavoc_ispmanager_lead&status=Open');
-                $m->addItem(['Installation Due','icon'=>'fa fa-users'],'xavoc_ispmanager_lead_installation');
-                $m->addItem(['Installation Assigned','icon'=>'fa fa-users'],'xavoc_ispmanager_lead_installationassigned');
-                $m->addItem(['Installed','icon'=>'fa fa-users'],'xavoc_ispmanager_lead_installed');
-                $m->addItem(['InDemo','icon'=>'fa fa-users'],'xavoc_ispmanager_user&status=InDemo');
-                $m->addItem(['Active User','icon'=>'fa fa-users'],'xavoc_ispmanager_user');
-                $m->addItem(['All Lead','icon'=>'fa fa-users'],'xavoc_ispmanager_lead_all');
-                $m->addItem(['Convert Customer to ISP User','icon'=>'fa fa-users'],'xavoc_ispmanager_convertcustomertoispuser');
+            // $m = $this->app->top_menu->addMenu('CAF');
+            //     $m->addItem(['Lead Category','icon'=>'fa fa-check-square-o'],'xepan_marketing_marketingcategory');
+            //     $m->addItem(['Lead','icon'=>'fa fa-users'],'xavoc_ispmanager_lead&status=Open');
+            //     $m->addItem(['Installation Due','icon'=>'fa fa-users'],'xavoc_ispmanager_lead_installation');
+            //     $m->addItem(['Installation Assigned','icon'=>'fa fa-users'],'xavoc_ispmanager_lead_installationassigned');
+            //     $m->addItem(['Installed','icon'=>'fa fa-users'],'xavoc_ispmanager_lead_installed');
+            //     $m->addItem(['InDemo','icon'=>'fa fa-users'],'xavoc_ispmanager_user&status=InDemo');
+            //     $m->addItem(['Active User','icon'=>'fa fa-users'],'xavoc_ispmanager_user');
+            //     $m->addItem(['All Lead','icon'=>'fa fa-users'],'xavoc_ispmanager_lead_all');
+            //     $m->addItem(['Convert Customer to ISP User','icon'=>'fa fa-users'],'xavoc_ispmanager_convertcustomertoispuser');
                 
-            $m = $this->app->top_menu->addMenu('ISP MANAGER');
-            // $m->addItem(['Leads','icon'=>'fa fa-users'],'xavoc_ispmanager_lead');
-            $m->addItem(['Users','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_user&status=Active');
-            $m->addItem(['Plans','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_plan&status=Published');
-            $m->addItem(['Topups','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_topup');
-            $m->addItem(['Invoices','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_invoice');
-            $m->addItem(['Up-Coming Invoice','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_upcominginvoice2');
-            $m->addItem(['Microtik Routers','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_client');
-            $m->addItem(['Reports','icon'=>'fa fa-cog'],'xavoc_ispmanager_report');
-            $m->addItem(['Configuration','icon'=>'fa fa-cog'],'xavoc_ispmanager_configuration');
-            $m->addItem(['Log','icon'=>'fa fa-user'],'xavoc_ispmanager_log');
-            $m->addItem(['Device Management','icon'=>'fa fa-user'],'xavoc_ispmanager_device');
-            $m->addItem(['Employee Payment Collection','icon'=>'fa fa-users'],'xavoc_ispmanager_employeepaymentcollection');
-            $m->addItem(['Up coming Invoice Correction','icon'=>'fa fa-users'],'xavoc_ispmanager_invoicecorrection');
-            $m->addItem(['Debug RADIUS','icon'=>'fa fa-users'],'xavoc_ispmanager_debug');
-            $m->addItem(['Dates Management','icon'=>'fa fa-users'],'xavoc_ispmanager_datesmanage');
+            // $m = $this->app->top_menu->addMenu('ISP MANAGER');
+                // $m->addItem(['Users','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_user&status=Active');
+                // $m->addItem(['Plans','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_plan&status=Published');
+                // $m->addItem(['Topups','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_topup');
+                // $m->addItem(['Invoices','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_invoice');
+                // $m->addItem(['Up-Coming Invoice','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_upcominginvoice2');
+                // $m->addItem(['Microtik Routers','icon'=>'fa fa-check-square-o'],'xavoc_ispmanager_client');
+                // $m->addItem(['Reports','icon'=>'fa fa-cog'],'xavoc_ispmanager_report');
+                // $m->addItem(['Configuration','icon'=>'fa fa-cog'],'xavoc_ispmanager_configuration');
+                // $m->addItem(['Log','icon'=>'fa fa-user'],'xavoc_ispmanager_log');
+                // $m->addItem(['Device Management','icon'=>'fa fa-user'],'xavoc_ispmanager_device');
+                // $m->addItem(['Employee Payment Collection','icon'=>'fa fa-users'],'xavoc_ispmanager_employeepaymentcollection');
+                // $m->addItem(['Up coming Invoice Correction','icon'=>'fa fa-users'],'xavoc_ispmanager_invoicecorrection');
+                // $m->addItem(['Debug RADIUS','icon'=>'fa fa-users'],'xavoc_ispmanager_debug');
+                // $m->addItem(['Dates Management','icon'=>'fa fa-users'],'xavoc_ispmanager_datesmanage');
 
-            $m = $this->app->top_menu->addMenu('Channel');
-            $m->addItem(['channel Mgnt','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_channel');
-            $m->addItem(['Agent Mgnt','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_agent');
-            $m->addItem(['Plan','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_plan');
-            $m->addItem(['Lead','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_lead');
-            $m->addItem(['ISP User','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_user');
-            $m->addItem(['Commission Mgnt','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_commission');
-            $m->addItem(['Invoice','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_invoice');
-            $m->addItem(['Payment Collection','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_paymentcollection');
+            // $m = $this->app->top_menu->addMenu('Channel');
+                // $m->addItem(['channel Mgnt','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_channel');
+                // $m->addItem(['Agent Mgnt','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_agent');
+                // $m->addItem(['Plan','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_plan');
+                // $m->addItem(['Lead','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_lead');
+                // $m->addItem(['ISP User','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_user');
+                // $m->addItem(['Commission Mgnt','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_commission');
+                // $m->addItem(['Invoice','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_invoice');
+                // $m->addItem(['Payment Collection','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_paymentcollection');
             // $m->addItem(['Ticket','icon'=>'fa fa-cog'],'xavoc_ispmanager_channel_ticket');
         }
 
@@ -203,6 +202,178 @@ class Initiator extends \Controller_Addon {
         $config_path = getcwd().$pre.'websites/'.$this->app->current_website_name.'/config.php';
         $webapppath = getcwd().$pre.'shared/apps/xavoc/ispmanager/webappconfig';
         file_put_contents($config_path, file_get_contents($config_path). file_get_contents($webapppath));
+
+    }
+
+    function getTopApplicationMenu(){
+        return [
+                'ISPMANAGER'=>[
+                    [
+                        'name'=>'User',
+                        'icon'=>'fa fa-check-square-o',
+                        'url'=>'xavoc_ispmanager_user',
+                        'url_param'=>['status'=>'Active']
+                    ],
+                    [ 
+                        'name'=>'Plans',
+                        'icon'=>'fa fa-check-square-o',
+                        'url'=>'xavoc_ispmanager_plan',
+                        'url_param'=>['status'=>'Published']
+                    ],
+                    [
+                        'name'=>'Topups',
+                        'icon'=>'fa fa-check-square-o',
+                        'url'=>'xavoc_ispmanager_topup'
+                    ],
+                    [
+                        'name'=>'Invoices',
+                        'icon'=>'fa fa-check-square-o',
+                        'url'=>'xavoc_ispmanager_invoice'
+                    ],
+                    [
+                        'name'=>'Up-Coming Invoice',
+                        'icon'=>'fa fa-check-square-o',
+                        'url'=>'xavoc_ispmanager_upcominginvoice2'
+                    ],
+                    [
+                        'name'=>'Microtik Routers',
+                        'icon'=>'fa fa-check-square-o',
+                        'url'=>'xavoc_ispmanager_client'
+                    ],
+                    [
+                        'name'=>'Reports',
+                        'icon'=>'fa fa-cog',
+                        'url'=>'xavoc_ispmanager_report'
+                    ],
+                    [
+                        'name'=>'Configuration',
+                        'icon'=>'fa fa-cog',
+                        'url'=>'xavoc_ispmanager_configuration'
+                    ],
+                    [
+                        'name'=>'Log',
+                        'icon'=>'fa fa-user',
+                        'url'=>'xavoc_ispmanager_log'
+                    ],
+                    [
+                        'name'=>'Device Management',
+                        'icon'=>'fa fa-user',
+                        'url'=>'xavoc_ispmanager_device',
+
+                    ],
+                    [
+                        'name'=>'Employee Payment Collection',
+                        'icon'=>'fa fa-users',
+                        'url'=>'xavoc_ispmanager_employeepaymentcollection'
+                    ],
+                    [
+                        'name'=>'Up coming Invoice Correction',
+                        'icon'=>'fa fa-users',
+                        'url'=>'xavoc_ispmanager_invoicecorrection'
+                    ],
+                    [
+                        'name'=>'Debug RADIUS',
+                        'icon'=>'fa fa-users',
+                        'url'=>'xavoc_ispmanager_debug'
+                    ],
+                    [
+                        'name'=>'Dates Management',
+                        'icon'=>'fa fa-users',
+                        'url'=>'xavoc_ispmanager_datesmanage'
+                    ]
+            ],
+            'CAF'=>[
+                    [
+                        'name'=>'Lead Category',
+                        'icon'=>'fa fa-check-square-o',
+                        'url'=>'xepan_marketing_marketingcategory'
+                    ],
+                    [   'name'=>'Lead',
+                        'icon'=>'fa fa-users',
+                        'url'=>'xavoc_ispmanager_lead',
+                        'url_param'=>['status'=>'Open']
+                    ],
+                    [
+                        'name'=>'Installation Due',
+                        'icon'=>'fa fa-users',
+                        'url'=>'xavoc_ispmanager_lead_installation'
+                    ],
+                    [
+                        'name'=>'Installation Assigned',
+                        'icon'=>'fa fa-users',
+                        'url'=>'xavoc_ispmanager_lead_installationassigned'
+                    ],
+                    [
+                        'name'=>'Installed',
+                        'icon'=>'fa fa-users',
+                        'url'=>'xavoc_ispmanager_lead_installed'
+                    ],
+                    [
+                        'name'=>'InDemo',
+                        'icon'=>'fa fa-users',
+                        'url'=>'xavoc_ispmanager_user',
+                        'url_param'=>['status'=>'InDemo']
+                    ],
+                    [   'name'=>'Active User',
+                        'icon'=>'fa fa-users',
+                        'url'=>'xavoc_ispmanager_user'
+                    ],
+                    [
+                        'name'=>'All Lead',
+                        'icon'=>'fa fa-users',
+                        'url'=>'xavoc_ispmanager_lead_all'
+                    ],
+                    [
+                        'name'=>'Convert Customer to ISP User',
+                        'icon'=>'fa fa-users',
+                        'url'=>'xavoc_ispmanager_convertcustomertoispuser'
+                    ]
+                ],
+            'Channel'=>[
+                    [
+                        'name'=>'channel Mgnt',
+                        'icon'=>'fa fa-cog',
+                        'url'=>'xavoc_ispmanager_channel_channel'
+                    ],
+                    [
+                        'name'=>'Agent Mgnt',
+                        'icon'=>'fa fa-cog',
+                        'url'=>'xavoc_ispmanager_channel_agent'
+                    ],
+                    [
+                        'name'=>'Plan',
+                        'icon'=>'fa fa-cog',
+                        'url'=>'xavoc_ispmanager_channel_plan'
+                    ],
+                    [
+                        'name'=>'Lead',
+                        'icon'=>'fa fa-cog',
+                        'url'=>'xavoc_ispmanager_channel_lead'
+                    ],
+                    [
+                        'name'=>'ISP User',
+                        'icon'=>'fa fa-cog',
+                        'url'=>'xavoc_ispmanager_channel_user'
+                    ],
+                    [
+                        'name'=>'Commission Mgnt',
+                        'icon'=>'fa fa-cog',
+                        'url'=>'xavoc_ispmanager_channel_commission'
+                    ],
+                    [
+                        'name'=>'Invoice',
+                        'icon'=>'fa fa-cog',
+                        'url'=>'xavoc_ispmanager_channel_invoice'
+                    ],
+                    [
+                        'name'=>'Payment Collection',
+                        'icon'=>'fa fa-cog',
+                        'url'=>'xavoc_ispmanager_channel_paymentcollection'
+                    ]
+                ]
+
+
+            ];
 
     }
 

@@ -43,7 +43,7 @@ class Model_UserUnclosedSession extends Model_User {
 			$mr = $this->add('xavoc\ispmanager\Model_RadAcct');
 			$mr->addCondition('username',$m->getElement('radius_username'));
 			$mr->addCondition('radacctid','<>',$m->getElement('last_rad_acct_id'));
-			$mr->addCondition('acctupdatetime','<=',$m->getElement('condition_expire_date'));
+			$mr->addCondition('acctupdatetime','<',$m->getElement('condition_expire_date'));
 			$mr->addCondition('acctupdatetime','>=',$m->getElement('condition_start_date'));
 			$mr->addCondition('acctstoptime',NULL);
 			return $q->expr('[0]',[$mr->count()]);
@@ -53,7 +53,7 @@ class Model_UserUnclosedSession extends Model_User {
 			$mr = $this->add('xavoc\ispmanager\Model_RadAcct');
 			$mr->addCondition('username',$m->getElement('radius_username'));
 			$mr->addCondition('radacctid','<>',$m->getElement('last_rad_acct_id'));
-			$mr->addCondition('acctupdatetime','<=',$m->getElement('condition_expire_date'));
+			$mr->addCondition('acctupdatetime','<',$m->getElement('condition_expire_date'));
 			$mr->addCondition('acctupdatetime','>=',$m->getElement('condition_start_date'));
 			$mr->addCondition('acctstoptime',NULL);
 			return $q->expr('([0]+[1])',[$mr->sum('acctinputoctets'),$mr->sum('acctoutputoctets')]);

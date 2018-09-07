@@ -323,6 +323,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$master_data['serial'] = $serial;
 		$master_data['qsp_no'] = $this->add('xepan\commerce\Model_'.$qsp_type)->newNumber();
 		$master_data['contact_id'] = $this->id;
+		$master_data['branch_id'] = $this['branch_id'];
 		$master_data['currency_id'] = $this->app->epan->default_currency->get('id');
 		$master_data['billing_country_id'] = $this['billing_country_id'];
 		$master_data['billing_state_id'] = $this['billing_state_id'];

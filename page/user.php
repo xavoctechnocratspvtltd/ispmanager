@@ -12,7 +12,6 @@ class page_user extends \xepan\base\Page {
 		$model = $this->add('xavoc\ispmanager\Model_UserData');
 		$model->getElement('country_id')->getModel('status','Active');
 		$model->getElement('state_id')->getModel('status','Active');
-
 		// return net_data_limit, data_consumed
 		$model->addExpression('active_condition_data')->set(function($m,$q){
 			$upt = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup');
@@ -132,6 +131,7 @@ class page_user extends \xepan\base\Page {
 						'state_id'=>'c4~3',
 						'city'=>'c5~3',
 						'pin_code'=>'c6~3',
+						'branch_id~Branch'=>'c8~12',
 						
 						'plan~Plan'=>'User Plan Information~c1~4',
 						'radius_username~Radius User Name'=>'c2~4',
@@ -142,12 +142,12 @@ class page_user extends \xepan\base\Page {
 						// 'custom_radius_attributes'=>'c7~12',
 						'create_invoice~'=>'c8~12',
 						'is_invoice_date_first_to_first~'=>'c9~12',
-						'include_pro_data_basis'=>'c10~12'
+						'include_pro_data_basis'=>'c10~12',
 					]);
 			// $form->setLayout('form/user');
 		}
 
-		$crud->setModel($model,['net_data_limit','branch_id','radius_username','radius_password','plan_id','simultaneous_use','grace_period_in_days','custom_radius_attributes','first_name','last_name','create_invoice','is_invoice_date_first_to_first','include_pro_data_basis','country_id','state_id','city','address','pin_code','qty_unit_id','mac_address'],['name','radius_username','plan','radius_login_response','contacts_str','emails_str','created_at','last_login','is_online','active_condition_data','framed_ip_address','last_logout','name','created_by','active_plan_expire_date','due_date']);
+		$crud->setModel($model,['net_data_limit','branch_id','radius_username','radius_password','plan_id','simultaneous_use','grace_period_in_days','custom_radius_attributes','first_name','last_name','create_invoice','is_invoice_date_first_to_first','include_pro_data_basis','country_id','state_id','city','address','pin_code','qty_unit_id','mac_address'],['name','radius_username','plan','radius_login_response','contacts_str','emails_str','created_at','last_login','is_online','active_condition_data','framed_ip_address','last_logout','name','created_by','active_plan_expire_date','due_date','branch']);
 
 		$crud->grid->removeColumn('attachment_icon');
 		$crud->grid->removeColumn('framed_ip_address');
@@ -204,7 +204,7 @@ class page_user extends \xepan\base\Page {
 			
 			// add online /offline
 			$status = ($g->model['is_online'] && $data[0]) ? "Online":"Offline";
-			$g->current_row_html['radius_username'] = $g->model['radius_username']."<br>".$g->model['name']."<br/><div class='".$status."'><i class='fa fa-circle'></i>&nbsp;".$status."</div><br>IP: ".$g->model['framed_ip_address'];
+			$g->current_row_html['radius_username'] = $g->model['radius_username']."<br>".$g->model['name']."<br/><div class='".$status."'><i class='fa fa-circle'></i>&nbsp;".$status."</div>IP: ".$g->model['framed_ip_address']."<br/>Branch:".$g->model['branch'];
 
 
 			$data_limit = explode(",",$g->model['active_condition_data']);

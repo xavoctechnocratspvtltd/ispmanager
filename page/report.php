@@ -16,6 +16,7 @@ class page_report extends \xepan\base\Page {
 		$tab->addTabUrl('./missingno','Missing QSP No');
 		$tab->addTabUrl('./useraudit','User Audit');
 		$tab->addTabUrl('xepan_commerce_reports_gst','GST');
+		$tab->addTabUrl('xepan_commerce_reports_itemsalereport','Item Sales Report');
 		$tab->addTabUrl('./unclosedsession','Unclosed Session Users');
 
 	}

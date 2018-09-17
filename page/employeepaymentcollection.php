@@ -117,6 +117,13 @@ class page_employeepaymentcollection extends \xepan\base\Page {
 			],'.flc-atk-form-row');
 
 			$customer_field = $form->getElement('contact_id');
+			$customer_model = $customer_field->getModel();
+			$acl = $customer_model->add('xepan\hr\Controller_ACL');
+			if($acl->isBranchRestricted() AND @$this->app->branch->id){
+				$customer_model->addCondition('branch_id',$this->app->branch->id);
+			}
+
+
 			$inv_field = $form->getElement('invoice_id');
 			if($customer_id){
 				$inv_field->getModel()

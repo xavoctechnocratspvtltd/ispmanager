@@ -31,9 +31,9 @@ apt-get install -y unzip
 cd /var/www/html
 
 
-wget http://epan.in/xepan2-$xepan_version.zip
+wget http://epan.in/xepan2.zip
 
-unzip xepan2-$xepan_version.zip
+unzip xepan2.zip
 rm index.html
 
 chown -R www-data:www-data .

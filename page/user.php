@@ -331,41 +331,41 @@ class page_user extends \xepan\base\Page {
 			$form->js()->univ()->newWindow($form->app->url('xavoc_ispmanager_user_import',['download_sample_csv_file'=>true]))->execute();
 		}
 
-		$form_delete = $col2->add('Form');
-		$form_delete->addSubmit('Delete All User Forcely')->addClass('btn btn-danger');
-		if($form_delete->isSubmitted()){
+		// $form_delete = $col2->add('Form');
+		// $form_delete->addSubmit('Delete All User Forcely')->addClass('btn btn-danger');
+		// if($form_delete->isSubmitted()){
 
-			$qsp_master = $this->add('xepan\commerce\Model_QSP_Master');
-			foreach ($qsp_master as $qsp) {
-				$qsp->delete();
-			}
+		// 	$qsp_master = $this->add('xepan\commerce\Model_QSP_Master');
+		// 	foreach ($qsp_master as $qsp) {
+		// 		$qsp->delete();
+		// 	}
 
-			$users = $this->add('xavoc\ispmanager\Model_User');
-			foreach ($users as $user) {
-				$user->delete();
-			}
+		// 	$users = $this->add('xavoc\ispmanager\Model_User');
+		// 	foreach ($users as $user) {
+		// 		$user->delete();
+		// 	}
 			
-			foreach ($this->add('xavoc\ispmanager\Model_UserPlanAndTopup') as $cond) {
-				$cond->delete();
-			}
+		// 	foreach ($this->add('xavoc\ispmanager\Model_UserPlanAndTopup') as $cond) {
+		// 		$cond->delete();
+		// 	}
 
-			$this->add('xavoc\ispmanager\Model_RadCheck')->deleteAll();
-			$this->add('xavoc\ispmanager\Model_RadPostAuth')->deleteAll();
+		// 	$this->add('xavoc\ispmanager\Model_RadCheck')->deleteAll();
+		// 	$this->add('xavoc\ispmanager\Model_RadPostAuth')->deleteAll();
 
-			$user = $this->add('xepan\base\Model_User');
-			$user->addCondition('scope','WebsiteUser');
-			$user->deleteAll();
+		// 	$user = $this->add('xepan\base\Model_User');
+		// 	$user->addCondition('scope','WebsiteUser');
+		// 	$user->deleteAll();
 
-			$ci = $this->add('xepan\base\Model_Contact_Info');
-			$ci->addCondition('contact_type','Customer');
-			$ci->deleteAll();
+		// 	$ci = $this->add('xepan\base\Model_Contact_Info');
+		// 	$ci->addCondition('contact_type','Customer');
+		// 	$ci->deleteAll();
 			
-			$this->app->db->dsql()->expr('DELETE FROM radacct;')->execute();
-			$this->app->db->dsql()->expr('DELETE FROM radreply;')->execute();
-			$this->app->db->dsql()->expr('DELETE FROM radusergroup;')->execute();
+		// 	$this->app->db->dsql()->expr('DELETE FROM radacct;')->execute();
+		// 	$this->app->db->dsql()->expr('DELETE FROM radreply;')->execute();
+		// 	$this->app->db->dsql()->expr('DELETE FROM radusergroup;')->execute();
 
-			$form_delete->js()->univ()->successMessage("User's Deleted Successfully")->execute();
-		}
+		// 	$form_delete->js()->univ()->successMessage("User's Deleted Successfully")->execute();
+		// }
 
 		$this->add('View')->setElement('iframe')->setAttr('src',$this->api->url('./execute',array('cut_page'=>1)))->setAttr('width','100%');
 			

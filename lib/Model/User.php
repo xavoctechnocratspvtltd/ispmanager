@@ -433,7 +433,20 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 	function surrenderRefundValue($in_days=true,$refund_tax_value=false){
 
-		$refund_value = 0;
+		$refund_value = [
+				'qsp_detail'=>null,
+				'plan'=>null,
+				'effective_end_date'=>0,
+				'effective_start_date'=>0,
+				'actual_days'=>0,
+				'refund_days'=>0,
+				'refund_value'=>0,
+				'invoice_based_refund_amount'=>0,
+				'total_plan_data'=>0,
+				'total_data_consumed'=>0,
+				'data_based_refund_amount'=>0,
+			];
+
 		$qsp_detail_model = $this->add('xepan\commerce\Model_QSP_Detail')
 					->addCondition('item_id',$this['plan_id'])
 					->addCondition('customer_id',$this->id)
@@ -459,40 +472,68 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 		$actual_differance = $this->app->my_date_diff($effective_end_date,$effective_start_date);
 
-		if($on_time < $effective_end_time){
-			$date_diff = $this->app->my_date_diff($this->app->now,$effective_end_date);
-			$amount = $refund_tax_value?$qsp_detail_model['total_amount']:$qsp_detail_model['amount_excluding_tax'];
+		if($on_time > $effective_end_time) return $refund_value;
 
-			if($in_days){
-				$actual_days = $actual_differance['days_total'];
-				$refund_days = $date_diff['days_total'];
-				$refund_value =  $amount*($refund_days/$actual_days);
-			}
+		$date_diff = $this->app->my_date_diff($this->app->now,$effective_end_date);
+		$amount = $refund_tax_value?$qsp_detail_model['total_amount']:$qsp_detail_model['amount_excluding_tax'];
 
-			$round_standard_name = $this->add('xepan\base\Model_ConfigJsonModel',
-					[
-						'fields'=>[
-									'round_amount_standard'=>'DropDown'
-									],
-							'config_key'=>'COMMERCE_TAX_AND_ROUND_AMOUNT_CONFIG',
-							'application'=>'commerce'
-					]);
-			$round_standard_name->tryLoadAny();
-			$round_standard = $round_standard_name['round_amount_standard'];
-
-
-			switch ($round_standard) {
-				case 'Standard':
-					$refund_value = round($refund_value);
-					break;
-				case 'Up':
-					$refund_value = ceil($refund_value);
-					break;
-				case 'Down':
-					$refund_value = floor($refund_value);
-					break;
-			}
+		if($in_days){
+			$actual_days = $actual_differance['days_total'];
+			$refund_days = $date_diff['days_total'];
+			$refund_value =  $amount*($refund_days/$actual_days);
 		}
+
+		$round_standard_name = $this->add('xepan\base\Model_ConfigJsonModel',
+				[
+					'fields'=>[
+								'round_amount_standard'=>'DropDown'
+								],
+						'config_key'=>'COMMERCE_TAX_AND_ROUND_AMOUNT_CONFIG',
+						'application'=>'commerce'
+				]);
+		$round_standard_name->tryLoadAny();
+		$round_standard = $round_standard_name['round_amount_standard'];
+
+		switch ($round_standard) {
+			case 'Standard':
+				$refund_value = round($refund_value);
+				break;
+			case 'Up':
+				$refund_value = ceil($refund_value);
+				break;
+			case 'Down':
+				$refund_value = floor($refund_value);
+				break;
+		}
+
+
+		// data based refund amount
+		$rad_model = $this->add('xavoc\ispmanager\Model_RadAcctData');
+		$rad_model->addCondition('username',$this['radius_username']);
+		$rad_model->addCondition('acctstarttime','>=',$effective_start_date);
+		$rad_model->addCondition('acctupdatetime','<',$this->app->nextDate($this->app->now));
+		$rad_model->setOrder('radacctid','desc');
+		$rad_model->tryLoadAny();
+
+		$total_plan_data = $plan_model->ref('conditions')->sum('data_limit')->getOne();
+		$total_consumed_data = $rad_model['total_download'] + $rad_model['total_upload'];
+		$unused_data = $total_plan_data-$total_consumed_data;
+		$data_based_refund_amount = ($amount/$total_plan_data)*$unused_data;
+		// end of data based refund amount
+		$refund_value = [
+			'plan_name'=>$plan_model['name']." - ".$plan_model['sku'],
+			'invoice_number'=>$qsp_detail_model['qsp_master'],
+			'invoice_amount'=>$amount,
+			'effective_end_date'=>$effective_end_date,
+			'effective_start_date'=>$effective_start_date,
+			'actual_days'=>$actual_days,
+			'refund_days'=>$refund_days,
+			'invoice_based_refund_amount'=>$refund_value,
+			'total_plan_data'=>$total_plan_data,
+			'total_data_consumed'=>$total_consumed_data,
+			'data_based_refund_amount'=>$data_based_refund_amount,
+		];
+		
 
 		return $refund_value;
 	}
@@ -527,7 +568,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$refund_value = $this->surrenderRefundValue($in_days,$refund_tax_value);
 		
 		$page->add('View')->addClass('alert alert-info')
-				->set('Refund Amount: '.$refund_value." ".$this->app->epan->default_currency['name']);
+				->set('Refund Amount: '.$this->app->print_r($refund_value)." ".$this->app->epan->default_currency['name']);
 		$form = $page->add('Form');
 		$form->addSubmit('Surrender Now')->addClass('btn btn-primary');
 		if($form->isSubmitted()){

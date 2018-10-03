@@ -9,8 +9,8 @@ class Model_User extends \xepan\commerce\Model_Customer{
 				'Won'=>['view','assign_for_installation','documents','print_caf','personal_info','communication','edit','delete'],
 				'Installation'=>['view','print_caf','personal_info','communication','edit','delete','installed','payment_receive','documents','assign_for_installation'],
 				'Installed'=>['view','active_and_change_plan','print_caf','personal_info','assign_for_installation','documents','communication','edit','delete'],
-				'Active'=>['view','active_and_change_plan','print_caf','challan','personal_info','communication','edit','delete','AddTopups','CurrentConditions','documents','radius_attributes','deactivate','Reset_Current_Plan_Condition','surrenderPlan','force_surrender','close_session'],
-				'InDemo'=>['view','active_and_change_plan','print_caf','challan','personal_info','communication','edit','delete','AddTopups','CurrentConditions','documents','radius_attributes','deactivate','Reset_Current_Plan_Condition','surrenderPlan','force_surrender','close_session'],
+				'Active'=>['view','active_and_change_plan','print_caf','challan','personal_info','communication','edit','delete','AddTopups','CurrentConditions','documents','radius_attributes','deactivate','Reset_Current_Plan_Condition','surrenderPlan','close_session'],
+				'InDemo'=>['view','active_and_change_plan','print_caf','challan','personal_info','communication','edit','delete','AddTopups','CurrentConditions','documents','radius_attributes','deactivate','Reset_Current_Plan_Condition','surrenderPlan','close_session'],
 				'InActive'=>['view','print_caf','personal_info','communication','edit','delete','active_and_change_plan','documents']
 			];
 
@@ -64,6 +64,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$user_j->addField('is_active')->type('boolean')->defaultValue(0);
 
 		$user_j->addField('connection_type')->enum($this->add('xavoc\ispmanager\Model_Config_Mendatory')->getConnctionTypes());
+		$user_j->addField('surrender_applied_on')->type('date');
 
 		$user_j->hasMany('xavoc\ispmanager\UserPlanAndTopup','user_id',null,'PlanConditions');
 		$user_j->hasMany('xavoc\ispmanager\Condition','user_id',null,'ActualConditions');
@@ -542,6 +543,19 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$this->page_surrenderPlan($page,$force_surrender=true);
 	}
 
+
+	// ON SURRENDER:
+	// Ask surrenderable or not
+	// If surrenderable, Ask 1 month notice period is served or not
+	// If yes proceed for surrender
+	// If no ask customer to serve notice,
+	// On yes:
+	// Security deposit is available or not
+	// If available ask for any other charge is required to be deducted
+	// Accountant will raise a request to process surrender to technical team.
+	// Accountant will ask customer about availibility of time & Bank Accounts details.
+	// When Tech team reach customer end they will acknowledge about device in good condition & accountant will make neft to customer.
+
 	function page_surrenderPlan($page,$force_surrender = false){
 
 		$qsp_detail_model = $this->add('xepan\commerce\Model_QSP_Detail')
@@ -562,13 +576,33 @@ class Model_User extends \xepan\commerce\Model_Customer{
 				return;
 			}
 		}
+
+		$form = $page->add('Form');
+		$form->add('xepan\base\Controller_FLC')
+		->showLables(true)
+		->makePanelsCoppalsible(true)
+		->layout([
+				'surrender_applied_on'=>'Surrender Applied On~c1~6',
+				'FormButtons~&nbsp;'=>'c2~6'
+			]);
+		$form->addField('DatePicker','surrender_applied_on')
+			->set($this['surrender_applied_on']);
+
+		$form->addSubmit('Update Surrender Apply Date')->addClass('btn btn-info');
+		if($form->isSubmitted()){
+			$this['surrender_applied_on'] = $form['surrender_applied_on'];
+			$this->save();
+			$form->js()->reload();
+		}
+
+		// check one month is served or not
 		
 		$refund_tax_value = false;
 		$in_days = true;
 		$refund_value = $this->surrenderRefundValue($in_days,$refund_tax_value);
 		
-		$page->add('View')->addClass('alert alert-info')
-				->set('Refund Amount: '.$this->app->print_r($refund_value)." ".$this->app->epan->default_currency['name']);
+		// $page->add('View')->addClass('alert alert-info')
+		// 		->set('Refund Amount: '.$this->app->epan->default_currency['name']);
 		$form = $page->add('Form');
 		$form->addSubmit('Surrender Now')->addClass('btn btn-primary');
 		if($form->isSubmitted()){

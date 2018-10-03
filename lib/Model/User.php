@@ -544,6 +544,50 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	}
 
 
+	function getRefundableSecurityDeposit($nominals_ids_arr){
+		// $nominals = $this->add('xepan\commerce\Model_Ledger')->addCondition('id',$nominals_ids_arr);
+		$transaction_row = $this->add('xepan\accounts\Model_TransactionRow');
+		$transaction_row->addCondition('ledger_id',$nominals_ids_arr);
+		$tr_j = $transaction_row->join('account_transaction','transaction_id');
+		$tr_j->addField('related_id');
+		$tr_j->addField('related_type');
+
+		$inv_j = $tr_j->join('qsp_master.document_id','related_id');
+		$inv_j->addField('contact_id');
+
+		$transaction_row->addCondition('contact_id',$this->id);
+		$transaction_row->addCondition('related_type','xepan\commerce\Model_SalesInvoice');
+		$balance = [];
+		foreach ($transaction_row as $trr) {
+			if(!isset($balance[$trr['ledger_id']])) {
+				$balance[$trr['ledger_id']] = ['amountCr'=>0,'amountDr'=>0,'name'=>$trr['ledger']];
+			}
+			$filled_side = $trr['amountCr']?'amountCr':'amountDr';
+			$balance[$trr['ledger_id']][$filled_side] += $trr[$filled_side];
+		}
+
+		return $balance;
+
+	}
+
+	function getIssuedDevices(){
+
+	}
+
+	function adjustRefundaleSecurityDeposit($amount){
+
+	}
+
+	/**
+		arr =[
+			device_id/type/serial=>returned/damage
+		]
+	*/
+	function submitIssuedDevices($arr=[]){
+
+	}
+
+
 	// ON SURRENDER:
 	// Ask surrenderable or not
 	// If surrenderable, Ask 1 month notice period is served or not
@@ -557,6 +601,9 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	// When Tech team reach customer end they will acknowledge about device in good condition & accountant will make neft to customer.
 
 	function page_surrenderPlan($page,$force_surrender = false){
+
+		var_dump($this->getRefundableSecurityDeposit([3989]));
+		return
 
 		$qsp_detail_model = $this->add('xepan\commerce\Model_QSP_Detail')
 					->addCondition('item_id',$this['plan_id'])

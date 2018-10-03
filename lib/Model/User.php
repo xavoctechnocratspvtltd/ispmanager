@@ -9,8 +9,8 @@ class Model_User extends \xepan\commerce\Model_Customer{
 				'Won'=>['view','assign_for_installation','documents','print_caf','personal_info','communication','edit','delete'],
 				'Installation'=>['view','print_caf','personal_info','communication','edit','delete','installed','payment_receive','documents','assign_for_installation'],
 				'Installed'=>['view','active_and_change_plan','print_caf','personal_info','assign_for_installation','documents','communication','edit','delete'],
-				'Active'=>['view','active_and_change_plan','print_caf','challan','personal_info','communication','edit','delete','AddTopups','CurrentConditions','documents','radius_attributes','deactivate','Reset_Current_Plan_Condition','surrenderPlan','close_session'],
-				'InDemo'=>['view','active_and_change_plan','print_caf','challan','personal_info','communication','edit','delete','AddTopups','CurrentConditions','documents','radius_attributes','deactivate','Reset_Current_Plan_Condition','surrenderPlan','close_session'],
+				'Active'=>['view','active_and_change_plan','print_caf','challan','personal_info','communication','edit','delete','AddTopups','CurrentConditions','documents','radius_attributes','deactivate','Reset_Current_Plan_Condition','surrenderRequest','close_session'],
+				'InDemo'=>['view','active_and_change_plan','print_caf','challan','personal_info','communication','edit','delete','AddTopups','CurrentConditions','documents','radius_attributes','deactivate','Reset_Current_Plan_Condition','surrenderRequest','close_session'],
 				'InActive'=>['view','print_caf','personal_info','communication','edit','delete','active_and_change_plan','documents']
 			];
 
@@ -539,12 +539,37 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		return $refund_value;
 	}
 
+	function page_surrenderRequest($page){
+		$sr_model = $this->add('xavoc\ispmanager\Model_SurrenderRequest');
+		$sr_model->addCondition('contact_id',$this->id);
+		$crud = $page->add('xepan\hr\CRUD',['status_color'=>$sr_model->status_color]);
+		$crud->setModel($sr_model,['contact_id','assign_to_id','created_at','device_collection_availibility','narration'],['contact','assign_to','created_at','device_collection_availibility','narration','status']);
+		$crud->grid->addFormatter('contact','Wrap');
+		$crud->grid->addFormatter('narration','Wrap');
+		$crud->grid->removeAttachment();
+		$crud->grid->removeColumn('status');
+	}
+
 	function page_force_surrender($page){
 		$this->page_surrenderPlan($page,$force_surrender=true);
 	}
 
 
-	function getRefundableSecurityDeposit($nominals_ids_arr){
+	function getRefundableSecurityDeposit($nominals_ids_arr=null){
+
+		if(!$nominals_ids_arr){
+			$config = $this->add('xepan\base\Model_ConfigJsonModel',
+				[
+					'fields'=>[
+								'refundable_nominal_accounts'=>'xepan\base\Multiselect',
+							],
+						'config_key'=>'ISPMANAGER_Refundable_Nominal_Accounts',
+						'application'=>'ispmanager'
+				]);
+			$config->tryLoadAny();
+			$nominals_ids_arr = explode(",",$config['refundable_nominal_accounts']);
+		}
+
 		// $nominals = $this->add('xepan\commerce\Model_Ledger')->addCondition('id',$nominals_ids_arr);
 		$transaction_row = $this->add('xepan\accounts\Model_TransactionRow');
 		$transaction_row->addCondition('ledger_id',$nominals_ids_arr);
@@ -571,6 +596,17 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	}
 
 	function getIssuedDevices(){
+
+		$m = $this->add('xepan\commerce\Model_Store_TransactionAbstract');
+		$m->addCondition('type',"Issue");
+		$m->addCondition('to_warehouse_id',$this->id);
+		$tran_ids = array_column($m->getRows(),'id');
+		$tran_ids = array_combine($tran_ids,$tran_ids);
+
+		$tr = $this->add('xepan\commerce\Model_Store_TransactionRow');
+		$tr->addCondition('store_transaction_id',$tran_ids);
+		
+		return $tr;
 
 	}
 
@@ -602,9 +638,6 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 	function page_surrenderPlan($page,$force_surrender = false){
 
-		var_dump($this->getRefundableSecurityDeposit([3989]));
-		return
-
 		$qsp_detail_model = $this->add('xepan\commerce\Model_QSP_Detail')
 					->addCondition('item_id',$this['plan_id'])
 					->addCondition('customer_id',$this->id)
@@ -624,22 +657,35 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			}
 		}
 
-		$form = $page->add('Form');
+		$refund_security_deposite = [];
+		$refund_security_deposite = $this->getRefundableSecurityDeposit();
+
+		// update surrender applied on date
+		$view = $page->add('View');
+
+		if(!$this['surrender_applied_on']){
+			$view->add('View_Error')->set('Surrender 1 month notice period is not surved');
+		}else{
+			$date_diff = $this->app->my_date_diff($this->app->today,$this['surrender_applied_on']);
+			if(!$date_diff['months'])
+				$view->add('View')->setHtml('<h3>Surrender 1 month notice period is not surved, Total Days Served: '.$date_diff['days']." Applied on: ".$this['surrender_applied_on']."</h3>")->addClass('bg bg-warning');
+		}
+
+		$form = $view->add('Form');
 		$form->add('xepan\base\Controller_FLC')
 		->showLables(true)
 		->makePanelsCoppalsible(true)
 		->layout([
-				'surrender_applied_on'=>'Surrender Applied On~c1~6',
-				'FormButtons~&nbsp;'=>'c2~6'
+				'none~&nbsp;'=>'Surrender Applied On~c1~1',
+				'surrender_applied_on'=>'c2~6',
+				'FormButtons~&nbsp;'=>'c3~4'
 			]);
-		$form->addField('DatePicker','surrender_applied_on')
-			->set($this['surrender_applied_on']);
-
+		$form->addField('DatePicker','surrender_applied_on')->set($this['surrender_applied_on']);
 		$form->addSubmit('Update Surrender Apply Date')->addClass('btn btn-info');
 		if($form->isSubmitted()){
 			$this['surrender_applied_on'] = $form['surrender_applied_on'];
 			$this->save();
-			$form->js()->reload();
+			$view->js()->reload();
 		}
 
 		// check one month is served or not
@@ -648,6 +694,9 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$in_days = true;
 		$refund_value = $this->surrenderRefundValue($in_days,$refund_tax_value);
 		
+		$issued_items = $this->getIssuedDevices();
+		// $this->app->print_r($issued_items->getRows());
+
 		// $page->add('View')->addClass('alert alert-info')
 		// 		->set('Refund Amount: '.$this->app->epan->default_currency['name']);
 		$form = $page->add('Form');

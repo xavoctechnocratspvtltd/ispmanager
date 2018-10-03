@@ -21,7 +21,33 @@ class page_configuration extends \xepan\base\Page {
 		$tab->addTabURL('./mandatory','Mandatory');
 		$tab->addTabURL('./caf_layout','CAF Layout');
 		$tab->addTabURL('xepan_marketing_leadsource','Lead source');
+		$tab->addTabURL('./refund','Refundable Nominal Accounts');
 		
+	}
+
+	function page_refund(){
+		$config = $this->add('xepan\base\Model_ConfigJsonModel',
+			[
+				'fields'=>[
+							'refundable_nominal_accounts'=>'xepan\base\Multiselect',
+						],
+					'config_key'=>'ISPMANAGER_Refundable_Nominal_Accounts',
+					'application'=>'ispmanager'
+			]);
+		$config->add('xepan\hr\Controller_ACL');
+		$config->tryLoadAny();
+		$form = $this->add('Form');
+		$form->setModel($config);
+		$accounts = $form->getElement('refundable_nominal_accounts');
+		$accounts->setModel('xepan\accounts\Ledger');
+		$accounts->set(explode(",", $config['refundable_nominal_accounts']));
+		$form->addSubmit('save')->addClass('btn btn-primary');
+		
+		if($form->isSubmitted()){
+			$form->save();
+			$form->js(null,$form->js()->reload())->univ()->successMessage('Saved Successfully')->execute();
+		}
+
 	}
 
 	function page_caf_layout(){

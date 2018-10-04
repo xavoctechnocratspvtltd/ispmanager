@@ -209,6 +209,7 @@ class Form_CAF extends \Form{
 		if($this->show_consumption_detail){
 			$stock_model = $this->add('xepan\commerce\Model_Item_Stock',['warehouse_id'=>$this->model->id]);
 			$stock_model->addCondition('maintain_inventory',true);
+			$stock_model->addCondition('net_stock','>',0);
 
 			$grid= $this->layout->add('xepan\base\Grid',['fixed_header'=>false],'consumptions');
 			$grid->setModel($stock_model,['name','net_stock','serial_nos','qty_unit']);
@@ -308,7 +309,7 @@ class Form_CAF extends \Form{
 						$item_model = $this->add('xepan\commerce\Model_Item')
 								->load($model['item']);
 
-						// check serial no exist or not in department
+						// check serial no exist or not issue to current login employee
 						$result_data = [];
 						$senitized_serial_nos = $code = preg_replace('/\n$/','',preg_replace('/^\n/','',preg_replace('/[\r\n]+/',"\n",$model['serial_nos'])));
 						$stock_data = $item_model->getStockAvalibility(($model['extra_info']?:'{}'),$model['quantity'],$result_data,$this->app->employee->id,$item_model['qty_unit_id'],explode("\n",$senitized_serial_nos));

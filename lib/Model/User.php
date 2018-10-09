@@ -947,7 +947,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	
 		$title = "New Plan (".$plan_model['name']." ".$plan_model['sku'].") Implemented by employee ".$this->app->employee['name'];
 		if($force_set_plan){
-			$title .= " reset plan forcely on date ".$this->app->reset_same_plan_again_on_date;
+			$title .= " reset plan forcely on date ". @$this->app->reset_same_plan_again_on_date;
 		}
 
 		$this->add('xepan\communication\Model_Communication_Comment')
@@ -2262,9 +2262,9 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		
 		// current plan id not same as new plan id
 		//  and if reset_same_plan_again is define then reset the plan agian on reset date if define else 
-		if((($p = $this->currentRunningPlan())&& $p->id != $plan_id) OR $this->app->reset_same_plan_again){
+		if((($p = $this->currentRunningPlan())&& $p->id != $plan_id) OR @$this->app->reset_same_plan_again){
 			$on_date = null;
-			if($this->app->reset_same_plan_again_on_date){
+			if(@$this->app->reset_same_plan_again_on_date){
 				$on_date = $this->app->reset_same_plan_again_on_date;
 			}
 

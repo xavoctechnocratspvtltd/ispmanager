@@ -106,7 +106,7 @@ class Tool_HotspotRegistration extends \xepan\cms\View_Tool{
 			}
 			
 			//after sms send user active now
-			$user->active();
+			$user->active_and_change_plan();
 			$this->app->memorize('success_message',"Your account registered successfully, password send on your mobile number");
 			$registration_form->js()->redirect($this->app->url($this->options['login_page']))->execute();
 		}

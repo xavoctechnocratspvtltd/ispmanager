@@ -660,6 +660,12 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$refund_security_deposite = [];
 		$refund_security_deposite = $this->getRefundableSecurityDeposit();
 
+
+		// ===== all things will change now, devices recived in separate model and 
+		// ===== here only show that json, received damaged or what
+		// ===== and show amount to be adjusted in user account by any transaction or jv
+
+
 		// update surrender applied on date
 		$view = $page->add('View');
 

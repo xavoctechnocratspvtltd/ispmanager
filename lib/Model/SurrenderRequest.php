@@ -52,8 +52,8 @@ class Model_SurrenderRequest extends \xepan\base\Model_Table{
 		$issued_items = $user_model->getIssuedDevices();
 
 		// $this->app->print_r($issued_items->getRows(),true);
+		$form = $page->add('Form');
 		if($issued_items->count()->getOne()){
-			$form = $page->add('Form');
 			$form->addField('DropDown','warehouse','Device Submit To Warehouse')
 				->setEmptyText('Please Select ...')
 				->validate('required')
@@ -74,10 +74,13 @@ class Model_SurrenderRequest extends \xepan\base\Model_Table{
 
 			}
 
-			$form->addSubmit('Receive');
+		}
 
-			if($form->isSubmitted()){
+		$form->addSubmit('Receive');
+
+		if($form->isSubmitted()){
 				// check if damaged serial numbers are the ones from issued
+			if($issued_items->count()->getOne()){
 				foreach ($issued_items as $issued_item){
 					$serials = json_decode($issued_item['serial_nos'],true);
 					if(count($serials) > 0){
@@ -117,16 +120,22 @@ class Model_SurrenderRequest extends \xepan\base\Model_Table{
 					];
 					$transaction->addItem(null,$model['item_id'],$model['quantity'],null,$cf_key,'Received',null,null,null,$senitized_serial_nos,null,"Surreder Device Received",$serial_fields);
 				}
-
-				$this['status'] = "SurrenderDeviceReceived";
-				$this['device_collection_data'] = json_encode($form->get());
-				$this->save();
-				return $page->js()->univ()->closeDialog();
 			}
 
+			$this['status'] = "SurrenderDeviceReceived";
+			$this['device_collection_data'] = json_encode($form->get());
+			$this->save();
+			return $page->js()->univ()->closeDialog();
+			}
 
-		}
+	}
 
+
+	function page_surrender($page){
+		$isp_user = $this->add('xavoc\ispmanager\Model_User');
+		$isp_user->load($this['contact_id']);
+
+		$isp_user->page_surrenderPlan($page);
 	}
 
 

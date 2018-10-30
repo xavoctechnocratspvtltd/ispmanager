@@ -80,6 +80,10 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 					->setLimit(1);
 			return $q->expr('CONCAT([0],[1])',[$act->fieldQuery('serial'),$act->fieldQuery('document_no')]);
 		});
+
+		$model->addExpression('plan_validity_value')->set($model->refSQL('plan_id')->fieldQuery('plan_validity_value'));
+		$model->addExpression('qty_unit')->set($model->refSQL('plan_id')->fieldQuery('qty_unit'));
+
 		$model->addExpression('user_status')->set($model->refSQL('user_id')->fieldQuery('status'));
 		
 		$model->addCondition('user_status','Active');
@@ -149,6 +153,8 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 
 			if(strtotime($g->model['end_date']) == strtotime(date('Y-m-d',strtotime($g->model['last_invoice_date']))))
 				$g->current_row_html['last_invoice_date'] = "<div class='alert alert-success'>Yes, Invoice created <br/>Invoice No.".$g->model['last_invoice_no']."<br/><strong>".date('d-M-Y',strtotime($g->model['last_invoice_date']))."</strong></div>";
+			elseif(strtotime(date('Y-m-d',strtotime($g->model['last_invoice_date']))) >  strtotime("-".$g->model['plan_validity_value']." ".$g->model['qty_unit'],strtotime($g->model['end_date'])) ) // invoice is created between end_date and plan validity in past .. may be for this renew
+				$g->current_row_html['last_invoice_date'] = "<div class='alert alert-warning'>MAY BE, Invoice created <br/>Invoice No.".$g->model['last_invoice_no']."<br/><strong>".date('d-M-Y',strtotime($g->model['last_invoice_date']))."</strong></div>";
 			else
 				$g->current_row_html['last_invoice_date'] = "<div class='alert alert-danger'>No, Last Invoice Date: <br/>Invoice No.".$g->model['last_invoice_no']."<br/><strong>".$g->model['last_invoice_date']."</strong></div>";
 				
@@ -169,9 +175,11 @@ class page_upcominginvoice2 extends \xepan\base\Page {
 		$crud->grid->current_invoice = null;
 
 		$model->getElement('start_date')->caption('Date');
-		$crud->setModel($model,['user_id','user','radius_username','customer','plan','plan_code','sale_price','start_date','end_date','expire_date','last_invoice_date','organization','user_status','last_invoice_no','is_expired','branch_id']);
+		$crud->setModel($model,['user_id','user','radius_username','customer','plan','plan_code','sale_price','start_date','end_date','expire_date','last_invoice_date','organization','user_status','last_invoice_no','is_expired','branch_id','plan_validity_value','qty_unit']);
 		$crud->grid->removeColumn('organization');
 		$crud->grid->removeColumn('branch_id');
+		$crud->grid->removeColumn('plan_validity_value');
+		$crud->grid->removeColumn('qty_unit');
 
 		$grid = $crud->grid;
 		$grid->add('VirtualPage')

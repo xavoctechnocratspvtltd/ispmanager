@@ -215,6 +215,12 @@ class Initiator extends \Controller_Addon {
                         'url'=>'xavoc_ispmanager_user',
                         'url_param'=>['status'=>'Active']
                     ],
+                    [
+                        'name'=>'User List',
+                        'icon'=>'fa fa-check-square-o',
+                        'url'=>'xavoc_ispmanager_listuser',
+                        'url_param'=>['status'=>'Active']
+                    ],
                     [ 
                         'name'=>'Plans',
                         'icon'=>'fa fa-check-square-o',

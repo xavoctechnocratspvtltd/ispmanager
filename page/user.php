@@ -5,10 +5,18 @@ namespace xavoc\ispmanager;
 class page_user extends \xepan\base\Page {
 	
 	public $title ="User";
+	public $datastatus = true;
 
 	function page_index(){
 		// parent::init();
+
+		$hide_datastatus = 0;
+		if(!$this->datastatus){
+			$hide_datastatus = 1;
+			$this->datastatus = false;
+		} 
 			
+		
 		$model = $this->add('xavoc\ispmanager\Model_UserData');
 		$model->getElement('country_id')->getModel('status','Active');
 		$model->getElement('state_id')->getModel('status','Active');
@@ -87,6 +95,10 @@ class page_user extends \xepan\base\Page {
 		}else{
 			$model->addCondition('status',['Active','InActive']);
 		}
+
+		if($hide_datastatus){
+			$model->getElement('radius_login_response')->destroy();
+		} 
 
 		$model->add('xepan\base\Controller_SideBarStatusFilter',['add_status_to_sidebar'=>['Active','InActive','InDemo']]);
 
@@ -184,27 +196,35 @@ class page_user extends \xepan\base\Page {
 			$form->getElement('is_invoice_date_first_to_first')->set(false);
 		}
 
-		$crud->grid->addHook('formatRow',function($g){
-			$data = explode(",",$g->model['radius_login_response']);
-			$limits = explode("/", $data[2]);
-			$ul_limit = $this->app->byte2human($limits[0]);
-			$dl_limit = $this->app->byte2human($limits[1]);
-			$data[2] = $ul_limit.' / '.$dl_limit;
+		$crud->grid->addHook('formatRow',function($g)use($hide_datastatus){
+			if(!$hide_datastatus){
+				$data = explode(",",$g->model['radius_login_response']);
+				$limits = explode("/", $data[2]);
+				$ul_limit = $this->app->byte2human($limits[0]);
+				$dl_limit = $this->app->byte2human($limits[1]);
+				$data[2] = $ul_limit.' / '.$dl_limit;
 
-			// data status 
-			// find prosiible cause of no access 
-			$access="Yes";
-			
-			if(!$data[0]){
-				$access = "No Valid Plan Condition Matched: Authentication failed";
-				if($g->model['is_expired'] || strtotime($this->app->now) > strtotime($g->model['active_plan_end_date'])) $access=" Plan Expired / Ended : Authentication Failed ";
+				// data status 
+				// find prosiible cause of no access 
+				$access="Yes";
+				
+				if(!$data[0]){
+					$access = "No Valid Plan Condition Matched: Authentication failed";
+					if($g->model['is_expired'] || strtotime($this->app->now) > strtotime($g->model['active_plan_end_date'])) $access=" Plan Expired / Ended : Authentication Failed ";
+				}
+
+				$g->current_row_html['radius_login_response'] = 'Access: '.($data[0]?'<span class="label label-success">yes</span>':'<br/><span class="label label-danger" style="font-size:8px;">'.$access.'</span>').'<br/>'.'COA: '.($data[1]?'yes':'no').'<br/>UL / DL: '.$data[2].'<br/>Burst: '.$data['3']."<br/>Expire Date: ".($g->model['active_plan_expire_date']?date('d-M-Y',strtotime($g->model['active_plan_expire_date'])):"");
+
+				// add online /offline
+				$status = ($g->model['is_online'] && $data[0]) ? "Online":"Offline";
+				$g->current_row_html['radius_username'] = $g->model['radius_username']."<br>".$g->model['name']."<br/><div class='".$status."'><i class='fa fa-circle'></i>&nbsp;".$status."</div>IP: ".$g->model['framed_ip_address']."<br/>Branch:".$g->model['branch'];
+
+			}else{
+				$status = ($g->model['is_online'])?"Online":"Offline";
+				$g->current_row_html['radius_username'] = $g->model['radius_username']."<br>".$g->model['name']."<br/><div class='".$status."'><i class='fa fa-circle'></i>&nbsp;".$status."</div>IP: ".$g->model['framed_ip_address']."<br/>Branch:".$g->model['branch'];
 			}
-
-			$g->current_row_html['radius_login_response'] = 'Access: '.($data[0]?'<span class="label label-success">yes</span>':'<br/><span class="label label-danger" style="font-size:8px;">'.$access.'</span>').'<br/>'.'COA: '.($data[1]?'yes':'no').'<br/>UL / DL: '.$data[2].'<br/>Burst: '.$data['3']."<br/>Expire Date: ".($g->model['active_plan_expire_date']?date('d-M-Y',strtotime($g->model['active_plan_expire_date'])):"");
 			
-			// add online /offline
-			$status = ($g->model['is_online'] && $data[0]) ? "Online":"Offline";
-			$g->current_row_html['radius_username'] = $g->model['radius_username']."<br>".$g->model['name']."<br/><div class='".$status."'><i class='fa fa-circle'></i>&nbsp;".$status."</div>IP: ".$g->model['framed_ip_address']."<br/>Branch:".$g->model['branch'];
+
 
 
 			$data_limit = explode(",",$g->model['active_condition_data']);
@@ -240,7 +260,10 @@ class page_user extends \xepan\base\Page {
 		$crud->grid->removeColumn('emails_str');
 		$crud->grid->removeColumn('name');
 		$crud->grid->addFormatter('contacts_str','Wrap');
-		$crud->grid->addFormatter('radius_login_response','Wrap');
+
+		if(!$hide_datastatus)
+			$crud->grid->addFormatter('radius_login_response','Wrap');
+
 		$crud->grid->removeColumn('active_condition_data');
 		$crud->grid->removeColumn('is_online');
 		$crud->grid->removeColumn('created_by');

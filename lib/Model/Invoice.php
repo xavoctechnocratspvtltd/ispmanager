@@ -4,14 +4,14 @@ namespace xavoc\ispmanager;
 
 class Model_Invoice extends \xepan\commerce\Model_SalesInvoice{ 
 	public $status = ['Draft','Submitted','Redesign','Due','Paid','Canceled'];
-	// public $actions = [
-	// 'Draft'=>['view','edit','delete','submit','manage_attachments'],
-	// 'Submitted'=>['view','edit','delete','redesign','approve','manage_attachments','print_document'],
-	// 'Redesign'=>['view','edit','delete','submit','manage_attachments'],
-	// 'Due'=>['view','edit','delete','redesign','paid','send','cancel','manage_attachments','print_document','recurring_invoice'],
-	// 'Paid'=>['view','edit','delete','send','cancel','manage_attachments','print_document','recurring_invoice'],
-	// 'Canceled'=>['view','edit','delete','redraft','manage_attachments']
-	// ];
+		public $actions = [
+		'Draft'=>['view','cancle','edit','delete','submit','other_info','manage_attachments','communication'],
+		'Submitted'=>['view','cancle','edit','delete','other_info','redesign','approve','manage_attachments','print_document','communication'],
+		'Redesign'=>['view','edit','delete','submit','other_info','cancle','manage_attachments','communication'],
+		'Due'=>['view','edit','delete','redesign','paid','send','cancel','other_info','manage_attachments','print_document','communication'],
+		'Paid'=>['view','edit','delete','send','cancel','other_info','manage_attachments','print_document','communication'],
+		'Canceled'=>['view','edit','delete','paid','redraft','other_info','manage_attachments','communication']
+		];
 
 	// function page_recurring_invoice($page){
 	// 	$page->add('View')->set("recurring invoice");

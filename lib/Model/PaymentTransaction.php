@@ -44,16 +44,20 @@ class Model_PaymentTransaction extends \xepan\base\Model_Table{
 		$this->addExpression('invoice_number')->set(function($m,$q){
 			return $m->refSQL('invoice_id')->fieldQuery('invoice_number');
 		});
+		$this->addExpression('invoice_net_amount')->set(function($m,$q){
+			return $m->refSQL('invoice_id')->fieldQuery('net_amount');
+		});
 
 		$this->add('xepan\base\Controller_AuditLog');
 		$this->addHook('beforeSave',$this);
-		// $this->addHook('afterSave',$this);
+		$this->addHook('afterSave',[$this,'paymentReceived']);
 
 		$this->is([
 				'contact_id|to_trim|required',
 				'employee_id|to_trim|required',
 				'payment_mode|to_trim|required',
 				'amount|to_trim|required',
+				'invoice_id|to_trim|required',
 			]);
 	}
 
@@ -78,7 +82,8 @@ class Model_PaymentTransaction extends \xepan\base\Model_Table{
 		}
 	}
 
-	function afterSave(){
+	function paymentReceived(){
+
 		if($this['payment_mode'] === "Cash"){
 			// Do accounts entry for this customer
 			$entry_template =$this->add('xepan\accounts\Model_EntryTemplate')->loadBy('unique_trnasaction_template_code','PARTYCASHRECEIVED');
@@ -119,6 +124,31 @@ class Model_PaymentTransaction extends \xepan\base\Model_Table{
 					]
 				]
 			);
+
+			// lodgement here
+			if($this['amount'] >= $this['invoice_net_amount']){
+
+				$transaction = $this->add('xepan\accounts\Model_Transaction')
+								->addCondition('related_type','xavoc\ispmanager\Model_PaymentTransaction')
+								->addCondition('related_id',$this->id)
+								->setOrder('id','desc')
+								->tryLoadAny()
+								;
+
+				$output = $this->add('xepan\commerce\Model_Lodgement')
+						->doLodgement(
+										[$this['invoice_id']],
+										$transaction->id,
+										$this['invoice_net_amount'],
+										$this->app->epan->default_currency->id,
+										1,
+										"SalesInvoice"
+									);
+				if($output[$this['invoice_id']]['status'] == "success"){
+					$this->ref('invoice_id')->paid();
+				}
+			}
+
 		}
 	}
 

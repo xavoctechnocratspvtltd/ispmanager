@@ -22,7 +22,30 @@ class page_configuration extends \xepan\base\Page {
 		$tab->addTabURL('./caf_layout','CAF Layout');
 		$tab->addTabURL('xepan_marketing_leadsource','Lead source');
 		$tab->addTabURL('./refund','Refundable Nominal Accounts');
+		$tab->addTabURL('./disclaimer','Customer Disclaimer');
 		
+	}
+
+	function page_disclaimer(){
+		$config = $this->add('xepan\base\Model_ConfigJsonModel',
+			[
+				'fields'=>[
+							'disclaimer_for_customer'=>'xepan\base\RichText',
+						],
+					'config_key'=>'ISPMANAGER_Refundable_Nominal_Accounts',
+					'application'=>'ispmanager'
+			]);
+		$config->add('xepan\hr\Controller_ACL');
+		$config->tryLoadAny();
+
+		$form = $this->add('Form');
+		$form->setModel($config);
+		$form->addSubmit('save')->addClass('btn btn-primary');
+		
+		if($form->isSubmitted()){
+			$form->save();
+			$form->js(null,$form->js()->reload())->univ()->successMessage('Saved Successfully')->execute();
+		}	
 	}
 
 	function page_refund(){

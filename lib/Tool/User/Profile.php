@@ -36,13 +36,13 @@ class Tool_User_Profile extends \xepan\cms\View_Tool{
 		// $account_tab = $tabs->addTab('My Account');
 
 		$c = $profile_tab->add('Columns')->addClass('row');
-		$logo_c = $c->addColumn(4)->addClass('col-md-3');
-		$detail_c = $c->addColumn(8)->addClass('col-md-8');
+		$logo_c = $c->addColumn(5)->addClass('col-md-5');
+		$detail_c = $c->addColumn(7)->addClass('col-md-7');
 
 		$dp_view = $logo_c->add('View')->setElement('img')->setAttr(['src'=>$user['image'],'width'=>'100','height'=>'100'])->addClass(' avatar img-circle');
+		$logo_c->add('View')->setElement('h3')->set('Update Your Profile Picture');
 		$dp_form= $logo_c->add('Form',null,null,['form/empty']);
 		$dp_form->addField('Upload','myfile_id')->setModel('xepan/filestore/Image');
-
 		// $dp_form->setLayout(['form/user-profile','logo_wrapper']);
 		// $dp_form->setModel($user,['image_id']);
 		$dp_form->addSubmit('Update Profile Picture')->addClass('btn btn-success');

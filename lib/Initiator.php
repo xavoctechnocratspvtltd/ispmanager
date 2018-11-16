@@ -284,6 +284,11 @@ class Initiator extends \Controller_Addon {
                         'url'=>'xavoc_ispmanager_invoicecorrection'
                     ],
                     [
+                        'name'=>'General Notification',
+                        'icon'=>'fa fa-bell',
+                        'url'=>'xavoc_ispmanager_notification'
+                    ],
+                    [
                         'name'=>'Debug RADIUS',
                         'icon'=>'fa fa-users',
                         'url'=>'xavoc_ispmanager_debug'

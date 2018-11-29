@@ -171,7 +171,7 @@ class page_user extends \xepan\base\Page {
 		$crud->grid->removeColumn('last_logout');
 
 		$crud->grid->addPaginator($ipp=10);
-		$filter_form = $crud->grid->addQuickSearch(['name','radius_username','plan']);
+		$filter_form = $crud->grid->addQuickSearch(['name','radius_username','plan','contacts_str','emails_str']);
 		$crud->grid->addSno();
 
 		if($crud->isEditing()){

@@ -3,6 +3,7 @@ delimiter |
 CREATE EVENT e_daily
     ON SCHEDULE
       EVERY 1 DAY
+      STARTS (TIMESTAMP(CURRENT_DATE) + INTERVAL 1 DAY + INTERVAL 0 HOUR)
     COMMENT 'Saves total number of sessions then clears the table each day'
     DO
       BEGIN

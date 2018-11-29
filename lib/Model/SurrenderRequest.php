@@ -27,7 +27,7 @@ class Model_SurrenderRequest extends \xepan\base\Model_Table{
 		$this->addField('device_collection_availibility')->display(['form'=>'DateTimePicker'])->type('datetime');
 		$this->addField('narration')->type('text');
 		$this->addField('status')->enum($this->status)->defaultValue('SurrenderRequest');
-		$this->addField('created_at')->type('datetime')->display(['form'=>'DateTimePicker'])->defaultValue($this->app->now);
+		$this->addField('created_at')->type('datetime')->display(['form'=>'DateTimePicker'])->defaultValue($this->app->now)->sortable(true);
 		$this->addField('device_collected_at')->type('datetime')->display(['form'=>'DateTimePicker'])->system(true);
 		$this->addField('surrender_at')->type('datetime')->display(['form'=>'DateTimePicker'])->system(true);
 		$this->addField('device_collection_data')->type('text')->system(true);

@@ -10,6 +10,7 @@ class page_surrenderrequest extends \xepan\base\Page {
 		parent::init();
 
 		$sr_model = $this->add('xavoc\ispmanager\Model_SurrenderRequest');
+		$sr_model->setOrder('created_at','desc');
 		$crud = $this->add('xepan\hr\CRUD',['status_color'=>$sr_model->status_color]);
 
 		$crud->setModel($sr_model,['contact_id','assign_to_id','created_at','device_collection_availibility','narration'],['contact','assign_to','created_at','device_collection_availibility','duration_in_month','narration','status']);
@@ -17,6 +18,7 @@ class page_surrenderrequest extends \xepan\base\Page {
 		$crud->grid->addFormatter('narration','Wrap');
 		$crud->grid->removeAttachment();
 		$crud->grid->removeColumn('status');
+		$crud->grid->addPaginator(15);
 
 	}
 }

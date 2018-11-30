@@ -27,6 +27,7 @@ class page_report extends \xepan\base\Page {
 		$from_date = $this->app->stickyGET('ip_from_date')?:0;
 		$to_date = $this->app->stickyGET('ip_to_date')?:0;
 		$username = $this->app->stickyGET('ip_username')?:0;
+		$ip = $this->app->stickyGET('ip_ip')?:0;
 
 		$form = $this->add('Form');
 		$form->add('xepan\base\Controller_FLC')
@@ -36,11 +37,17 @@ class page_report extends \xepan\base\Page {
 					'from_date'=>'Filter~c1~2',
 					'to_date'=>'c2~2',
 					'username'=>'c3~2',
+					'ip~IP Address'=>'c4~2',
 					'FormButtons~&nbsp;'=>'c6~2'
 				]);
-		$form->addField('DateTimePicker','from_date');
-		$form->addField('DateTimePicker','to_date');
+		$field_from_date = $form->addField('DateTimePicker','from_date');
+		$field_to_date = $form->addField('DateTimePicker','to_date');
+
+		if(!$from_date) $field_from_date->set($this->app->now);
+		if(!$to_date) $field_to_date->set($this->app->now);
+
 		$form->addField('username');
+		$form->addField('ip');
 		$form->addSubmit('Filter');
 
 		$rad_model = $this->add('xavoc\ispmanager\Model_RadAcct');
@@ -52,7 +59,11 @@ class page_report extends \xepan\base\Page {
 				$rad_model->addCondition([['acctstarttime','<=',$to_date],['acctupdatetime',$to_date]]);
 			}
 			if($username)
-				$rad_model->addCondition('username',$username);
+				$rad_model->addCondition('username','like','%'.$username.'%');
+			if($ip){
+				$rad_model->addCondition('framedipaddress','like','%'.$ip.'%');
+			}
+
 		}
 		$rad_model->getElement('callingstationid')->caption('MAC ID');
 		$rad_model->setOrder('acctsessionid','desc');
@@ -63,9 +74,10 @@ class page_report extends \xepan\base\Page {
 		if($form->isSubmitted()){
 			$form->js(null,$grid->js()->reload([
 					'ip_filter'=>1,
-					'ip_from_date'=>$form['from_date'],
-					'ip_to_date'=>$form['to_date'],
-					'ip_username'=>$form['username']
+					'ip_from_date'=>$form['from_date']?:0,
+					'ip_to_date'=>$form['to_date']?:0,
+					'ip_username'=>$form['username']?:0,
+					'ip_ip'=>$form['ip']?:0
 				]))->execute();
 		}
 

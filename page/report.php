@@ -18,6 +18,56 @@ class page_report extends \xepan\base\Page {
 		$tab->addTabUrl('xepan_commerce_reports_gst','GST');
 		$tab->addTabUrl('xepan_commerce_reports_itemsalereport','Item Sales Report');
 		$tab->addTabUrl('./unclosedsession','Unclosed Session Users');
+		$tab->addTabUrl('./ipsearch','IP Search');
+
+	}
+
+	function page_ipsearch(){
+		$filter = $this->app->stickyGET('ip_filter')?:0;
+		$from_date = $this->app->stickyGET('ip_from_date')?:0;
+		$to_date = $this->app->stickyGET('ip_to_date')?:0;
+		$username = $this->app->stickyGET('ip_username')?:0;
+
+		$form = $this->add('Form');
+		$form->add('xepan\base\Controller_FLC')
+			->showLables(true)
+			->makePanelsCoppalsible(true)
+			->layout([
+					'from_date'=>'Filter~c1~2',
+					'to_date'=>'c2~2',
+					'username'=>'c3~2',
+					'FormButtons~&nbsp;'=>'c6~2'
+				]);
+		$form->addField('DateTimePicker','from_date');
+		$form->addField('DateTimePicker','to_date');
+		$form->addField('username');
+		$form->addSubmit('Filter');
+
+		$rad_model = $this->add('xavoc\ispmanager\Model_RadAcct');
+
+		if($filter){
+			if($from_date)
+				$rad_model->addCondition('acctstarttime','>=',$from_date);
+			if($to_date){
+				$rad_model->addCondition([['acctstarttime','<=',$to_date],['acctupdatetime',$to_date]]);
+			}
+			if($username)
+				$rad_model->addCondition('username',$username);
+		}
+		$rad_model->getElement('callingstationid')->caption('MAC ID');
+		$rad_model->setOrder('acctsessionid','desc');
+		$grid = $this->add('Grid');
+		$grid->setModel($rad_model,['username','nasipaddress','framedipaddress','acctstarttime','acctupdatetime','acctstoptime','acctinterval','callingstationid']);
+		$grid->addPaginator(50);
+		$grid->add('misc\Export');
+		if($form->isSubmitted()){
+			$form->js(null,$grid->js()->reload([
+					'ip_filter'=>1,
+					'ip_from_date'=>$form['from_date'],
+					'ip_to_date'=>$form['to_date'],
+					'ip_username'=>$form['username']
+				]))->execute();
+		}
 
 	}
 

@@ -66,7 +66,7 @@ class page_report extends \xepan\base\Page {
 
 		}
 		$rad_model->getElement('callingstationid')->caption('MAC ID');
-		$rad_model->setOrder('acctsessionid','desc');
+		$rad_model->setOrder('acctstarttime','desc');
 		$grid = $this->add('Grid');
 		$grid->setModel($rad_model,['username','nasipaddress','framedipaddress','acctstarttime','acctupdatetime','acctstoptime','acctinterval','callingstationid']);
 		$grid->addPaginator(50);

@@ -57,7 +57,7 @@ class Model_PaymentTransaction extends \xepan\base\Model_Table{
 				'employee_id|to_trim|required',
 				'payment_mode|to_trim|required',
 				'amount|to_trim|required',
-				'invoice_id|to_trim|required',
+				// 'invoice_id|to_trim|required',
 			]);
 	}
 

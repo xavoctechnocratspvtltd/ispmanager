@@ -50,7 +50,7 @@ class Model_PaymentTransaction extends \xepan\base\Model_Table{
 
 		$this->add('xepan\base\Controller_AuditLog');
 		$this->addHook('beforeSave',$this);
-		$this->addHook('afterSave',[$this,'paymentReceived']);
+		// $this->addHook('afterSave',[$this,'paymentReceived']);
 
 		$this->is([
 				'contact_id|to_trim|required',

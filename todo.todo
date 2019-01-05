@@ -158,3 +158,19 @@ Plan with branch id:
 Invoice page pe user expired status
 Payment collection executer
 invoice date filter
+
+
+// invoice date
+
+1. general notification with plan wise
+2. customer panel offer system.
+3. show only invoice of due and submitted
+
+
+
+payment collection add new action for approval/received 
+customer panel add only emai or mobile no.
+old invoice/order/quotation layout removed from createorder/createinvoice
+payment collection edit correction or apply validation amount must not be less then invoice amount
+add spot for customer remaining a amount on it
+

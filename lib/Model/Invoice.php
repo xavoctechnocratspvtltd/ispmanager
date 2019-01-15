@@ -48,6 +48,7 @@ class Model_Invoice extends \xepan\commerce\Model_SalesInvoice{
 		$plan = $this->add('xavoc\ispmanager\Model_Plan')
 					->addCondition('is_topup',false)
 					->addCondition('id',$items_ids)->tryLoadAny();
+
 		if($plan->loaded()){
 			$oi = $this->Items()->tryLoadBy('item_id',$plan->id);
 			$cm = $user->getLastCondition();
@@ -80,7 +81,6 @@ class Model_Invoice extends \xepan\commerce\Model_SalesInvoice{
 			
 			$col = $page->add('Columns');
 			$col2 = $col->addColumn(12)->addClass('text-center');
-
 			$form = $col2->add('Form');
 			$form->addField('checkbox','update_condition')->set(true);
 			$form->addSubmit('approve invoice now')->addClass('btn btn-primary');
@@ -91,7 +91,17 @@ class Model_Invoice extends \xepan\commerce\Model_SalesInvoice{
 
 				$this->app->page_action_result = $form->js()->univ()->closeDialog();
 			}
+		}else{
+			$form = $page->add('Form')->addClass('text-center');
+			$form->addSubmit('approve invoice now')->addClass('btn btn-primary');
+			if($form->isSubmitted()){
+				$this->app->isp_invoice_approved_function_not_run = 1;
+				$this->approve();
+				$this->app->page_action_result = $form->js()->univ()->closeDialog();
+			}
 		}	
+
+			
 
 	} 
 

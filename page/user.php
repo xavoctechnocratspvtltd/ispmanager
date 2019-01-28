@@ -101,6 +101,7 @@ class page_user extends \xepan\base\Page {
 		} 
 
 		$model->add('xepan\base\Controller_SideBarStatusFilter',['add_status_to_sidebar'=>['Active','InActive','InDemo']]);
+		
 
 		$model->is([
 				'radius_username|to_trim|required',

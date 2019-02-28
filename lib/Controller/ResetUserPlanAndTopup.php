@@ -18,7 +18,8 @@ class Controller_ResetUserPlanAndTopup extends \AbstractController {
 		$upt_model->addCondition('reset_date_only',$date);
 
 		if($test_user) $upt_model->addCondition('user_id',$test_user->id);
-
+		
+		
 		foreach ($upt_model as $key => $model) {
 			try{
 
@@ -34,6 +35,7 @@ class Controller_ResetUserPlanAndTopup extends \AbstractController {
 									<th>Session Upload Data</th>
 									<th>Reset Session Down Data</th>
 									<th>Reset Session Upload Data</th>
+									<th>Carry Data</th>
 								</tr>";
 
 					$echo_html .= "<tr><td>Old</td>
@@ -43,6 +45,7 @@ class Controller_ResetUserPlanAndTopup extends \AbstractController {
 									"<td>".$model['session_upload_data_consumed']."</td>".
 									"<td>".$model['session_download_data_consumed_on_reset']."</td>".
 									"<td>".$model['session_upload_data_consumed_on_reset']."</td>".
+									"<td>".$model['carry_data']."</td>".
 								"</tr>";
 				}
 
@@ -51,11 +54,31 @@ class Controller_ResetUserPlanAndTopup extends \AbstractController {
 				// IF TODAY IS RESET DATE
 				// if($model['reset_date'] && strtotime($model['reset_date']) == strtotime($date)){
 					//IF DATA IS CARRY FORWARD THEN UPDATE THE DATA LIMIT = (PLAN DATA LIMIT + REMAINING DATA LIMIT OF LAST PERIOD)
-				if($model['is_data_carry_forward'] == 'once'){
-					$model['carry_data'] = ($model['data_limit'] - $model['data_consumed'])>0?$model['data_limit'] - $model['data_consumed']:0;
+				if($debug){
+					echo "<br/> Old Carry Data = ".$model['carry_data'];
+				} 
+
+				if($model['is_data_carry_forward'] == "once"){
+					if($debug){
+						echo " <br/>data_limit ".$model['data_limit']."  data_consumed = ".$model['data_consumed'];
+					}
+
+					$data_limit = $this->app->human2byte($model['data_limit']);
+					$data_consumed = $this->app->human2byte($model['data_consumed']);
+					$model['carry_data'] = ($data_limit - $data_consumed)>0?($data_limit - $data_consumed):0;
+					
 				}elseif($model['is_data_carry_forward'] == "allways"){
-					$model['carry_data'] = ($model['net_data_limit'] - $model['data_consumed'])>0?($model['net_data_limit'] - $model['data_consumed']):0;
+					if($debug){
+						echo "<br/> net_data_limit ".$model['net_data_limit']."  data_consumed = ".$model['data_consumed'];
+					}
+
+					$net_data_limit = $this->app->human2byte($model['net_data_limit']);
+					$data_consumed = $this->app->human2byte($model['data_consumed']);
+
+					$model['carry_data'] = ($net_data_limit - $data_consumed)>0?($net_data_limit - $data_consumed):0;
 				}
+
+				if($debug) echo "<br/> Updated Carry Data = ".$this->app->byte2human($model['carry_data']);
 
 				// RESET TO ZERO OF download_data_consumed AND UPLOAD_data_consumed
 				// temporary commented
@@ -98,6 +121,7 @@ class Controller_ResetUserPlanAndTopup extends \AbstractController {
 									"<td>".$rmodel['session_upload_data_consumed']."</td>".
 									"<td>".$rmodel['session_download_data_consumed_on_reset']."</td>".
 									"<td>".$rmodel['session_upload_data_consumed_on_reset']."</td>".
+									"<td>".$rmodel['carry_data']."</td>".
 									"</tr>";
 					$echo_html .= "</table>";
 					

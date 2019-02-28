@@ -124,6 +124,7 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 					'fup_upload_limit',
 					'data_consumed',
 					'net_data_limit',
+					'carry_data',
 					'download_data_consumed',
 					'upload_data_consumed',
 					'session_download_data_consumed',

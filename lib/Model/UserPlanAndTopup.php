@@ -188,6 +188,7 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 
 
 	function resetData($include_reset_date=false){
+		
 		if(!$this->loaded()){
 			throw new \Exception("user plan condition must be loaded");
 		}
@@ -196,11 +197,16 @@ class Model_UserPlanAndTopup extends \xepan\base\Model_Table{
 		}
 
 		if($this['is_data_carry_forward'] == 'once'){
-			$this['carry_data'] = ($this['data_limit'] - $this['data_consumed'])>0?$this['data_limit'] - $this['data_consumed']:0;
-		}elseif($this['is_data_carry_forward'] == "allways"){
-			$this['carry_data'] = ($this['net_data_limit'] - $this['data_consumed'])>0?($this['net_data_limit'] - $this['data_consumed']):0;
-		}
+			$data_limit = $this->app->human2byte($this['data_limit']);
+			$data_consumed = $this->app->human2byte($this['data_consumed']);
+			$this['carry_data'] = ($data_limit - $data_consumed)>0?($data_limit - $data_consumed):0;
 
+		}elseif($this['is_data_carry_forward'] == "allways"){
+			$net_data_limit = $this->app->human2byte($this['net_data_limit']);
+			$data_consumed = $this->app->human2byte($this['data_consumed']);
+			$this['carry_data'] = ($net_data_limit - $data_consumed)>0?($net_data_limit - $data_consumed):0;
+		}
+		
 		$this['download_data_consumed'] = 0;
 		$this['upload_data_consumed'] = 0;
 		$this['session_download_data_consumed_on_reset'] = $this['session_download_data_consumed'];

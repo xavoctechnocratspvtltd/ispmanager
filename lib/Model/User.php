@@ -1649,6 +1649,8 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	// }
 
 	function import($data){
+		$this->app->skip_audit_log = true;
+		
 		// get all plan list
 		$plan_list = [];
 		// if($this->app->recall('isp_user_import_plan',false) == false){
@@ -1689,6 +1691,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		// die();
 		
 		try{
+
 			$this->api->db->beginTransaction();
 			$imported_user_count = 1;
 			foreach ($data as $key => $record) {
@@ -1908,7 +1911,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 	// invoicePaid functionality shifted to invoiceApproved
 	function invoiceApproved($app,$invoice_model){
 
-		if($this->app->isp_invoice_approved_function_not_run){
+		if(@$this->app->isp_invoice_approved_function_not_run){
 			return;
 		}
 

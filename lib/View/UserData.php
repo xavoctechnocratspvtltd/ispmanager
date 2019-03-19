@@ -222,22 +222,24 @@ class View_UserData extends \View {
 
 		// session uses
 		$this->add('View')->setElement('h3')->set('Session Uses');
-		$radacct = $this->add('xavoc\ispmanager\Model_RadAcct');
-		$radacct->addCondition('username',$this->isp_user_model['radius_username']);
-		$radacct->setOrder('radacctid','desc');
-		$radacct->add('xavoc\ispmanager\Controller_HumanByte')
-			->handleFields([
-				'acctinputoctets',
-				'acctoutputoctets'
-			]);
-		$radacct->getElement('acctoutputoctets')->caption('Download Data');
-		$radacct->getElement('acctinputoctets')->caption('Upload Data');
-		$radacct->getElement('acctstarttime')->caption('Start Time');
-		$radacct->getElement('acctstoptime')->caption('Stop Time');
-		$radacct->getElement('acctupdatetime')->caption('Last Update Time');
-		$grid = $this->add('Grid');
-		$grid->setModel($radacct,['acctstarttime','acctstoptime','acctupdatetime','acctinputoctets','acctoutputoctets','framedipaddress']);
-		$grid->addPaginator(5);
-		$grid->template->tryDel('quick_search_wrapper');
+		// $radacct = $this->add('xavoc\ispmanager\Model_RadAcct');
+		// $radacct->addCondition('username',$this->isp_user_model['radius_username']);
+		// $radacct->setOrder('radacctid','desc');
+		// $radacct->add('xavoc\ispmanager\Controller_HumanByte')
+		// 	->handleFields([
+		// 		'acctinputoctets',
+		// 		'acctoutputoctets'
+		// 	]);
+		// $radacct->getElement('acctoutputoctets')->caption('Download Data');
+		// $radacct->getElement('acctinputoctets')->caption('Upload Data');
+		// $radacct->getElement('acctstarttime')->caption('Start Time');
+		// $radacct->getElement('acctstoptime')->caption('Stop Time');
+		// $radacct->getElement('acctupdatetime')->caption('Last Update Time');
+		// $grid = $this->add('Grid');
+		// $grid->setModel($radacct,['acctstarttime','acctstoptime','acctupdatetime','acctinputoctets','acctoutputoctets','framedipaddress']);
+		// $grid->addPaginator(5);
+		// $grid->template->tryDel('quick_search_wrapper');
+
+		$this->add('xavoc\ispmanager\View_UserDataConsumption',['username'=>$this->isp_user_model['radius_username']]);
 	}
 }

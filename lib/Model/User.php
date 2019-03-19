@@ -1975,9 +1975,9 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$upt = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup');
 		$upt->addCondition('user_id',$this->id);
 		$upt->addCondition('is_expired',false);
+		$upt->addCondition('is_topup',false);
 		$upt->setOrder('id','desc');
-		$upt->setOrder('is_topup',false);
-		$upt->tryLoadAny();
+		$upt->setLimit(1);
 
 		return $upt->ref('plan_id');
 	}

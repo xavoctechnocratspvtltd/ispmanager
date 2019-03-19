@@ -841,7 +841,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			$u_p->addCondition('user_id',$this->id)
 				->addCondition('plan_id',$plan_model->id)
 				->addCondition('condition_id',$condition['id'])
-				// ->addCondition('is_expired',false)
+				->addCondition([['is_expired',false],['is_expired',null]])
 				;
 
 			if($is_same_plan_continued){

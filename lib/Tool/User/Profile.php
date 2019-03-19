@@ -42,7 +42,7 @@ class Tool_User_Profile extends \xepan\cms\View_Tool{
 		$dp_view = $logo_c->add('View')->setElement('img')->setAttr(['src'=>$user['image'],'width'=>'100','height'=>'100'])->addClass(' avatar img-circle');
 		$logo_c->add('View')->setElement('h3')->set('Update Your Profile Picture');
 		$dp_form= $logo_c->add('Form',null,null,['form/empty']);
-		$dp_form->addField('Upload','myfile_id')->setModel('xepan/filestore/Image');
+		$dp_form->addField('xepan\base\Upload','myfile_id')->setModel('xepan/filestore/Image');
 		// $dp_form->setLayout(['form/user-profile','logo_wrapper']);
 		// $dp_form->setModel($user,['image_id']);
 		$dp_form->addSubmit('Update Profile Picture')->addClass('btn btn-success');
@@ -157,8 +157,8 @@ class Tool_User_Profile extends \xepan\cms\View_Tool{
 		// 	$form->js(null,$form->js()->reload())->univ()->successMessage('Profile Updated')->execute();
 		// }
 
-		$base_user = $this->add('xepan\base\Model_User')->load($this->api->auth->model->id);
-		$this->api->auth->addEncryptionHook($base_user);
+		// $base_user = $this->add('xepan\base\Model_User')->load($this->api->auth->model->id);
+		// $this->api->auth->addEncryptionHook($base_user);
 		
 		// $change_pass_form = $pass_tab->add('Form');
 		// $change_pass_form->setLayout(['form/change-password']);

@@ -62,11 +62,15 @@ class Tool_HotspotLogin extends \xepan\cms\View_Tool{
 
 		if($this->options['registration_page']){
 			$form->layout->template->trySet('registration_url',$this->app->url($this->options['registration_page']));
+		}else{
+			$form->layout->template->tryDel('new_registration_wrapper');
 		}
 
 		if($this->options['forgot_password_page']){
 			$form->layout->template->trySet('forgot_password_url',$this->app->url($this->options['forgot_password_page']));
-		}			
+		}else{
+			$form->layout->template->tryDel('forgot_password_wrapper');
+		}
 
 
 		if($form->isSubmitted()){

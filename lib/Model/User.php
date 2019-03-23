@@ -911,7 +911,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			}else{
 				$u_p['expire_date'] = $u_p['is_topup']? $end_date : date("Y-m-d H:i:s", strtotime("+".($this['grace_period_in_days']?:0)." days",strtotime($end_date)));
 			}
-			$u_p['is_recurring'] = $plan_model['is_auto_renew'];
+			$u_p['is_recurring'] = $plan_model['is_renewable'];
 			$u_p['reset_date'] = $reset_date;
 			$u_p['is_expired'] = false;
 			

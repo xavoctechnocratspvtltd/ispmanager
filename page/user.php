@@ -6,7 +6,8 @@ class page_user extends \xepan\base\Page {
 	
 	public $title ="User";
 	public $datastatus = true;
-
+	public $model_class = null;
+	public $paginator = 5;
 	function page_index(){
 		// parent::init();
 
@@ -18,6 +19,9 @@ class page_user extends \xepan\base\Page {
 			
 		
 		$model = $this->add('xavoc\ispmanager\Model_UserData');
+		if($this->model_class)
+			$model = $this->add($this->model_class);
+
 		$model->getElement('country_id')->getModel('status','Active');
 		$model->getElement('state_id')->getModel('status','Active');
 		// return net_data_limit, data_consumed
@@ -96,7 +100,7 @@ class page_user extends \xepan\base\Page {
 			$model->addCondition('status',['Active','InActive']);
 		}
 
-		if($hide_datastatus){
+		if($hide_datastatus && !$this->model_class){
 			$model->getElement('radius_login_response')->destroy();
 		} 
 
@@ -175,7 +179,7 @@ class page_user extends \xepan\base\Page {
 		$crud->grid->removeColumn('country');
 		$crud->grid->removeColumn('last_logout');
 
-		$crud->grid->addPaginator($ipp=10);
+		$crud->grid->addPaginator($this->paginator);
 		$filter_form = $crud->grid->addQuickSearch(['name','radius_username','plan','contacts_str','emails_str']);
 		$crud->grid->addSno();
 

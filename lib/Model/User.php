@@ -65,7 +65,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 		$user_j->addField('connection_type')->enum($this->add('xavoc\ispmanager\Model_Config_Mendatory')->getConnctionTypes());
 		$user_j->addField('surrender_applied_on')->type('date');
-
+		$user_j->addField('is_hotspotuser')->type('boolean')->defaultValue(0);
 		$user_j->hasMany('xavoc\ispmanager\UserPlanAndTopup','user_id',null,'PlanConditions');
 		$user_j->hasMany('xavoc\ispmanager\Condition','user_id',null,'ActualConditions');
 		$user_j->hasMany('xepan\hr\Employee_Document','customer_id',null,'CustomerDocuments');
@@ -2276,7 +2276,6 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			if(@$this->app->reset_same_plan_again_on_date){
 				$on_date = $this->app->reset_same_plan_again_on_date;
 			}
-
 				 //setPlan($plan, $on_date=null, $remove_old=false,$is_topup=false,$remove_old_topups=false,$expire_all_plan=false,$expire_all_topup=false,$work_on_pro_data=true,$as_grace = true,$force_plan_end_date=null,$force_set_plan=false)
 			$this->setPlan($plan_id,$on_date,null,null,null,$expire_all_plan=true,null,null,$as_grace=false,null,$force_set_plan=true);
 		}

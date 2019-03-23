@@ -793,7 +793,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 				if($remove_old)
 					$update_query = "DELETE FROM  isp_user_plan_and_topup WHERE user_id = '".$this->id."' AND is_topup = '0'";
 				else
-					$update_query = "UPDATE isp_user_plan_and_topup SET is_expired = '1' WHERE user_id = '".$this->id."' AND is_topup = '0'";
+					$update_query = "UPDATE isp_user_plan_and_topup SET is_expired = '1', is_effective = '0' WHERE user_id = '".$this->id."' AND is_topup = '0'";
 				
 				$this->app->db->dsql()->expr($update_query)->execute();
 			}
@@ -820,7 +820,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			$old_p = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup');
 			$old_p->addCondition('user_id',$this->id);
 			$old_p->addCondition('is_topup',false);
-			$old_p->_dsql()->set('is_expired',1)->update();
+			$old_p->_dsql()->set('is_expired',1)->set('is_effective',0)->update();
 		}
 
 		if($expire_all_topup){

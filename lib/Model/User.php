@@ -810,9 +810,9 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 		$is_same_plan_continued = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup')
 									->addCondition('user_id',$this->id)
+									->addCondition('is_topup',false)
 									->setOrder('id','desc')
 									->setLimit(1)
-									->addCondition('is_topup',false)
 									->tryLoadAny()->get('plan_id') == $plan_model->id;
 
 		// as per logic.jade if force set plan then update it's start date in a new condition

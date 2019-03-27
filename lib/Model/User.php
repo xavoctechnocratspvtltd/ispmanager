@@ -252,11 +252,11 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$this->setPlan($this['plan_id'],$on_date, $remove_old=false,$is_topup=false,$remove_old_topups=false,$expire_all_plan,$expire_all_topup,null,$as_grace,$force_plan_end_date);
 	}
 
-	function createInvoice($m,$detail_data=null,$false_condition=false,$master_created_at=null,$force_create=false){
+	function createInvoice($m,$detail_data=null,$false_condition=false,$master_created_at=null,$force_create=false,$status="Draft"){
 		// if(!$false_condition)
 		if(!$this['create_invoice'] AND !$force_create) return;
 		
-		$invoice_data = $this->createQSP($m,$detail_data,'SalesInvoice',null,$master_created_at);
+		$invoice_data = $this->createQSP($m,$detail_data,'SalesInvoice',null,$master_created_at,$status);
 		$channel = $this->add('xepan\base\Model_Contact');
 		if($channel->loadLoggedIn('Channel')){
 			$asso = $this->add('xavoc\ispmanager\Model_Channel_Association');
@@ -288,7 +288,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		return $invoice_data;
 	}
 
-	function createQSP($m,$detail_data=[],$qsp_type="SalesInvoice",$plan_id=null,$master_created_at=null){
+	function createQSP($m,$detail_data=[],$qsp_type="SalesInvoice",$plan_id=null,$master_created_at=null,$status="Draft"){
 		if(is_array($m)) $detail_data = $m;
 
 		if(!$this->loaded()) throw new \Exception("model radius user must loaded");
@@ -354,7 +354,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$master_data['exchange_rate'] = 1;
 		$master_data['tnc_id'] = $this->add('xepan\commerce\Model_TNC')->addCondition('is_default_for_sale_invoice',true)->tryLoadAny()->id;
 		$master_data['nominal_id'] = $this->add('xepan\accounts\Model_Ledger')->load('Sales Account')->get('id');
-		
+		$master_data['status'] = $status;
 		if(!count($detail_data)){
 			$detail_data = [];
 			if($plan_id > 0)

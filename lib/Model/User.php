@@ -769,6 +769,10 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		return true;
 	}
 
+	// how set plan works
+	// if same plan applied AND last cindition is same plan condition then it only update the start and end date on same alst condition and set is_expired false
+	// if last user last condition is not the plan conditon then it create a new entry and work accordingly
+
 	function setPlan($plan, $on_date=null, $remove_old=false,$is_topup=false,$remove_old_topups=false,$expire_all_plan=false,$expire_all_topup=false,$work_on_pro_data=true,$as_grace = true,$force_plan_end_date=null,$force_set_plan=false,$set_reset_date=true){
 		
 		if(!$on_date) $on_date = isset($this->app->isptoday)? $this->app->isptoday : $this->app->today;
@@ -841,9 +845,10 @@ class Model_User extends \xepan\commerce\Model_Customer{
 			$u_p->addCondition('user_id',$this->id)
 				->addCondition('plan_id',$plan_model->id)
 				->addCondition('condition_id',$condition['id'])
-				->addCondition([['is_expired',false],['is_expired',null]])
+				// ->addCondition([['is_expired',false],['is_expired',null]])
 				;
-
+			$u_p->setOrder('id','desc');
+			$u_p->setLimit(1);
 			if($is_same_plan_continued){
 				$u_p->tryLoadAny();
 			}

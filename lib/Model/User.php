@@ -1914,13 +1914,14 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 	// online invoice paid check / then associated plan with it
 	// invoicePaid functionality shifted to invoiceApproved
+	// this function is not run at first time of user creation or even active_and_change_plan 
 	function invoiceApproved($app,$invoice_model){
 
 		if(@$this->app->isp_invoice_approved_function_not_run){
 			return;
 		}
 
-		$customer = $this->add('xavoc\ispmanager\Model_User');
+		$user = $customer = $this->add('xavoc\ispmanager\Model_User');
 		$customer->addCondition('id',$invoice_model['contact_id']);
 		$customer->tryLoadAny();
 
@@ -1928,9 +1929,9 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 		// // $user->addCondition('customer_id',$customer->id)->tryLoadAny();
 		// // throw new \Exception($user->id);
-		
-		$user = $this->add('xavoc\ispmanager\Model_User');
-		$user->loadBy('radius_username',$customer['radius_username']);
+		// why loading two time same model 
+		// $user = $this->add('xavoc\ispmanager\Model_User');
+		// $user->loadBy('radius_username',$customer['radius_username']);
 		
 		$items = $invoice_model->Items()->getRows();
 		$items_ids = array_column($items, 'item_id');
@@ -2291,12 +2292,16 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$this->save();
 
 		// $this->updateUserConditon();
+		$this->app->isp_invoice_approved_function_not_run = 1;
 		$return_data = $this->createInvoice($this,null,null,$this->app->now);
 
 		if(isset($return_data['master_detail'])){
 			$invoice_model = $this->add('xepan\commerce\Model_SalesInvoice')
 					->load($return_data['master_detail']['id']);
 			// as per logic.jade it is due in status here by default
+			// not need of config, that is invoice default status
+			// if we set it to due that end date increase twise the plan validity
+			// invoive approved hoook not run in caf form even inovice is create
 			$invoice_model['status'] = 'Due';
 			$invoice_model->save();
 		}

@@ -314,11 +314,9 @@ class Form_CAF extends \Form{
 				//consumption entry
 				if($this->manage_consumption == true){
 					
-					if(!$this->session_item->count() AND !$this->consumed_stock->count()){
+					if(!$this->session_item->count() AND !($this->consumed_stock && $this->consumed_stock->count())){
 						$this->js()->univ()->errorMessage('please add consumption items')->execute();
 					}
-					
-					throw new \Exception("Error Processing Request");
 					
 					$warehouse = $this->add('xepan\commerce\Model_Store_Warehouse');
 					$transaction = $warehouse->newTransaction(null,null,$this->app->employee->id,'Issue',null,$this->model->id,"Issue to customer ".$this->model['name'],null,'Received',$this->app->now);

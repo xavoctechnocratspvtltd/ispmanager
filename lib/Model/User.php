@@ -2223,6 +2223,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 			$invoice_data = $this->active_and_change_plan();
 			
+			// add extra invoice item like installation charge or etc afte invoice is created
 			if($form->allow_invoice && $form->invoice_items->count() && $form['create_invoice']){
 				$master_model = $invoice_data['master_model'];
 				$temp = [];

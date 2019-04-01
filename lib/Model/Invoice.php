@@ -32,6 +32,15 @@ class Model_Invoice extends \xepan\commerce\Model_SalesInvoice{
 					$this->getElement('status')
 				]);
 		});
+		
+		$this->addExpression('user_plan_expire_date')->set(function($m,$q){
+			$condition_model = $m->add('xavoc\ispmanager\Model_UserPlanAndTopup');
+			$condition_model->addCondition('user_id',$m->getElement('contact_id'));
+			$condition_model->addCondition('is_effective',true);
+			$condition_model->setOrder('id','desc');
+			$condition_model->setLimit(1);
+			return $q->expr('IFNULL([0],"-")',[$condition_model->fieldQuery('expire_date')]);
+		});
 	}
 
 	function page_approve($page){

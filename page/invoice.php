@@ -5,7 +5,7 @@
 
 	public $title='Invoices';
 	public $invoice_model = "xavoc\ispmanager\Model_Invoice";
-
+	public $export_fields = ['serial','document_no','status','organization_name','contact_name','created_at','created_by','net_amount','narration','currency','branch','user_plan_expire_date'];
 	function init(){
 		parent::init();
 
@@ -15,6 +15,7 @@
 		$model->addExpression('city')->set(function($m,$q){
 			return $q->expr('[0]',[$m->refSQL('contact_id')->fieldQuery('city')]);
 		});
+
 		$model->setOrder('created_at','desc');
 		
 		$data = $this->app->db->dsql()->expr('SELECT DISTINCT(city) AS city FROM contact')->get();

@@ -14,6 +14,9 @@ class Form_CAF extends \Form{
 	public $show_demoplan=false;
 	public $change_plan=true;
 	public $show_reset_plan_detail = true;
+	public $consumed_stock;
+	public $cafInvoiceMandatory = 0;
+
 	function init(){
 		parent::init();
 		
@@ -207,13 +210,14 @@ class Form_CAF extends \Form{
 		}
 
 		if($this->show_consumption_detail){
-			$stock_model = $this->add('xepan\commerce\Model_Item_Stock',['warehouse_id'=>$this->model->id]);
+			$this->consumed_stock = $stock_model = $this->add('xepan\commerce\Model_Item_Stock',['warehouse_id'=>$this->model->id]);
 			$stock_model->addCondition('maintain_inventory',true);
 			$stock_model->addCondition('net_stock','>',0);
 
 			$grid= $this->layout->add('xepan\base\Grid',['fixed_header'=>false],'consumptions');
 			$grid->setModel($stock_model,['name','net_stock','serial_nos','qty_unit']);
 			$grid->addPaginator(10);
+			$grid->add('View',null,'grid_buttons')->set('Consumed Stock History');
 		}
 
 		$attachment_model = $this->add('xavoc\ispmanager\Model_Attachment');
@@ -252,6 +256,14 @@ class Form_CAF extends \Form{
 		
 		$this->addSubmit('Save')->addClass('btn btn-primary btn-block');
 		
+		if($this->app->branch->id){
+			$this->cafInvoiceMandatory = $this->add('xavoc\ispmanager\Model_Config_CAFInvoiceMandatory')
+									->addCondition('branch_id',$this->app->branch->id)
+									->count();			
+			if($this->cafInvoiceMandatory){
+				$this->getElement('create_invoice')->set(1);
+			}
+		}
 	}
 
 
@@ -285,7 +297,10 @@ class Form_CAF extends \Form{
 				// }
 
 			}
-
+			// invoice generate or not
+			if($this->cafInvoiceMandatory && !$this['create_invoice'])
+				$this->displayError('create_invoice','must not be empty');
+			
 			if($this->show_reset_plan_detail){
 				$this->app->reset_same_plan_again = $this['reset_same_plan_again'];
 				$this->app->reset_same_plan_again_on_date = $this['reset_same_plan_again_on_date'];
@@ -298,10 +313,12 @@ class Form_CAF extends \Form{
 
 				//consumption entry
 				if($this->manage_consumption == true){
-					// temporary removed .. to do uncomment
-					// if(!$this->session_item->count()){
-					// 	$this->js()->univ()->errorMessage('please add consumption items')->execute();
-					// }
+					
+					if(!$this->session_item->count() AND !$this->consumed_stock->count()){
+						$this->js()->univ()->errorMessage('please add consumption items')->execute();
+					}
+					
+					throw new \Exception("Error Processing Request");
 					
 					$warehouse = $this->add('xepan\commerce\Model_Store_Warehouse');
 					$transaction = $warehouse->newTransaction(null,null,$this->app->employee->id,'Issue',null,$this->model->id,"Issue to customer ".$this->model['name'],null,'Received',$this->app->now);

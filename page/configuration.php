@@ -23,6 +23,7 @@ class page_configuration extends \xepan\base\Page {
 		$tab->addTabURL('xepan_marketing_leadsource','Lead source');
 		$tab->addTabURL('./refund','Refundable Nominal Accounts');
 		$tab->addTabURL('./disclaimer','Customer Disclaimer');
+		$tab->addTabURL('./cafinvman','CAF Invoice Mandatory');
 		
 	}
 
@@ -130,12 +131,18 @@ class page_configuration extends \xepan\base\Page {
 
 		$crud = $conn_tab->add('xepan\base\CRUD');
 		$crud->setModel($model,['connection_type','mendatory_fields','mendatory_documents','other_documents']);
+		$crud->grid->addFormatter('mendatory_documents','wrap');
+		$crud->grid->addFormatter('mendatory_fields','wrap');
+		$crud->grid->addFormatter('other_documents','wrap');
 
 		$model = $this->add('xavoc\ispmanager\Model_Config_Mendatory');
 		$model->addCondition('connection_type',null);
 
 		$crud = $comm_tab->add('xepan\base\CRUD');
 		$crud->setModel($model,['customer_type','mendatory_fields','mendatory_documents','other_documents']);
+		$crud->grid->addFormatter('mendatory_documents','wrap');
+		$crud->grid->addFormatter('mendatory_fields','wrap');
+		$crud->grid->addFormatter('other_documents','wrap');
 	}
 
 	function page_location(){
@@ -414,4 +421,11 @@ class page_configuration extends \xepan\base\Page {
 		}
 	}
 
+
+	function page_cafinvman(){
+		$model = $this->add('xavoc\ispmanager\Model_Config_CAFInvoiceMandatory');
+		$crud = $this->add('xepan\base\CRUD');
+		$crud->setModel($model,['branch_id'],['branch']);
+
+	}
 }

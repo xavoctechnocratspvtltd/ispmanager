@@ -2214,7 +2214,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 						'plan_id'=>'required',
 
 					];
-		$form = $page->add('xavoc\ispmanager\Form_CAF',['model'=>$this,'mandatory_field'=>$mandatory_field,'manage_consumption'=>false,'show_consumption_detail'=>true,'validate_values'=>false,'allow_invoice'=>true,'show_demoplan'=>true]);
+		$form = $page->add('xavoc\ispmanager\Form_CAF',['model'=>$this,'mandatory_field'=>$mandatory_field,'manage_consumption'=>true,'show_consumption_detail'=>true,'validate_values'=>true,'allow_invoice'=>true,'show_demoplan'=>true]);
 
 		if(!$this['radius_username'])
 			$form->getElement('radius_username')->set($this['code']);

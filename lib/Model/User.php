@@ -597,14 +597,9 @@ class Model_User extends \xepan\commerce\Model_Customer{
 
 	function getIssuedDevices(){
 
-		$m = $this->add('xepan\commerce\Model_Store_TransactionAbstract');
-		$m->addCondition('type',"Issue");
-		$m->addCondition('to_warehouse_id',$this->id);
-		$tran_ids = array_column($m->getRows(),'id');
-		$tran_ids = array_combine($tran_ids,$tran_ids);
-
 		$tr = $this->add('xepan\commerce\Model_Store_TransactionRow');
-		$tr->addCondition('store_transaction_id',$tran_ids);
+		$tr->addCondition('type','Issue');
+		$tr->addCondition('to_warehouse_id',$this->id);
 		
 		return $tr;
 
@@ -660,6 +655,11 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$refund_security_deposite = [];
 		$refund_security_deposite = $this->getRefundableSecurityDeposit();
 
+		// echo "<pre>";
+		// print_r($refund_security_deposite);
+		// echo "</pre>";
+		// return;
+		
 
 		// ===== all things will change now, devices recived in separate model and 
 		// ===== here only show that json, received damaged or what
@@ -691,6 +691,7 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		if($form->isSubmitted()){
 			$this['surrender_applied_on'] = $form['surrender_applied_on'];
 			$this->save();
+			$this->reload();
 			$view->js()->reload();
 		}
 
@@ -703,8 +704,9 @@ class Model_User extends \xepan\commerce\Model_Customer{
 		$issued_items = $this->getIssuedDevices();
 		// $this->app->print_r($issued_items->getRows());
 
-		// $page->add('View')->addClass('alert alert-info')
-		// 		->set('Refund Amount: '.$this->app->epan->default_currency['name']);
+		$page->add('View')->addClass('alert alert-info')
+				->set('Refund Amount: '.$this->app->epan->default_currency['name']);
+
 		$form = $page->add('Form');
 		$form->addSubmit('Surrender Now')->addClass('btn btn-primary');
 		if($form->isSubmitted()){

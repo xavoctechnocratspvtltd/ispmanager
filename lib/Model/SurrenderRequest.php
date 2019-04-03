@@ -7,30 +7,35 @@ class Model_SurrenderRequest extends \xepan\base\Model_Table{
 	public $acl_type = "SurrenderRequest";
 	public $status = ["SurrenderRequest","SurrenderDeviceReceived","Surrender"];
 	public $actions = [
-			"SurrenderRequest"=>['view','surrender_device_received','edit','delete'],
+			"SurrenderRequest"=>['view','retain','surrender_device_received','edit','delete'],
+			"Retain"=>['view','edit','delete'],
 			"SurrenderDeviceReceived"=>['view','surrender','edit','delete'],
-			"Surrender"=>['view','surrender','edit','delete']
+			"Surrender"=>['view','edit','delete']
 		];
 	public $status_color = [
 						'SurrenderRequest'=>'danger',
 						'SurrenderDeviceReceived'=>'primary',
-						'Surrender'=>'success'
+						'Surrender'=>'danger',
+						'Retain'=>'success'
 					];
 
 	function init(){
 		parent::init();
 		
-		$this->hasOne('xepan\commerce\Customer','contact_id','unique_name')->display(['form'=>'xepan\base\DropDown'])->caption('Customer');
-		$this->hasOne('xepan\hr\Employee','assign_to_id');
+		$this->hasOne('xepan\commerce\Customer','contact_id','unique_name')->display(['form'=>'autocomplete\Basic'])->caption('Customer');
+		$this->hasOne('xepan\hr\Employee','assign_to_id')->caption('Assign To Employee');
 		$this->hasOne('xepan\base\Model_Contact','created_by_id')->defaultValue($this->app->employee->id)->system(true);
+		$this->hasOne('xepan\hr\Employee','retain_by_id')->caption('Retain By Employee');
 
-		$this->addField('device_collection_availibility')->display(['form'=>'DateTimePicker'])->type('datetime');
+		$this->addField('device_collection_availibility')->display(['form'=>'DateTimePicker'])->type('datetime')->defaultValue($this->app->now);
 		$this->addField('narration')->type('text');
 		$this->addField('status')->enum($this->status)->defaultValue('SurrenderRequest');
 		$this->addField('created_at')->type('datetime')->display(['form'=>'DateTimePicker'])->defaultValue($this->app->now)->sortable(true);
 		$this->addField('device_collected_at')->type('datetime')->display(['form'=>'DateTimePicker'])->system(true);
 		$this->addField('surrender_at')->type('datetime')->display(['form'=>'DateTimePicker'])->system(true);
 		$this->addField('device_collection_data')->type('text')->system(true);
+		$this->addField('retain_comment')->type('text');
+		$this->addField('not_retain_reason');
 
 		$this->addExpression('duration_in_month')->set(function($m,$q){
 			return $q->expr('TIMESTAMPDIFF(MONTH,[0],IF([1],[1],[2]))',[$m->getElement('created_at'),$m->getElement('surrender_at'),"'".$this->app->now."'"]);
@@ -38,11 +43,42 @@ class Model_SurrenderRequest extends \xepan\base\Model_Table{
 		
 		$this->add('xepan\base\Controller_AuditLog');
 		$this->is([
-			'contact_id|to_trim|required'
+			'contact_id|to_trim|required',
+			'assign_to_id|to_trim|required'
 		]);
 	}
 
+	function page_retain($page){
+
+		$form = $page->add('Form');
+		$form->setModel($this,['retain_by_id','retain_comment']);
+		$form->addSubmit('Submit');
+		$form->getElement('retain_by_id')->validate('required');
+		$form->getElement('retain_comment')->validate('required');
+
+		if($form->isSubmitted()){
+			$this->retain($form['retain_by_id'],$form['retain_comment']);
+			return $this->app->page_action_result = $this->app->js(true,$page->js()->univ()->closeDialog())->univ()->successMessage('Customer Retain Successfully');
+		}
+	}
+
+	function retain($retain_by_id,$retain_comment){
+		$this['retain_by_id'] = $retain_by_id;
+		$this['retain_comment'] = $retain_comment;
+		$this['status'] = "Retain";
+		$this->save();
+
+		$this->app->employee
+			->addActivity("Customer (".$this['contact_id'].") Retain By Employee ".$this['retain_by_id'],null, $this['retain_by_id'] /*Related Contact ID*/,null,null,null)
+			->notifyWhoCan('surrender_device_received','Surrender')
+			->notifyTo([$this['retain_by_id'],$this['created_by_id'],$this['assign_to_id']],"Customer (".$this['contact_id'].") Retain By Employee ".$this['retain_by_id'])
+			;
+
+		return $this;
+	}
+
 	function page_surrender_device_received($page){
+
 		if(!$this['duration_in_month']){
 			$date_diff = $this->app->my_date_diff(($this['surrender_at']?$this['surrender_at']:$this->app->today),date('Y-m-d',strtotime($this['created_at'])));
 			$page->add('View')->setHtml('<h3>Surrender 1 month notice period is not surved, Total Days Served: '.$date_diff['days']." Applied on: ".$this['created_at']."</h3>")->addClass('bg bg-warning');
@@ -53,6 +89,9 @@ class Model_SurrenderRequest extends \xepan\base\Model_Table{
 
 		// $this->app->print_r($issued_items->getRows(),true);
 		$form = $page->add('Form');
+		$form->addField('Line','not_retain_reason','Customer Not Retain Reason')->validate('required');
+		$form->add('HR');
+				
 		if($issued_items->count()->getOne()){
 			$form->addField('DropDown','warehouse','Device Submit To Warehouse')
 				->setEmptyText('Please Select ...')
@@ -71,15 +110,15 @@ class Model_SurrenderRequest extends \xepan\base\Model_Table{
 					$form->addField('DropDown','received_status_'.$issued_item['id'],'received_status')->setValueList(['ok'=>'Ok','damaged'=>'Damaged']);
 				}
 				$form->add('HR');
-
 			}
-
+		}else{
+			$form->add('View')->set('No one Device is found related to customer')->addClass('alert alert-danger');
 		}
 
 		$form->addSubmit('Receive');
 
 		if($form->isSubmitted()){
-				// check if damaged serial numbers are the ones from issued
+			// check if damaged serial numbers are the ones from issued
 			if($issued_items->count()->getOne()){
 				foreach ($issued_items as $issued_item){
 					$serials = json_decode($issued_item['serial_nos'],true);
@@ -126,7 +165,7 @@ class Model_SurrenderRequest extends \xepan\base\Model_Table{
 			$this['device_collection_data'] = json_encode($form->get());
 			$this->save();
 			return $page->js()->univ()->closeDialog();
-			}
+		}
 
 	}
 

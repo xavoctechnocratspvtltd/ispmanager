@@ -183,3 +183,26 @@ party account lager print option not proper
 add in invoice view need balance amount
 prompt automation store activity start karna he po nahi banta he
 
+
+
+
+final-------------------------------
+
+ALTER TABLE `isp_surrender_request` ADD `retain_by_id` INT(11) NULL AFTER `device_collection_data`, ADD `not_retain_reason` VARCHAR(255) NOT NULL AFTER `retain_by_id`, ADD `retain_comment` INT(11) NOT NULL AFTER `not_retain_reason`;
+
+    Done:  ------------------------
+    active and change plan
+    invoice export with user plan expired date
+    notification with acl: additional
+    ---------------------------------------
+
+
+    
+    Burst Limit
+    surrender process
+    Purchase Due date wise report: additional
+    admin user page load speed
+    
+    ---------------------------------------
+    commission generates: additional
+

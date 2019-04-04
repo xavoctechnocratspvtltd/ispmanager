@@ -170,7 +170,9 @@ class Initiator extends \Controller_Addon {
             if(!$job->getSchedule() || $job->getSchedule()->valid($now)){
                 echo " Executing Condition Reset<br/>";
                 $this->add('xavoc\ispmanager\Controller_ResetUserPlanAndTopup')->run();
+                $this->add('xavoc\ispmanager\Controller_AutoMacBind')->run();
             }
+            
 
         });
 

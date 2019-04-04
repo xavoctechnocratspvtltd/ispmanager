@@ -172,7 +172,12 @@ class Initiator extends \Controller_Addon {
                 $this->add('xavoc\ispmanager\Controller_ResetUserPlanAndTopup')->run();
                 $this->add('xavoc\ispmanager\Controller_AutoMacBind')->run();
             }
-            
+            $job->setSchedule(new \Cron\Schedule\CrontabSchedule('0-5 2 * * *'));
+            if(!$job->getSchedule() || $job->getSchedule()->valid($now)){
+                echo " Executing Auto mac bind<br/>";
+                $this->add('xavoc\ispmanager\Controller_AutoMacBind')->run();
+            }
+
 
         });
 

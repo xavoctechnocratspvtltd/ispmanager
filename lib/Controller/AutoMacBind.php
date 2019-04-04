@@ -24,28 +24,31 @@ class Controller_AutoMacBind extends \AbstractController {
 		// $user_model->addCondition('first_name','<>',null);
 		
 		$user_data_row = $user_model->getRows();
-		try{
-			foreach($user_data_row as $model){
+		
+		if(!$debug){
+			try{
+				foreach($user_data_row as $model){
 
-				$radcheck = $this->add('xavoc\ispmanager\Model_RadCheck');
-				$radcheck->addCondition('value',$model['recent_mac_address']);
-				if($radcheck->count()->getOne() > 1){ continue; }
+					$radcheck = $this->add('xavoc\ispmanager\Model_RadCheck');
+					$radcheck->addCondition('value',$model['recent_mac_address']);
+					if($radcheck->count()->getOne() > 1){ continue; }
 
-				$radcheck->tryLoadAny();
-				if($radcheck->loaded() AND $radcheck['username'] != $model['radius_username']) continue;
+					$radcheck->tryLoadAny();
+					if($radcheck->loaded() AND $radcheck['username'] != $model['radius_username']) continue;
 
-				$radcheck['username'] = $model['radius_username'];
-				$radcheck['attribute'] = "Calling-Station-Id";
-				$radcheck['op'] = ":=";
-				$radcheck->saveAndUnload();
+					$radcheck['username'] = $model['radius_username'];
+					$radcheck['attribute'] = "Calling-Station-Id";
+					$radcheck['op'] = ":=";
+					$radcheck->saveAndUnload();
 
-				$query = "UPDATE `isp_user` SET `mac_address` = '".$model['recent_mac_address']."' WHERE `isp_user`.`customer_id` = ".$model['id'].";";
-				// $model['mac_address'] = $model['recent_mac_address'];
-				// $model->save();
-				$this->app->db->dsql()->expr($query)->execute();
+					$query = "UPDATE `isp_user` SET `mac_address` = '".$model['recent_mac_address']."' WHERE `isp_user`.`customer_id` = ".$model['id'].";";
+					// $model['mac_address'] = $model['recent_mac_address'];
+					// $model->save();
+					$this->app->db->dsql()->expr($query)->execute();
+				}
+			}catch(\Exception $e){
+
 			}
-		}catch(\Exception $e){
-
 		}
 
 		if($debug && $this->grid)

@@ -11,6 +11,8 @@ class page_listuser2 extends \xepan\base\Page{
 	function init(){
 		parent::init();
 
+		$this->addFilterForm();
+
 		$this->setModel();
 		$this->crud = $crud = $this->add('xepan\hr\CRUD',['entity_name'=>'User']);
 		$this->app->stickyGET('status');
@@ -121,6 +123,7 @@ class page_listuser2 extends \xepan\base\Page{
 		$this->crud->setModel($this->model,['net_data_limit','branch_id','radius_username','radius_password','plan_id','simultaneous_use','grace_period_in_days','custom_radius_attributes','first_name','last_name','create_invoice','is_invoice_date_first_to_first','include_pro_data_basis','country_id','state_id','city','address','pin_code','qty_unit_id','mac_address'],['name','radius_username','plan','radius_login_response','contacts_str','emails_str','created_at','last_login','is_online','active_condition_data','last_logout','name','created_by','active_plan_expire_date','due_date','branch','address','city','state','country']);
 		$this->crud->grid->addPaginator(10);
 		$crud->grid->addSno();
+		$crud->grid->add('misc\Export');
 
 		if($crud->isEditing()){
 			$form = $crud->form;
@@ -170,9 +173,20 @@ class page_listuser2 extends \xepan\base\Page{
 		$filter_form = $crud->grid->addQuickSearch(['name','radius_username','plan','contacts_str','emails_str']);
 		$crud->grid->addSno();
 		$this->addTopBarStatusFilter();
+
+		$this->formSubmit();
 	}
 
 	function setModel(){
+		$filter = $this->app->stickyGET('filter');
+		$from_date = $this->app->stickyGET('from_date');
+		$to_date = $this->app->stickyGET('to_date');
+		$look_according_to = $this->app->stickyGET('look_according_to');
+		$user = $this->app->stickyGET('user');
+		$employee = $this->app->stickyGET('employee');
+		$city = $this->app->stickyGET('city');
+		$connection_status = $this->app->stickyGET('connection_status');
+
 		$this->model = $model = $this->add('xavoc\ispmanager\Model_User');
 		$model->getElement('country_id')->getModel('status','Active');
 		$model->getElement('state_id')->getModel('status','Active');
@@ -252,6 +266,30 @@ class page_listuser2 extends \xepan\base\Page{
 			$model->addCondition('branch_id',$this->app->branch->id);
 		}
 
+		if($filter){
+			if($user){
+				$model->addCondition('id',$user);
+
+			}else{
+
+				if($from_date && $look_according_to) $model->addCondition($look_according_to,">=",$from_date);
+				if($to_date && $look_according_to) $model->addCondition($look_according_to,"<", $this->app->nextDate($to_date?$to_date:$this->app->today));
+
+				if($employee) $model->addCondition('created_by_id',$employee);
+				if($city) $model->addCondition('city',$city);
+				if($connection_status){
+					if($connection_status == "Online"){
+						$model->addCondition('is_online',true);
+					}
+					if($connection_status == "Offline"){
+						$model->addCondition('is_online',false);
+					}
+				}
+
+			}
+
+		}
+
 		$model->is([
 				'radius_username|to_trim|required',
 				'radius_password|to_trim|required',
@@ -322,6 +360,80 @@ class page_listuser2 extends \xepan\base\Page{
 					->js('click')->univ()->location($this->api->url(null,['status'=>null]))
 				;
 
+	}
+
+	function addFilterForm(){
+		$this->filter_form = $form = $this->add('Form');
+		$form->add('xepan\base\Controller_FLC')
+			->showLables(true)
+			->makePanelsCoppalsible(true)
+			->layout([
+					'from_date'=>'Filter~c1~4~closed',
+					'to_date'=>'c2~4',
+					'look_according_to'=>'c3~4',
+					'user~Radius User'=>'c4~3',
+					'employee~User Created By Employee'=>'c5~3',
+					'city'=>'c6~3',
+					'connection_status'=>'c7~3',
+
+					'FormButtons~&nbsp;'=>'z1~3'
+				]);
+		$form->addField('DatePicker','from_date');
+		$form->addField('DatePicker','to_date');
+
+		$user_model = $this->add('xavoc\ispmanager\Model_User');
+		$user_model->title_field = "radius_effective_name";
+		$form->addField('autocomplete\Basic','user')->setModel($user_model);
+		$look_field = $form->addField('DropDown','look_according_to')
+				->setValueList(
+					[
+					'radius_user_created_at'=>'Created Date',
+					'last_login'=>'Last Login',
+					'last_logout'=>'Last Logout',
+					'due_date'=>'Due Date',
+
+				]);
+		$look_field->setEmptyText('select date variable');
+
+		$form->addField('autocomplete\Basic','employee')->setModel('xepan\hr\Model_Employee');
+
+		$data = $this->app->db->dsql()->expr('SELECT DISTINCT(city) AS city FROM contact')->get();
+		$city_list = [];
+		foreach ($data as $key => $value) {
+			if(!trim($value['city'])) continue;
+			$city_list[$value['city']] = $value['city'];
+		}
+		$city_field = $form->addField('DropDown','city');
+		$city_field->setValueList($city_list);
+		$city_field->setEmptyText('Select City');
+
+		$connection_status_field = $form->addField('DropDown','connection_status');
+		$connection_status_field->setValueList(['Online'=>'Online','Offline'=>'Offline']);
+		$connection_status_field->setEmptyText('Both Online/Offline');
+
+		$this->filter_btn = $form->addSubmit('Apply Filter')->addClass('btn btn-primary');
+		$this->clear_btn = $form->addSubmit('clear')->addClass('btn btn-warning');
+
+	}
+
+
+	function formSubmit(){
+		if($this->filter_form->isSubmitted()){
+			$form_data = [
+					'filter'=>0
+				];
+
+			if($this->filter_form->isClicked($this->clear_btn)){
+				$this->crud->js(null,$this->filter_form->js()->reload())->reload($form_data)->execute();
+			}			
+
+			$form_data = $this->filter_form->getAllFields();
+
+			if(($form_data['from_date'] OR $form_data['to_date']) AND ! $form_data['look_according_to']) $this->filter_form->displayError('look_according_to','look according to must not be empty');
+
+			$form_data['filter'] = 1;
+			$this->crud->js()->reload($form_data)->execute();
+		}
 	}
 
 }

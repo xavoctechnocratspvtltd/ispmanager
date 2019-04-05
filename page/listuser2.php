@@ -243,7 +243,7 @@ class page_listuser2 extends \xepan\base\Page{
 		})->sortable(true)->type('boolean');
 
 		$model->addExpression('new_status')->set(function($m,$q){
-			return $q->expr('if([0]=1,"Expired",[1])',[$m->getElement('is_expired'),$m->getElement("status")]);
+			return $q->expr('if(([0]=1 AND [1]="Active"),"Expired",[1])',[$m->getElement('is_expired'),$m->getElement("status")]);
 		});
 
 		$model->addCondition('status',['InActive','Active']);
@@ -292,7 +292,7 @@ class page_listuser2 extends \xepan\base\Page{
 			return $q->expr('IFNULL([0],0)',[$upt->fieldQuery('is_expired')]);
 		});
 		$user_model->addExpression('new_status')->set(function($m,$q){
-			return $q->expr('if([0]=1,"Expired",[1])',[$m->getElement('is_expired'),$m->getElement("status")]);
+			return $q->expr('if(([0]=1 AND [1]="Active"),"Expired",[1])',[$m->getElement('is_expired'),$m->getElement("status")]);
 		});
 		$user_model->addExpression('total_record')->set('count(*)');
 		$user_model->add('xepan\hr\Controller_ACL');

@@ -2,7 +2,7 @@
 
 namespace xavoc\ispmanager;
 
-class page_listuser extends \xepan\base\Page{
+class page_listuser2 extends \xepan\base\Page{
 	public $title = "User List";
 	public $datastatus = false;
 	public $model_class = "xavoc\ispmanager\Model_User";

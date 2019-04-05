@@ -19,6 +19,7 @@ class page_report extends \xepan\base\Page {
 		$tab->addTabUrl('xepan_commerce_reports_itemsalereport','Item Sales Report');
 		$tab->addTabUrl('./unclosedsession','Unclosed Session Users');
 		$tab->addTabUrl('./ipsearch','IP Search');
+		$tab->addTabUrl('./usercount','User Count Report');
 
 	}
 
@@ -722,4 +723,28 @@ class page_report extends \xepan\base\Page {
 		// $o->move('Delete','first')->now();
 
 	}
+
+	function page_usercount(){
+		$user_model = $this->add('xavoc\ispmanager\Model_User');
+		$user_model->addExpression('is_expired')->set(function($m,$q){
+			$upt = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup');
+			$upt->addCondition('user_id',$m->getElement('id'));
+			$upt->addCondition('is_topup',false);
+			$upt->setOrder('id','desc');
+			$upt->setLimit(1);
+			return $q->expr('IFNULL([0],0)',[$upt->fieldQuery('is_expired')]);
+		});
+
+		$user_model->addExpression('new_status')->set(function($m,$q){
+			return $q->expr('if([0]=1,"Expired",[1])',[$m->getElement('is_expired'),$m->getElement("status")]);
+		});
+		$user_model->addExpression('total_record')->set('count(*)');
+		$user_model->_dsql()->group('new_status');
+
+		$grid = $this->add('Grid');
+		$grid->setModel($user_model,['new_status','total_record']);
+		$grid->addTotals(['total_record']);
+
+	}
+
 }

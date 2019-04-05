@@ -8,7 +8,6 @@ class page_user extends \xepan\base\Page {
 	public $datastatus = true;
 	public $model_class = null;
 	public $paginator = 5;
-	
 	function page_index(){
 		// parent::init();
 
@@ -125,7 +124,7 @@ class page_user extends \xepan\base\Page {
 		$model->addHook('afterSave',[$model,'createInvoice'],[null,null,$this->app->now]);
 		$model->addHook('afterSave',[$model,'updateNASCredential']);
 		$model->addHook('afterSave',[$model,'updateWebsiteUser']);
-		// $model->setOrder('id','desc');
+		$model->setOrder('id','desc');
 
 		$model->getElement('emails_str')->caption('Emails');
 		$model->getElement('contacts_str')->caption('Contacts');

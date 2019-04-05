@@ -22,6 +22,7 @@ class Controller_AutoMacBind extends \AbstractController {
 		$user_model->addCondition([['is_hotspotuser',false],['is_hotspotuser',null]]);
 		$user_model->addCondition([['mac_address',null],['mac_address',""]]);
 		$user_model->addCondition('radius_username','<>',null);
+		$user_model->addCondition('status','Active');
 		// $user_model->addCondition('first_name','<>',null);
 		
 		$user_data_row = $user_model->getRows();

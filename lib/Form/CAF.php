@@ -23,6 +23,7 @@ class Form_CAF extends \Form{
 		if(!$this->model)
 			$this->model = $model = $this->add('xavoc\ispmanager\Model_User');
 
+		$this->manage_consumption = false;
 		// $config = $this->add('xepan\base\Model_ConfigJsonModel',
 			// [
 			// 	'fields'=>[

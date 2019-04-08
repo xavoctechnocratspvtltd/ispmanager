@@ -177,7 +177,7 @@ class Initiator extends \Controller_Addon {
                 echo " Executing Auto mac bind<br/>";
                 $this->add('xavoc\ispmanager\Controller_AutoMacBind')->run();
             }
-            $job->setSchedule(new \Cron\Schedule\CrontabSchedule('0-10 2 * * *'));
+            $job->setSchedule(new \Cron\Schedule\CrontabSchedule('1 2 * * *'));
             if(!$job->getSchedule() || $job->getSchedule()->valid($now)){
                 echo " Invoice Auto Create<br/>";
                 $this->add('xavoc\ispmanager\Controller_GenerateInvoice')->run();

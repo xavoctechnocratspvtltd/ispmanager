@@ -29,7 +29,7 @@ class Controller_GenerateInvoice extends \AbstractController {
 			$model->addCondition('branch_id',$branch_id);
 
 		$model->addCondition('end_date','<>',$model->getElement('last_invoice_date'));
-
+		$model->addCondition([['is_expired',false],['is_expired',null]]);
 		$model->addCondition('user_status','Active');
 		$model->_dsql()->where('id in ( select max(id) from isp_user_plan_and_topup group by user_id)');
 		$model->setActualFields(['id','last_invoice_date','end_date','user_status']);

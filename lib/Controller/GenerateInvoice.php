@@ -42,8 +42,8 @@ class Controller_GenerateInvoice extends \AbstractController {
           		continue;
           	}
 			
-          	if(strtotime(date('Y-m-d',strtotime($data['last_invoice_date']))) >  strtotime("-".$data['plan_validity_value']." ".$data['qty_unit'],strtotime($data['end_date'])) ) // invoice is created between end_date and plan validity in past .. may be for this renew
-				continue;
+    //       	if(strtotime(date('Y-m-d',strtotime($data['last_invoice_date']))) >  strtotime("-".$data['plan_validity_value']." ".$data['qty_unit'],strtotime($data['end_date'])) ) // invoice is created between end_date and plan validity in past .. may be for this renew
+				// continue;
 			
           	try{
           		$this->app->db->beginTransaction();

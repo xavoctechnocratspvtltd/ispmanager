@@ -9,6 +9,17 @@ class Controller_GenerateInvoice extends \AbstractController {
 		$from_date = $from_date?:$this->app->today;
 		$to_date = $to_date?:$this->app->today;
 
+		$log_model = $this->add('xepan\base\Model_AuditLog');
+		$log_model['model_class'] = "xavoc\ispmanager\Controller_GenerateInvoice";
+		$log_model['created_at'] = date('Y-m-d H:i:s');
+		$log_model['type'] = "Started Auto Generate Invoice";
+		$log_model['name'] = json_encode([
+				'action'=>"Auto Generate Invoice started", 
+				'from date'=> $from_date,
+				'to date' =>$to_date
+			]);
+		$log_model->save();
+
 		$model = $this->add('xavoc\ispmanager\Model_UserPlanAndTopup');
 		$model->addExpression('last_invoice_date')->set(function($m,$q){
 			$act = $m->add('xavoc\ispmanager\Model_Invoice')
@@ -36,7 +47,7 @@ class Controller_GenerateInvoice extends \AbstractController {
 		$model->_dsql()->where('id in ( select max(id) from isp_user_plan_and_topup group by user_id)');
 		$model->setActualFields(['id','last_invoice_date','end_date','user_status','plan_id','plan_validity_value','qty_unit']);
 		
-
+		$count = 0;
 		foreach ($model as $data) {
 			if(strtotime($data['end_date']) == strtotime(date('Y-m-d',strtotime($data['last_invoice_date'])))){
           		continue;
@@ -52,10 +63,30 @@ class Controller_GenerateInvoice extends \AbstractController {
           		// echo "</pre>";
           		$data->createInvoice('Submitted');
           		$this->app->db->commit();
+          		$count++;
           	}catch(\Exception $e){
           		$this->app->db->rollback();
+
+				$log_m = $this->add('xepan\base\Model_AuditLog');
+				$log_m['model_class'] = "xavoc\ispmanager\Model_UserPlanAndTopup";
+				$log_m['pk_id'] = $data['id'];
+				$log_m['name'] = json_encode($model->data);
+				$log_m['type'] = "Error in Generate Invoice of user ".$data['user']." dates are from:".$from_date." to:".$to_date."  error_more_info ".$e->getMessage();
+				$log_m->save();
           	}
 		}
+
+		$log_model = $this->add('xepan\base\Model_AuditLog');
+		$log_model['model_class'] = "xavoc\ispmanager\Controller_GenerateInvoice";
+		$log_model['created_at'] = date('Y-m-d H:i:s');
+		$log_model['type'] = "Finish Auto Generate Invoice";
+		$log_model['name'] = json_encode(
+			[	'action'=>"Auto Generate Invoice Finish",
+				'from date'=> $from_date,
+				'to date'=>$to_date,
+				'Total Invoice Generated'=>$count
+			]);
+		$log_model->save();
 
 	}
 
